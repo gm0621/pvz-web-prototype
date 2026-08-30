@@ -5,8 +5,8 @@
 ## 關羽攻擊動作
 
 - 來源：Gimmy 提供圖1。
-- 目前用途：角色介紹頁維持原本關羽圖；遊戲中關羽火焰將揮刀攻擊時，短暫切換成 `assets/characters/future-generals/guanyu/guanyu-qinglong-slash.png`。
-- 方向：素材以面向右方攻擊為準，避免在三國守方由左往右攻擊時反向。
+- 目前用途：保留作為備用素材；角色介紹頁與遊戲中關羽火焰將都改回使用原本 `assets/characters/guanyu-fire-general.png`。
+- 遊戲中攻擊效果：不再切換圖1，改用原圖短暫向右前揮的翻轉/傾斜動畫，避免換圖突兀。
 
 ## 鬥神張飛
 - 消耗：225 軍糧

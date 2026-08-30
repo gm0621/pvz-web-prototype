@@ -9,7 +9,7 @@
 - shield-general.png：盾將，取代原堅果牆。
 - ambush-scout.png：伏兵，取代原土豆雷。
 - guanyu-fire-general.png：關羽火焰將，取代原火焰豌豆。
-- future-generals/guanyu/guanyu-qinglong-slash.png：關羽遊戲中揮刀攻擊專用圖，使用 Gimmy 提供的圖1青龍斬設計；角色介紹頁改回原本關羽圖。
+- 關羽火焰將：角色介紹頁與遊戲中都使用 `guanyu-fire-general.png` 原圖；攻擊時以 CSS 向右前揮翻轉/傾斜動畫表現，不再切換圖1青龍斬圖片。
 
 ## 僵屍方 PNG 正式素材
 
