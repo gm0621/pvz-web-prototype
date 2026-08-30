@@ -1,6 +1,12 @@
 # Future Three Kingdoms Generals
 
-這批角色依 Gimmy 指示先存入，未來關卡會用到；目前尚未整合到正式遊戲卡片。
+# 未來武將素材
+
+## 關羽攻擊動作
+
+- 來源：Gimmy 提供圖1。
+- 目前用途：角色介紹頁維持原本關羽圖；遊戲中關羽火焰將揮刀攻擊時，短暫切換成 `assets/characters/future-generals/guanyu/guanyu-qinglong-slash.png`。
+- 方向：素材以面向右方攻擊為準，避免在三國守方由左往右攻擊時反向。
 
 ## 鬥神張飛
 - 消耗：225 軍糧
