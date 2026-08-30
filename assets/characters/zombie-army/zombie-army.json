@@ -1,0 +1,50 @@
+[
+  {
+    "slug": "normal-zombie",
+    "name": "一般僵屍",
+    "role": "basic melee",
+    "asset": "assets/characters/zombie-army/normal-zombie.png",
+    "source_original": "assets/characters/zombie-army/source-originals/zombie-sheet-source.png",
+    "integrated_in_game": true
+  },
+  {
+    "slug": "armored-zombie",
+    "name": "鐵甲僵屍",
+    "role": "armored tank",
+    "asset": "assets/characters/zombie-army/armored-zombie.png",
+    "source_original": "assets/characters/zombie-army/source-originals/zombie-sheet-source.png",
+    "integrated_in_game": true
+  },
+  {
+    "slug": "jumping-zombie",
+    "name": "跳躍僵屍",
+    "role": "jumping runner",
+    "asset": "assets/characters/zombie-army/jumping-zombie.png",
+    "source_original": "assets/characters/zombie-army/source-originals/zombie-sheet-source.png",
+    "integrated_in_game": true
+  },
+  {
+    "slug": "beast-giant",
+    "name": "獸之巨人",
+    "role": "giant heavy unit",
+    "asset": "assets/characters/zombie-army/beast-giant.png",
+    "source_original": "assets/characters/zombie-army/source-originals/zombie-sheet-source.png",
+    "integrated_in_game": true
+  },
+  {
+    "slug": "zombie-warlord",
+    "name": "僵屍王將軍",
+    "role": "boss warlord",
+    "asset": "assets/characters/zombie-army/zombie-warlord.png",
+    "source_original": "assets/characters/zombie-army/source-originals/zombie-sheet-source.png",
+    "integrated_in_game": true
+  },
+  {
+    "slug": "rock-thrower-zombie",
+    "name": "擲石僵屍",
+    "role": "ranged stone thrower",
+    "asset": "assets/characters/zombie-army/rock-thrower-zombie.png",
+    "source_original": "assets/characters/zombie-army/source-originals/rock-thrower-source.png",
+    "integrated_in_game": true
+  }
+]
