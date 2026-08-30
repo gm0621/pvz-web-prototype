@@ -18,8 +18,8 @@
 
 ## 穿刺馬超
 - 消耗：200 軍糧
-- 定位：二格穿刺群攻
-- 能力：高攻擊力；可以打到二格內敵人；具穿刺效果，可同時打多人。
+- 定位：三格穿刺群攻
+- 能力：高攻擊力；可以打到三格內敵人；具穿刺效果，可同時打多人，並顯示藍色刺擊軌跡。
 - 素材：`assets/characters/future-generals/pierce-machao.png`
 - 原始圖：`assets/characters/future-generals/source-originals/pierce-machao-source.png`
 
@@ -39,7 +39,7 @@
 
 ## 火神龐統
 - 消耗：175 軍糧
-- 定位：整列一次性高輸出
-- 能力：一列攻擊，高輸出傷害；一次性使用，打完就消失。
+- 定位：三列鳳火一次性高輸出
+- 能力：三列火攻，高輸出傷害；一次性使用，打完就消失，並顯示鳳火特效。
 - 素材：`assets/characters/future-generals/fire-god-pangtong.png`
 - 原始圖：`assets/characters/future-generals/source-originals/fire-god-pangtong-source.png`
