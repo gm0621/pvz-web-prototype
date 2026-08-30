@@ -30,7 +30,7 @@ Manifest：`zombie-army/zombie-army.json`。
 
 ## Audio and animation notes
 
-- 背景音樂使用 `../audio/asianoriental1.ogg`；音效使用瀏覽器 WebAudio 即時合成。
+- 背景音樂使用 `../audio/bgm/01_main.ogg`（Asianoriental1 保留當主畫面）；音效使用瀏覽器 WebAudio 即時合成。
 - 遊戲頁有「音樂 ON/OFF」按鈕；受瀏覽器自動播放限制，聲音會在玩家互動後啟動。
 - 攻擊動畫包含角色入場/呼吸、攻擊前衝、投射物脈動、命中斬擊、龐統整排火、孔明全圖八卦/雷陣、火焰/冰凍/爆炸與推車音效。
 

@@ -1,0 +1,20 @@
+{
+  "implemented": {
+    "main": {
+      "title": "Asianoriental1",
+      "file": "bgm/01_main.ogg",
+      "source_url": "https://opengameart.org/sites/default/files/asianoriental1_0.ogg",
+      "license": "CC0 per user-provided note",
+      "status": "active_main_menu_bgm"
+    }
+  },
+  "planned": [
+    {"scene":"stage_select","title":"Prepare Your Swords","target_file":"bgm/02_stage_select.ogg","license":"CC0","status":"needs_verified_download_url"},
+    {"scene":"battle","title":"Fast Fight / Battle Music – Looped","target_file":"bgm/03_battle.ogg","license":"CC0","status":"needs_verified_download_url"},
+    {"scene":"zombie_wave","title":"Zombies' March","target_file":"bgm/04_zombie_wave.ogg","license":"CC0","status":"needs_verified_download_url"},
+    {"scene":"giant_boss","title":"Battle Epic","target_file":"bgm/05_giant_boss.mp3","license":"Pixabay License","status":"needs_verified_download_url"},
+    {"scene":"zombie_king","title":"JRPG Epic Rock Battle Theme #1","target_file":"bgm/06_zombie_king_intro.mp3 + bgm/06_zombie_king_loop.mp3","license":"CC0","status":"needs_verified_download_url"},
+    {"scene":"hero_fanfare","title":"10 Fanfares","target_file":"jingle/07_hero_*.ogg","license":"CC0","status":"needs_verified_download_url"},
+    {"scene":"victory","title":"Victory Fanfare Short","target_file":"jingle/08_victory.wav","license":"CC0","status":"needs_verified_download_url"}
+  ]
+}
