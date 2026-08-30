@@ -7,8 +7,8 @@
     "ability": "高防禦力、高攻擊力；敵人靠近被攻擊時往後退一格；攻擊速度較慢。",
     "asset": "assets/characters/future-generals/god-zhangfei.png",
     "source_original": "assets/characters/future-generals/source-originals/god-zhangfei-source.png",
-    "status": "reserved_future_unit",
-    "integrated_in_game": false,
+    "status": "integrated_playable_unit",
+    "integrated_in_game": true,
     "original_size": [
       1254,
       1254
@@ -27,8 +27,8 @@
     "ability": "可遠程攻擊但攻擊力較低；近距離攻擊力較高；被打到的敵方速度變慢。",
     "asset": "assets/characters/future-generals/ice-zhaoyun.png",
     "source_original": "assets/characters/future-generals/source-originals/ice-zhaoyun-source.png",
-    "status": "reserved_future_unit",
-    "integrated_in_game": false,
+    "status": "integrated_playable_unit",
+    "integrated_in_game": true,
     "original_size": [
       1254,
       1254
@@ -47,8 +47,8 @@
     "ability": "高攻擊力；可以打到二格內敵人；具穿刺效果，可同時打多人。",
     "asset": "assets/characters/future-generals/pierce-machao.png",
     "source_original": "assets/characters/future-generals/source-originals/pierce-machao-source.png",
-    "status": "reserved_future_unit",
-    "integrated_in_game": false,
+    "status": "integrated_playable_unit",
+    "integrated_in_game": true,
     "original_size": [
       1254,
       1254
@@ -67,8 +67,8 @@
     "ability": "同弓兵，但一次可以射三排：自己那一排、上排、下排。",
     "asset": "assets/characters/future-generals/hundred-arrows-huangzhong.png",
     "source_original": "assets/characters/future-generals/source-originals/hundred-arrows-huangzhong-source.png",
-    "status": "reserved_future_unit",
-    "integrated_in_game": false,
+    "status": "integrated_playable_unit",
+    "integrated_in_game": true,
     "original_size": [
       1254,
       1254
@@ -87,8 +87,8 @@
     "ability": "全地圖攻擊，高輸出傷害；一次性使用，打完就消失。",
     "asset": "assets/characters/future-generals/war-god-kongming.png",
     "source_original": "assets/characters/future-generals/source-originals/war-god-kongming-source.png",
-    "status": "reserved_future_unit",
-    "integrated_in_game": false,
+    "status": "integrated_playable_unit",
+    "integrated_in_game": true,
     "original_size": [
       1145,
       1374
@@ -107,8 +107,8 @@
     "ability": "一列攻擊，高輸出傷害；一次性使用，打完就消失。",
     "asset": "assets/characters/future-generals/fire-god-pangtong.png",
     "source_original": "assets/characters/future-generals/source-originals/fire-god-pangtong-source.png",
-    "status": "reserved_future_unit",
-    "integrated_in_game": false,
+    "status": "integrated_playable_unit",
+    "integrated_in_game": true,
     "original_size": [
       1145,
       1374

@@ -24,7 +24,9 @@
 Manifest：`zombie-army/zombie-army.json`。
 原始上傳圖：`zombie-army/source-originals/`。
 
-## Future Three Kingdoms generals reserved for later levels
+## Three Kingdoms generals integrated in game
+
+這批武將已加入三國守方卡片與角色介紹頁。
 
 - 鬥神張飛：225 軍糧，高防禦/高攻擊，近戰反推一格，攻速慢。
 - 寒冰趙雲：175 軍糧，遠程低傷、近戰高傷，命中緩速。
