@@ -118,5 +118,28 @@
       1024
     ],
     "background_processing": "alpha preserved from uploaded PNG"
+  },
+  {
+    "key": "liubei",
+    "name": "仁德劉備",
+    "cost": 300,
+    "role": "召喚三路刀兵輔助",
+    "ability": "每隔一段時間召喚上、前、下三隻可前進刀兵；刀兵為一般攻擊力。未來商城可用金幣與經驗值升級仁德治世、昭烈之志、以德服人、匡扶漢室。",
+    "asset": "assets/characters/future-generals/liubei/liubei-main.png",
+    "action_assets": {
+      "heal": "assets/characters/future-generals/liubei/liubei-heal.png",
+      "rally": "assets/characters/future-generals/liubei/liubei-rally.png",
+      "slash": "assets/characters/future-generals/liubei/liubei-slash.png",
+      "guard": "assets/characters/future-generals/liubei/liubei-guard.png"
+    },
+    "skill_icons": {
+      "rende": "assets/characters/future-generals/liubei/skill-rende.png",
+      "zhaolie": "assets/characters/future-generals/liubei/skill-zhaolie.png",
+      "yide": "assets/characters/future-generals/liubei/skill-yide.png",
+      "kuangfu": "assets/characters/future-generals/liubei/skill-kuangfu.png"
+    },
+    "source": "assets/characters/future-generals/source-originals/liubei-sheet-source.png",
+    "integrated_in_game": true,
+    "status": "integrated_playable_unit"
   }
 ]

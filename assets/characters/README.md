@@ -41,5 +41,12 @@ Manifest：`zombie-army/zombie-army.json`。
 - 百箭黃忠：200 軍糧，自己排/上排/下排三排射擊。
 - 軍神孔明：250 軍糧，全地圖一次性高輸出，使用後消失。
 - 火神龐統：175 軍糧，三列鳳火一次性高輸出，使用後消失。
+- 仁德劉備：300 軍糧，定時召喚上、前、下三隻可前進刀兵；主圖與四張戰鬥動作圖位於 `future-generals/liubei/`。
+
+## Future shop / ability upgrades
+
+- 目前金幣與經驗值已在遊戲內保存，未來商城可用來兌換或升級將軍能力。
+- 劉備預留四個技能素材：仁德治世、昭烈之志、以德服人、匡扶漢室。
+- 劉備戰鬥動作素材：仁德治療、鼓舞士氣、雙股劍攻擊、守護之力，可供後續依攻擊/防守/技能狀態切換圖片。
 
 Reserved asset manifest: `future-generals/future-generals.json`.

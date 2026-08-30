@@ -43,3 +43,16 @@
 - 能力：三列火攻，高輸出傷害；一次性使用，打完就消失，並顯示鳳火特效。
 - 素材：`assets/characters/future-generals/fire-god-pangtong.png`
 - 原始圖：`assets/characters/future-generals/source-originals/fire-god-pangtong-source.png`
+
+## 仁德劉備
+- 消耗：300 軍糧
+- 定位：召喚三路刀兵輔助
+- 能力：每隔一段時間召喚上、前、下三隻可前進刀兵；刀兵為一般攻擊力。
+- 主圖：`assets/characters/future-generals/liubei/liubei-main.png`
+- 戰鬥動作：
+  - `liubei-heal.png`：仁德治療
+  - `liubei-rally.png`：鼓舞士氣（目前召喚時切換使用）
+  - `liubei-slash.png`：雙股劍攻擊
+  - `liubei-guard.png`：守護之力
+- 未來商城技能素材：仁德治世、昭烈之志、以德服人、匡扶漢室，可用金幣與經驗值升級或兌換。
+- 原始圖：`assets/characters/future-generals/source-originals/liubei-sheet-source.png`
