@@ -1,0 +1,122 @@
+[
+  {
+    "slug": "god-zhangfei",
+    "name": "鬥神張飛",
+    "cost": 225,
+    "role": "高防禦近戰反推",
+    "ability": "高防禦力、高攻擊力；敵人靠近被攻擊時往後退一格；攻擊速度較慢。",
+    "asset": "assets/characters/future-generals/god-zhangfei.png",
+    "source_original": "assets/characters/future-generals/source-originals/god-zhangfei-source.png",
+    "status": "reserved_future_unit",
+    "integrated_in_game": false,
+    "original_size": [
+      1254,
+      1254
+    ],
+    "normalized_size": [
+      1024,
+      1024
+    ],
+    "background_processing": "edge-flood light checkerboard removal"
+  },
+  {
+    "slug": "ice-zhaoyun",
+    "name": "寒冰趙雲",
+    "cost": 175,
+    "role": "遠近雙型緩速",
+    "ability": "可遠程攻擊但攻擊力較低；近距離攻擊力較高；被打到的敵方速度變慢。",
+    "asset": "assets/characters/future-generals/ice-zhaoyun.png",
+    "source_original": "assets/characters/future-generals/source-originals/ice-zhaoyun-source.png",
+    "status": "reserved_future_unit",
+    "integrated_in_game": false,
+    "original_size": [
+      1254,
+      1254
+    ],
+    "normalized_size": [
+      1024,
+      1024
+    ],
+    "background_processing": "edge-flood light checkerboard removal"
+  },
+  {
+    "slug": "pierce-machao",
+    "name": "穿刺馬超",
+    "cost": 200,
+    "role": "二格穿刺群攻",
+    "ability": "高攻擊力；可以打到二格內敵人；具穿刺效果，可同時打多人。",
+    "asset": "assets/characters/future-generals/pierce-machao.png",
+    "source_original": "assets/characters/future-generals/source-originals/pierce-machao-source.png",
+    "status": "reserved_future_unit",
+    "integrated_in_game": false,
+    "original_size": [
+      1254,
+      1254
+    ],
+    "normalized_size": [
+      1024,
+      1024
+    ],
+    "background_processing": "edge-flood light checkerboard removal"
+  },
+  {
+    "slug": "hundred-arrows-huangzhong",
+    "name": "百箭黃忠",
+    "cost": 200,
+    "role": "三排弓箭覆蓋",
+    "ability": "同弓兵，但一次可以射三排：自己那一排、上排、下排。",
+    "asset": "assets/characters/future-generals/hundred-arrows-huangzhong.png",
+    "source_original": "assets/characters/future-generals/source-originals/hundred-arrows-huangzhong-source.png",
+    "status": "reserved_future_unit",
+    "integrated_in_game": false,
+    "original_size": [
+      1254,
+      1254
+    ],
+    "normalized_size": [
+      1024,
+      1024
+    ],
+    "background_processing": "edge-flood light checkerboard removal"
+  },
+  {
+    "slug": "war-god-kongming",
+    "name": "軍神孔明",
+    "cost": 250,
+    "role": "全地圖一次性高輸出",
+    "ability": "全地圖攻擊，高輸出傷害；一次性使用，打完就消失。",
+    "asset": "assets/characters/future-generals/war-god-kongming.png",
+    "source_original": "assets/characters/future-generals/source-originals/war-god-kongming-source.png",
+    "status": "reserved_future_unit",
+    "integrated_in_game": false,
+    "original_size": [
+      1145,
+      1374
+    ],
+    "normalized_size": [
+      1024,
+      1024
+    ],
+    "background_processing": "alpha preserved from uploaded PNG"
+  },
+  {
+    "slug": "fire-god-pangtong",
+    "name": "火神龐統",
+    "cost": 175,
+    "role": "整列一次性高輸出",
+    "ability": "一列攻擊，高輸出傷害；一次性使用，打完就消失。",
+    "asset": "assets/characters/future-generals/fire-god-pangtong.png",
+    "source_original": "assets/characters/future-generals/source-originals/fire-god-pangtong-source.png",
+    "status": "reserved_future_unit",
+    "integrated_in_game": false,
+    "original_size": [
+      1145,
+      1374
+    ],
+    "normalized_size": [
+      1024,
+      1024
+    ],
+    "background_processing": "alpha preserved from uploaded PNG"
+  }
+]

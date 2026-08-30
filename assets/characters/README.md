@@ -26,3 +26,14 @@
 - guanyu-fire-general.png：關羽火焰將，取代火焰豌豆。
 
 僵屍 SVG 依 Gimmy 指示先保留不重做。
+
+
+## Future Three Kingdoms generals reserved for later levels
+- 鬥神張飛：225 軍糧，高防禦/高攻擊，近戰反推一格，攻速慢。
+- 寒冰趙雲：175 軍糧，遠程低傷、近戰高傷，命中緩速。
+- 穿刺馬超：200 軍糧，二格穿刺群攻。
+- 百箭黃忠：200 軍糧，自己排/上排/下排三排射擊。
+- 軍神孔明：250 軍糧，全地圖一次性高輸出，使用後消失。
+- 火神龐統：175 軍糧，整列一次性高輸出，使用後消失。
+
+Reserved asset manifest: `future-generals/future-generals.json`.
