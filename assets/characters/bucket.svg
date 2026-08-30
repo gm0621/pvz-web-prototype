@@ -1,47 +1,21 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" role="img" aria-label="鐵桶僵屍姿勢差異版" class="chibi-no-bg premium-detail official-distinct-zombie">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" role="img" aria-label="bucket" class="storybook-card-style v5-no-bg premium-detail">
 <defs>
-<linearGradient id="skin" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f3f0ff"/><stop offset=".52" stop-color="#c5c0e3"/><stop offset="1" stop-color="#8981aa"/></linearGradient>
-<linearGradient id="cone" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffce79"/><stop offset=".45" stop-color="#ff7a1a"/><stop offset="1" stop-color="#b83212"/></linearGradient>
-<linearGradient id="bucket" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffffff"/><stop offset=".22" stop-color="#dce8f7"/><stop offset=".52" stop-color="#8294a7"/><stop offset=".82" stop-color="#465363"/><stop offset="1" stop-color="#1f2937"/></linearGradient>
-<linearGradient id="orangeSuit" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffb74a"/><stop offset="1" stop-color="#e24b16"/></linearGradient>
-<linearGradient id="steelSuit" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7dd3fc"/><stop offset="1" stop-color="#1e3a8a"/></linearGradient>
-<filter id="shadow" x="-40%" y="-40%" width="180%" height="180%"><feDropShadow dx="0" dy="24" stdDeviation="18" flood-color="#111827" flood-opacity=".26"/></filter>
-<style>.line{stroke:#141821;stroke-width:15;stroke-linecap:round;stroke-linejoin:round}.thin{stroke:#141821;stroke-width:8;stroke-linecap:round;stroke-linejoin:round}.soft{stroke:#fff;stroke-width:11;stroke-linecap:round;opacity:.45}.bob{animation:bob 1.8s ease-in-out infinite alternate;transform-origin:512px 720px}@keyframes bob{from{transform:translateY(7px)}to{transform:translateY(-8px)}}</style>
+<linearGradient id="gGreen" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#c9e96b"/><stop offset=".55" stop-color="#71b94d"/><stop offset="1" stop-color="#2f6f38"/></linearGradient>
+<linearGradient id="gDarkGreen" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#4a9b5a"/><stop offset="1" stop-color="#1e4e32"/></linearGradient>
+<linearGradient id="gYellow" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff08b"/><stop offset="1" stop-color="#d6a43b"/></linearGradient>
+<linearGradient id="gBrown" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#c78b54"/><stop offset="1" stop-color="#6f4028"/></linearGradient>
+<linearGradient id="gRed" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffcf4c"/><stop offset=".45" stop-color="#df4a42"/><stop offset="1" stop-color="#7a2730"/></linearGradient>
+<linearGradient id="gZombie" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#d4d0c6"/><stop offset="1" stop-color="#6e7773"/></linearGradient>
+<linearGradient id="gCone" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffc46a"/><stop offset=".55" stop-color="#f36b21"/><stop offset="1" stop-color="#9d3718"/></linearGradient>
+<linearGradient id="gMetal" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f1f5f9"/><stop offset=".52" stop-color="#7d8997"/><stop offset="1" stop-color="#2f3742"/></linearGradient>
+<filter id="shadow" x="-40%" y="-40%" width="180%" height="180%"><feDropShadow dx="0" dy="18" stdDeviation="12" flood-color="#111827" flood-opacity=".2"/></filter>
+<style>.line{stroke:#27252a;stroke-width:18;stroke-linecap:round;stroke-linejoin:round}.thin{stroke:#27252a;stroke-width:10;stroke-linecap:round;stroke-linejoin:round}.soft{stroke:#fff7e8;stroke-width:12;stroke-linecap:round;opacity:.38}.bob{animation:bob 2s ease-in-out infinite alternate;transform-origin:512px 780px}.run{animation:run 1.25s ease-in-out infinite alternate;transform-origin:512px 780px}.blink{animation:blink 3.5s infinite;transform-origin:center}@keyframes bob{from{transform:translateY(7px)}to{transform:translateY(-7px)}}@keyframes run{from{transform:translate(-6px,5px) rotate(-3deg)}to{transform:translate(7px,-6px) rotate(3deg)}}@keyframes blink{0%,92%,100%{transform:scaleY(1)}95%{transform:scaleY(.12)}} </style>
 </defs>
-<!-- 巨大金屬桶帽｜金屬胸甲｜睏怒眼神｜蹲低重裝姿勢 -->
-<g class="bob" filter="url(#shadow)">
-<ellipse cx="520" cy="918" rx="205" ry="38" fill="#0f172a" opacity=".2"/>
-<g transform="rotate(5 512 560)">
-<!-- huge bucket helmet covering most head, actually worn -->
-<path class="line" fill="url(#bucket)" d="M285 121h451l-64 361H350z"/>
-<path d="M331 183h354M315 278h387M341 371h315" stroke="#ffffff" stroke-width="24" stroke-linecap="round" opacity=".75"/>
-<path d="M337 130c121 59 273 60 394 0" fill="none" stroke="#141821" stroke-width="15" opacity=".72"/>
-<path class="line" fill="#a8551b" d="M626 218c48-13 88 9 98 50 10 39-17 78-62 91-43 12-87-10-101-49-14-42 18-80 65-92z"/>
-<path d="M646 229l-43 118M694 260l-103 50" stroke="#6b2c12" stroke-width="11" stroke-linecap="round"/>
-<path class="line" fill="#16205d" d="M260 445c129-72 433-72 563 0 14 56-22 96-83 111-137 34-305 35-442 0-62-15-98-55-38-111z"/>
-<path d="M313 449c146 45 346 45 456 0" fill="none" stroke="#facc15" stroke-width="18" stroke-linecap="round"/>
-<!-- face: different sleepy angry heavy eyes under bucket -->
-<circle class="line" cx="347" cy="600" r="36" fill="url(#skin)"/>
-<circle class="line" cx="687" cy="600" r="36" fill="url(#skin)"/>
-<path class="line" fill="url(#skin)" d="M343 493c81-45 255-45 337 0 54 91 22 211-54 263-70 48-203 48-273-1-76-54-109-172-10-262z"/>
-<path class="soft" fill="none" d="M405 500c71-31 168-32 223-3"/>
-<path class="line" fill="#fff" d="M394 587c39-31 91-26 122 11-37 30-88 26-122-11z"/>
-<path class="line" fill="#fff" d="M541 600c37-40 92-46 134-17-29 41-84 48-134 17z"/>
-<circle cx="461" cy="590" r="15" fill="#0b1020"/><circle cx="600" cy="588" r="15" fill="#0b1020"/>
-<path d="M403 553c42-20 82-17 119 10M535 561c45-26 91-25 132 0" fill="none" stroke="#141821" stroke-width="15" stroke-linecap="round"/>
-<ellipse cx="379" cy="657" rx="30" ry="15" fill="#ff91b2" opacity=".38"/><ellipse cx="641" cy="657" rx="30" ry="15" fill="#ff91b2" opacity=".38"/>
-<path d="M424 692q86 48 177 0" fill="none" stroke="#141821" stroke-width="14" stroke-linecap="round"/>
-<path class="thin" fill="#fffaf0" d="M483 690l20 52h-43zM556 690l-22 52h46z"/>
-<!-- unique clothes: squat heavy armor, short legs, metal plates -->
-<path class="line" fill="url(#steelSuit)" d="M315 728c53-96 330-103 400 0l-44 167c-97 61-219 61-317 0z"/>
-<path class="line" fill="url(#bucket)" d="M382 708h260l38 131H344z"/>
-<path d="M397 742h231M369 794h286" stroke="#e2e8f0" stroke-width="16" stroke-linecap="round" opacity=".85"/>
-<circle class="thin" cx="512" cy="832" r="33" fill="#94a3b8"/>
-<path class="line" fill="#334155" d="M334 730c-88 23-133 75-153 151l101 24c22-64 51-97 94-113z"/>
-<path class="line" fill="#334155" d="M690 730c88 23 133 75 153 151l-101 24c-22-64-51-97-94-113z"/>
-<path class="line" fill="url(#skin)" d="M202 875c-45 11-66 45-51 78 15 31 54 39 82 16 19-16 24-41 14-68"/>
-<path class="line" fill="url(#skin)" d="M822 875c45 11 66 45 51 78-15 31-54 39-82 16-19-16-24-41-14-68"/>
-<path class="line" fill="#111827" d="M405 885c-51 29-75 67-60 101 73 3 124-18 151-72zM619 885c51 29 75 67 60 101-73 3-124-18-151-72z"/>
-</g>
-</g>
+<g class="bob" filter="url(#shadow)"><!-- 參考圖風格：鐵桶僵屍，巨型金屬桶帽、矮胖重裝、睏怒眼 -->
+<ellipse cx="512" cy="916" rx="185" ry="36" fill="#1e293b" opacity=".16"/>
+<path class="line" fill="url(#gMetal)" d="M319 100h387l-55 309H374z"/><path stroke="#f8fafc" stroke-width="21" stroke-linecap="round" d="M361 162h303M343 242h324M370 326h256"/><path class="line" fill="#1f2b65" d="M294 404c113-53 325-53 438 0 12 47-21 81-76 94-99 23-188 24-288 0-55-13-87-47-74-94z"/>
+<path class="line" fill="url(#gZombie)" d="M336 455c83-60 270-58 346 12 69 97 20 232-75 285-74 41-197 40-269-11-86-61-91-207-2-286z"/>
+<path class="line" fill="#f5e9b8" d="M388 535c43-32 91-26 123 12-42 25-83 23-123-12z"/><path class="line" fill="#f5e9b8" d="M535 550c38-38 91-43 134-13-30 41-84 47-134 13z"/>
+<circle cx="452" cy="536" r="12" fill="#2b2630"/><circle cx="600" cy="535" r="12" fill="#2b2630"/><path class="thin" d="M427 646q86 42 170 0" fill="none"/>
+<path class="line" fill="#456789" d="M333 708c63-86 302-91 362 0l-34 168c-89 52-205 52-294 0z"/><path class="line" fill="url(#gMetal)" d="M395 696h236l35 122H360z"/></g>
 </svg>

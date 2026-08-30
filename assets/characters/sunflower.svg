@@ -1,26 +1,23 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" role="img" aria-label="sunflower" class="chibi-no-bg premium-detail official-distinct-plant">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" role="img" aria-label="sunflower" class="storybook-card-style v5-no-bg premium-detail">
 <defs>
-<linearGradient id="green" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#e4ff9e"/><stop offset=".45" stop-color="#55db63"/><stop offset="1" stop-color="#138243"/></linearGradient>
-<linearGradient id="deepGreen" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#58e27b"/><stop offset="1" stop-color="#14532d"/></linearGradient>
-<linearGradient id="sun" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff7ad"/><stop offset=".55" stop-color="#facc15"/><stop offset="1" stop-color="#d97706"/></linearGradient>
-<linearGradient id="nut" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f5d08b"/><stop offset=".55" stop-color="#b7791f"/><stop offset="1" stop-color="#713f12"/></linearGradient>
-<linearGradient id="fire" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff7ad"/><stop offset=".35" stop-color="#fb923c"/><stop offset="1" stop-color="#b91c1c"/></linearGradient>
-<filter id="shadow" x="-40%" y="-40%" width="180%" height="180%"><feDropShadow dx="0" dy="24" stdDeviation="18" flood-color="#111827" flood-opacity=".25"/></filter>
-<filter id="glow" x="-80%" y="-80%" width="260%" height="260%"><feGaussianBlur stdDeviation="13" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-<style>.line{stroke:#141821;stroke-width:15;stroke-linecap:round;stroke-linejoin:round}.thin{stroke:#141821;stroke-width:8;stroke-linecap:round;stroke-linejoin:round}.soft{stroke:#fff;stroke-width:11;stroke-linecap:round;opacity:.45}.float{animation:bob 1.8s ease-in-out infinite alternate;transform-origin:512px 720px}.blink{animation:blink 3.4s infinite;transform-origin:center}.shine{animation:shine 1.2s ease-in-out infinite alternate}@keyframes bob{from{transform:translateY(7px)}to{transform:translateY(-8px)}}@keyframes blink{0%,92%,100%{transform:scaleY(1)}95%{transform:scaleY(.12)}}@keyframes shine{from{opacity:.55;transform:scale(.98)}to{opacity:1;transform:scale(1.04)}}</style>
+<linearGradient id="gGreen" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#c9e96b"/><stop offset=".55" stop-color="#71b94d"/><stop offset="1" stop-color="#2f6f38"/></linearGradient>
+<linearGradient id="gDarkGreen" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#4a9b5a"/><stop offset="1" stop-color="#1e4e32"/></linearGradient>
+<linearGradient id="gYellow" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff08b"/><stop offset="1" stop-color="#d6a43b"/></linearGradient>
+<linearGradient id="gBrown" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#c78b54"/><stop offset="1" stop-color="#6f4028"/></linearGradient>
+<linearGradient id="gRed" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffcf4c"/><stop offset=".45" stop-color="#df4a42"/><stop offset="1" stop-color="#7a2730"/></linearGradient>
+<linearGradient id="gZombie" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#d4d0c6"/><stop offset="1" stop-color="#6e7773"/></linearGradient>
+<linearGradient id="gCone" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffc46a"/><stop offset=".55" stop-color="#f36b21"/><stop offset="1" stop-color="#9d3718"/></linearGradient>
+<linearGradient id="gMetal" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f1f5f9"/><stop offset=".52" stop-color="#7d8997"/><stop offset="1" stop-color="#2f3742"/></linearGradient>
+<filter id="shadow" x="-40%" y="-40%" width="180%" height="180%"><feDropShadow dx="0" dy="18" stdDeviation="12" flood-color="#111827" flood-opacity=".2"/></filter>
+<style>.line{stroke:#27252a;stroke-width:18;stroke-linecap:round;stroke-linejoin:round}.thin{stroke:#27252a;stroke-width:10;stroke-linecap:round;stroke-linejoin:round}.soft{stroke:#fff7e8;stroke-width:12;stroke-linecap:round;opacity:.38}.bob{animation:bob 2s ease-in-out infinite alternate;transform-origin:512px 780px}.run{animation:run 1.25s ease-in-out infinite alternate;transform-origin:512px 780px}.blink{animation:blink 3.5s infinite;transform-origin:center}@keyframes bob{from{transform:translateY(7px)}to{transform:translateY(-7px)}}@keyframes run{from{transform:translate(-6px,5px) rotate(-3deg)}to{transform:translate(7px,-6px) rotate(3deg)}}@keyframes blink{0%,92%,100%{transform:scaleY(1)}95%{transform:scaleY(.12)}} </style>
 </defs>
-<g class="float" filter="url(#shadow)"><ellipse cx="512" cy="918" rx="180" ry="34" fill="#0f172a" opacity=".18"/>
-<g class="shine" fill="url(#sun)">
-<ellipse class="line" cx="512" cy="210" rx="44" ry="113"/><ellipse class="line" cx="512" cy="620" rx="44" ry="113"/><ellipse class="line" cx="306" cy="415" rx="113" ry="44"/><ellipse class="line" cx="718" cy="415" rx="113" ry="44"/>
-<ellipse class="line" cx="365" cy="268" rx="42" ry="105" transform="rotate(-45 365 268)"/><ellipse class="line" cx="659" cy="268" rx="42" ry="105" transform="rotate(45 659 268)"/><ellipse class="line" cx="365" cy="562" rx="42" ry="105" transform="rotate(45 365 562)"/><ellipse class="line" cx="659" cy="562" rx="42" ry="105" transform="rotate(-45 659 562)"/>
-</g>
-<circle class="line" cx="512" cy="415" r="159" fill="#9a5c2d"/><circle class="thin" cx="512" cy="415" r="111" fill="#c77a31"/>
-<g class="blink"><circle class="line" cx="455" cy="400" r="50" fill="#fff"/><circle class="line" cx="570" cy="400" r="50" fill="#fff"/><circle cx="471" cy="408" r="17" fill="#07111f"/><circle cx="554" cy="408" r="17" fill="#07111f"/><circle cx="462" cy="396" r="8" fill="#fff"/><circle cx="545" cy="396" r="8" fill="#fff"/></g>
-<ellipse cx="397" cy="472" rx="35" ry="18" fill="#ff8fb1" opacity=".55"/><ellipse cx="625" cy="472" rx="35" ry="18" fill="#ff8fb1" opacity=".55"/>
-<path d="M447 496q65 58 132 0" fill="none" stroke="#171922" stroke-width="14" stroke-linecap="round"/>
-<path class="line" d="M512 572v302" stroke="#15803d"/>
-<path class="line" fill="#22c55e" d="M499 736c-103-64-195-54-275 29 107 37 197 20 275-29z"/>
-<path class="line" fill="#16a34a" d="M526 762c105-61 198-43 274 34-115 31-201 13-274-34z"/>
-<path class="shine" d="M418 308c58-56 154-67 225-8" fill="none" stroke="#fff" stroke-width="12" stroke-linecap="round" opacity=".35"/>
-</g>
+<g class="bob" filter="url(#shadow)"><!-- 參考圖風格：圓臉向日葵、單純笑臉 -->
+<ellipse cx="512" cy="890" rx="160" ry="34" fill="#1e293b" opacity=".15"/>
+<ellipse class="line" cx="512" cy="360" rx="52" ry="115" fill="url(#gYellow)" transform="rotate(0 512 360)"/><ellipse class="line" cx="512" cy="360" rx="52" ry="115" fill="url(#gYellow)" transform="rotate(30 512 360)"/><ellipse class="line" cx="512" cy="360" rx="52" ry="115" fill="url(#gYellow)" transform="rotate(60 512 360)"/><ellipse class="line" cx="512" cy="360" rx="52" ry="115" fill="url(#gYellow)" transform="rotate(90 512 360)"/><ellipse class="line" cx="512" cy="360" rx="52" ry="115" fill="url(#gYellow)" transform="rotate(120 512 360)"/><ellipse class="line" cx="512" cy="360" rx="52" ry="115" fill="url(#gYellow)" transform="rotate(150 512 360)"/><ellipse class="line" cx="512" cy="360" rx="52" ry="115" fill="url(#gYellow)" transform="rotate(180 512 360)"/><ellipse class="line" cx="512" cy="360" rx="52" ry="115" fill="url(#gYellow)" transform="rotate(210 512 360)"/><ellipse class="line" cx="512" cy="360" rx="52" ry="115" fill="url(#gYellow)" transform="rotate(240 512 360)"/><ellipse class="line" cx="512" cy="360" rx="52" ry="115" fill="url(#gYellow)" transform="rotate(270 512 360)"/><ellipse class="line" cx="512" cy="360" rx="52" ry="115" fill="url(#gYellow)" transform="rotate(300 512 360)"/><ellipse class="line" cx="512" cy="360" rx="52" ry="115" fill="url(#gYellow)" transform="rotate(330 512 360)"/>
+<circle class="line" cx="512" cy="360" r="154" fill="url(#gBrown)"/>
+<g class="blink"><ellipse class="line" cx="462" cy="334" rx="29" ry="48" fill="#fff8e8"/><ellipse class="line" cx="570" cy="334" rx="29" ry="48" fill="#fff8e8"/><ellipse cx="470" cy="341" rx="10" ry="18" fill="#26232a"/><ellipse cx="562" cy="341" rx="10" ry="18" fill="#26232a"/><circle cx="466" cy="322" r="6" fill="#fff"/><circle cx="558" cy="322" r="6" fill="#fff"/></g>
+<path class="thin" d="M426 414q87 72 178 0" fill="none"/>
+<path class="line" stroke="#356b3e" d="M512 512v316"/>
+<path class="line" fill="url(#gDarkGreen)" d="M496 696c-92-52-164-37-228 38 96 32 169 18 228-38z"/>
+<path class="line" fill="url(#gDarkGreen)" d="M528 716c95-48 170-28 229 44-103 27-175 8-229-44z"/></g>
 </svg>

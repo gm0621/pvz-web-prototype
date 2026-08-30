@@ -1,23 +1,25 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" role="img" aria-label="firepea" class="chibi-no-bg premium-detail official-distinct-plant">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" role="img" aria-label="firepea" class="storybook-card-style v5-no-bg premium-detail">
 <defs>
-<linearGradient id="green" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#e4ff9e"/><stop offset=".45" stop-color="#55db63"/><stop offset="1" stop-color="#138243"/></linearGradient>
-<linearGradient id="deepGreen" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#58e27b"/><stop offset="1" stop-color="#14532d"/></linearGradient>
-<linearGradient id="sun" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff7ad"/><stop offset=".55" stop-color="#facc15"/><stop offset="1" stop-color="#d97706"/></linearGradient>
-<linearGradient id="nut" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f5d08b"/><stop offset=".55" stop-color="#b7791f"/><stop offset="1" stop-color="#713f12"/></linearGradient>
-<linearGradient id="fire" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff7ad"/><stop offset=".35" stop-color="#fb923c"/><stop offset="1" stop-color="#b91c1c"/></linearGradient>
-<filter id="shadow" x="-40%" y="-40%" width="180%" height="180%"><feDropShadow dx="0" dy="24" stdDeviation="18" flood-color="#111827" flood-opacity=".25"/></filter>
-<filter id="glow" x="-80%" y="-80%" width="260%" height="260%"><feGaussianBlur stdDeviation="13" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-<style>.line{stroke:#141821;stroke-width:15;stroke-linecap:round;stroke-linejoin:round}.thin{stroke:#141821;stroke-width:8;stroke-linecap:round;stroke-linejoin:round}.soft{stroke:#fff;stroke-width:11;stroke-linecap:round;opacity:.45}.float{animation:bob 1.8s ease-in-out infinite alternate;transform-origin:512px 720px}.blink{animation:blink 3.4s infinite;transform-origin:center}.shine{animation:shine 1.2s ease-in-out infinite alternate}@keyframes bob{from{transform:translateY(7px)}to{transform:translateY(-8px)}}@keyframes blink{0%,92%,100%{transform:scaleY(1)}95%{transform:scaleY(.12)}}@keyframes shine{from{opacity:.55;transform:scale(.98)}to{opacity:1;transform:scale(1.04)}}</style>
+<linearGradient id="gGreen" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#c9e96b"/><stop offset=".55" stop-color="#71b94d"/><stop offset="1" stop-color="#2f6f38"/></linearGradient>
+<linearGradient id="gDarkGreen" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#4a9b5a"/><stop offset="1" stop-color="#1e4e32"/></linearGradient>
+<linearGradient id="gYellow" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff08b"/><stop offset="1" stop-color="#d6a43b"/></linearGradient>
+<linearGradient id="gBrown" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#c78b54"/><stop offset="1" stop-color="#6f4028"/></linearGradient>
+<linearGradient id="gRed" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffcf4c"/><stop offset=".45" stop-color="#df4a42"/><stop offset="1" stop-color="#7a2730"/></linearGradient>
+<linearGradient id="gZombie" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#d4d0c6"/><stop offset="1" stop-color="#6e7773"/></linearGradient>
+<linearGradient id="gCone" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffc46a"/><stop offset=".55" stop-color="#f36b21"/><stop offset="1" stop-color="#9d3718"/></linearGradient>
+<linearGradient id="gMetal" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f1f5f9"/><stop offset=".52" stop-color="#7d8997"/><stop offset="1" stop-color="#2f3742"/></linearGradient>
+<filter id="shadow" x="-40%" y="-40%" width="180%" height="180%"><feDropShadow dx="0" dy="18" stdDeviation="12" flood-color="#111827" flood-opacity=".2"/></filter>
+<style>.line{stroke:#27252a;stroke-width:18;stroke-linecap:round;stroke-linejoin:round}.thin{stroke:#27252a;stroke-width:10;stroke-linecap:round;stroke-linejoin:round}.soft{stroke:#fff7e8;stroke-width:12;stroke-linecap:round;opacity:.38}.bob{animation:bob 2s ease-in-out infinite alternate;transform-origin:512px 780px}.run{animation:run 1.25s ease-in-out infinite alternate;transform-origin:512px 780px}.blink{animation:blink 3.5s infinite;transform-origin:center}@keyframes bob{from{transform:translateY(7px)}to{transform:translateY(-7px)}}@keyframes run{from{transform:translate(-6px,5px) rotate(-3deg)}to{transform:translate(7px,-6px) rotate(3deg)}}@keyframes blink{0%,92%,100%{transform:scaleY(1)}95%{transform:scaleY(.12)}} </style>
 </defs>
-<g class="float" filter="url(#shadow)"><ellipse cx="512" cy="918" rx="180" ry="34" fill="#0f172a" opacity=".18"/>
-<path class="shine" fill="url(#fire)" filter="url(#glow)" d="M493 96c106 106 5 173 103 268 70 68 83 168 14 262-83 113-273 88-340-24-73-122 5-219 91-286 64-49 99-111 132-220z"/>
-<path class="line" fill="url(#deepGreen)" d="M300 746c-91 7-154 56-201 136 113 30 210-1 272-88z"/>
-<ellipse class="line" cx="680" cy="432" rx="174" ry="104" fill="#fb923c"/>
-<ellipse cx="766" cy="432" rx="65" ry="47" fill="#7c2d12"/>
-<path class="soft" fill="none" d="M595 362c64-39 144-34 197 5"/>
-<path d="M384 420c38-31 82-30 113-4M538 416c44-26 88-19 118 10" fill="none" stroke="#141821" stroke-width="14" stroke-linecap="round"/><g class="blink"><circle class="line" cx="392" cy="468" r="49" fill="#fff"/><circle class="line" cx="552" cy="468" r="49" fill="#fff"/><circle cx="410" cy="476" r="17" fill="#07111f"/><circle cx="537" cy="476" r="17" fill="#07111f"/><circle cx="400" cy="464" r="7" fill="#fff"/><circle cx="528" cy="464" r="7" fill="#fff"/></g>
-<ellipse cx="355" cy="548" rx="36" ry="18" fill="#ff8fb1" opacity=".42"/>
-<path d="M397 578q98 58 206-2" fill="none" stroke="#7c2d12" stroke-width="15" stroke-linecap="round"/>
-<path class="shine" d="M790 392c43 12 69 39 80 78" fill="none" stroke="#fed7aa" stroke-width="14" stroke-linecap="round"/>
-</g>
+<g class="bob" filter="url(#shadow)"><!-- 參考圖風格：紅色小身體、火焰頭髮、圓筒嘴在正面 -->
+<ellipse cx="512" cy="900" rx="160" ry="35" fill="#1e293b" opacity=".16"/>
+<path class="line" fill="#8d3032" d="M491 590c-38 92-38 185-8 282h87c23-100 9-186-34-280z"/>
+<path class="line" fill="#7b2a31" d="M420 829c-70 14-119 48-143 103 87 23 158 4 205-56z"/>
+<path class="line" fill="#7b2a31" d="M598 829c72 13 123 47 149 103-91 24-161 3-209-57z"/>
+<path class="line" fill="url(#gRed)" d="M324 356c49-75 147-85 188-206 45 100 10 157 91 211 88 59 91 203 14 276-88 84-247 62-313-39-45-69-35-161 20-242z"/>
+<circle class="line" cx="632" cy="506" r="79" fill="#d9483f"/>
+<circle class="line" cx="661" cy="506" r="38" fill="#4c1d1f"/>
+<path class="soft" d="M590 464c33-23 80-26 112-5" fill="none"/>
+<g class="blink"><ellipse class="line" cx="430" cy="450" rx="41" ry="54" fill="#ffe48a"/><ellipse class="line" cx="544" cy="450" rx="41" ry="54" fill="#ffe48a"/><ellipse cx="444" cy="460" rx="14" ry="20" fill="#26232a"/><ellipse cx="532" cy="460" rx="14" ry="20" fill="#26232a"/></g>
+<path class="thin" d="M410 544q75 43 161 0" fill="none"/></g>
 </svg>

@@ -1,45 +1,20 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" role="img" aria-label="路障僵屍姿勢差異版" class="chibi-no-bg premium-detail official-distinct-zombie">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" role="img" aria-label="cone" class="storybook-card-style v5-no-bg premium-detail">
 <defs>
-<linearGradient id="skin" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f3f0ff"/><stop offset=".52" stop-color="#c5c0e3"/><stop offset="1" stop-color="#8981aa"/></linearGradient>
-<linearGradient id="cone" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffce79"/><stop offset=".45" stop-color="#ff7a1a"/><stop offset="1" stop-color="#b83212"/></linearGradient>
-<linearGradient id="bucket" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffffff"/><stop offset=".22" stop-color="#dce8f7"/><stop offset=".52" stop-color="#8294a7"/><stop offset=".82" stop-color="#465363"/><stop offset="1" stop-color="#1f2937"/></linearGradient>
-<linearGradient id="orangeSuit" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffb74a"/><stop offset="1" stop-color="#e24b16"/></linearGradient>
-<linearGradient id="steelSuit" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7dd3fc"/><stop offset="1" stop-color="#1e3a8a"/></linearGradient>
-<filter id="shadow" x="-40%" y="-40%" width="180%" height="180%"><feDropShadow dx="0" dy="24" stdDeviation="18" flood-color="#111827" flood-opacity=".26"/></filter>
-<style>.line{stroke:#141821;stroke-width:15;stroke-linecap:round;stroke-linejoin:round}.thin{stroke:#141821;stroke-width:8;stroke-linecap:round;stroke-linejoin:round}.soft{stroke:#fff;stroke-width:11;stroke-linecap:round;opacity:.45}.bob{animation:bob 1.8s ease-in-out infinite alternate;transform-origin:512px 720px}@keyframes bob{from{transform:translateY(7px)}to{transform:translateY(-8px)}}</style>
+<linearGradient id="gGreen" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#c9e96b"/><stop offset=".55" stop-color="#71b94d"/><stop offset="1" stop-color="#2f6f38"/></linearGradient>
+<linearGradient id="gDarkGreen" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#4a9b5a"/><stop offset="1" stop-color="#1e4e32"/></linearGradient>
+<linearGradient id="gYellow" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff08b"/><stop offset="1" stop-color="#d6a43b"/></linearGradient>
+<linearGradient id="gBrown" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#c78b54"/><stop offset="1" stop-color="#6f4028"/></linearGradient>
+<linearGradient id="gRed" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffcf4c"/><stop offset=".45" stop-color="#df4a42"/><stop offset="1" stop-color="#7a2730"/></linearGradient>
+<linearGradient id="gZombie" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#d4d0c6"/><stop offset="1" stop-color="#6e7773"/></linearGradient>
+<linearGradient id="gCone" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffc46a"/><stop offset=".55" stop-color="#f36b21"/><stop offset="1" stop-color="#9d3718"/></linearGradient>
+<linearGradient id="gMetal" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f1f5f9"/><stop offset=".52" stop-color="#7d8997"/><stop offset="1" stop-color="#2f3742"/></linearGradient>
+<filter id="shadow" x="-40%" y="-40%" width="180%" height="180%"><feDropShadow dx="0" dy="18" stdDeviation="12" flood-color="#111827" flood-opacity=".2"/></filter>
+<style>.line{stroke:#27252a;stroke-width:18;stroke-linecap:round;stroke-linejoin:round}.thin{stroke:#27252a;stroke-width:10;stroke-linecap:round;stroke-linejoin:round}.soft{stroke:#fff7e8;stroke-width:12;stroke-linecap:round;opacity:.38}.bob{animation:bob 2s ease-in-out infinite alternate;transform-origin:512px 780px}.run{animation:run 1.25s ease-in-out infinite alternate;transform-origin:512px 780px}.blink{animation:blink 3.5s infinite;transform-origin:center}@keyframes bob{from{transform:translateY(7px)}to{transform:translateY(-7px)}}@keyframes run{from{transform:translate(-6px,5px) rotate(-3deg)}to{transform:translate(7px,-6px) rotate(3deg)}}@keyframes blink{0%,92%,100%{transform:scaleY(1)}95%{transform:scaleY(.12)}} </style>
 </defs>
-<!-- 巨大交通錐帽｜橘色工地背心｜單眼表情｜歪身快跑姿勢 -->
-<g class="bob" filter="url(#shadow)">
-<ellipse cx="500" cy="918" rx="180" ry="34" fill="#0f172a" opacity=".18"/>
-<g transform="rotate(-9 512 540)">
-<!-- giant cone worn as a real hat, low on head -->
-<path class="line" fill="url(#cone)" d="M336 430L514 54l178 376z"/>
-<path d="M392 292h244M364 371h300" stroke="#fff4db" stroke-width="33" stroke-linecap="round"/>
-<path class="soft" fill="none" d="M463 121c-38 96-72 190-104 286"/>
-<path class="line" fill="#1e2a78" d="M247 428c118-61 410-61 531 0 23 50-12 91-72 104-124 27-264 27-390-2-59-14-92-53-69-102z"/>
-<path d="M290 433c128 42 325 42 445 0" fill="none" stroke="#ffe082" stroke-width="18" stroke-linecap="round"/>
-<path d="M343 522c19 48 85 66 167 66 81 0 150-19 174-69" fill="none" stroke="#111827" stroke-width="10" opacity=".45"/>
-<!-- face with different expression: one big eye, one suspicious slit -->
-<circle class="line" cx="351" cy="569" r="39" fill="url(#skin)"/>
-<circle class="line" cx="668" cy="546" r="39" fill="url(#skin)"/>
-<path class="line" fill="url(#skin)" d="M360 457c62-50 224-71 303-9 65 51 66 174 10 244-65 80-212 96-288 30-70-61-84-216-25-265z"/>
-<path class="soft" fill="none" d="M405 466c54-31 153-43 213-7"/>
-<circle class="line" cx="440" cy="565" r="49" fill="#fff"/>
-<circle cx="458" cy="577" r="17" fill="#0b1020"/><circle cx="450" cy="565" r="8" fill="#fff"/>
-<path d="M554 549c34-18 69-13 98 13" fill="none" stroke="#141821" stroke-width="17" stroke-linecap="round"/>
-<path d="M554 588c35 12 72 9 104-10" fill="none" stroke="#141821" stroke-width="9" stroke-linecap="round" opacity=".55"/>
-<ellipse cx="392" cy="628" rx="31" ry="16" fill="#ff91b2" opacity=".5"/>
-<path class="line" fill="#e94d66" d="M430 655c46-22 120-30 163 13 13 44-47 78-108 64-41-10-66-38-55-77z"/>
-<path class="thin" fill="#fffaf0" d="M466 646l25 56h-51z"/>
-<!-- unique clothes: orange construction vest, striped sleeves, diagonal pose -->
-<path class="line" fill="url(#orangeSuit)" d="M350 730c53-90 247-110 326-40l-8 198c-91 63-190 72-288 18z"/>
-<path class="line" fill="#fff7ed" d="M403 730h209l17 94H392z"/>
-<path d="M407 761h222M395 804h247" stroke="#f97316" stroke-width="14" stroke-linecap="round"/>
-<path class="line" fill="#263238" d="M356 717c-71 40-96 109-92 180l84 12c1-71 26-111 73-142z"/>
-<path class="line" fill="#f97316" d="M677 691c72 12 119 60 153 132l-76 48c-31-59-62-89-104-103z"/>
-<path class="line" fill="url(#skin)" d="M269 889c-45 9-68 40-55 74 13 31 48 43 76 22 20-15 27-39 18-66"/>
-<path class="line" fill="url(#skin)" d="M754 840c45-5 78 18 83 54 5 34-20 61-56 58-25-2-43-20-48-50"/>
-<path class="line" fill="#171b24" d="M408 889c-57 7-91 37-91 74 74 20 132 8 166-40zM599 885c39 39 89 55 157 34-17-40-62-62-123-62z"/>
-</g>
-</g>
+<g class="run" filter="url(#shadow)"><!-- 參考圖風格：路障僵屍，巨型交通錐帽、橘色背心、歪身跑 -->
+<g transform="rotate(-7 512 560)"><ellipse cx="512" cy="910" rx="170" ry="34" fill="#1e293b" opacity=".16"/>
+<path class="line" fill="url(#gCone)" d="M374 342L512 75l139 267z"/><path stroke="#fff1c5" stroke-width="31" stroke-linecap="round" d="M408 235h205M386 304h254"/><path class="line" fill="#1f2b65" d="M305 344c95-42 319-42 414 0 16 42-14 74-62 85-96 21-194 21-290 0-49-11-78-43-62-85z"/>
+<path class="line" fill="url(#gZombie)" d="M350 390c79-70 224-63 292 15 64 73 38 207-47 256-77 44-197 33-249-39-50-70-44-177 4-232z"/>
+<circle class="line" cx="421" cy="479" r="50" fill="#f5e9b8"/><path d="M540 470q52-34 101 0" fill="none" stroke="#27252a" stroke-width="17" stroke-linecap="round"/><circle cx="437" cy="489" r="14" fill="#2b2630"/><path class="thin" d="M426 583q71 50 162 0" fill="none"/>
+<path class="line" fill="#f26b2b" d="M355 646c56-71 203-83 277-20l-10 233c-70 50-150 56-242 14z"/><path class="line" fill="#ffe6bd" d="M410 660h159l33 108H387z"/></g></g>
 </svg>

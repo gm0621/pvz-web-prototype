@@ -1,21 +1,22 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" role="img" aria-label="wallnut" class="chibi-no-bg premium-detail official-distinct-plant">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" role="img" aria-label="wallnut" class="storybook-card-style v5-no-bg premium-detail">
 <defs>
-<linearGradient id="green" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#e4ff9e"/><stop offset=".45" stop-color="#55db63"/><stop offset="1" stop-color="#138243"/></linearGradient>
-<linearGradient id="deepGreen" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#58e27b"/><stop offset="1" stop-color="#14532d"/></linearGradient>
-<linearGradient id="sun" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff7ad"/><stop offset=".55" stop-color="#facc15"/><stop offset="1" stop-color="#d97706"/></linearGradient>
-<linearGradient id="nut" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f5d08b"/><stop offset=".55" stop-color="#b7791f"/><stop offset="1" stop-color="#713f12"/></linearGradient>
-<linearGradient id="fire" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff7ad"/><stop offset=".35" stop-color="#fb923c"/><stop offset="1" stop-color="#b91c1c"/></linearGradient>
-<filter id="shadow" x="-40%" y="-40%" width="180%" height="180%"><feDropShadow dx="0" dy="24" stdDeviation="18" flood-color="#111827" flood-opacity=".25"/></filter>
-<filter id="glow" x="-80%" y="-80%" width="260%" height="260%"><feGaussianBlur stdDeviation="13" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-<style>.line{stroke:#141821;stroke-width:15;stroke-linecap:round;stroke-linejoin:round}.thin{stroke:#141821;stroke-width:8;stroke-linecap:round;stroke-linejoin:round}.soft{stroke:#fff;stroke-width:11;stroke-linecap:round;opacity:.45}.float{animation:bob 1.8s ease-in-out infinite alternate;transform-origin:512px 720px}.blink{animation:blink 3.4s infinite;transform-origin:center}.shine{animation:shine 1.2s ease-in-out infinite alternate}@keyframes bob{from{transform:translateY(7px)}to{transform:translateY(-8px)}}@keyframes blink{0%,92%,100%{transform:scaleY(1)}95%{transform:scaleY(.12)}}@keyframes shine{from{opacity:.55;transform:scale(.98)}to{opacity:1;transform:scale(1.04)}}</style>
+<linearGradient id="gGreen" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#c9e96b"/><stop offset=".55" stop-color="#71b94d"/><stop offset="1" stop-color="#2f6f38"/></linearGradient>
+<linearGradient id="gDarkGreen" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#4a9b5a"/><stop offset="1" stop-color="#1e4e32"/></linearGradient>
+<linearGradient id="gYellow" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff08b"/><stop offset="1" stop-color="#d6a43b"/></linearGradient>
+<linearGradient id="gBrown" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#c78b54"/><stop offset="1" stop-color="#6f4028"/></linearGradient>
+<linearGradient id="gRed" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffcf4c"/><stop offset=".45" stop-color="#df4a42"/><stop offset="1" stop-color="#7a2730"/></linearGradient>
+<linearGradient id="gZombie" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#d4d0c6"/><stop offset="1" stop-color="#6e7773"/></linearGradient>
+<linearGradient id="gCone" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffc46a"/><stop offset=".55" stop-color="#f36b21"/><stop offset="1" stop-color="#9d3718"/></linearGradient>
+<linearGradient id="gMetal" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f1f5f9"/><stop offset=".52" stop-color="#7d8997"/><stop offset="1" stop-color="#2f3742"/></linearGradient>
+<filter id="shadow" x="-40%" y="-40%" width="180%" height="180%"><feDropShadow dx="0" dy="18" stdDeviation="12" flood-color="#111827" flood-opacity=".2"/></filter>
+<style>.line{stroke:#27252a;stroke-width:18;stroke-linecap:round;stroke-linejoin:round}.thin{stroke:#27252a;stroke-width:10;stroke-linecap:round;stroke-linejoin:round}.soft{stroke:#fff7e8;stroke-width:12;stroke-linecap:round;opacity:.38}.bob{animation:bob 2s ease-in-out infinite alternate;transform-origin:512px 780px}.run{animation:run 1.25s ease-in-out infinite alternate;transform-origin:512px 780px}.blink{animation:blink 3.5s infinite;transform-origin:center}@keyframes bob{from{transform:translateY(7px)}to{transform:translateY(-7px)}}@keyframes run{from{transform:translate(-6px,5px) rotate(-3deg)}to{transform:translate(7px,-6px) rotate(3deg)}}@keyframes blink{0%,92%,100%{transform:scaleY(1)}95%{transform:scaleY(.12)}} </style>
 </defs>
-<g class="float" filter="url(#shadow)"><ellipse cx="512" cy="918" rx="180" ry="34" fill="#0f172a" opacity=".18"/>
-<path class="line" fill="url(#nut)" d="M309 259c76-139 306-142 402-3 79 116 54 381-45 474-98 92-301 76-373-44-67-111-43-319 16-427z"/>
-<path d="M392 250c-28 128 3 204 107 262M318 608c122-70 268-48 354 59M631 298c-98 93-111 209-40 318" fill="none" stroke="#713f12" stroke-width="15" stroke-linecap="round" opacity=".5"/>
-<path class="soft" fill="none" d="M397 270c61-53 174-63 255-4"/>
-<path d="M383 452q49 34 99 0M544 452q49 34 99 0" fill="none" stroke="#141821" stroke-width="15" stroke-linecap="round"/>
-<ellipse cx="380" cy="530" rx="34" ry="17" fill="#ff8fb1" opacity=".36"/><ellipse cx="637" cy="530" rx="34" ry="17" fill="#ff8fb1" opacity=".36"/>
-<path d="M406 590q104-64 216 6" fill="none" stroke="#171922" stroke-width="15" stroke-linecap="round"/>
-<path class="line" fill="#7c2d12" opacity=".45" d="M304 735c54 77 154 112 260 100-117 75-247 35-302-63z"/>
-</g>
+<g class="bob" filter="url(#shadow)"><!-- 參考圖風格：厚實直立堅果、半瞇眼 -->
+<ellipse cx="512" cy="910" rx="180" ry="35" fill="#1e293b" opacity=".16"/>
+<path class="line" fill="url(#gBrown)" d="M342 216c75-90 246-91 340-2 89 85 100 365 20 494-82 133-284 143-381 24-91-112-65-413 21-516z"/>
+<path d="M407 246c-39 132-12 239 92 321M321 592c124-60 257-51 367 29M630 277c-89 96-100 219-26 340" fill="none" stroke="#5f351e" stroke-width="15" stroke-linecap="round" opacity=".48"/>
+<path class="soft" d="M400 244c68-48 168-54 238-4" fill="none"/>
+<path d="M390 439q57 38 115 0M541 439q57 38 115 0" fill="none" stroke="#27252a" stroke-width="17" stroke-linecap="round"/>
+<path class="thin" d="M425 561q86-48 174 0" fill="none"/>
+<ellipse cx="377" cy="505" rx="34" ry="17" fill="#d98c6f" opacity=".38"/><ellipse cx="649" cy="505" rx="34" ry="17" fill="#d98c6f" opacity=".38"/></g>
 </svg>
