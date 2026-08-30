@@ -16,3 +16,13 @@
 - football.svg：紅色護具、衝刺姿勢。
 - pea-zombie.svg：灰綠僵屍頭與小豌豆嘴。
 - pole-vault.svg：長桿與跳躍姿勢。
+
+
+## 三國守方 PNG 正式素材
+- shu-archer.png：蜀軍弓兵，取代豌豆射手。
+- quartermaster-strategist.png：軍糧官 / 小軍師，取代向日葵。
+- shield-general.png：盾將，取代堅果牆。
+- ambush-scout.png：伏兵，取代土豆雷。
+- guanyu-fire-general.png：關羽火焰將，取代火焰豌豆。
+
+僵屍 SVG 依 Gimmy 指示先保留不重做。
