@@ -5,10 +5,11 @@
 ## 三國守方 PNG 正式素材
 
 - shu-archer.png：蜀軍弓兵，取代原豌豆射手。
-- quartermaster-strategist.png：軍糧官 / 小軍師，取代原向日葵。
+- quartermaster-strategist.png：軍糧官，取代原向日葵。
 - shield-general.png：盾將，取代原堅果牆。
 - ambush-scout.png：伏兵，取代原土豆雷。
 - guanyu-fire-general.png：關羽火焰將，取代原火焰豌豆。
+- future-generals/guanyu/guanyu-guide.png：關羽角色介紹頁專用圖，使用 Gimmy 提供的圖1設計風格；遊戲中仍沿用原本可讀性較好的戰鬥 sprite。
 
 ## 僵屍方 PNG 正式素材
 
@@ -42,6 +43,7 @@ Manifest：`zombie-army/zombie-army.json`。
 - 軍神孔明：250 軍糧，全地圖一次性高輸出，使用後消失。
 - 火神龐統：175 軍糧，三列鳳火一次性高輸出，使用後消失。
 - 仁德劉備：300 軍糧，定時召喚上、前、下三隻可前進刀兵；主圖與四張戰鬥動作圖位於 `future-generals/liubei/`。
+- 劉備角色介紹頁專用圖已換成 `future-generals/liubei/liubei-guide.png`（Gimmy 提供圖2）。
 
 ## Future shop / ability upgrades
 

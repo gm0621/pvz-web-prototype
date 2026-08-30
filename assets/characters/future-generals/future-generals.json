@@ -140,6 +140,8 @@
     },
     "source": "assets/characters/future-generals/source-originals/liubei-sheet-source.png",
     "integrated_in_game": true,
-    "status": "integrated_playable_unit"
+    "status": "integrated_playable_unit",
+    "guide_asset": "assets/characters/future-generals/liubei/liubei-guide.png",
+    "guide_source": "assets/characters/future-generals/source-originals/liubei-guide-source.png"
   }
 ]

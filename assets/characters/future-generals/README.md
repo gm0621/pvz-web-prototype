@@ -49,6 +49,7 @@
 - 定位：召喚三路刀兵輔助
 - 能力：每隔一段時間召喚上、前、下三隻可前進刀兵；刀兵為一般攻擊力。
 - 主圖：`assets/characters/future-generals/liubei/liubei-main.png`
+- 角色介紹頁專用圖：`assets/characters/future-generals/liubei/liubei-guide.png`（Gimmy 提供圖2）
 - 戰鬥動作：
   - `liubei-heal.png`：仁德治療
   - `liubei-rally.png`：鼓舞士氣（目前召喚時切換使用）
