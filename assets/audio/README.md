@@ -5,6 +5,10 @@
 - `bgm/01_main.ogg`：主畫面 BGM，Gimmy 指定保留 Asianoriental1，不換掉。
   - 來源：`https://opengameart.org/sites/default/files/asianoriental1_0.ogg`
   - 授權：依 Gimmy 提供資料標示為 CC0。
+- `bgm/03_battle.mp3`：一進到遊戲後播放的戰鬥 BGM，使用 Gimmy 提供的新音檔。
+  - 來源：`/Users/gimmy/.hermes/audio_cache/audio_fa3ba61983dd.ogg`
+  - 檔案實際格式：MP3（來源副檔名是 `.ogg`，但檔頭為 MP3 frame）。
+  - 授權：使用者提供。
 - `asianoriental1.ogg`：舊路徑保留一份，避免歷史連結失效。
 
 遊戲目前會在玩家互動後播放背景音樂；瀏覽器自動播放限制下，未互動前不會自動出聲。主選單右上角有「音樂 ON/OFF」與「音效 ON/OFF」兩個獨立開關；音效仍用 WebAudio 即時合成。
