@@ -1,17 +1,47 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" role="img" aria-label="鐵桶僵屍" class="chibi-no-bg premium-detail">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" role="img" aria-label="鐵桶僵屍姿勢差異版" class="chibi-no-bg premium-detail official-distinct-zombie">
 <defs>
-<linearGradient id="skin" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f2f0ff"/><stop offset=".55" stop-color="#c8c3e8"/><stop offset="1" stop-color="#928bb6"/></linearGradient>
-<linearGradient id="leaf" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#d9f99d"/><stop offset=".5" stop-color="#4ade80"/><stop offset="1" stop-color="#15803d"/></linearGradient>
-<linearGradient id="gold" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff1a6"/><stop offset=".6" stop-color="#e0ad4b"/><stop offset="1" stop-color="#9a6227"/></linearGradient>
-<linearGradient id="robe" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7f8cff"/><stop offset="1" stop-color="#4246ae"/></linearGradient>
-<linearGradient id="red" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ff8aa0"/><stop offset="1" stop-color="#8e2440"/></linearGradient>
-<linearGradient id="blue" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4156c9"/><stop offset="1" stop-color="#202970"/></linearGradient>
-<filter id="shadow" x="-40%" y="-40%" width="180%" height="180%"><feDropShadow dx="0" dy="24" stdDeviation="18" flood-color="#111827" flood-opacity=".25"/></filter>
-<filter id="glow" x="-80%" y="-80%" width="260%" height="260%"><feGaussianBlur stdDeviation="10" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-<style>.line{stroke:#171922;stroke-width:14;stroke-linecap:round;stroke-linejoin:round}.thin{stroke:#171922;stroke-width:8;stroke-linecap:round;stroke-linejoin:round}.soft{stroke:#fff;stroke-width:10;stroke-linecap:round;opacity:.42}.float{animation:bob 1.8s ease-in-out infinite alternate;transform-origin:512px 675px}.run{animation:run .72s ease-in-out infinite alternate;transform-origin:512px 700px}.blink{animation:blink 3.4s infinite;transform-origin:center}.shine{animation:shine 1.5s ease-in-out infinite alternate}.cheek{fill:#ff8fb1;opacity:.48}@keyframes bob{from{transform:translateY(7px)}to{transform:translateY(-8px)}}@keyframes run{from{transform:translateY(6px) rotate(-2deg)}to{transform:translateY(-7px) rotate(2deg)}}@keyframes blink{0%,92%,100%{transform:scaleY(1)}95%{transform:scaleY(.12)}}@keyframes shine{from{opacity:.45}to{opacity:1}}</style>
+<linearGradient id="skin" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f3f0ff"/><stop offset=".52" stop-color="#c5c0e3"/><stop offset="1" stop-color="#8981aa"/></linearGradient>
+<linearGradient id="cone" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffce79"/><stop offset=".45" stop-color="#ff7a1a"/><stop offset="1" stop-color="#b83212"/></linearGradient>
+<linearGradient id="bucket" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffffff"/><stop offset=".22" stop-color="#dce8f7"/><stop offset=".52" stop-color="#8294a7"/><stop offset=".82" stop-color="#465363"/><stop offset="1" stop-color="#1f2937"/></linearGradient>
+<linearGradient id="orangeSuit" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffb74a"/><stop offset="1" stop-color="#e24b16"/></linearGradient>
+<linearGradient id="steelSuit" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7dd3fc"/><stop offset="1" stop-color="#1e3a8a"/></linearGradient>
+<filter id="shadow" x="-40%" y="-40%" width="180%" height="180%"><feDropShadow dx="0" dy="24" stdDeviation="18" flood-color="#111827" flood-opacity=".26"/></filter>
+<style>.line{stroke:#141821;stroke-width:15;stroke-linecap:round;stroke-linejoin:round}.thin{stroke:#141821;stroke-width:8;stroke-linecap:round;stroke-linejoin:round}.soft{stroke:#fff;stroke-width:11;stroke-linecap:round;opacity:.45}.bob{animation:bob 1.8s ease-in-out infinite alternate;transform-origin:512px 720px}@keyframes bob{from{transform:translateY(7px)}to{transform:translateY(-8px)}}</style>
 </defs>
-<g class="run" filter="url(#shadow)">
-<ellipse cx="512" cy="915" rx="178" ry="34" fill="#0f172a" opacity=".18"/>
-<path class="line" fill="#cbd5e1" d="M370 180h285l-38 188H407z"/><path d="M398 224h231M388 284h245" stroke="#fff" stroke-width="16" stroke-linecap="round" opacity=".75"/><path class="line" fill="url(#blue)" d="M316 348c91-31 305-31 392 1 17 35 0 64-37 74-101 27-218 25-318 0-38-10-55-39-37-75z"/><circle class="line" cx="352" cy="508" r="43" fill="url(#skin)"/><circle class="line" cx="672" cy="508" r="43" fill="url(#skin)"/><path class="line" fill="url(#skin)" d="M356 384c75-80 238-80 312 0 57 62 50 184-10 249-68 74-220 74-290 0-61-64-69-186-12-249z"/><path class="soft" fill="none" d="M406 392c56-42 162-45 219 0"/><path d="M415 444c26-23 65-25 93-3M550 441c30-22 70-17 94 8" fill="none" stroke="#151922" stroke-width="13" stroke-linecap="round"/><g class="blink"><circle class="line" cx="438" cy="506" r="51" fill="#fff"/><circle class="line" cx="586" cy="506" r="51" fill="#fff"/><circle cx="455" cy="515" r="17" fill="#0b1020"/><circle cx="570" cy="515" r="17" fill="#0b1020"/><circle cx="447" cy="504" r="8" fill="#fff"/><circle cx="562" cy="504" r="8" fill="#fff"/><circle cx="463" cy="525" r="4" fill="#7dd3fc"/><circle cx="578" cy="525" r="4" fill="#7dd3fc"/></g><ellipse class="cheek" cx="388" cy="573" rx="34" ry="18"/><ellipse class="cheek" cx="636" cy="573" rx="34" ry="18"/><path class="thin" fill="#6f668c" opacity=".45" d="M505 534c-16 18-35 50-12 68 18 15 53 15 70 0 22-20 1-55-17-70z"/><path class="line" fill="#e94d66" d="M415 609c42-36 151-42 194 0 24 24 15 65-20 82-44 22-110 21-153-1-35-18-45-59-21-81z"/><path class="thin" fill="#fffaf0" d="M457 601l25 55h-50zM574 601l-25 55h50z"/><path d="M466 674q47-16 92 0" fill="none" stroke="#a82740" stroke-width="7" stroke-linecap="round"/><path class="line" fill="#475569" d="M350 660c44-78 280-78 324 0l-34 229c-80 54-176 54-256 0z"/><path class="soft" fill="none" d="M398 672c63 35 165 34 228 0"/><path class="line" fill="url(#gold)" d="M430 658h164l28 154H402z"/><path class="thin" fill="#9bf2ff" d="M445 683h134l16 105H429z"/><path class="line" fill="#c74361" d="M354 664c-65 17-103 64-126 132l79 41c18-64 45-96 84-118z"/><path class="line" fill="#c74361" d="M670 664c65 17 103 64 126 132l-79 41c-18-64-45-96-84-118z"/><path class="line" fill="url(#skin)" d="M303 756c-46 2-77 30-77 68 0 35 31 56 65 45 25-8 39-28 39-57"/><path class="line" fill="url(#skin)" d="M721 756c46 2 77 30 77 68 0 35-31 56-65 45-25-8-39-28-39-57"/><path d="M254 814v38M286 803v43M318 817v34M738 803v43M770 814v38M706 817v34" class="thin" fill="none"/><path class="line" fill="#171b24" d="M425 885c-29 28-25 62 6 77 29 14 68 1 73-44zM599 885c29 28 25 62-6 77-29 14-68 1-73-44z"/>
+<!-- 巨大金屬桶帽｜金屬胸甲｜睏怒眼神｜蹲低重裝姿勢 -->
+<g class="bob" filter="url(#shadow)">
+<ellipse cx="520" cy="918" rx="205" ry="38" fill="#0f172a" opacity=".2"/>
+<g transform="rotate(5 512 560)">
+<!-- huge bucket helmet covering most head, actually worn -->
+<path class="line" fill="url(#bucket)" d="M285 121h451l-64 361H350z"/>
+<path d="M331 183h354M315 278h387M341 371h315" stroke="#ffffff" stroke-width="24" stroke-linecap="round" opacity=".75"/>
+<path d="M337 130c121 59 273 60 394 0" fill="none" stroke="#141821" stroke-width="15" opacity=".72"/>
+<path class="line" fill="#a8551b" d="M626 218c48-13 88 9 98 50 10 39-17 78-62 91-43 12-87-10-101-49-14-42 18-80 65-92z"/>
+<path d="M646 229l-43 118M694 260l-103 50" stroke="#6b2c12" stroke-width="11" stroke-linecap="round"/>
+<path class="line" fill="#16205d" d="M260 445c129-72 433-72 563 0 14 56-22 96-83 111-137 34-305 35-442 0-62-15-98-55-38-111z"/>
+<path d="M313 449c146 45 346 45 456 0" fill="none" stroke="#facc15" stroke-width="18" stroke-linecap="round"/>
+<!-- face: different sleepy angry heavy eyes under bucket -->
+<circle class="line" cx="347" cy="600" r="36" fill="url(#skin)"/>
+<circle class="line" cx="687" cy="600" r="36" fill="url(#skin)"/>
+<path class="line" fill="url(#skin)" d="M343 493c81-45 255-45 337 0 54 91 22 211-54 263-70 48-203 48-273-1-76-54-109-172-10-262z"/>
+<path class="soft" fill="none" d="M405 500c71-31 168-32 223-3"/>
+<path class="line" fill="#fff" d="M394 587c39-31 91-26 122 11-37 30-88 26-122-11z"/>
+<path class="line" fill="#fff" d="M541 600c37-40 92-46 134-17-29 41-84 48-134 17z"/>
+<circle cx="461" cy="590" r="15" fill="#0b1020"/><circle cx="600" cy="588" r="15" fill="#0b1020"/>
+<path d="M403 553c42-20 82-17 119 10M535 561c45-26 91-25 132 0" fill="none" stroke="#141821" stroke-width="15" stroke-linecap="round"/>
+<ellipse cx="379" cy="657" rx="30" ry="15" fill="#ff91b2" opacity=".38"/><ellipse cx="641" cy="657" rx="30" ry="15" fill="#ff91b2" opacity=".38"/>
+<path d="M424 692q86 48 177 0" fill="none" stroke="#141821" stroke-width="14" stroke-linecap="round"/>
+<path class="thin" fill="#fffaf0" d="M483 690l20 52h-43zM556 690l-22 52h46z"/>
+<!-- unique clothes: squat heavy armor, short legs, metal plates -->
+<path class="line" fill="url(#steelSuit)" d="M315 728c53-96 330-103 400 0l-44 167c-97 61-219 61-317 0z"/>
+<path class="line" fill="url(#bucket)" d="M382 708h260l38 131H344z"/>
+<path d="M397 742h231M369 794h286" stroke="#e2e8f0" stroke-width="16" stroke-linecap="round" opacity=".85"/>
+<circle class="thin" cx="512" cy="832" r="33" fill="#94a3b8"/>
+<path class="line" fill="#334155" d="M334 730c-88 23-133 75-153 151l101 24c22-64 51-97 94-113z"/>
+<path class="line" fill="#334155" d="M690 730c88 23 133 75 153 151l-101 24c-22-64-51-97-94-113z"/>
+<path class="line" fill="url(#skin)" d="M202 875c-45 11-66 45-51 78 15 31 54 39 82 16 19-16 24-41 14-68"/>
+<path class="line" fill="url(#skin)" d="M822 875c45 11 66 45 51 78-15 31-54 39-82 16-19-16-24-41-14-68"/>
+<path class="line" fill="#111827" d="M405 885c-51 29-75 67-60 101 73 3 124-18 151-72zM619 885c51 29 75 67 60 101-73 3-124-18-151-72z"/>
+</g>
 </g>
 </svg>

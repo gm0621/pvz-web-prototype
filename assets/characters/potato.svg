@@ -1,17 +1,22 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" role="img" aria-label="土豆雷" class="chibi-no-bg premium-detail">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" role="img" aria-label="potato" class="chibi-no-bg premium-detail official-distinct-plant">
 <defs>
-<linearGradient id="skin" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f2f0ff"/><stop offset=".55" stop-color="#c8c3e8"/><stop offset="1" stop-color="#928bb6"/></linearGradient>
-<linearGradient id="leaf" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#d9f99d"/><stop offset=".5" stop-color="#4ade80"/><stop offset="1" stop-color="#15803d"/></linearGradient>
-<linearGradient id="gold" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff1a6"/><stop offset=".6" stop-color="#e0ad4b"/><stop offset="1" stop-color="#9a6227"/></linearGradient>
-<linearGradient id="robe" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7f8cff"/><stop offset="1" stop-color="#4246ae"/></linearGradient>
-<linearGradient id="red" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ff8aa0"/><stop offset="1" stop-color="#8e2440"/></linearGradient>
-<linearGradient id="blue" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4156c9"/><stop offset="1" stop-color="#202970"/></linearGradient>
+<linearGradient id="green" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#e4ff9e"/><stop offset=".45" stop-color="#55db63"/><stop offset="1" stop-color="#138243"/></linearGradient>
+<linearGradient id="deepGreen" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#58e27b"/><stop offset="1" stop-color="#14532d"/></linearGradient>
+<linearGradient id="sun" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff7ad"/><stop offset=".55" stop-color="#facc15"/><stop offset="1" stop-color="#d97706"/></linearGradient>
+<linearGradient id="nut" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f5d08b"/><stop offset=".55" stop-color="#b7791f"/><stop offset="1" stop-color="#713f12"/></linearGradient>
+<linearGradient id="fire" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff7ad"/><stop offset=".35" stop-color="#fb923c"/><stop offset="1" stop-color="#b91c1c"/></linearGradient>
 <filter id="shadow" x="-40%" y="-40%" width="180%" height="180%"><feDropShadow dx="0" dy="24" stdDeviation="18" flood-color="#111827" flood-opacity=".25"/></filter>
-<filter id="glow" x="-80%" y="-80%" width="260%" height="260%"><feGaussianBlur stdDeviation="10" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-<style>.line{stroke:#171922;stroke-width:14;stroke-linecap:round;stroke-linejoin:round}.thin{stroke:#171922;stroke-width:8;stroke-linecap:round;stroke-linejoin:round}.soft{stroke:#fff;stroke-width:10;stroke-linecap:round;opacity:.42}.float{animation:bob 1.8s ease-in-out infinite alternate;transform-origin:512px 675px}.run{animation:run .72s ease-in-out infinite alternate;transform-origin:512px 700px}.blink{animation:blink 3.4s infinite;transform-origin:center}.shine{animation:shine 1.5s ease-in-out infinite alternate}.cheek{fill:#ff8fb1;opacity:.48}@keyframes bob{from{transform:translateY(7px)}to{transform:translateY(-8px)}}@keyframes run{from{transform:translateY(6px) rotate(-2deg)}to{transform:translateY(-7px) rotate(2deg)}}@keyframes blink{0%,92%,100%{transform:scaleY(1)}95%{transform:scaleY(.12)}}@keyframes shine{from{opacity:.45}to{opacity:1}}</style>
+<filter id="glow" x="-80%" y="-80%" width="260%" height="260%"><feGaussianBlur stdDeviation="13" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+<style>.line{stroke:#141821;stroke-width:15;stroke-linecap:round;stroke-linejoin:round}.thin{stroke:#141821;stroke-width:8;stroke-linecap:round;stroke-linejoin:round}.soft{stroke:#fff;stroke-width:11;stroke-linecap:round;opacity:.45}.float{animation:bob 1.8s ease-in-out infinite alternate;transform-origin:512px 720px}.blink{animation:blink 3.4s infinite;transform-origin:center}.shine{animation:shine 1.2s ease-in-out infinite alternate}@keyframes bob{from{transform:translateY(7px)}to{transform:translateY(-8px)}}@keyframes blink{0%,92%,100%{transform:scaleY(1)}95%{transform:scaleY(.12)}}@keyframes shine{from{opacity:.55;transform:scale(.98)}to{opacity:1;transform:scale(1.04)}}</style>
 </defs>
-<g class="float" filter="url(#shadow)">
-<ellipse cx="512" cy="915" rx="178" ry="34" fill="#0f172a" opacity=".18"/>
-<path class="line" fill="#b7791f" d="M282 391c48-165 295-212 423-66 121 137 39 398-150 446-171 44-348-65-318-232 8-47 21-95 45-148z"/><circle cx="367" cy="379" r="20" fill="#713f12" opacity=".38"/><circle cx="650" cy="407" r="18" fill="#713f12" opacity=".3"/><circle cx="660" cy="617" r="17" fill="#713f12" opacity=".3"/><path class="line shine" fill="#ef4444" d="M512 176l46 95h-92z"/><path d="M512 270v64" stroke="#7f1d1d" stroke-width="13" stroke-linecap="round"/><g class="blink"><circle class="line" cx="428" cy="520" r="48" fill="#fff"/><circle class="line" cx="596" cy="520" r="48" fill="#fff"/><circle cx="444" cy="455" r="16" fill="#0b1020"/><circle cx="561" cy="455" r="16" fill="#0b1020"/><circle cx="437" cy="443" r="7" fill="#fff"/><circle cx="554" cy="443" r="7" fill="#fff"/></g><ellipse class="cheek" cx="375" cy="594" rx="35" ry="18"/><ellipse class="cheek" cx="648" cy="594" rx="35" ry="18"/><path d="M418 638q86 61 191 0" fill="none" stroke="#171922" stroke-width="14" stroke-linecap="round"/><path class="soft" fill="none" d="M348 363c71-63 211-81 318 1"/>
+<g class="float" filter="url(#shadow)"><ellipse cx="512" cy="918" rx="180" ry="34" fill="#0f172a" opacity=".18"/>
+<path class="line" fill="url(#nut)" d="M279 394c51-174 307-223 439-69 120 140 38 406-157 456-178 46-361-66-330-238 8-49 22-97 48-149z"/>
+<circle cx="366" cy="386" r="22" fill="#713f12" opacity=".38"/><circle cx="657" cy="411" r="20" fill="#713f12" opacity=".3"/><circle cx="674" cy="624" r="18" fill="#713f12" opacity=".3"/>
+<path class="line shine" fill="#ef4444" d="M512 164l52 107H460z"/><path d="M512 269v64" stroke="#7f1d1d" stroke-width="14" stroke-linecap="round"/>
+<g class="blink"><circle class="line" cx="430" cy="525" r="50" fill="#fff"/><circle class="line" cx="595" cy="525" r="50" fill="#fff"/><circle cx="446" cy="533" r="17" fill="#07111f"/><circle cx="579" cy="533" r="17" fill="#07111f"/><circle cx="437" cy="521" r="8" fill="#fff"/><circle cx="570" cy="521" r="8" fill="#fff"/></g>
+<ellipse cx="374" cy="604" rx="35" ry="18" fill="#ff8fb1" opacity=".45"/><ellipse cx="654" cy="604" rx="35" ry="18" fill="#ff8fb1" opacity=".45"/>
+<path d="M417 650q91 62 201 0" fill="none" stroke="#171922" stroke-width="15" stroke-linecap="round"/>
+<path class="soft" fill="none" d="M346 365c75-67 220-84 332 2"/>
+<path d="M255 773c80 83 210 114 345 83" fill="none" stroke="#713f12" stroke-width="13" opacity=".35" stroke-linecap="round"/>
 </g>
 </svg>
