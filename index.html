@@ -60,6 +60,12 @@
   .cards-panel{max-height:158px!important;overflow:hidden!important;padding:8px 6px 12px!important}
   .card{flex:0 0 82px!important;width:82px!important;min-width:82px!important;min-height:108px!important}
 }
+
+/* Board/grid sync fix: board height follows the 5x9 grid, no blank green tail */
+.game .board{height:auto!important;min-height:0!important;overflow:hidden!important}
+.game .grid{height:auto!important;grid-template-rows:repeat(5,minmax(92px,1fr))!important}
+@media(max-width:980px){.game .grid{grid-template-rows:repeat(5,minmax(78px,1fr))!important}}
+@media(max-width:720px){.game .board{height:min(52vh,calc((100vw - 12px)*5/9))!important;min-height:0!important;max-height:52vh!important}.game .grid{height:100%!important;grid-template-rows:repeat(5,1fr)!important}}
 </style>
 </head>
 <body>
