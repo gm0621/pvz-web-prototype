@@ -43,6 +43,23 @@
 
 /* Progression + shop prototype: character upgrades, equipment, skills, skins */
 .shop-page{padding:44px;background:radial-gradient(circle at 16% 10%,#f9731655,transparent 24%),radial-gradient(circle at 84% 12%,#facc1550,transparent 24%),linear-gradient(135deg,#1f1300,#111827 55%,#1e1b4b)}.shop-layout{display:grid;grid-template-columns:280px 1fr;gap:20px;margin-top:20px}.shop-wallet,.shop-panel{border:1px solid #facc1544;border-radius:24px;background:#0f172acc;box-shadow:0 18px 50px #0007;padding:18px}.shop-tabs{display:flex;gap:10px;flex-wrap:wrap;margin:14px 0}.shop-tabs button{height:46px;margin:0!important;border-radius:999px}.shop-tabs button.active{background:#facc15!important;color:#1f1300!important;border-color:#fde68a!important}.shop-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px}.shop-item{border:1px solid #ffffff22;border-radius:20px;background:linear-gradient(135deg,#111827,#1f2937);padding:14px;box-shadow:0 12px 28px #0005}.shop-item h3{margin:0 0 6px;color:#fde68a}.shop-item small{display:block;color:#bfdbfe;font-weight:800;margin-bottom:8px}.shop-item p{color:#dbeafe;line-height:1.5}.shop-item button,.upgrade-btn,.equip-btn{height:42px;margin:8px 8px 0 0!important;padding:0 14px!important;display:inline-flex;align-items:center;justify-content:center;border-radius:12px}.owned-pill{display:inline-block;padding:5px 8px;border-radius:999px;background:#14532d;color:#bbf7d0;font-weight:900;font-size:12px}.equipped-pill{display:inline-block;margin-left:6px;padding:5px 8px;border-radius:999px;background:#7c2d12;color:#fed7aa;font-weight:900;font-size:12px}.level-effects{margin-top:8px;color:#fde68a;font-size:12px;font-weight:850}.char-level-card .upgrade-btn{width:auto;min-width:92px}.stat-note{font-size:12px;color:#bfdbfe;margin-top:4px}.skin-red .card.selected,.skin-red .char-level-card{box-shadow:0 0 0 2px #ef444477}.skin-blue .card.selected,.skin-blue .char-level-card{box-shadow:0 0 0 2px #38bdf877}@media(max-width:900px){.shop-layout{grid-template-columns:1fr}.shop-page{padding:26px}}
+
+/* Mobile board fit fix: keep 9x5 grid inside board, no dropped empty rows */
+@media(max-width:720px){
+  .game{padding:6px 6px 166px!important;overflow-x:hidden!important}
+  .board-wrap{display:block!important;width:100%!important;margin:0!important;overflow:hidden!important}
+  .board{width:100%!important;height:min(52vh,calc((100vw - 12px)*5/9))!important;min-height:0!important;max-height:52vh!important;overflow:hidden!important;border-width:3px!important;border-radius:16px!important}
+  .grid{height:100%!important;grid-template-rows:repeat(5,1fr)!important}
+  .cell{min-height:0!important}
+  .base-line,.target-line{width:7px!important}
+  .lawnmower{font-size:22px!important}
+  .entity .char-img{width:46px!important;height:46px!important}
+  .entity.type-corpseTitan .char-img{width:54px!important;height:54px!important}
+  .entity.type-fireCatapult .char-img{width:58px!important;height:58px!important}
+  .sprite{font-size:26px!important}.hpbar{width:42px!important;height:6px!important}.label{font-size:11px!important}
+  .cards-panel{max-height:158px!important;overflow:hidden!important;padding:8px 6px 12px!important}
+  .card{flex:0 0 82px!important;width:82px!important;min-width:82px!important;min-height:108px!important}
+}
 </style>
 </head>
 <body>
