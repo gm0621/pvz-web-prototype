@@ -1,9 +1,9 @@
--- 三國萌將守城：屍潮來襲｜Supabase prototype cloud save table
+-- 三國萌將守城：屍潮來襲｜Supabase Auth cloud save table
 -- Run this in Supabase SQL Editor once for the GitHub Pages prototype.
--- This is a simple sync-code based prototype, not a full authenticated account system.
+-- Players sign in with Google or email/password; saves are scoped to auth.uid().
 
 create table if not exists public.sgz_profiles (
-  owner_code text primary key,
+  user_id uuid primary key references auth.users(id) on delete cascade,
   game text not null default 'sg-zombie-defense',
   version integer not null default 1,
   profile jsonb not null default '{}'::jsonb,
@@ -15,27 +15,27 @@ create index if not exists sgz_profiles_game_updated_idx
 
 alter table public.sgz_profiles enable row level security;
 
--- Prototype policy: allow the anon key to upsert/select rows by sync code.
--- Anyone with the same sync code can load/overwrite that save.
--- Replace this with Supabase Auth user_id policies before public launch.
-drop policy if exists "sgz prototype read by anon" on public.sgz_profiles;
-create policy "sgz prototype read by anon"
+-- Authenticated players can only read their own save.
+drop policy if exists "sgz players read own profile" on public.sgz_profiles;
+create policy "sgz players read own profile"
   on public.sgz_profiles
   for select
-  to anon
-  using (game = 'sg-zombie-defense');
+  to authenticated
+  using (auth.uid() = user_id and game = 'sg-zombie-defense');
 
-drop policy if exists "sgz prototype insert by anon" on public.sgz_profiles;
-create policy "sgz prototype insert by anon"
+-- Authenticated players can only create their own save.
+drop policy if exists "sgz players insert own profile" on public.sgz_profiles;
+create policy "sgz players insert own profile"
   on public.sgz_profiles
   for insert
-  to anon
-  with check (game = 'sg-zombie-defense' and length(owner_code) >= 12);
+  to authenticated
+  with check (auth.uid() = user_id and game = 'sg-zombie-defense');
 
-drop policy if exists "sgz prototype update by anon" on public.sgz_profiles;
-create policy "sgz prototype update by anon"
+-- Authenticated players can only update their own save.
+drop policy if exists "sgz players update own profile" on public.sgz_profiles;
+create policy "sgz players update own profile"
   on public.sgz_profiles
   for update
-  to anon
-  using (game = 'sg-zombie-defense')
-  with check (game = 'sg-zombie-defense' and length(owner_code) >= 12);
+  to authenticated
+  using (auth.uid() = user_id and game = 'sg-zombie-defense')
+  with check (auth.uid() = user_id and game = 'sg-zombie-defense');
