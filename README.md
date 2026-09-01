@@ -1,6 +1,6 @@
-# 萌將守城戰｜網頁版遊戲原型
+# 三國萌將守城：屍潮來襲｜網頁版遊戲原型
 
-一個純前端 HTML/JavaScript 小遊戲原型：開頭可選三國守方或僵屍方，接著進入獨立選關頁；第一階段已重新拆成十關，可直接跳任一關測試。
+一個純前端 HTML/JavaScript 小遊戲原型：開頭可選三國守方或僵屍方，接著進入獨立選關頁；第一階段已重新拆成十關，可直接跳任一關測試。主選單使用正式 LOGO 圖 `assets/brand/sanguo-zombie-logo.webp`，favicon / Apple touch icon 使用同張圖製作的 icon 資產。
 
 ## 玩法
 
