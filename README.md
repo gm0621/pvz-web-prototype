@@ -70,7 +70,7 @@
 2. 到 Supabase Auth 開啟 Email provider；如果要 Google 登入，另外在 Auth Providers 開啟 Google OAuth。
 3. 在 Supabase Auth URL 設定加入 GitHub Pages 網址：`https://gm0621.github.io/pvz-web-prototype/`。
 4. 執行 `supabase/sgz_profiles.sql` 建立 `sgz_profiles` 資料表與 RLS policy。
-5. 將 `index.html` 內的 `SUPABASE_URL`、`SUPABASE_ANON_KEY` 改成你的專案值。anon key 是 public key，可以放前端；service role key 不可放前端。
+5. 前端已內建本專案的 Supabase Project URL 與 anon publishable key，玩家介面不會顯示資料庫設定欄位；service role key 不可放前端。
 
 資料安全：`sgz_profiles` 使用 Supabase Auth 的 `auth.uid()` 做 RLS；也就是 auth.uid() 做 RLS，每位玩家只能讀寫自己的 user_id 存檔。未登入時仍保留 localStorage 本機存檔，登入後會自動上傳 / 載入雲端。
 
