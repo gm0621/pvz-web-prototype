@@ -37,7 +37,7 @@
 - 第一階段十關難度以起始資源、電腦能量、補給、AI 行動窗口與開場壓力逐步上升；僵屍出兵冷卻仍維持原本節奏，不用加快出兵速度來做難度。
 - 修正擲石僵屍的投石顯示：投射物改成可見的旋轉石頭，避免投一次後看起來球不見。
 - 寒冰趙雲增加藍色冷凍視覺處理，卡片、角色圖與場上單位會偏藍並帶冰光。
-- 新增玩家資料中心 / 帳號雲端同步：首頁有「玩家資料」入口，可設定玩家名稱，查看玩家等級、金幣、經驗值、最高通關、已通關關卡與角色等級資料。玩家可用 Google 或 Email/密碼登入；登入後會用 Supabase Auth 的 `user_id` 自動把 `name/gold/xp/level/highestLevel/completedLevels/characterLevels/inventory` 存到雲端，換裝置登入同一帳號即可載入。資料仍會先保存到瀏覽器 localStorage，離線或未登入時也可玩；手動下載 / 匯入 txt 存檔保留作為備份。角色 XP 現在可在玩家資料中心升級角色，角色等級會實際套用到戰鬥 HP、近戰/遠戰/技能攻擊、攻擊速度與冷卻，圖鑑也會顯示目前等級數值與下一級預覽。商城入口已加入主畫面，先提供本機版裝備、技能、服裝三類商品；金幣可購買裝備/技能/外觀，裝備可裝到指定角色，技能會強化指定技能，服裝先做外觀收藏並存入 inventory。
+- 新增玩家資料中心 / 帳號雲端同步：首頁主選單新增 Email 註冊 / 登入區，玩家登入後會用 Supabase Auth 的 `user_id` 自動把 `name/gold/xp/level/highestLevel/completedLevels/characterLevels/inventory` 存到雲端，換裝置登入同一帳號即可載入；Google 登入暫時移除，等 OAuth provider 串好再放回。資料仍會先保存到瀏覽器 localStorage，離線或未登入時也可玩；玩家資料頁只保留存檔碼複製 / 貼上，給不想登入的玩家手動備份 / 搬家，不再提供 txt 下載 / 匯入。角色 XP 現在可在玩家資料中心升級角色，角色等級會實際套用到戰鬥 HP、近戰/遠戰/技能攻擊、攻擊速度與冷卻，圖鑑也會顯示目前等級數值與下一級預覽。商城入口已加入主畫面，先提供本機版裝備、技能、服裝三類商品；金幣可購買裝備/技能/外觀，裝備可裝到指定角色，技能會強化指定技能，服裝先做外觀收藏並存入 inventory。
 - 遊戲中新增「暫停 / 繼續」與「⛶ 全螢幕 / ⛶ 離開全螢幕」按鈕；全螢幕按鈕移到遊戲工具列最右側，改成更醒目的黃色大按鈕，手機版會獨立佔滿一列方便點擊。暫停時戰場時間、AI、投射物與冷卻都會停止，棋盤上顯示「暫停中」遮罩。遊戲 HUD 已改成更精簡：遊戲中不再顯示玩家等級/金幣/經驗面板；軍糧/腦力改成棋盤上方一條矮列，左邊只顯示自己的資源圖示與數量，中間顯示關卡名稱，右邊顯示對方腦力/軍糧。全螢幕模式會把棋盤撐滿可視範圍，但底部卡片列不再蓋住第五路最後一行；底部仍保留可橫向滑動、可拖曳的將軍/角色卡片列，玩家仍可把武將卡直接拉進格子部署。勝利彈窗已調整為「下一關」最大最明顯，原本的「再玩一次 / 換陣營同關」保留為次要按鈕，並新增「回主選單」按鈕可直接回到首頁。獲得金幣、玩家經驗與出戰角色 XP 會獨立顯示在「戰利品結算」區塊，並加入彈出、閃光與彩帶特效，讓玩家明確注意到本場獲得；選關、遊戲、角色圖鑑、玩家資料頁都補上固定左上角返回按鈕；底部回首頁按鈕也加大間距、改成更明顯的圓角樣式，避免貼太近或藏在頁面最下面不直覺。
 - 手機版遊戲畫面新增底部固定出角快捷列：卡片改成橫向滑動，不需要為了選角色在卡片區與棋盤間上下拉；側欄在手機版隱藏，棋盤下方預留空間避免被快捷列遮住。棋盤已修正為容器高度跟 5x9 格線同步，避免桌機或手機出現格線只在上半部、下半部整塊掉成空白綠地；手機版另固定 9x5 比例並限制高度。
 - 僵屍方進攻初始腦已依十關重新拉曲線：第一關 320、第二關 400、第三關 480、第四關 560、第五關 650、第六關 725、第七關 800、第八關 875、第九關 960、第十關 1050；同時電腦三國守方起手資源逐關提高，讓進攻更有壓力，但僵屍出兵冷卻與出兵速度不加快。
@@ -62,13 +62,13 @@
 
 ## Supabase Auth 雲端帳號設定
 
-此版本已改成玩家友善登入：玩家只需要用 Google 或 Email/密碼登入，登入後會自動把進度同步到雲端；不再需要玩家自己填 Project URL、anon key 或同步碼。
+此版本已改成玩家友善登入：登入入口放在主選單，目前先開 Email/密碼註冊登入，登入後會自動把進度同步到雲端；不再需要玩家自己填 Project URL、anon key 或同步碼。Google 登入按鈕暫時移除，等 Google OAuth provider 串好後再放回。
 
 管理者第一次設定：
 
 1. 建立 Supabase project。
-2. 到 Supabase Auth 開啟 Email provider；如果要 Google 登入，另外在 Auth Providers 開啟 Google OAuth。
-3. 在 Supabase Auth URL 設定加入 GitHub Pages 網址：`https://gm0621.github.io/pvz-web-prototype/`。建議 Site URL 與 Redirect URLs / Additional Redirect URLs 都填這個；程式註冊信與 Google OAuth 也會固定用這個 `APP_URL`，避免確認信跳回 localhost。
+2. 到 Supabase Auth 開啟 Email provider；Google OAuth 尚未串好前不用開，之後要恢復 Google 登入再到 Auth Providers 開啟 Google OAuth。
+3. 在 Supabase Auth URL 設定加入 GitHub Pages 網址：`https://gm0621.github.io/pvz-web-prototype/`。建議 Site URL 與 Redirect URLs / Additional Redirect URLs 都填這個；程式註冊信會固定用這個 `APP_URL`，避免確認信跳回 localhost。
 4. 執行 `supabase/sgz_profiles.sql` 建立 `sgz_profiles` 資料表與 RLS policy。
 5. 前端已內建本專案的 Supabase Project URL 與 anon publishable key，玩家介面不會顯示資料庫設定欄位；service role key 不可放前端。
 
