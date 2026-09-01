@@ -68,7 +68,7 @@
 
 1. 建立 Supabase project。
 2. 到 Supabase Auth 開啟 Email provider；如果要 Google 登入，另外在 Auth Providers 開啟 Google OAuth。
-3. 在 Supabase Auth URL 設定加入 GitHub Pages 網址：`https://gm0621.github.io/pvz-web-prototype/`。
+3. 在 Supabase Auth URL 設定加入 GitHub Pages 網址：`https://gm0621.github.io/pvz-web-prototype/`。建議 Site URL 與 Redirect URLs / Additional Redirect URLs 都填這個；程式註冊信與 Google OAuth 也會固定用這個 `APP_URL`，避免確認信跳回 localhost。
 4. 執行 `supabase/sgz_profiles.sql` 建立 `sgz_profiles` 資料表與 RLS policy。
 5. 前端已內建本專案的 Supabase Project URL 與 anon publishable key，玩家介面不會顯示資料庫設定欄位；service role key 不可放前端。
 
