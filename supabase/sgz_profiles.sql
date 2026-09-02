@@ -23,19 +23,8 @@ create policy "sgz players read own profile"
   to authenticated
   using (auth.uid() = user_id and game = 'sg-zombie-defense');
 
--- Authenticated players can only create their own save.
+-- Direct writes are intentionally disabled. Device locks and economy mutations are
+-- installed by migrations/202609020001_production_foundation.sql and run through RPCs.
 drop policy if exists "sgz players insert own profile" on public.sgz_profiles;
-create policy "sgz players insert own profile"
-  on public.sgz_profiles
-  for insert
-  to authenticated
-  with check (auth.uid() = user_id and game = 'sg-zombie-defense');
-
--- Authenticated players can only update their own save.
 drop policy if exists "sgz players update own profile" on public.sgz_profiles;
-create policy "sgz players update own profile"
-  on public.sgz_profiles
-  for update
-  to authenticated
-  using (auth.uid() = user_id and game = 'sg-zombie-defense')
-  with check (auth.uid() = user_id and game = 'sg-zombie-defense');
+revoke insert, update, delete on public.sgz_profiles from authenticated;

@@ -1,1 +1,6 @@
 preview/
+node_modules/
+test-results/
+playwright-report/
+supabase/.temp/
+.DS_Store

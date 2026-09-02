@@ -65,17 +65,29 @@
 
 ## Supabase Auth 雲端帳號設定
 
-此版本已改成玩家友善登入：右上角玩家帳號入口未登入時顯示「登入 / 註冊」，點擊後進入獨立登入 / 註冊頁；目前先開 Email/密碼註冊登入，登入後右上角顯示玩家名稱，點擊會連到玩家資料。登入後會自動把進度同步到雲端；不再需要玩家自己填 Project URL、anon key 或同步碼。Google 登入按鈕暫時移除，等 Google OAuth provider 串好後再放回。
+此版本提供 Email/密碼註冊登入、忘記密碼、重寄驗證信、修改 Email、修改密碼、登出此裝置與登出所有裝置。登入後右上角顯示玩家名稱，點擊可管理玩家資料與帳號安全；未登入仍可使用 localStorage 本機存檔。
 
 管理者第一次設定：
 
-1. 建立 Supabase project。
-2. 到 Supabase Auth 開啟 Email provider；Google OAuth 尚未串好前不用開，之後要恢復 Google 登入再到 Auth Providers 開啟 Google OAuth。
-3. 在 Supabase Auth URL 設定加入 GitHub Pages 網址：`https://gm0621.github.io/pvz-web-prototype/`。建議 Site URL 與 Redirect URLs / Additional Redirect URLs 都填這個；程式註冊信會固定用這個 `APP_URL`，避免確認信跳回 localhost。
-4. 執行 `supabase/sgz_profiles.sql` 建立 `sgz_profiles` 資料表與 RLS policy。
-5. 前端已內建本專案的 Supabase Project URL 與 anon publishable key，玩家介面不會顯示資料庫設定欄位；service role key 不可放前端。
+1. 建立 Supabase project，並在 Auth 開啟 Email provider；若要使用 Google 登入，再開啟 Google provider 並設定 OAuth Client ID / Secret。
+2. 在 Supabase Auth URL 設定加入 GitHub Pages 網址：`https://gm0621.github.io/pvz-web-prototype/`；Site URL 與 Redirect URLs 都加入此網址。
+3. 先執行 `supabase/sgz_profiles.sql` 建立基本 profile 表，再執行 `supabase/migrations/202609020001_production_foundation.sql`。
+4. migration 會建立原子 active-device lock、30 秒 heartbeat、120 秒逾時、`save_version` optimistic lock、Realtime 接管通知、商城 catalog、交易 audit、對戰紀錄、頭像 Storage bucket 及購買／裝備／外觀／角色升級／戰利品 RPC。
+5. 前端只放 anon publishable key；service role key 不可放在前端或 Git。
 
-資料安全：`sgz_profiles` 使用 Supabase Auth 的 `auth.uid()` 做 RLS；也就是 auth.uid() 做 RLS，每位玩家只能讀寫自己的 user_id 存檔。未登入時仍保留 localStorage 本機存檔，登入後會自動上傳 / 載入雲端。
+資料安全：一般 profile 儲存 RPC 不接受客戶端修改 `gold/xp/level/characterLevels/inventory/highestLevel/completedLevels`；這些欄位只能由專用 `SECURITY DEFINER` RPC 在資料列鎖定後修改。所有 RPC 都以 `auth.uid()` 定位玩家，並驗證目前 active device。商城扣款與物品發放在同一個 PostgreSQL transaction 完成，並記錄於 `sgz_economy_transactions`。
+
+對戰獎勵不接受前端傳入勝敗值，只接受伺服器核發且達到關卡最低時間的單次 match completion；角色 XP 每場最多指定一名已存在角色。由於戰鬥模擬仍在瀏覽器執行，這可防止直接偽造 `p_won` 與高速重複領獎，但若要做到競技遊戲等級的完整反作弊，仍需把戰鬥模擬或 replay validator 搬到伺服器。
+
+## 開發與驗證
+
+```bash
+npm install
+npx playwright install chromium
+npm test
+```
+
+Playwright 會在 desktop 與 mobile 專案驗證首頁、選關、商城、帳號復原、遊戲確認彈窗、active-device 衝突、權威購買 RPC、模組載入與 migration 關鍵安全結構。正式碼已從單一 `index.html` 拆成 `css/`、`js/data.js`、`js/cloud.js`、`js/account.js`、`js/shop.js` 與 `js/app.js`。
 
 ## 僵屍方角色
 
