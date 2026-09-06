@@ -181,6 +181,91 @@ test('production files are split and loaded', async ({ page }) => {
   for (const file of ['data.js','cloud.js','account.js','shop.js','app.js']) expect(assets.scripts.some(s => s.includes('/js/' + file))).toBeTruthy();
 });
 
+test('defense campaign waits before zombies, accelerates over time, and ends with a boss', async ({ page }) => {
+  await openApp(page);
+  const campaign = await page.evaluate(() => Object.values(LEVELS).map(level => ({
+    level: level.level,
+    difficultyRank: level.difficultyRank,
+    firstZombieDelay: level.firstZombieDelay,
+    openingSpacing: level.openingSpacing,
+    winAfter: level.winAfter,
+    bossAt: level.bossAt,
+    bossType: level.bossType
+  })));
+  expect(campaign.map(level => level.difficultyRank)).toEqual([1,2,3,4,5,6,7,8,9,10]);
+  expect(campaign.map(level => level.winAfter)).toEqual([35000,40000,45000,50000,55000,60000,65000,70000,75000,80000]);
+  expect(campaign.every(level => level.firstZombieDelay === (level.level <= 4 ? 5000 : 7000))).toBeTruthy();
+  expect(campaign.every(level => level.openingSpacing >= 2800 && level.bossAt < level.winAfter && level.bossType)).toBeTruthy();
+  expect(campaign[8].openingSpacing).toBeGreaterThanOrEqual(4500);
+  expect(campaign[9].openingSpacing).toBeGreaterThanOrEqual(4500);
+
+  const runtime = await page.evaluate(() => {
+    selectedLevel = 10;
+    start('plants');
+    clearInterval(timer);
+    const noImmediateZombie = state.zombies.length === 0;
+    state.time = LEVELS[10].firstZombieDelay - 1;
+    processLevelEvents();
+    const stillWaiting = state.zombies.length === 0;
+    state.time = LEVELS[10].firstZombieDelay;
+    processLevelEvents();
+    const firstWaveCount = state.zombies.length;
+    const savedRandom = Math.random;
+    Math.random = () => 0.5;
+    state.time = 12000;
+    const earlyPace = aiPace('zombies');
+    state.time = 42000;
+    const midPace = aiPace('zombies');
+    state.time = LEVELS[10].bossAt - 1000;
+    const latePace = aiPace('zombies');
+    Math.random = savedRandom;
+    state.time = LEVELS[10].bossAt;
+    processLevelEvents();
+    const bosses = state.zombies.filter(z => z.boss);
+    processLevelEvents();
+    return {
+      noImmediateZombie,
+      stillWaiting,
+      firstWaveCount,
+      earlyPace,
+      midPace,
+      latePace,
+      bossCount: state.zombies.filter(z => z.boss).length,
+      bossHp: bosses[0]?.maxHp || 0,
+      baseHp: bosses[0] ? ZOMBIE_TYPES[bosses[0].type].hp : 0
+    };
+  });
+  expect(runtime.noImmediateZombie).toBeTruthy();
+  expect(runtime.stillWaiting).toBeTruthy();
+  expect(runtime.firstWaveCount).toBe(1);
+  expect(runtime.earlyPace).toBeGreaterThan(runtime.midPace);
+  expect(runtime.midPace).toBeGreaterThan(runtime.latePace);
+  expect(runtime.earlyPace).toBeGreaterThanOrEqual(6500);
+  expect(runtime.bossCount).toBe(1);
+  expect(runtime.bossHp).toBeGreaterThan(runtime.baseHp);
+
+  const bossesByLevel = await page.evaluate(() => Object.values(LEVELS).map(level => {
+    selectedLevel = level.level;
+    start('plants');
+    clearInterval(timer);
+    state.time = level.bossAt;
+    processLevelEvents();
+    processLevelEvents();
+    const boss = state.zombies.find(z => z.boss);
+    return {
+      level: level.level,
+      count: state.zombies.filter(z => z.boss).length,
+      type: boss?.type,
+      row: boss?.r,
+      hp: boss?.maxHp || 0,
+      baseHp: boss ? ZOMBIE_TYPES[boss.type].hp : 0
+    };
+  }));
+  expect(bossesByLevel.every(boss => boss.count === 1 && boss.type)).toBeTruthy();
+  expect(bossesByLevel.every(boss => boss.row >= 1 && boss.row <= 3)).toBeTruthy();
+  expect(bossesByLevel.every(boss => boss.hp > boss.baseHp)).toBeTruthy();
+});
+
 test('migration defines atomic lock and authoritative economy RPCs', async () => {
   const sql = fs.readFileSync(path.join(__dirname, '..', 'supabase', 'migrations', '202609020001_production_foundation.sql'), 'utf8');
   for (const marker of ['for update','sgz_claim_device','sgz_heartbeat','sgz_save_profile','sgz_release_device','sgz_buy_item','sgz_equip_item','sgz_activate_skin','sgz_upgrade_character','security definer','auth.uid()','p_initial_profile','revoke all on function','supabase_realtime',"- 'highestLevel'","- 'completedLevels'",'revoke insert,update,delete']) expect(sql.toLowerCase()).toContain(marker.toLowerCase());
