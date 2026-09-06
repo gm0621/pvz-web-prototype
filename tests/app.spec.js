@@ -63,6 +63,65 @@ async function login(page) {
   await expect(page.locator('#start')).toHaveClass(/active/);
 }
 
+test('campaign progression unlocks defense 1-10 before attack 1-10 and then marks all clear', async ({ page }) => {
+  await openApp(page);
+  const result = await page.evaluate(() => {
+    playerProfile = normalizeProfile({});
+    const unlocked = side => Object.values(LEVELS).filter(lv => isCampaignLevelUnlocked(side, lv.level)).map(lv => lv.level);
+    const initial = {plants:unlocked('plants'),zombies:unlocked('zombies'),status:campaignStatus()};
+    completeCampaignLevel('plants',1);
+    completeCampaignLevel('plants',2);
+    const afterDefense2 = {plants:unlocked('plants'),completed:[isCampaignLevelCompleted('plants',1),isCampaignLevelCompleted('plants',2)]};
+    for(let level=3;level<=9;level++) completeCampaignLevel('plants',level);
+    const beforeDefense10 = {plants:unlocked('plants'),zombies:unlocked('zombies')};
+    completeCampaignLevel('plants',10);
+    const afterDefense10 = {plants:unlocked('plants'),zombies:unlocked('zombies'),step:nextCampaignStep('plants',10,true)};
+    completeCampaignLevel('zombies',1);
+    const afterAttack1 = {zombies:unlocked('zombies')};
+    for(let level=2;level<=10;level++) completeCampaignLevel('zombies',level);
+    return {initial,afterDefense2,beforeDefense10,afterDefense10,afterAttack1,final:campaignStatus()};
+  });
+  expect(result.initial).toEqual({plants:[1],zombies:[],status:{plants:0,zombies:0,attackUnlocked:false,allComplete:false}});
+  expect(result.afterDefense2).toEqual({plants:[1,2,3],completed:[true,true]});
+  expect(result.beforeDefense10.plants).toEqual([1,2,3,4,5,6,7,8,9,10]);
+  expect(result.beforeDefense10.zombies).toEqual([]);
+  expect(result.afterDefense10.zombies).toEqual([1]);
+  expect(result.afterDefense10.step).toEqual({faction:'zombies',level:1,label:'開始攻城：第一關 ▶'});
+  expect(result.afterAttack1.zombies).toEqual([1,2]);
+  expect(result.final).toEqual({plants:10,zombies:10,attackUnlocked:true,allComplete:true});
+});
+
+test('campaign UI disables locked faction and labels completed current and locked levels', async ({ page }) => {
+  await openApp(page);
+  const initial = await page.evaluate(() => {
+    playerProfile = normalizeProfile({});
+    refreshCampaignUI();
+    chooseFaction('plants');
+    return {
+      attackDisabled:document.querySelector('#zombieStartBtn').disabled,
+      attackText:document.querySelector('#zombieStartBtn').textContent,
+      levels:[...document.querySelectorAll('#levelGrid .level-card')].map(card => ({className:card.className,text:card.querySelector('button').textContent,disabled:card.querySelector('button').disabled}))
+    };
+  });
+  expect(initial.attackDisabled).toBeTruthy();
+  expect(initial.attackText).toContain('守城第十關後解鎖');
+  expect(initial.levels[0]).toMatchObject({disabled:false,text:'開始第一關'});
+  expect(initial.levels[1].disabled).toBeTruthy();
+  expect(initial.levels[1].className).toContain('locked');
+
+  const advanced = await page.evaluate(() => {
+    completeCampaignLevel('plants',1);
+    completeCampaignLevel('plants',2);
+    buildLevelCards();
+    return [...document.querySelectorAll('#levelGrid .level-card')].slice(0,4).map(card => ({className:card.className,text:card.querySelector('button').textContent,disabled:card.querySelector('button').disabled}));
+  });
+  expect(advanced[0].className).toContain('completed');
+  expect(advanced[0].text).toBe('重玩第一關');
+  expect(advanced[1].text).toBe('重玩第二關');
+  expect(advanced[2]).toMatchObject({disabled:false,text:'開始第三關'});
+  expect(advanced[3].disabled).toBeTruthy();
+});
+
 test('home can enter level selection and shop', async ({ page }) => {
   await openApp(page);
   await page.locator('#plantStartBtn').click();
@@ -209,6 +268,7 @@ test('named generals gain random super-skill chance with level while strategists
 test('general effects and critical mechanics only appear when the random super skill triggers', async ({ page }) => {
   await openApp(page);
   const result = await page.evaluate(() => {
+    for(let level=1;level<=9;level++) completeCampaignLevel('plants',level);
     const effectSelector = '.guanyu-dragon-fx,.zhaoyun-ice-fx,.lance-dash-fx,.huangzhong-volley-fx,.zhangfei-roar-fx,.liubei-benevolence-fx';
     const run = (key, roll) => {
       selectedLevel = 10;
@@ -282,6 +342,7 @@ test('defense campaign waits before zombies, accelerates over time, and ends wit
   expect(campaign[9].openingSpacing).toBeGreaterThanOrEqual(4500);
 
   const runtime = await page.evaluate(() => {
+    for(let level=1;level<=9;level++) completeCampaignLevel('plants',level);
     selectedLevel = 10;
     start('plants');
     clearInterval(timer);
@@ -326,7 +387,9 @@ test('defense campaign waits before zombies, accelerates over time, and ends wit
   expect(runtime.bossCount).toBe(1);
   expect(runtime.bossHp).toBeGreaterThan(runtime.baseHp);
 
-  const bossesByLevel = await page.evaluate(() => Object.values(LEVELS).map(level => {
+  const bossesByLevel = await page.evaluate(() => {
+    for(let level=1;level<=10;level++) completeCampaignLevel('plants',level);
+    return Object.values(LEVELS).map(level => {
     selectedLevel = level.level;
     start('plants');
     clearInterval(timer);
@@ -342,10 +405,18 @@ test('defense campaign waits before zombies, accelerates over time, and ends wit
       hp: boss?.maxHp || 0,
       baseHp: boss ? ZOMBIE_TYPES[boss.type].hp : 0
     };
-  }));
+    });
+  });
   expect(bossesByLevel.every(boss => boss.count === 1 && boss.type)).toBeTruthy();
   expect(bossesByLevel.every(boss => boss.row >= 1 && boss.row <= 3)).toBeTruthy();
   expect(bossesByLevel.every(boss => boss.hp > boss.baseHp)).toBeTruthy();
+});
+
+test('linear campaign migration protects faction progress and locks server matches', async () => {
+  const sql = fs.readFileSync(path.join(__dirname, '..', 'supabase', 'migrations', '202609060001_linear_campaign_progression.sql'), 'utf8');
+  for (const marker of ["- 'campaignProgress'", "profile->'campaignProgress'", "p_faction='zombies'", "raise exception 'FACTION_LOCKED'", "raise exception 'LEVEL_LOCKED'", "array[p_faction,'completedLevels']", "array[v_match.faction]"]) expect(sql).toContain(marker);
+  expect(sql).toContain("where not (profile ? 'campaignProgress')");
+  expect(sql).toMatch(/for v_i in 1\.\.10 loop/g);
 });
 
 test('migration defines atomic lock and authoritative economy RPCs', async () => {
