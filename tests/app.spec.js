@@ -181,6 +181,88 @@ test('production files are split and loaded', async ({ page }) => {
   for (const file of ['data.js','cloud.js','account.js','shop.js','app.js']) expect(assets.scripts.some(s => s.includes('/js/' + file))).toBeTruthy();
 });
 
+test('named generals gain random super-skill chance with level while strategists stay excluded', async ({ page }) => {
+  await openApp(page);
+  const result = await page.evaluate(() => {
+    const heroes = ['firepea','huangzhong','zhaoyun','machao','zhangfei','liubei'];
+    return {
+      level1: heroes.map(key => superSkillChance(key, 1)),
+      level10: heroes.map(key => superSkillChance(key, 10)),
+      capped: heroes.map(key => superSkillChance(key, 99)),
+      lowRoll: heroes.map(key => rollSuperSkill(key, () => 0.249)),
+      highRoll: heroes.map(key => rollSuperSkill(key, () => 0.99)),
+      excluded: ['kongming','pangtong'].map(key => ({chance: superSkillChance(key, 99), roll: rollSuperSkill(key, () => 0)})),
+      ui: (() => { showCharacterDetail('plants','firepea'); return {detail:document.querySelector('#charModalSkill').textContent,stats:document.querySelector('#charModalStats').textContent}; })()
+    };
+  });
+  expect(result.level1).toEqual([0.25,0.25,0.25,0.25,0.25,0.25]);
+  expect(result.level10).toEqual([0.43,0.43,0.43,0.43,0.43,0.43]);
+  expect(result.capped).toEqual([0.6,0.6,0.6,0.6,0.6,0.6]);
+  expect(result.lowRoll.every(Boolean)).toBeTruthy();
+  expect(result.highRoll.some(Boolean)).toBeFalsy();
+  expect(result.excluded).toEqual([{chance:0,roll:false},{chance:0,roll:false}]);
+  expect(result.ui.detail).toContain('目前 Lv.1 發動率 25%');
+  expect(result.ui.detail).toContain('未觸發時只使用普通攻擊');
+  expect(result.ui.stats).toContain('25%（下級 27%）');
+});
+
+test('general effects and critical mechanics only appear when the random super skill triggers', async ({ page }) => {
+  await openApp(page);
+  const result = await page.evaluate(() => {
+    const effectSelector = '.guanyu-dragon-fx,.zhaoyun-ice-fx,.lance-dash-fx,.huangzhong-volley-fx,.zhangfei-roar-fx,.liubei-benevolence-fx';
+    const run = (key, roll) => {
+      selectedLevel = 10;
+      start('plants');
+      clearInterval(timer);
+      state.time = 10000;
+      state.plants = [];
+      state.zombies = [];
+      state.projectiles = [];
+      document.querySelectorAll(effectSelector).forEach(node => node.remove());
+      addPlant(key, 2, 2);
+      const hero = state.plants[0];
+      hero.last = 0;
+      const positions = key === 'machao' ? [[2,3.5],[2,4.2],[2,4.9]] : key === 'zhangfei' ? [[2,2.7]] : [[1,4],[2,4],[3,4]];
+      positions.forEach(([r,c]) => addZombie('normal', c, r));
+      const beforeHp = state.zombies.map(z => z.hp);
+      const beforeC = state.zombies.map(z => z.c);
+      const savedRandom = Math.random;
+      Math.random = () => roll;
+      actPlants();
+      Math.random = savedRandom;
+      return {
+        effects: document.querySelectorAll(effectSelector).length,
+        projectiles: state.projectiles.map(p => ({damage:p.damage,fire:!!p.fire,slow:!!p.slow,r:p.r})),
+        damaged: state.zombies.filter((z,i) => z.hp < beforeHp[i]).length,
+        totalDamage: state.zombies.reduce((sum,z,i) => sum + beforeHp[i] - z.hp, 0),
+        moved: state.zombies.some((z,i) => z.c > beforeC[i]),
+        soldiers: state.plants.filter(p => p.type === 'swordSoldier').length
+      };
+    };
+    const heroes = ['firepea','zhaoyun','machao','huangzhong','zhangfei','liubei'];
+    return Object.fromEntries(heroes.map(key => [key,{ordinary:run(key,.99),super:run(key,0)}]));
+  });
+  for (const [key,pair] of Object.entries(result)) {
+    expect(pair.ordinary.effects, `${key} ordinary`).toBe(0);
+    expect(pair.super.effects, `${key} super`).toBeGreaterThan(0);
+  }
+  expect(result.firepea.ordinary.projectiles[0].fire).toBeFalsy();
+  expect(result.firepea.super.projectiles[0].fire).toBeTruthy();
+  expect(result.firepea.super.projectiles[0].damage).toBeGreaterThan(result.firepea.ordinary.projectiles[0].damage);
+  expect(result.zhaoyun.ordinary.projectiles[0].slow).toBeFalsy();
+  expect(result.zhaoyun.super.projectiles[0].slow).toBeTruthy();
+  expect(result.machao.ordinary.damaged).toBe(1);
+  expect(result.machao.super.damaged).toBe(3);
+  expect(result.huangzhong.ordinary.projectiles).toHaveLength(1);
+  expect(result.huangzhong.super.projectiles).toHaveLength(3);
+  expect(result.zhangfei.ordinary.moved).toBeFalsy();
+  expect(result.zhangfei.super.moved).toBeTruthy();
+  expect(result.zhangfei.super.totalDamage).toBeGreaterThan(result.zhangfei.ordinary.totalDamage);
+  expect(result.liubei.ordinary.soldiers).toBe(0);
+  expect(result.liubei.ordinary.projectiles).toHaveLength(1);
+  expect(result.liubei.super.soldiers).toBe(3);
+});
+
 test('defense campaign waits before zombies, accelerates over time, and ends with a boss', async ({ page }) => {
   await openApp(page);
   const campaign = await page.evaluate(() => Object.values(LEVELS).map(level => ({
