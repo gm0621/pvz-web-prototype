@@ -100,6 +100,48 @@ test('campaign progression unlocks defense 1-10 before attack 1-10 and then mark
   expect(result.final).toEqual({plants:10,zombies:10,attackUnlocked:true,allComplete:true});
 });
 
+test('a very fast attack win shows a live verification countdown and still allows leaving', async ({ page }) => {
+  await openApp(page);
+  await page.evaluate(async () => {
+    playerProfile = normalizeProfile({});
+    for(let level=1;level<=10;level++) completeCampaignLevel('plants',level);
+    for(let level=1;level<=9;level++) completeCampaignLevel('zombies',level);
+    selectedLevel=10;
+    start('zombies');
+    clearInterval(timer);
+    await new Promise(requestAnimationFrame);
+    currentUser={id:'user-1',email:'player@example.com'};
+    cloudLockOwned=true;
+    cloudMatchId='00000000-0000-4000-8000-000000000010';
+    state.cloudMatchStartedAt=Date.now();
+    supabaseClient={rpc:async name=>name==='sgz_claim_level_reward'?{data:null,error:{message:'MATCH_TOO_SHORT'}}:{data:null,error:null}};
+    void end(true,'突破成功！','第十關完成');
+  });
+  await expect(page.locator('#modalText')).toContainText(/倒數.*秒/);
+  await expect(page.locator('#modalMainMenu')).toBeEnabled();
+  await page.locator('#modalMainMenu').click();
+  await expect(page.locator('#start')).toHaveClass(/active/);
+});
+
+test('the final attack victory has a primary all-clear exit instead of a dead end', async ({ page }) => {
+  await openApp(page);
+  await page.evaluate(async () => {
+    playerProfile = normalizeProfile({});
+    for(let level=1;level<=10;level++) completeCampaignLevel('plants',level);
+    for(let level=1;level<=9;level++) completeCampaignLevel('zombies',level);
+    selectedLevel=10;
+    start('zombies');
+    clearInterval(timer);
+    currentUser=null;
+    await end(true,'突破成功！','第十關完成');
+  });
+  await expect(page.locator('#modalNext')).toBeVisible();
+  await expect(page.locator('#modalNext')).toBeEnabled();
+  await expect(page.locator('#modalNext')).toContainText('全破完成');
+  await page.locator('#modalNext').click();
+  await expect(page.locator('#start')).toHaveClass(/active/);
+});
+
 test('cloud retry timing matches the server for attack and defense', async ({ page }) => {
   await openApp(page);
   const timings=await page.evaluate(()=>({attack:cloudMatchMinimumMs('zombies',3),defense:cloudMatchMinimumMs('plants',3)}));
@@ -313,7 +355,9 @@ test('named generals gain random super-skill chance with level while strategists
   expect(result.highRoll.some(Boolean)).toBeFalsy();
   expect(result.excluded).toEqual([{chance:0,roll:false},{chance:0,roll:false}]);
   expect(result.ui.detail).toContain('目前 Lv.1 發動率 25%');
-  expect(result.ui.detail).toContain('未觸發時只使用普通攻擊');
+  expect(result.ui.detail).toContain('天賦：火焰效果（固定生效）');
+  expect(result.ui.detail).toContain('機率技能：青龍爆擊');
+  expect(result.ui.detail).not.toContain('未觸發時只使用普通攻擊');
   expect(result.ui.stats).toContain('25%（下級 27%）');
 });
 
@@ -324,9 +368,11 @@ test('character guide cards explain every random super skill before opening deta
     buildCharacterGrid('plants');
     return Object.fromEntries(['firepea','huangzhong','zhaoyun','machao','zhangfei','liubei'].map(key => [key, document.querySelector(`#characterGrid .type-${key}`).textContent]));
   });
-  const skillNames = {firepea:'青龍火斬',huangzhong:'百箭三排',zhaoyun:'寒冰緩速',machao:'三格穿刺',zhangfei:'近戰反推',liubei:'仁德召兵'};
+  const talentNames = {firepea:'火焰效果',huangzhong:'上、中、下三列效果',zhaoyun:'寒冰效果',machao:'穿刺三格效果',zhangfei:'彈開效果',liubei:'召喚將士'};
+  const randomSkillNames = {firepea:'青龍爆擊',huangzhong:'百箭爆擊',zhaoyun:'冰龍爆擊',machao:'鐵騎爆擊',zhangfei:'震軍爆擊',liubei:'白毦號令'};
   for (const [key, text] of Object.entries(summaries)) {
-    expect(text).toContain(`超級技能：${skillNames[key]}`);
+    expect(text).toContain(`天賦：${talentNames[key]}`);
+    expect(text).toContain(`機率技能：${randomSkillNames[key]}`);
     expect(text).toContain('Lv.1 發動率 25%');
     expect(text).toContain('每升一級 +2%，最高 60%');
   }
@@ -617,7 +663,7 @@ test('visible battle action controls work by tap and stay disabled for attackers
   await expect(page.locator('#relocateUnitBtn')).toBeDisabled();
 });
 
-test('general effects and critical mechanics only appear when the random super skill triggers', async ({ page }) => {
+test('general talents always apply while random super skills only add their stronger bonus', async ({ page }) => {
   await openApp(page);
   const result = await page.evaluate(() => {
     for(let level=1;level<=9;level++) completeCampaignLevel('plants',level);
@@ -659,19 +705,21 @@ test('general effects and critical mechanics only appear when the random super s
     return Object.fromEntries(heroes.map(key => [key,{ordinary:run(key,.99),super:run(key,0)}]));
   });
   for (const [key,pair] of Object.entries(result)) {
-    expect(pair.ordinary.effects, `${key} ordinary`).toBe(0);
     expect(pair.super.effects, `${key} super`).toBeGreaterThan(0);
   }
-  expect(result.firepea.ordinary.projectiles[0].fire).toBeFalsy();
+  expect(result.firepea.ordinary.projectiles[0].fire).toBeTruthy();
   expect(result.firepea.super.projectiles[0].fire).toBeTruthy();
   expect(result.firepea.super.projectiles[0].damage).toBeGreaterThan(result.firepea.ordinary.projectiles[0].damage);
-  expect(result.zhaoyun.ordinary.projectiles[0].slow).toBeFalsy();
+  expect(result.zhaoyun.ordinary.projectiles[0].slow).toBeTruthy();
   expect(result.zhaoyun.super.projectiles[0].slow).toBeTruthy();
-  expect(result.machao.ordinary.damaged).toBe(1);
+  expect(result.zhaoyun.super.projectiles[0].damage).toBeGreaterThan(result.zhaoyun.ordinary.projectiles[0].damage);
+  expect(result.machao.ordinary.damaged).toBe(3);
   expect(result.machao.super.damaged).toBe(3);
-  expect(result.huangzhong.ordinary.projectiles).toHaveLength(1);
+  expect(result.machao.super.totalDamage).toBeGreaterThan(result.machao.ordinary.totalDamage);
+  expect(result.huangzhong.ordinary.projectiles).toHaveLength(3);
   expect(result.huangzhong.super.projectiles).toHaveLength(3);
-  expect(result.zhangfei.ordinary.moved).toBeFalsy();
+  expect(result.huangzhong.super.projectiles[0].damage).toBeGreaterThan(result.huangzhong.ordinary.projectiles[0].damage);
+  expect(result.zhangfei.ordinary.moved).toBeTruthy();
   expect(result.zhangfei.super.moved).toBeTruthy();
   expect(result.zhangfei.super.totalDamage).toBeGreaterThan(result.zhangfei.ordinary.totalDamage);
   expect(result.liubei.ordinary.projectiles).toHaveLength(0);
@@ -686,6 +734,17 @@ test('general effects and critical mechanics only appear when the random super s
   expect(result.liubei.super.elites[0].c).toBeGreaterThan(result.liubei.ordinary.militia[0].c);
   expect(result.liubei.ordinary.militiaLabels).toEqual(['蜀軍鄉勇']);
   expect(result.liubei.super.eliteLabels).toEqual(['白毦禁衛','白毦禁衛','白毦禁衛']);
+});
+
+test('character descriptions separate fixed talents from random skills', async ({ page }) => {
+  await openApp(page);
+  const details=await page.evaluate(()=>Object.fromEntries(['firepea','zhaoyun','zhangfei','huangzhong','machao','liubei'].map(key=>[key,skillDetail(key,effectiveUnit('plants',key),'plants')])));
+  const talents={firepea:'火焰',zhaoyun:'寒冰',zhangfei:'彈開',huangzhong:'上、中、下三列',machao:'穿刺三格',liubei:'召喚將士'};
+  for(const [key,detail] of Object.entries(details)){
+    expect(detail).toContain(`天賦：${talents[key]}`);
+    expect(detail).toContain('機率技能：');
+    expect(detail).not.toContain('未觸發時只使用普通攻擊');
+  }
 });
 
 test('defense campaign waits before zombies, eases from slow opening to steady pressure, and ends with one boss', async ({ page }) => {

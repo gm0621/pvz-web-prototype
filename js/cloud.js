@@ -19,6 +19,7 @@ async function pushCloudProfile(manual=true){try{if(!currentUser){if(manual)acco
 async function pullCloudProfile(manual=true,mode='auto'){try{const client=initSupabaseClient();if(!client||!currentUser){if(manual)accountStatus('請先登入帳號，再載入雲端。',true);return false}const {data,error}=await client.from(CLOUD_TABLE).select('*').eq('user_id',currentUser.id).eq('game',SAVE_GAME_ID).maybeSingle();if(error)throw error;if(!data){if(!await claimCloudDevice(true))return false;return pushCloudProfile(false)}const cloudProfile=normalizeProfile(data.profile||{}),localTs=profileTime(playerProfile),cloudTs=cloudRowTime(data);cloudSaveVersion=Number(data.save_version||0);cloudProfile.syncLock={deviceId:data.active_device_id||cloudProfile.syncLock?.deviceId||'',deviceName:data.active_device_name||cloudProfile.syncLock?.deviceName||'',activeSeenAt:data.active_seen_at||cloudProfile.syncLock?.activeSeenAt||''};const preserveLocal=mode!=='force'&&playerProfile.cloudOwnerUserId===currentUser.id&&localTs>cloudTs+1000;playerProfile=preserveLocal?playerProfile:cloudProfile;saveProfile(true,false,false);const claimed=await claimCloudDevice(false,!preserveLocal);if(claimed&&preserveLocal)await pushCloudProfile(false);else if(!claimed)accountStatus('已載入雲端資料；另一台裝置仍在同步，這台暫時唯讀。',true);else accountStatus(`已從雲端載入：${new Date(cloudTs||Date.now()).toLocaleString('zh-TW',{hour12:false})}`);return true}catch(error){accountStatus('雲端載入失敗：'+cloudErrorMessage(error),true);return false}}
 async function startCloudMatch(level,faction){cloudMatchId=null;if(!currentUser)return;if(!cloudLockOwned&&!await claimCloudDevice(false))return;const {data,error}=await initSupabaseClient().rpc('sgz_start_match',{p_device_id:getDeviceId(),p_level:level,p_faction:faction});if(error)return accountStatus('雲端對戰紀錄建立失敗：'+cloudErrorMessage(error),true);cloudMatchId=data}
 function cloudMatchMinimumMs(faction,level){return (faction==='zombies'?8:30+Math.max(1,Number(level)||1)*6)*1000}
+async function waitForCloudMatchVerification(waitMs){const deadline=Date.now()+waitMs,update=()=>{const seconds=Math.max(1,Math.ceil((deadline-Date.now())/1000));if(!$('modal')?.classList.contains('show')||!state?.over)return;$('modalTitle').textContent='⏳ 戰果確認中';$('modalText').textContent=`快速破關成功，安全檢查倒數 ${seconds} 秒；完成後會自動顯示戰果。`;if($('modalNext'))$('modalNext').textContent=`確認中（${seconds} 秒）…`};update();const countdown=setInterval(update,250);try{await new Promise(resolve=>setTimeout(resolve,waitMs))}finally{clearInterval(countdown)}}
 async function claimCloudMatchReward(win,usedKeys=[]){
   if(!currentUser)return false;
   if(!win){cloudMatchId=null;accountStatus('本場未過關，不發放雲端戰利品。');return true}
@@ -29,7 +30,7 @@ async function claimCloudMatchReward(win,usedKeys=[]){
   if(error&&/MATCH_TOO_SHORT/i.test(error?.message||'')){
     const minimumMs=cloudMatchMinimumMs(state?.faction,state?.level),elapsed=Date.now()-(state?.cloudMatchStartedAt||Date.now()),waitMs=Math.max(250,minimumMs-elapsed+1200);
     accountStatus(`戰果驗證中，約 ${Math.ceil(waitMs/1000)} 秒後自動完成；請留在結算畫面。`);
-    await new Promise(resolve=>setTimeout(resolve,waitMs));
+    await waitForCloudMatchVerification(waitMs);
     ({data,error}=await claim());
   }
   if(error){cloudMatchId=null;accountStatus('戰利品同步失敗：'+cloudErrorMessage(error),true);await pullCloudProfile(false,'force');return false}
