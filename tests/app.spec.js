@@ -425,6 +425,128 @@ test('defense stages last through larger finite zombie armies instead of fixed s
   expect(attack).toEqual({survivesEmptyMoment:true,overAtDeadline:true,title:'進攻失敗'});
 });
 
+test('leaving a battle for level select keeps a paused cache that resumes at the exact state', async ({ page }) => {
+  await openApp(page);
+  await page.evaluate(() => {
+    selectedLevel=1;
+    start('plants');
+    clearInterval(timer);
+    state.time=23450;
+    state.resource=287;
+    addPlant('peashooter',2,2);
+    addZombie('normal',7.2,2);
+    render();
+  });
+
+  await page.locator('#gameFloatBackBtn').click();
+  await expect(page.locator('#levelScreen')).toHaveClass(/active/);
+  await expect(page.locator('#profile')).not.toHaveClass(/active/);
+  const cached=await page.evaluate(()=>JSON.parse(localStorage.getItem(BATTLE_SAVE_KEY)||'null'));
+  expect(cached?.state).toMatchObject({time:23450,resource:287,paused:true,level:1,faction:'plants'});
+  await expect(page.locator('#resumeBattleLevelBtn')).toBeVisible();
+
+  await page.locator('#resumeBattleLevelBtn').click();
+  await expect(page.locator('#game')).toHaveClass(/active/);
+  await expect(page.locator('#pauseOverlay')).toHaveClass(/show/);
+  const resumed=await page.evaluate(()=>({time:state.time,resource:state.resource,plants:state.plants.length,zombies:state.zombies.length,paused:state.paused}));
+  expect(resumed).toEqual({time:23450,resource:287,plants:1,zombies:1,paused:true});
+});
+
+test('battle home button returns to the main menu and offers the cached battle', async ({ page }) => {
+  await openApp(page);
+  await page.evaluate(()=>{
+    selectedLevel=1;
+    start('plants');
+    clearInterval(timer);
+    state.time=14500;
+    state.resource=246;
+  });
+
+  await page.locator('#backBtn').click();
+  await expect(page.locator('#start')).toHaveClass(/active/);
+  await expect(page.locator('#profile')).not.toHaveClass(/active/);
+  await expect(page.locator('#resumeBattleBtn')).toBeVisible();
+  expect(await page.evaluate(()=>JSON.parse(localStorage.getItem(BATTLE_SAVE_KEY)).state.time)).toBe(14500);
+
+  await page.locator('#resumeBattleBtn').click();
+  await expect(page.locator('#game')).toHaveClass(/active/);
+  expect(await page.evaluate(()=>({time:state.time,resource:state.resource,paused:state.paused}))).toEqual({time:14500,resource:246,paused:true});
+});
+
+test('resume card keeps every desktop main-menu action inside the viewport', async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name!=='desktop');
+  await openApp(page);
+  await page.evaluate(()=>{selectedLevel=1;start('plants');clearInterval(timer);state.time=12000;backToHome()});
+  const bounds=await page.evaluate(()=>{
+    const resume=document.querySelector('#resumeBattleCard').getBoundingClientRect();
+    const shop=document.querySelector('#shopBtn').closest('.mode-banner').getBoundingClientRect();
+    return {resumeTop:resume.top,shopBottom:shop.bottom,viewport:innerHeight};
+  });
+  expect(bounds.resumeTop).toBeGreaterThanOrEqual(0);
+  expect(bounds.shopBottom).toBeLessThanOrEqual(bounds.viewport);
+});
+
+test('mobile resume menu uses normal page scrolling without a nested clipped action list', async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name!=='mobile');
+  await openApp(page);
+  await page.evaluate(()=>{selectedLevel=1;start('plants');clearInterval(timer);backToHome()});
+  const layout=await page.evaluate(()=>{
+    const actions=document.querySelector('.main-actions.clean');
+    return {clientHeight:actions.clientHeight,scrollHeight:actions.scrollHeight,documentWidth:document.documentElement.scrollWidth,viewportWidth:innerWidth};
+  });
+  expect(layout.scrollHeight).toBe(layout.clientHeight);
+  expect(layout.documentWidth).toBeLessThanOrEqual(layout.viewportWidth);
+});
+
+test('unfinished battle cache does not expire merely because the player was away for a long time', async ({ page }) => {
+  await openApp(page);
+  await page.evaluate(()=>{
+    selectedLevel=1;
+    start('plants');
+    clearInterval(timer);
+    state.time=32100;
+    state.resource=199;
+    persistBattleState();
+    const snapshot=JSON.parse(localStorage.getItem(BATTLE_SAVE_KEY));
+    snapshot.savedAt=Date.now()-30*24*60*60*1000;
+    localStorage.setItem(BATTLE_SAVE_KEY,JSON.stringify(snapshot));
+    document.querySelector('#game').classList.remove('active');
+  });
+
+  await page.reload();
+  await expect(page.locator('#game')).toHaveClass(/active/);
+  expect(await page.evaluate(()=>({time:state.time,resource:state.resource,paused:state.paused}))).toEqual({time:32100,resource:199,paused:true});
+});
+
+test('invalid battle cache is cleared and never opens a broken resume screen', async ({ page }) => {
+  await openApp(page);
+  const result=await page.evaluate(()=>{
+    localStorage.setItem(BATTLE_SAVE_KEY,JSON.stringify({version:BATTLE_SAVE_VERSION+1,state:{level:1,faction:'plants'}}));
+    const restored=restoreBattleIfAvailable();
+    return {restored,cached:localStorage.getItem(BATTLE_SAVE_KEY),resumeHidden:document.querySelector('#resumeBattleCard').classList.contains('hidden'),homeActive:document.querySelector('#start').classList.contains('active')};
+  });
+  expect(result).toEqual({restored:false,cached:null,resumeHidden:true,homeActive:true});
+});
+
+test('browser back during a battle stays in the app and caches the paused game', async ({ page }) => {
+  await openApp(page);
+  const appUrl=page.url();
+  await page.evaluate(()=>{
+    selectedLevel=1;
+    start('plants');
+    clearInterval(timer);
+    state.time=17800;
+    state.resource=211;
+  });
+
+  await page.goBack();
+  await expect(page).toHaveURL(appUrl);
+  await expect(page.locator('#start')).toHaveClass(/active/);
+  await expect(page.locator('#profile')).not.toHaveClass(/active/);
+  const cached=await page.evaluate(()=>JSON.parse(localStorage.getItem(BATTLE_SAVE_KEY)||'null'));
+  expect(cached?.state).toMatchObject({time:17800,resource:211,paused:true});
+});
+
 test('manual pause and background restore preserve the unfinished battle without advancing time', async ({ page }) => {
   await openApp(page);
   const beforeReload = await page.evaluate(() => {
