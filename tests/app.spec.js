@@ -382,27 +382,44 @@ test('only Zhao Yun and Ma Chao can change to an adjacent lane for 40 grain afte
   expect(result.skillText).toContain('冷卻 8 秒');
 });
 
-test('all stages have longer defense timers and a fair attack deadline instead of instant resource loss', async ({ page }) => {
+test('defense stages last through larger finite zombie armies instead of fixed survival timers', async ({ page }) => {
   await openApp(page);
-  const pacing = await page.evaluate(() => Object.values(LEVELS).map(level => ({winAfter:level.winAfter,bossAt:level.bossAt,attackTimeLimit:level.attackTimeLimit})));
-  expect(pacing.map(level => level.winAfter)).toEqual([60000,70000,80000,90000,100000,110000,120000,130000,140000,150000]);
-  for (const level of pacing) {
-    expect(level.bossAt).toBe(level.winAfter - 10000);
-    expect(level.attackTimeLimit).toBe(level.winAfter + 30000);
-  }
+  const pacing = await page.evaluate(() => Object.values(LEVELS).map(level => ({
+    level:level.level,
+    enemyCount:level.enemyCount,
+    firstZombieDelay:level.firstZombieDelay,
+    minSpawnSpacing:level.minSpawnSpacing,
+    attackTimeLimit:level.attackTimeLimit
+  })));
+  expect(pacing.map(level => level.enemyCount)).toEqual([14,16,18,20,22,25,28,31,34,36]);
+  expect(pacing.every(level => level.firstZombieDelay >= (level.level <= 4 ? 7000 : 9000))).toBeTruthy();
+  expect(pacing.every(level => level.minSpawnSpacing >= 4000)).toBeTruthy();
+
+  const defense = await page.evaluate(() => {
+    selectedLevel=1;
+    start('plants');
+    clearInterval(timer);
+    state.time=999999;
+    state.bossSpawned=false;
+    state.enemiesSpawned=state.levelConfig.enemyCount-1;
+    state.zombies=[];
+    checkEnd();
+    const noTimerWin=!state.over;
+    state.enemiesSpawned=state.levelConfig.enemyCount;
+    state.nextAI=state.time;
+    processLevelEvents();
+    const bossCount=state.zombies.filter(z=>z.boss).length;
+    state.zombies=[];
+    checkEnd();
+    return {noTimerWin,bossCount,wonAfterArmyCleared:state.over,title:document.querySelector('#modalTitle').textContent};
+  });
+  expect(defense).toEqual({noTimerWin:true,bossCount:1,wonAfterArmyCleared:true,title:'防守成功！'});
 
   const attack = await page.evaluate(() => {
-    for (let level=1; level<=10; level++) completeCampaignLevel('plants', level);
-    selectedLevel = 1;
-    start('zombies');
-    clearInterval(timer);
-    state.resource = 0;
-    state.zombies = [];
-    state.time = 9000;
-    checkEnd();
-    const survivesEmptyMoment = !state.over;
-    state.time = state.levelConfig.attackTimeLimit + 1;
-    checkEnd();
+    for(let level=1;level<=10;level++)completeCampaignLevel('plants',level);
+    selectedLevel=1;start('zombies');clearInterval(timer);state.resource=0;state.zombies=[];state.time=9000;checkEnd();
+    const survivesEmptyMoment=!state.over;
+    state.time=state.levelConfig.attackTimeLimit+1;checkEnd();
     return {survivesEmptyMoment,overAtDeadline:state.over,title:document.querySelector('#modalTitle').textContent};
   });
   expect(attack).toEqual({survivesEmptyMoment:true,overAtDeadline:true,title:'進攻失敗'});
@@ -494,13 +511,17 @@ test('general effects and critical mechanics only appear when the random super s
       Math.random = () => roll;
       actPlants();
       Math.random = savedRandom;
+      render();
       return {
         effects: document.querySelectorAll(effectSelector).length,
         projectiles: state.projectiles.map(p => ({damage:p.damage,fire:!!p.fire,slow:!!p.slow,r:p.r})),
         damaged: state.zombies.filter((z,i) => z.hp < beforeHp[i]).length,
         totalDamage: state.zombies.reduce((sum,z,i) => sum + beforeHp[i] - z.hp, 0),
         moved: state.zombies.some((z,i) => z.c > beforeC[i]),
-        soldiers: state.plants.filter(p => p.type === 'swordSoldier').length
+        militia: state.plants.filter(p => p.type === 'swordSoldier').map(p=>({hp:p.maxHp,damage:PLANT_TYPES[p.type].damage,elite:!!p.elite,c:p.c})),
+        elites: state.plants.filter(p => p.type === 'whiteFeatherGuard').map(p=>({hp:p.maxHp,damage:PLANT_TYPES[p.type].damage,elite:!!p.elite,c:p.c})),
+        militiaLabels:[...document.querySelectorAll('.entity.type-swordSoldier .label')].map(x=>x.textContent),
+        eliteLabels:[...document.querySelectorAll('.entity.type-whiteFeatherGuard .label')].map(x=>x.textContent)
       };
     };
     const heroes = ['firepea','zhaoyun','machao','huangzhong','zhangfei','liubei'];
@@ -522,98 +543,68 @@ test('general effects and critical mechanics only appear when the random super s
   expect(result.zhangfei.ordinary.moved).toBeFalsy();
   expect(result.zhangfei.super.moved).toBeTruthy();
   expect(result.zhangfei.super.totalDamage).toBeGreaterThan(result.zhangfei.ordinary.totalDamage);
-  expect(result.liubei.ordinary.soldiers).toBe(0);
-  expect(result.liubei.ordinary.projectiles).toHaveLength(1);
-  expect(result.liubei.super.soldiers).toBe(3);
+  expect(result.liubei.ordinary.projectiles).toHaveLength(0);
+  expect(result.liubei.ordinary.militia).toHaveLength(1);
+  expect(result.liubei.ordinary.elites).toHaveLength(0);
+  expect(result.liubei.super.projectiles).toHaveLength(0);
+  expect(result.liubei.super.militia).toHaveLength(0);
+  expect(result.liubei.super.elites).toHaveLength(3);
+  expect(result.liubei.super.elites[0].hp).toBeGreaterThan(result.liubei.ordinary.militia[0].hp);
+  expect(result.liubei.super.elites[0].damage).toBeGreaterThan(result.liubei.ordinary.militia[0].damage);
+  expect(result.liubei.super.elites.every(s=>s.elite)).toBeTruthy();
+  expect(result.liubei.super.elites[0].c).toBeGreaterThan(result.liubei.ordinary.militia[0].c);
+  expect(result.liubei.ordinary.militiaLabels).toEqual(['蜀軍鄉勇']);
+  expect(result.liubei.super.eliteLabels).toEqual(['白毦禁衛','白毦禁衛','白毦禁衛']);
 });
 
-test('defense campaign waits before zombies, accelerates over time, and ends with a boss', async ({ page }) => {
+test('defense campaign waits before zombies, eases from slow opening to steady pressure, and ends with one boss', async ({ page }) => {
   await openApp(page);
   const campaign = await page.evaluate(() => Object.values(LEVELS).map(level => ({
-    level: level.level,
-    difficultyRank: level.difficultyRank,
-    firstZombieDelay: level.firstZombieDelay,
-    openingSpacing: level.openingSpacing,
-    winAfter: level.winAfter,
-    bossAt: level.bossAt,
-    bossType: level.bossType
+    level:level.level,difficultyRank:level.difficultyRank,firstZombieDelay:level.firstZombieDelay,
+    openingSpacing:level.openingSpacing,minSpawnSpacing:level.minSpawnSpacing,enemyCount:level.enemyCount,bossType:level.bossType
   })));
-  expect(campaign.map(level => level.difficultyRank)).toEqual([1,2,3,4,5,6,7,8,9,10]);
-  expect(campaign.map(level => level.winAfter)).toEqual([60000,70000,80000,90000,100000,110000,120000,130000,140000,150000]);
-  expect(campaign.every(level => level.firstZombieDelay === (level.level <= 4 ? 5000 : 7000))).toBeTruthy();
-  expect(campaign.every(level => level.openingSpacing >= 2800 && level.bossAt < level.winAfter && level.bossType)).toBeTruthy();
-  expect(campaign[8].openingSpacing).toBeGreaterThanOrEqual(4500);
-  expect(campaign[9].openingSpacing).toBeGreaterThanOrEqual(4500);
+  expect(campaign.map(level=>level.difficultyRank)).toEqual([1,2,3,4,5,6,7,8,9,10]);
+  expect(campaign.map(level=>level.enemyCount)).toEqual([14,16,18,20,22,25,28,31,34,36]);
+  expect(campaign.every(level=>level.firstZombieDelay>=7000&&level.openingSpacing>=6300&&level.minSpawnSpacing>=4000&&level.bossType)).toBeTruthy();
 
-  const runtime = await page.evaluate(() => {
-    for(let level=1;level<=9;level++) completeCampaignLevel('plants',level);
-    selectedLevel = 10;
-    start('plants');
-    clearInterval(timer);
-    const noImmediateZombie = state.zombies.length === 0;
-    state.time = LEVELS[10].firstZombieDelay - 1;
-    processLevelEvents();
-    const stillWaiting = state.zombies.length === 0;
-    state.time = LEVELS[10].firstZombieDelay;
-    processLevelEvents();
-    const firstWaveCount = state.zombies.length;
-    const savedRandom = Math.random;
-    Math.random = () => 0.5;
-    state.time = 12000;
-    const earlyPace = aiPace('zombies');
-    state.time = 42000;
-    const midPace = aiPace('zombies');
-    state.time = LEVELS[10].bossAt - 1000;
-    const latePace = aiPace('zombies');
-    Math.random = savedRandom;
-    state.time = LEVELS[10].bossAt;
-    processLevelEvents();
-    const bosses = state.zombies.filter(z => z.boss);
-    processLevelEvents();
-    return {
-      noImmediateZombie,
-      stillWaiting,
-      firstWaveCount,
-      earlyPace,
-      midPace,
-      latePace,
-      bossCount: state.zombies.filter(z => z.boss).length,
-      bossHp: bosses[0]?.maxHp || 0,
-      baseHp: bosses[0] ? ZOMBIE_TYPES[bosses[0].type].hp : 0
-    };
+  const runtime=await page.evaluate(()=>{
+    for(let level=1;level<=9;level++)completeCampaignLevel('plants',level);
+    selectedLevel=10;start('plants');clearInterval(timer);
+    const noImmediateZombie=state.zombies.length===0;
+    state.time=LEVELS[10].firstZombieDelay-1;processLevelEvents();
+    const stillWaiting=state.zombies.length===0;
+    state.time=LEVELS[10].firstZombieDelay;processLevelEvents();
+    const firstWaveCount=state.zombies.length;
+    const savedRandom=Math.random;Math.random=()=>0.5;
+    state.enemiesSpawned=1;const earlyPace=aiPace('zombies');
+    state.enemiesSpawned=Math.floor(LEVELS[10].enemyCount/2);const midPace=aiPace('zombies');
+    state.enemiesSpawned=LEVELS[10].enemyCount-1;const latePace=aiPace('zombies');
+    Math.random=savedRandom;
+    state.enemiesSpawned=LEVELS[10].enemyCount;state.openingQueue=[];state.nextAI=state.time;processLevelEvents();
+    const bosses=state.zombies.filter(z=>z.boss);processLevelEvents();
+    return {noImmediateZombie,stillWaiting,firstWaveCount,earlyPace,midPace,latePace,bossCount:state.zombies.filter(z=>z.boss).length,bossHp:bosses[0]?.maxHp||0,baseHp:bosses[0]?ZOMBIE_TYPES[bosses[0].type].hp:0};
   });
   expect(runtime.noImmediateZombie).toBeTruthy();
   expect(runtime.stillWaiting).toBeTruthy();
   expect(runtime.firstWaveCount).toBe(1);
   expect(runtime.earlyPace).toBeGreaterThan(runtime.midPace);
   expect(runtime.midPace).toBeGreaterThan(runtime.latePace);
-  expect(runtime.earlyPace).toBeGreaterThanOrEqual(6500);
+  expect(runtime.latePace).toBeGreaterThanOrEqual(4000);
   expect(runtime.bossCount).toBe(1);
   expect(runtime.bossHp).toBeGreaterThan(runtime.baseHp);
 
-  const bossesByLevel = await page.evaluate(() => {
-    for(let level=1;level<=10;level++) completeCampaignLevel('plants',level);
-    return Object.values(LEVELS).map(level => {
-    selectedLevel = level.level;
-    start('plants');
-    clearInterval(timer);
-    state.time = level.bossAt;
-    processLevelEvents();
-    processLevelEvents();
-    const boss = state.zombies.find(z => z.boss);
-    return {
-      level: level.level,
-      count: state.zombies.filter(z => z.boss).length,
-      type: boss?.type,
-      row: boss?.r,
-      hp: boss?.maxHp || 0,
-      baseHp: boss ? ZOMBIE_TYPES[boss.type].hp : 0
-    };
+  const bossesByLevel=await page.evaluate(()=>{
+    for(let level=1;level<=10;level++)completeCampaignLevel('plants',level);
+    return Object.values(LEVELS).map(level=>{
+      selectedLevel=level.level;start('plants');clearInterval(timer);
+      state.enemiesSpawned=level.enemyCount;state.openingQueue=[];state.time=10000;state.nextAI=state.time;
+      processLevelEvents();processLevelEvents();const boss=state.zombies.find(z=>z.boss);
+      return {level:level.level,count:state.zombies.filter(z=>z.boss).length,type:boss?.type,row:boss?.r,hp:boss?.maxHp||0,baseHp:boss?ZOMBIE_TYPES[boss.type].hp:0};
     });
   });
-  expect(bossesByLevel.every(boss => boss.count === 1 && boss.type)).toBeTruthy();
-  expect(bossesByLevel.every(boss => boss.row >= 1 && boss.row <= 3)).toBeTruthy();
-  expect(bossesByLevel.every(boss => boss.hp > boss.baseHp)).toBeTruthy();
+  expect(bossesByLevel.every(boss=>boss.count===1&&boss.type)).toBeTruthy();
+  expect(bossesByLevel.every(boss=>boss.row>=1&&boss.row<=3)).toBeTruthy();
+  expect(bossesByLevel.every(boss=>boss.hp>boss.baseHp)).toBeTruthy();
 });
 
 test('linear campaign migration protects faction progress and locks server matches', async () => {
