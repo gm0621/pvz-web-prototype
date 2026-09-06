@@ -17,7 +17,7 @@ const mockSupabase = `
   const row = device => ({profile, save_version: version, active_device_id: device || localStorage.getItem('sgZombieDeviceId'), active_device_name: 'Chrome 電腦', active_seen_at: new Date().toISOString(), updated_at: oldCloud ? '2025-01-01T00:00:00.000Z' : new Date().toISOString()});
   const client = {
     auth: {
-      getSession: async () => ({data: {session: null}}),
+      getSession: async () => ({data: {session: new URL(location.href).searchParams.has('existingSession') ? {user: {id: 'user-1', email: 'player@example.com'}} : null}}),
       onAuthStateChange: cb => { authListener = cb; return {data: {subscription: {unsubscribe(){}}}}; },
       signInWithPassword: async ({email}) => ({data: {user: {id: 'user-1', email}}, error: null}),
       signInWithOAuth: async args => { window.__supabaseCalls.push(['oauth', args]); return {data: {}, error: null}; },
@@ -62,6 +62,15 @@ async function login(page) {
   await page.locator('#accountSubmitBtn').click();
   await expect(page.locator('#start')).toHaveClass(/active/);
 }
+
+test('restoring an existing login session keeps the player on the main menu', async ({ page }) => {
+  await page.route('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2', route => route.fulfill({contentType: 'application/javascript', body: mockSupabase}));
+  await page.goto('/?existingSession=1&cloudrow=1');
+  await page.waitForFunction(() => window.__supabaseCalls.some(([name]) => name === 'sgz_claim_device'));
+  await expect(page.locator('#start')).toHaveClass(/active/);
+  await expect(page.locator('#profile')).not.toHaveClass(/active/);
+  await expect.poll(() => page.evaluate(() => playerProfile.name)).toBe('雲端舊存檔');
+});
 
 test('campaign progression unlocks defense 1-10 before attack 1-10 and then marks all clear', async ({ page }) => {
   await openApp(page);
