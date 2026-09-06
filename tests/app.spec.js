@@ -265,6 +265,167 @@ test('named generals gain random super-skill chance with level while strategists
   expect(result.ui.stats).toContain('25%（下級 27%）');
 });
 
+test('character guide cards explain every random super skill before opening details', async ({ page }) => {
+  await openApp(page);
+  const summaries = await page.evaluate(() => {
+    playerProfile = normalizeProfile({});
+    buildCharacterGrid('plants');
+    return Object.fromEntries(['firepea','huangzhong','zhaoyun','machao','zhangfei','liubei'].map(key => [key, document.querySelector(`#characterGrid .type-${key}`).textContent]));
+  });
+  const skillNames = {firepea:'青龍火斬',huangzhong:'百箭三排',zhaoyun:'寒冰緩速',machao:'三格穿刺',zhangfei:'近戰反推',liubei:'仁德召兵'};
+  for (const [key, text] of Object.entries(summaries)) {
+    expect(text).toContain(`超級技能：${skillNames[key]}`);
+    expect(text).toContain('Lv.1 發動率 25%');
+    expect(text).toContain('每升一級 +2%，最高 60%');
+  }
+});
+
+test('defender removal mode frees an occupied cell without refunding grain', async ({ page }) => {
+  await openApp(page);
+  const result = await page.evaluate(() => {
+    selectedLevel = 1;
+    start('plants');
+    clearInterval(timer);
+    state.resource = 200;
+    addPlant('peashooter', 2, 2);
+    setBattleActionMode('remove');
+    place(2, 2);
+    return {
+      remaining: state.plants.length,
+      resource: state.resource,
+      mode: state.actionMode,
+      buttonText: document.querySelector('#removeUnitBtn').textContent
+    };
+  });
+  expect(result).toEqual({remaining:0,resource:200,mode:null,buttonText:'🪏 移除武將'});
+});
+
+test('only Zhao Yun and Ma Chao can change to an adjacent lane for 40 grain after cooldown', async ({ page }) => {
+  await openApp(page);
+  const result = await page.evaluate(() => {
+    for (let level=1; level<4; level++) completeCampaignLevel('plants', level);
+    selectedLevel = 4;
+    start('plants');
+    clearInterval(timer);
+    state.plants = [];
+    state.resource = 100;
+    state.time = 0;
+    addPlant('zhaoyun', 2, 2);
+    state.time = 8000;
+    setBattleActionMode('relocate');
+    place(2, 2);
+    place(1, 2);
+    const moved = {...state.plants[0], resource:state.resource};
+
+    state.time = 12000;
+    setBattleActionMode('relocate');
+    place(1, 2);
+    place(0, 2);
+    const cooling = {...state.plants[0], resource:state.resource};
+
+    addPlant('wallnut', 4, 4);
+    state.time = 30000;
+    setBattleActionMode('relocate');
+    place(4, 4);
+    const wallnutSelected = state.movingPlantId;
+    showCharacterDetail('plants','zhaoyun');
+    return {moved,cooling,wallnutSelected,skillText:document.querySelector('#charModalSkill').textContent};
+  });
+  expect([result.moved.r,result.moved.c,result.moved.resource]).toEqual([1,2,60]);
+  expect([result.cooling.r,result.cooling.c,result.cooling.resource]).toEqual([1,2,60]);
+  expect(result.wallnutSelected).toBeNull();
+  expect(result.skillText).toContain('可調動到同欄相鄰一路');
+  expect(result.skillText).toContain('消耗 40 軍糧');
+  expect(result.skillText).toContain('冷卻 8 秒');
+});
+
+test('all stages have longer defense timers and a fair attack deadline instead of instant resource loss', async ({ page }) => {
+  await openApp(page);
+  const pacing = await page.evaluate(() => Object.values(LEVELS).map(level => ({winAfter:level.winAfter,bossAt:level.bossAt,attackTimeLimit:level.attackTimeLimit})));
+  expect(pacing.map(level => level.winAfter)).toEqual([60000,70000,80000,90000,100000,110000,120000,130000,140000,150000]);
+  for (const level of pacing) {
+    expect(level.bossAt).toBe(level.winAfter - 10000);
+    expect(level.attackTimeLimit).toBe(level.winAfter + 30000);
+  }
+
+  const attack = await page.evaluate(() => {
+    for (let level=1; level<=10; level++) completeCampaignLevel('plants', level);
+    selectedLevel = 1;
+    start('zombies');
+    clearInterval(timer);
+    state.resource = 0;
+    state.zombies = [];
+    state.time = 9000;
+    checkEnd();
+    const survivesEmptyMoment = !state.over;
+    state.time = state.levelConfig.attackTimeLimit + 1;
+    checkEnd();
+    return {survivesEmptyMoment,overAtDeadline:state.over,title:document.querySelector('#modalTitle').textContent};
+  });
+  expect(attack).toEqual({survivesEmptyMoment:true,overAtDeadline:true,title:'進攻失敗'});
+});
+
+test('manual pause and background restore preserve the unfinished battle without advancing time', async ({ page }) => {
+  await openApp(page);
+  const beforeReload = await page.evaluate(() => {
+    selectedLevel = 1;
+    start('plants');
+    clearInterval(timer);
+    state.time = 12350;
+    state.resource = 333;
+    addPlant('peashooter', 2, 2);
+    addZombie('normal', 7.5, 2);
+    togglePause();
+    const manualSaved = JSON.parse(localStorage.getItem(BATTLE_SAVE_KEY));
+    togglePause();
+    pauseAndSaveBattle('background');
+    tick();
+    return {manualSavedTime:manualSaved.state.time,paused:state.paused,timeAfterTick:state.time};
+  });
+  expect(beforeReload).toEqual({manualSavedTime:12350,paused:true,timeAfterTick:12350});
+
+  await page.reload();
+  await expect(page.locator('#game')).toHaveClass(/active/);
+  await expect(page.locator('#pauseOverlay')).toHaveClass(/show/);
+  const restored = await page.evaluate(() => {
+    clearInterval(timer);
+    const value = {level:state.level,time:state.time,resource:state.resource,plants:state.plants.length,zombies:state.zombies.length,paused:state.paused,pauseLabel:document.querySelector('#pauseBtn').textContent};
+    tick();
+    value.timeAfterPausedTick = state.time;
+    togglePause();
+    value.pausedAfterContinue = state.paused;
+    return value;
+  });
+  expect(restored).toEqual({level:1,time:12350,resource:333,plants:1,zombies:1,paused:true,pauseLabel:'繼續',timeAfterPausedTick:12350,pausedAfterContinue:false});
+});
+
+test('visible battle action controls work by tap and stay disabled for attackers', async ({ page }) => {
+  await openApp(page);
+  await page.evaluate(() => {
+    selectedLevel = 1;
+    start('plants');
+    clearInterval(timer);
+    state.resource = 200;
+    addPlant('peashooter', 2, 2);
+    render();
+  });
+  await expect(page.locator('#removeUnitBtn')).toBeEnabled();
+  await page.locator('#removeUnitBtn').click();
+  await expect(page.locator('#removeUnitBtn')).toHaveClass(/active/);
+  await page.locator('.cell[data-r="2"][data-c="2"]').click();
+  expect(await page.evaluate(() => state.plants.length)).toBe(0);
+  expect(await page.evaluate(() => state.resource)).toBe(200);
+
+  await page.evaluate(() => {
+    for (let level=1;level<=10;level++) completeCampaignLevel('plants',level);
+    selectedLevel=1;
+    start('zombies');
+    clearInterval(timer);
+  });
+  await expect(page.locator('#removeUnitBtn')).toBeDisabled();
+  await expect(page.locator('#relocateUnitBtn')).toBeDisabled();
+});
+
 test('general effects and critical mechanics only appear when the random super skill triggers', async ({ page }) => {
   await openApp(page);
   const result = await page.evaluate(() => {
@@ -335,7 +496,7 @@ test('defense campaign waits before zombies, accelerates over time, and ends wit
     bossType: level.bossType
   })));
   expect(campaign.map(level => level.difficultyRank)).toEqual([1,2,3,4,5,6,7,8,9,10]);
-  expect(campaign.map(level => level.winAfter)).toEqual([35000,40000,45000,50000,55000,60000,65000,70000,75000,80000]);
+  expect(campaign.map(level => level.winAfter)).toEqual([60000,70000,80000,90000,100000,110000,120000,130000,140000,150000]);
   expect(campaign.every(level => level.firstZombieDelay === (level.level <= 4 ? 5000 : 7000))).toBeTruthy();
   expect(campaign.every(level => level.openingSpacing >= 2800 && level.bossAt < level.winAfter && level.bossType)).toBeTruthy();
   expect(campaign[8].openingSpacing).toBeGreaterThanOrEqual(4500);
