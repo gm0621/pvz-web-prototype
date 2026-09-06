@@ -226,6 +226,81 @@ test('home can enter level selection and shop', async ({ page }) => {
   await expect(page.locator('#shopGrid .shop-item')).toHaveCount(16);
 });
 
+test('shop offers a larger cosmetic catalog with frame ornament and battlefield filters', async ({ page }) => {
+  await openApp(page);
+  await page.locator('#shopBtn').click();
+  await page.locator('[data-shop-type=skin]').click();
+  await expect(page.locator('#shopSubtabs button')).toHaveCount(4);
+  await expect(page.locator('#shopGrid .shop-item')).toHaveCount(20);
+  await expect(page.locator('#shopGrid')).toContainText('關羽青龍冠');
+  await expect(page.locator('#shopGrid')).toContainText('桃園花瓣');
+  await expect(page.locator('#shopGrid')).toContainText('血月骨框');
+  await page.locator('[data-cosmetic-slot=ornament]').click();
+  await expect(page.locator('#shopGrid .shop-item')).toHaveCount(6);
+  await page.locator('[data-cosmetic-slot=battlefield]').click();
+  await expect(page.locator('#shopGrid .shop-item')).toHaveCount(6);
+  await page.locator('[data-cosmetic-slot=frame]').click();
+  await expect(page.locator('#shopGrid .shop-item')).toHaveCount(8);
+});
+
+test('cosmetic slots stack independently and replacing a frame keeps other effects', async ({ page }) => {
+  await openApp(page);
+  await page.evaluate(() => {
+    playerProfile.gold=3000;
+    saveProfile();
+    showShop('skin');
+  });
+  for (const [key,name] of [['jadeSealFrame','玉璽金框'],['guanyuDragonCrown','關羽青龍冠'],['peachPetals','桃園花瓣']]) {
+    await page.locator(`button[onclick="buyShopItem('${key}')"]`).click();
+    await expect(page.locator('#shopStatus')).toContainText(`已購買 ${name}`);
+    await page.locator(`button[onclick="activateSkin('${key}')"]`).click();
+    await expect(page.locator('#shopStatus')).toContainText(`已套用 ${name}`);
+  }
+  let active=await page.evaluate(() => playerProfile.inventory.activeCosmetics.plants);
+  expect(active).toEqual({frame:'skin-jade-frame',ornament:'ornament-guanyu-crown',battlefield:'battlefield-peach-petals'});
+  await expect(page.locator('body')).toHaveClass(/skin-jade-frame/);
+  await expect(page.locator('body')).toHaveClass(/ornament-guanyu-crown/);
+  await expect(page.locator('body')).toHaveClass(/battlefield-peach-petals/);
+  const visuals=await page.evaluate(() => {
+    const card=document.createElement('button');
+    card.className='card';
+    card.dataset.key='firepea';
+    document.body.appendChild(card);
+    const result={frame:getComputedStyle(card).borderColor,ornament:getComputedStyle(card,'::after').content,battlefield:getComputedStyle(document.querySelector('#board'),'::after').content};
+    card.remove();
+    return result;
+  });
+  expect(visuals.frame).toBe('rgb(110, 231, 183)');
+  expect(visuals.ornament).toContain('🐉');
+  expect(visuals.battlefield).toContain('🌸');
+
+  await page.locator(`button[onclick="buyShopItem('peachBloomFrame')"]`).click();
+  await page.locator(`button[onclick="activateSkin('peachBloomFrame')"]`).click();
+  active=await page.evaluate(() => playerProfile.inventory.activeCosmetics.plants);
+  expect(active).toEqual({frame:'skin-peach-frame',ornament:'ornament-guanyu-crown',battlefield:'battlefield-peach-petals'});
+  await expect(page.locator('body')).not.toHaveClass(/skin-jade-frame/);
+  await expect(page.locator('body')).toHaveClass(/skin-peach-frame/);
+  await expect(page.locator('body')).toHaveClass(/ornament-guanyu-crown/);
+  await expect(page.locator('body')).toHaveClass(/battlefield-peach-petals/);
+});
+
+test('legacy active skin save migrates into the new frame slot', async ({ page }) => {
+  await openApp(page);
+  const result=await page.evaluate(() => normalizeProfile({inventory:{equipment:{},skills:{},skins:{redFrame:1},equipped:{plants:{},zombies:{}},activeSkins:{plants:'skin-red'}}}).inventory);
+  expect(result.activeSkins.plants).toBe('skin-red');
+  expect(result.activeCosmetics.plants.frame).toBe('skin-red');
+  expect(result.activeCosmetics.plants.ornament).toBeUndefined();
+});
+
+test('shop cosmetic migration registers every new item and persists independent slots', async () => {
+  const migration=path.join(__dirname,'..','supabase','migrations','202609060003_shop_cosmetics.sql');
+  expect(fs.existsSync(migration)).toBe(true);
+  const sql=fs.readFileSync(migration,'utf8');
+  for (const key of ['jadeSealFrame','peachBloomFrame','moonSilverFrame','bloodMoonBoneFrame','guanyuDragonCrown','zhaoyunIcePlume','zhangfeiTigerGuard','liubeiJadePendant','jesterGhostBell','titanCorpseCrown','peachPetals','redCliffEmbers','hanGoldenRain','ghostFireField','bloodMoonAsh','frostNightField']) expect(sql).toContain(`'${key}'`);
+  expect(sql).toContain('cosmetic_slot');
+  expect(sql).toContain("array['activeCosmetics',v_item.side,v_slot]");
+});
+
 test('account screen exposes recovery and security controls', async ({ page }) => {
   await openApp(page);
   await page.locator('#accountCornerBtn').click();
