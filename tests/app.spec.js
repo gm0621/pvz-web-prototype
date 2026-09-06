@@ -91,6 +91,49 @@ test('campaign progression unlocks defense 1-10 before attack 1-10 and then mark
   expect(result.final).toEqual({plants:10,zombies:10,attackUnlocked:true,allComplete:true});
 });
 
+test('cloud retry timing matches the server for attack and defense', async ({ page }) => {
+  await openApp(page);
+  const timings=await page.evaluate(()=>({attack:cloudMatchMinimumMs('zombies',3),defense:cloudMatchMinimumMs('plants',3)}));
+  expect(timings).toEqual({attack:8000,defense:48000});
+});
+
+test('a short server-verified attack win retries without relocking level four', async ({ page }) => {
+  await openApp(page);
+  const result = await page.evaluate(async () => {
+    playerProfile = normalizeProfile({});
+    for(let level=1;level<=10;level++) completeCampaignLevel('plants',level);
+    completeCampaignLevel('zombies',1);
+    completeCampaignLevel('zombies',2);
+    selectedLevel=3;
+    start('zombies');
+    clearInterval(timer);
+    state.cloudMatchStartedAt=Date.now()-60000;
+    currentUser={id:'user-1',email:'player@example.com'};
+    cloudLockOwned=true;
+    cloudMatchId='00000000-0000-4000-8000-000000000003';
+    cloudSaveVersion=3;
+    const beforeClaim=structuredClone(playerProfile);
+    const serverAfterClaim=structuredClone(playerProfile);
+    serverAfterClaim.campaignProgress.zombies.completedLevels[3]=1;
+    serverAfterClaim.campaignProgress.zombies.highestLevel=3;
+    let attempts=0,pulls=0;
+    supabaseClient={rpc:async name=>{
+      if(name==='sgz_claim_level_reward'){
+        attempts++;
+        if(attempts===1)return {data:null,error:{message:'MATCH_TOO_SHORT'}};
+        return {data:{profile:serverAfterClaim,save_version:4,active_device_id:getDeviceId(),active_device_name:'Chrome',active_seen_at:new Date().toISOString(),updated_at:new Date().toISOString()},error:null};
+      }
+      return {data:'00000000-0000-4000-8000-000000000004',error:null};
+    }};
+    pullCloudProfile=async()=>{pulls++;playerProfile=normalizeProfile(beforeClaim);return true};
+    await end(true,'進攻成功','第三關完成');
+    goNextLevel();
+    clearInterval(timer);
+    return {attempts,pulls,level:state.level,faction:state.faction,attackHighest:campaignStatus().zombies,level4Unlocked:isCampaignLevelUnlocked('zombies',4)};
+  });
+  expect(result).toEqual({attempts:2,pulls:0,level:4,faction:'zombies',attackHighest:3,level4Unlocked:true});
+});
+
 test('campaign UI disables locked faction and labels completed current and locked levels', async ({ page }) => {
   await openApp(page);
   const initial = await page.evaluate(() => {
@@ -578,6 +621,13 @@ test('linear campaign migration protects faction progress and locks server match
   for (const marker of ["- 'campaignProgress'", "profile->'campaignProgress'", "p_faction='zombies'", "raise exception 'FACTION_LOCKED'", "raise exception 'LEVEL_LOCKED'", "array[p_faction,'completedLevels']", "array[v_match.faction]"]) expect(sql).toContain(marker);
   expect(sql).toContain("where not (profile ? 'campaignProgress')");
   expect(sql).toMatch(/for v_i in 1\.\.10 loop/g);
+});
+
+test('server accepts legitimate attack wins after eight seconds while preserving defense timing checks', async () => {
+  const migrationsDir=path.join(__dirname,'..','supabase','migrations');
+  const sql=fs.readdirSync(migrationsDir).sort().map(name=>fs.readFileSync(path.join(migrationsDir,name),'utf8')).join('\n');
+  expect(sql).toMatch(/v_minimum_seconds\s*:=\s*case\s+when\s+v_match\.faction\s*=\s*'zombies'\s+then\s+8\s+else\s+30\s*\+\s*v_match\.level_no\s*\*\s*6\s+end/i);
+  expect(sql).toMatch(/now\(\)\s*-\s*v_match\.started_at\s*<\s*make_interval\(secs\s*=>\s*v_minimum_seconds\)/i);
 });
 
 test('migration defines atomic lock and authoritative economy RPCs', async () => {
