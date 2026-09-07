@@ -292,6 +292,18 @@ test('legacy active skin save migrates into the new frame slot', async ({ page }
   expect(result.activeCosmetics.plants.ornament).toBeUndefined();
 });
 
+test('Qin emperor profile migration safely seeds existing cloud players', async () => {
+  const migration=path.join(__dirname,'..','supabase','migrations','202609070001_qin_emperor_profile.sql');
+  expect(fs.existsSync(migration)).toBe(true);
+  const sql=fs.readFileSync(migration,'utf8');
+  expect(sql).toContain("'qinEmperor'");
+  expect(sql).toContain("'{characterLevels}'");
+  expect(sql).toContain("'{characterLevels,zombies}'");
+  expect(sql).toContain("coalesce(wz.normalized_profile #> '{characterLevels,zombies,qinEmperor}'");
+  expect(sql).toContain('save_version=save_version+1');
+  expect(sql).toContain('updated_at=now()');
+});
+
 test('shop cosmetic migration registers every new item and persists independent slots', async () => {
   const migration=path.join(__dirname,'..','supabase','migrations','202609060003_shop_cosmetics.sql');
   expect(fs.existsSync(migration)).toBe(true);
@@ -407,6 +419,113 @@ test('production files are split and loaded', async ({ page }) => {
   const assets = await page.evaluate(() => ({style:[...document.styleSheets].some(s=>s.href?.includes('/css/app.css')),scripts:[...document.scripts].map(s=>s.src).filter(Boolean)}));
   expect(assets.style).toBeTruthy();
   for (const file of ['data.js','cloud.js','account.js','shop.js','app.js']) expect(assets.scripts.some(s => s.includes('/js/' + file))).toBeTruthy();
+});
+
+test('accepted Guan Yu and mirrored Qin artwork drive every runtime surface', async ({ page }) => {
+  const scriptPath=path.join(__dirname,'..','scripts','prepare_accepted_character_assets.py');
+  const guanSource=path.join(__dirname,'..','assets','characters','source-originals','guanyu-accepted-20260907.png');
+  const qinSource=path.join(__dirname,'..','assets','characters','source-originals','qin-emperor-accepted-20260907.png');
+  for(const file of [scriptPath,guanSource,qinSource]) expect(fs.existsSync(file)).toBe(true);
+  const script=fs.readFileSync(scriptPath,'utf8');
+  expect(script).toContain('ImageOps.mirror(qin_source)');
+  await openApp(page);
+  const result=await page.evaluate(() => {
+    showCharacters('plants');
+    showCharacterDetail('plants','firepea');
+    const avatar=AVATAR_CHOICES.find(item=>item[0]==='guanyu');
+    return {
+      guanAsset:PLANT_TYPES.firepea.asset,
+      avatarAsset:avatar?.[2],
+      guideAsset:new URL(document.querySelector('#charModalImg').src).pathname,
+      warmup:collectWarmupAssets(),
+      qinAsset:ZOMBIE_TYPES.qinEmperor.asset
+    };
+  });
+  expect(result.guanAsset).toBe('assets/characters/guanyu-fire-general.webp');
+  expect(result.avatarAsset).toBe(result.guanAsset);
+  expect(result.guideAsset).toContain('/assets/characters/guanyu-fire-general.webp');
+  expect(result.warmup).toContain(result.guanAsset);
+  expect(result.qinAsset).toBe('assets/characters/zombie-army/undead-qin-emperor.webp');
+});
+
+test('undead Qin emperor unlocks late with an independent summon identity', async ({ page }) => {
+  await openApp(page);
+  const result=await page.evaluate(() => {
+    playerProfile=normalizeProfile({});
+    buildCharacterGrid('zombies');
+    const card=document.querySelector('#characterGrid .type-qinEmperor');
+    return {
+      order:UNIT_ORDER.zombies,
+      level8:isUnlocked('zombies','qinEmperor',8),
+      level9:isUnlocked('zombies','qinEmperor',9),
+      definition:ZOMBIE_TYPES.qinEmperor,
+      footballAsset:ZOMBIE_TYPES.football.asset,
+      summonAssets:[ZOMBIE_TYPES.terracottaSoldier.asset,ZOMBIE_TYPES.blackArmorGuard.asset],
+      level9Weight:LEVELS[9].zombieWeights.includes('qinEmperor'),
+      level10Weight:LEVELS[10].zombieWeights.includes('qinEmperor'),
+      guideText:card?.textContent||''
+    };
+  });
+  expect(result.order.at(-1)).toBe('qinEmperor');
+  expect(result.level8).toBe(false);
+  expect(result.level9).toBe(true);
+  expect(result.definition.name).toBe('始皇屍帝・嬴政');
+  expect(result.definition.asset).toBe('assets/characters/zombie-army/undead-qin-emperor.webp');
+  expect(result.definition.summon).toBe(true);
+  expect(result.level9Weight).toBe(true);
+  expect(result.level10Weight).toBe(true);
+  expect(result.guideText).toContain('天賦：兵馬俑召令');
+  expect(result.guideText).toContain('機率技能：大秦軍陣');
+  expect(result.definition.asset).not.toBe(result.footballAsset);
+  expect(fs.existsSync(path.join(__dirname,'..',result.definition.asset))).toBe(true);
+  expect(new Set(result.summonAssets).size).toBe(2);
+  for(const asset of result.summonAssets) expect(fs.existsSync(path.join(__dirname,'..',asset))).toBe(true);
+});
+
+test('Qin emperor attacks by summoning one terracotta soldier or three black-armour guards', async ({ page }) => {
+  await openApp(page);
+  const result=await page.evaluate(() => {
+    for(let level=1;level<=10;level++) completeCampaignLevel('plants',level);
+    for(let level=1;level<=8;level++) completeCampaignLevel('zombies',level);
+    const run=roll => {
+      selectedLevel=9;
+      start('zombies');
+      clearInterval(timer);
+      state.time=10000;
+      state.plants=[];
+      state.zombies=[];
+      document.querySelectorAll('.qin-command-fx').forEach(node=>node.remove());
+      addPlant('wallnut',4,2);
+      addZombie('qinEmperor',4.5,2);
+      const beforeHp=state.plants[0].hp;
+      const savedRandom=Math.random;
+      Math.random=()=>roll;
+      actZombies();
+      Math.random=savedRandom;
+      render();
+      return {
+        plantDamage:beforeHp-state.plants[0].hp,
+        soldiers:state.zombies.filter(z=>z.type==='terracottaSoldier').map(z=>({r:z.r,c:z.c,summoned:!!z.summoned})),
+        guards:state.zombies.filter(z=>z.type==='blackArmorGuard').map(z=>({r:z.r,c:z.c,summoned:!!z.summoned,elite:!!z.elite})),
+        labels:[...document.querySelectorAll('.entity .label')].map(node=>node.textContent),
+        effects:document.querySelectorAll('.qin-command-fx').length
+      };
+    };
+    return {ordinary:run(.99),super:run(0)};
+  });
+  expect(result.ordinary.plantDamage).toBe(0);
+  expect(result.ordinary.soldiers).toHaveLength(1);
+  expect(result.ordinary.soldiers[0]).toMatchObject({r:2,summoned:true});
+  expect(result.ordinary.guards).toHaveLength(0);
+  expect(result.ordinary.labels).toContain('秦俑屍兵');
+  expect(result.ordinary.effects).toBeGreaterThan(0);
+  expect(result.super.plantDamage).toBe(0);
+  expect(result.super.soldiers).toHaveLength(0);
+  expect(result.super.guards).toHaveLength(3);
+  expect(result.super.guards.map(unit=>unit.r)).toEqual([1,2,3]);
+  expect(result.super.guards.every(unit=>unit.summoned&&unit.elite)).toBeTruthy();
+  expect(result.super.labels.filter(label=>label==='玄甲禁軍')).toHaveLength(3);
+  expect(result.super.effects).toBeGreaterThan(0);
 });
 
 test('named generals gain random super-skill chance with level while strategists stay excluded', async ({ page }) => {

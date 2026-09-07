@@ -8,8 +8,8 @@
 - quartermaster-strategist.png：軍糧官，取代原向日葵。
 - shield-general.png：盾將，取代原堅果牆。
 - ambush-scout.png：伏兵，取代原土豆雷。
-- guanyu-fire-general.png：關羽火焰將，取代原火焰豌豆。
-- 關羽火焰將：角色介紹頁與遊戲中都使用 `guanyu-fire-general.png` 原圖；攻擊時以 CSS 向右前揮翻轉/傾斜動畫表現，不再切換圖1青龍斬圖片。
+- guanyu-fire-general.png / .webp：Gimmy 於 2026-09-07 指定的 Q 版關羽青龍偃月刀與綠焰龍魂圖；角色介紹、玩家頭像、卡片與戰場單位統一使用這組正式素材。
+- 關羽攻擊時維持同一張正式圖，以 CSS 短暫向右前揮的傾斜動畫表現，避免戰鬥中突兀換圖。
 
 ## 僵屍方 PNG 正式素材
 

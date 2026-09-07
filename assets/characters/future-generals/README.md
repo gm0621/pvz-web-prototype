@@ -2,11 +2,11 @@
 
 # 未來武將素材
 
-## 關羽攻擊動作
+## 關羽舊動作拆圖
 
-- 來源：Gimmy 提供圖1。
-- 目前用途：保留作為備用素材；角色介紹頁與遊戲中關羽火焰將都改回使用原本 `assets/characters/guanyu-fire-general.png`。
-- 遊戲中攻擊效果：不再切換圖1，改用原圖短暫向右前揮的翻轉/傾斜動畫，避免換圖突兀。
+- 舊來源與拆圖保留供未來動畫研究。
+- 目前不再供角色介紹、頭像、卡片或戰場使用；所有執行期關羽畫面統一使用 `assets/characters/guanyu-fire-general.webp`。
+- 正式素材來源保存於 `assets/characters/source-originals/guanyu-accepted-20260907.png`。
 
 ## 鬥神張飛
 - 消耗：225 軍糧
