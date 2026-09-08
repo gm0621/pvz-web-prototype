@@ -497,6 +497,7 @@ test('undead Qin emperor unlocks late with an independent summon identity', asyn
       order:UNIT_ORDER.zombies,
       level8:isUnlocked('zombies','qinEmperor',8),
       level9:isUnlocked('zombies','qinEmperor',9),
+      level10:isUnlocked('zombies','qinEmperor',10),
       definition:ZOMBIE_TYPES.qinEmperor,
       footballAsset:ZOMBIE_TYPES.football.asset,
       summonAssets:[ZOMBIE_TYPES.terracottaSoldier.asset,ZOMBIE_TYPES.blackArmorGuard.asset],
@@ -507,7 +508,8 @@ test('undead Qin emperor unlocks late with an independent summon identity', asyn
   });
   expect(result.order.at(-1)).toBe('qinEmperor');
   expect(result.level8).toBe(false);
-  expect(result.level9).toBe(true);
+  expect(result.level9).toBe(false);
+  expect(result.level10).toBe(true);
   expect(result.definition.name).toBe('始皇屍帝・嬴政');
   expect(result.definition.asset).toBe('assets/characters/zombie-army/zombie-roster-v2/qin-emperor.webp');
   expect(result.definition.summon).toBe(true);
@@ -632,6 +634,28 @@ test('character guide lighting follows real campaign unlock progress instead of 
     attackStart:{normal:false,bucket:true},
     afterAttackFirst:{bucket:false}
   });
+});
+
+test('every completed stage lights exactly one additional character guide card', async ({ page }) => {
+  await openApp(page);
+  const counts = await page.evaluate(() => {
+    playerProfile=normalizeProfile({});
+    const countUnlocked=roster=>{buildCharacterGrid(roster);return document.querySelectorAll('#characterGrid .char-profile:not(.locked)').length};
+    const plants=[countUnlocked('plants')];
+    for(let level=1;level<=8;level++){
+      completeCampaignLevel('plants',level);
+      plants.push(countUnlocked('plants'));
+    }
+    for(let level=9;level<=10;level++)completeCampaignLevel('plants',level);
+    const zombies=[countUnlocked('zombies')];
+    for(let level=1;level<=9;level++){
+      completeCampaignLevel('zombies',level);
+      zombies.push(countUnlocked('zombies'));
+    }
+    return {plants,zombies};
+  });
+  expect(counts.plants).toEqual([4,5,6,7,8,9,10,11,12]);
+  expect(counts.zombies).toEqual([2,3,4,5,6,7,8,9,10,11]);
 });
 
 test('character guide cards use a complete ability block and align their footer', async ({ page }) => {
