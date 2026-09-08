@@ -23,8 +23,8 @@ Gimmy 已確認：Asianoriental1 固定當主畫面音樂。
 | 選關 / 武將配置 | Prepare Your Swords | `bgm/02_stage_select.ogg` | CC0 |
 | 一般戰鬥 | Fast Fight / Battle Music – Looped | `bgm/03_battle.ogg` | CC0 |
 | 大量僵屍來襲 | Zombies' March | `bgm/04_zombie_wave.ogg` | CC0 |
-| 獸之巨人登場 | Battle Epic | `bgm/05_giant_boss.mp3` | Pixabay License |
-| 僵屍王將軍 | JRPG Epic Rock Battle Theme #1 | `bgm/06_zombie_king_intro.mp3`, `bgm/06_zombie_king_loop.mp3` | CC0 |
+| 巨槌阿蠻登場 | Battle Epic | `bgm/05_giant_boss.mp3` | Pixabay License |
+| 白髮屍王 | JRPG Epic Rock Battle Theme #1 | `bgm/06_zombie_king_intro.mp3`, `bgm/06_zombie_king_loop.mp3` | CC0 |
 | 名將登場 | 10 Fanfares | `jingle/07_hero_*.ogg` | CC0 |
 | 勝利 | Victory Fanfare Short | `jingle/08_victory.wav` | CC0 |
 

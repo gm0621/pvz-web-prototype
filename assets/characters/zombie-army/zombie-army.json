@@ -1,50 +1,90 @@
 [
   {
-    "slug": "normal-zombie",
-    "name": "一般僵屍",
+    "key": "normal",
+    "name": "赤巾小屍",
     "role": "basic melee",
-    "asset": "assets/characters/zombie-army/normal-zombie.png",
-    "source_original": "assets/characters/zombie-army/source-originals/zombie-sheet-source.png",
+    "asset": "assets/characters/zombie-army/zombie-roster-v2/red-band-grunt.webp",
+    "source_original": "assets/characters/source-originals/zombie-roster-20260907/02-red-band-grunt.png",
     "integrated_in_game": true
   },
   {
-    "slug": "armored-zombie",
-    "name": "鐵甲僵屍",
+    "key": "cone",
+    "name": "鐵盔小兵",
     "role": "armored tank",
-    "asset": "assets/characters/zombie-army/armored-zombie.png",
-    "source_original": "assets/characters/zombie-army/source-originals/zombie-sheet-source.png",
+    "asset": "assets/characters/zombie-army/zombie-roster-v2/iron-helmet-grunt.webp",
+    "source_original": "assets/characters/source-originals/zombie-roster-20260907/03-iron-helmet-grunt.png",
     "integrated_in_game": true
   },
   {
-    "slug": "jumping-zombie",
-    "name": "跳躍僵屍",
-    "role": "jumping runner",
-    "asset": "assets/characters/zombie-army/jumping-zombie.png",
-    "source_original": "assets/characters/zombie-army/source-originals/zombie-sheet-source.png",
-    "integrated_in_game": true
-  },
-  {
-    "slug": "beast-giant",
-    "name": "獸之巨人",
+    "key": "bucket",
+    "name": "巨槌阿蠻",
     "role": "giant heavy unit",
-    "asset": "assets/characters/zombie-army/beast-giant.png",
-    "source_original": "assets/characters/zombie-army/source-originals/zombie-sheet-source.png",
+    "asset": "assets/characters/zombie-army/zombie-roster-v2/giant-mace-brute.webp",
+    "source_original": "assets/characters/source-originals/zombie-roster-20260907/04-giant-mace-brute.png",
     "integrated_in_game": true
   },
   {
-    "slug": "zombie-warlord",
-    "name": "僵屍王將軍",
-    "role": "boss warlord",
-    "asset": "assets/characters/zombie-army/zombie-warlord.png",
-    "source_original": "assets/characters/zombie-army/source-originals/zombie-sheet-source.png",
-    "integrated_in_game": true
-  },
-  {
-    "slug": "rock-thrower-zombie",
-    "name": "擲石僵屍",
+    "key": "peaZombie",
+    "name": "飛石阿投",
     "role": "ranged stone thrower",
-    "asset": "assets/characters/zombie-army/rock-thrower-zombie.png",
-    "source_original": "assets/characters/zombie-army/source-originals/rock-thrower-source.png",
+    "asset": "assets/characters/zombie-army/zombie-roster-v2/boulder-thrower.webp",
+    "source_original": "assets/characters/source-originals/zombie-roster-20260907/05-boulder-thrower.png",
+    "integrated_in_game": true
+  },
+  {
+    "key": "poleVault",
+    "name": "蹦蹦飛屍",
+    "role": "jumping runner",
+    "asset": "assets/characters/zombie-army/zombie-roster-v2/leaping-raider.webp",
+    "source_original": "assets/characters/source-originals/zombie-roster-20260907/06-leaping-raider.png",
+    "integrated_in_game": true
+  },
+  {
+    "key": "football",
+    "name": "白髮屍王",
+    "role": "boss warlord",
+    "asset": "assets/characters/zombie-army/zombie-roster-v2/white-haired-king.webp",
+    "source_original": "assets/characters/source-originals/zombie-roster-20260907/07-white-haired-king.png",
+    "integrated_in_game": true
+  },
+  {
+    "key": "jester",
+    "name": "鈴鐺丑屍",
+    "role": "confusion caster",
+    "asset": "assets/characters/zombie-army/zombie-roster-v2/bell-jester.webp",
+    "source_original": "assets/characters/source-originals/zombie-roster-20260907/08-bell-jester.png",
+    "integrated_in_game": true
+  },
+  {
+    "key": "bombJester",
+    "name": "爆爆桶屍",
+    "role": "death bomber",
+    "asset": "assets/characters/zombie-army/zombie-roster-v2/bomb-carrier.webp",
+    "source_original": "assets/characters/source-originals/zombie-roster-20260907/09-bomb-carrier.png",
+    "integrated_in_game": true
+  },
+  {
+    "key": "corpseTitan",
+    "name": "屍旗大胖",
+    "role": "siege titan",
+    "asset": "assets/characters/zombie-army/zombie-roster-v2/banner-titan.webp",
+    "source_original": "assets/characters/source-originals/zombie-roster-20260907/10-banner-titan.png",
+    "integrated_in_game": true
+  },
+  {
+    "key": "fireCatapult",
+    "name": "烈焰屍車",
+    "role": "fire catapult",
+    "asset": "assets/characters/zombie-army/zombie-roster-v2/flame-catapult.webp",
+    "source_original": "assets/characters/source-originals/zombie-roster-20260907/11-flame-catapult.png",
+    "integrated_in_game": true
+  },
+  {
+    "key": "qinEmperor",
+    "name": "始皇屍帝・嬴政",
+    "role": "summoner emperor",
+    "asset": "assets/characters/zombie-army/zombie-roster-v2/qin-emperor.webp",
+    "source_original": "assets/characters/source-originals/zombie-roster-20260907/01-qin-emperor.png",
     "integrated_in_game": true
   }
 ]

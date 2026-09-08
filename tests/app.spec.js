@@ -421,7 +421,46 @@ test('production files are split and loaded', async ({ page }) => {
   for (const file of ['data.js','cloud.js','account.js','shop.js','app.js']) expect(assets.scripts.some(s => s.includes('/js/' + file))).toBeTruthy();
 });
 
-test('accepted Guan Yu and mirrored Qin artwork drive every runtime surface', async ({ page }) => {
+test('the complete zombie roster uses the approved v2 art and memorable names', async ({ page }) => {
+  const expected={
+    qinEmperor:{name:'始皇屍帝・嬴政',asset:'qin-emperor.webp'},
+    normal:{name:'赤巾小屍',asset:'red-band-grunt.webp'},
+    cone:{name:'鐵盔小兵',asset:'iron-helmet-grunt.webp'},
+    bucket:{name:'巨槌阿蠻',asset:'giant-mace-brute.webp'},
+    peaZombie:{name:'飛石阿投',asset:'boulder-thrower.webp'},
+    poleVault:{name:'蹦蹦飛屍',asset:'leaping-raider.webp'},
+    football:{name:'白髮屍王',asset:'white-haired-king.webp'},
+    jester:{name:'鈴鐺丑屍',asset:'bell-jester.webp'},
+    bombJester:{name:'爆爆桶屍',asset:'bomb-carrier.webp'},
+    corpseTitan:{name:'屍旗大胖',asset:'banner-titan.webp'},
+    fireCatapult:{name:'烈焰屍車',asset:'flame-catapult.webp'}
+  };
+  const sourceDir=path.join(__dirname,'..','assets','characters','source-originals','zombie-roster-20260907');
+  const outputDir=path.join(__dirname,'..','assets','characters','zombie-army','zombie-roster-v2');
+  const scriptPath=path.join(__dirname,'..','scripts','prepare_zombie_roster_assets.py');
+  expect(fs.existsSync(scriptPath)).toBe(true);
+  for(let figure=1;figure<=11;figure++) expect(fs.existsSync(path.join(sourceDir,`${String(figure).padStart(2,'0')}-${Object.values(expected)[figure-1].asset.replace('.webp','.png')}`))).toBe(true);
+  const script=fs.readFileSync(scriptPath,'utf8');
+  expect(script).toContain("ImageOps.mirror(source)");
+  expect(script).toContain("remove_baked_background");
+  await openApp(page);
+  const actual=await page.evaluate(async expected=>{
+    const result={};
+    for(const [key,want] of Object.entries(expected)){
+      const unit=ZOMBIE_TYPES[key];
+      const image=await new Promise((resolve,reject)=>{const img=new Image();img.onload=()=>resolve({width:img.naturalWidth,height:img.naturalHeight});img.onerror=reject;img.src=unit.asset});
+      result[key]={name:unit.name,asset:unit.asset.split('/').pop(),path:unit.asset,size:image,spentAsset:unit.spentAsset};
+    }
+    return result;
+  },expected);
+  for(const [key,want] of Object.entries(expected)){
+    expect(actual[key]).toMatchObject({name:want.name,asset:want.asset,path:`assets/characters/zombie-army/zombie-roster-v2/${want.asset}`,size:{width:1024,height:1024}});
+    expect(fs.existsSync(path.join(outputDir,want.asset))).toBe(true);
+  }
+  expect(actual.poleVault.spentAsset).toBe(actual.poleVault.path);
+});
+
+test('accepted Guan Yu and the latest mirrored Qin artwork drive every runtime surface', async ({ page }) => {
   const scriptPath=path.join(__dirname,'..','scripts','prepare_accepted_character_assets.py');
   const guanSource=path.join(__dirname,'..','assets','characters','source-originals','guanyu-accepted-20260907.png');
   const qinSource=path.join(__dirname,'..','assets','characters','source-originals','qin-emperor-accepted-20260907.png');
@@ -445,7 +484,7 @@ test('accepted Guan Yu and mirrored Qin artwork drive every runtime surface', as
   expect(result.avatarAsset).toBe(result.guanAsset);
   expect(result.guideAsset).toContain('/assets/characters/guanyu-fire-general.webp');
   expect(result.warmup).toContain(result.guanAsset);
-  expect(result.qinAsset).toBe('assets/characters/zombie-army/undead-qin-emperor.webp');
+  expect(result.qinAsset).toBe('assets/characters/zombie-army/zombie-roster-v2/qin-emperor.webp');
 });
 
 test('undead Qin emperor unlocks late with an independent summon identity', async ({ page }) => {
@@ -470,7 +509,7 @@ test('undead Qin emperor unlocks late with an independent summon identity', asyn
   expect(result.level8).toBe(false);
   expect(result.level9).toBe(true);
   expect(result.definition.name).toBe('始皇屍帝・嬴政');
-  expect(result.definition.asset).toBe('assets/characters/zombie-army/undead-qin-emperor.webp');
+  expect(result.definition.asset).toBe('assets/characters/zombie-army/zombie-roster-v2/qin-emperor.webp');
   expect(result.definition.summon).toBe(true);
   expect(result.level9Weight).toBe(true);
   expect(result.level10Weight).toBe(true);
