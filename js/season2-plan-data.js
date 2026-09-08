@@ -14,7 +14,7 @@ const SEASON2_PLAN = {
   },
   stages: [
     {
-      number:1, name:'霜土前哨', region:'外圍防區', light:'冷白清晨', hue:'#a7c1d2', cardArt:null,
+      number:1, name:'霜土前哨', region:'外圍防區', light:'冷白清晨', hue:'#a7c1d2', cardArt:'assets/backgrounds/season2/s2-01.webp',
       artBrief:'灰白霜土、低矮木柵、遠處北境丘陵與少量靛藍魏旗。小型前哨，不是大城堡；保留清楚的平坦前景，不畫綠草坪。',
       defense:{
         story:'北境第一班哨兵發現屍群踏過霜土。屯田兵先建立補給，強弩兵逐路迎擊，守住尚未築好的防線。',
