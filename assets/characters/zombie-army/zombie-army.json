@@ -86,5 +86,13 @@
     "asset": "assets/characters/zombie-army/zombie-roster-v2/qin-emperor.webp",
     "source_original": "assets/characters/source-originals/zombie-roster-20260907/01-qin-emperor.png",
     "integrated_in_game": true
+  },
+  {
+    "key": "necromancer",
+    "name": "冥火屍巫",
+    "role": "final-boss curse caster",
+    "asset": "assets/characters/zombie-army/zombie-roster-v2/netherfire-necromancer.webp",
+    "source_original": "assets/characters/source-originals/zombie-roster-20260908/12-netherfire-necromancer.png",
+    "integrated_in_game": true
   }
 ]

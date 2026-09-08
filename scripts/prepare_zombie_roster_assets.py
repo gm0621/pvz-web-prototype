@@ -20,6 +20,7 @@ ROSTER = [
     ("09-bomb-carrier.png", "bomb-carrier.webp", False, True),
     ("10-banner-titan.png", "banner-titan.webp", False, False),
     ("11-flame-catapult.png", "flame-catapult.webp", True, False),
+    ("../zombie-roster-20260908/12-netherfire-necromancer.png", "netherfire-necromancer.webp", False, True),
 ]
 
 

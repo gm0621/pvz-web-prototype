@@ -506,7 +506,7 @@ test('undead Qin emperor unlocks late with an independent summon identity', asyn
       guideText:card?.textContent||''
     };
   });
-  expect(result.order.at(-1)).toBe('qinEmperor');
+  expect(result.order.at(-2)).toBe('qinEmperor');
   expect(result.level8).toBe(false);
   expect(result.level9).toBe(false);
   expect(result.level10).toBe(true);
@@ -521,6 +521,87 @@ test('undead Qin emperor unlocks late with an independent summon identity', asyn
   expect(fs.existsSync(path.join(__dirname,'..',result.definition.asset))).toBe(true);
   expect(new Set(result.summonAssets).size).toBe(2);
   for(const asset of result.summonAssets) expect(fs.existsSync(path.join(__dirname,'..',asset))).toBe(true);
+});
+
+test('netherfire necromancer is a final all-clear reward and level-ten boss', async ({ page }) => {
+  const source=path.join(__dirname,'..','assets','characters','source-originals','zombie-roster-20260908','12-netherfire-necromancer.png');
+  const asset=path.join(__dirname,'..','assets','characters','zombie-army','zombie-roster-v2','netherfire-necromancer.webp');
+  await openApp(page);
+  const result=await page.evaluate(() => {
+    playerProfile=normalizeProfile({});
+    for(let level=1;level<=10;level++)completeCampaignLevel('plants',level);
+    for(let level=1;level<=9;level++)completeCampaignLevel('zombies',level);
+    selectedLevel=10;
+    buildCharacterGrid('zombies');
+    start('zombies');
+    clearInterval(timer);
+    const before={
+      guideLocked:document.querySelector('#characterGrid .type-necromancer')?.classList.contains('locked')??true,
+      battleCard:!!document.querySelector('#cards [data-key="necromancer"]')
+    };
+    completeCampaignLevel('zombies',10);
+    buildCharacterGrid('zombies');
+    buildCards();
+    const unit=ZOMBIE_TYPES.necromancer;
+    return {
+      before,
+      after:{
+        guideLocked:document.querySelector('#characterGrid .type-necromancer')?.classList.contains('locked')??true,
+        battleCard:!!document.querySelector('#cards [data-key="necromancer"]')
+      },
+      unit:unit?{name:unit.name,asset:unit.asset,curse:unit.curse,cost:unit.cost}:null,
+      last:UNIT_ORDER.zombies.at(-1),
+      level10Weight:LEVELS[10].zombieWeights.includes('necromancer'),
+      bossOnly:AI_DELAYS.zombies.necromancer===Infinity,
+      level10Boss:LEVEL_PACING[10].bossType
+    };
+  });
+  expect(result.before).toEqual({guideLocked:true,battleCard:false});
+  expect(result.after).toEqual({guideLocked:false,battleCard:true});
+  expect(result.unit).toEqual({
+    name:'冥火屍巫',
+    asset:'assets/characters/zombie-army/zombie-roster-v2/netherfire-necromancer.webp',
+    curse:true,
+    cost:400
+  });
+  expect(result.last).toBe('necromancer');
+  expect(result.level10Weight).toBe(true);
+  expect(result.bossOnly).toBe(true);
+  expect(result.level10Boss).toBe('necromancer');
+  expect(fs.existsSync(source)).toBe(true);
+  expect(fs.existsSync(asset)).toBe(true);
+});
+
+test('netherfire necromancer fixed talent damages and confuses a distant defender', async ({ page }) => {
+  await openApp(page);
+  const result=await page.evaluate(() => {
+    playerProfile=normalizeProfile({});
+    for(let level=1;level<=9;level++)completeCampaignLevel('plants',level);
+    selectedLevel=10;
+    start('plants');
+    clearInterval(timer);
+    state.time=6000;
+    state.plants=[];
+    state.zombies=[];
+    addPlant('wallnut',3,2);
+    const caster=addZombie('necromancer',8,2),target=state.plants[0];
+    actZombies();
+    buildCharacterGrid('zombies');
+    const summary=document.querySelector('.char-profile.type-necromancer .ability-summary')?.textContent||'';
+    return {
+      hp:target.hp,
+      stunUntil:target.stunUntil,
+      curseLast:caster.curseLast,
+      fx:!!document.querySelector('.necromancer-curse-fx'),
+      summary
+    };
+  });
+  expect(result.hp).toBe(420-72);
+  expect(result.stunUntil).toBe(8200);
+  expect(result.curseLast).toBe(6000);
+  expect(result.fx).toBe(true);
+  expect(result.summary).toContain('天賦：幽冥禁咒');
+  expect(result.summary).toContain('固定生效');
 });
 
 test('Qin emperor attacks by summoning one terracotta soldier or three black-armour guards', async ({ page }) => {
@@ -648,14 +729,14 @@ test('every completed stage lights exactly one additional character guide card',
     }
     for(let level=9;level<=10;level++)completeCampaignLevel('plants',level);
     const zombies=[countUnlocked('zombies')];
-    for(let level=1;level<=9;level++){
+    for(let level=1;level<=10;level++){
       completeCampaignLevel('zombies',level);
       zombies.push(countUnlocked('zombies'));
     }
     return {plants,zombies};
   });
   expect(counts.plants).toEqual([4,5,6,7,8,9,10,11,12]);
-  expect(counts.zombies).toEqual([2,3,4,5,6,7,8,9,10,11]);
+  expect(counts.zombies).toEqual([2,3,4,5,6,7,8,9,10,11,12]);
 });
 
 test('character guide cards use a complete ability block and align their footer', async ({ page }) => {
@@ -717,7 +798,7 @@ test('character guide uses balanced ability sections and labels key zombie talen
     const zombie={
       allHaveAbility:zombieCards.every(card=>card.querySelector('.ability-summary')),
       basic:document.querySelector('#characterGrid .type-normal .ability-summary')?.textContent,
-      talents:Object.fromEntries(['football','jester','bombJester','corpseTitan','fireCatapult','qinEmperor'].map(key=>[key,document.querySelector(`#characterGrid .type-${key} .ability-summary`)?.textContent]))
+      talents:Object.fromEntries(['football','jester','bombJester','corpseTitan','fireCatapult','qinEmperor','necromancer'].map(key=>[key,document.querySelector(`#characterGrid .type-${key} .ability-summary`)?.textContent]))
     };
     showCharacterDetail('zombies','corpseTitan');
     zombie.detail=document.querySelector('#charModalSkill').textContent;
@@ -731,7 +812,7 @@ test('character guide uses balanced ability sections and labels key zombie talen
   expect(result.plant.statusMargin).toBe('0px');
   expect(result.zombie.allHaveAbility).toBeTruthy();
   expect(result.zombie.basic).toContain('招式：');
-  const expected={football:'屍王疾行',jester:'亂陣狂笑',bombJester:'終幕爆彈',corpseTitan:'破城震擊',fireCatapult:'烈焰轟石',qinEmperor:'兵馬俑召令'};
+  const expected={football:'屍王疾行',jester:'亂陣狂笑',bombJester:'終幕爆彈',corpseTitan:'破城震擊',fireCatapult:'烈焰轟石',qinEmperor:'兵馬俑召令',necromancer:'幽冥禁咒'};
   for(const [key,name] of Object.entries(expected))expect(result.zombie.talents[key]).toContain(`天賦：${name}`);
   expect(result.zombie.detail).toContain('天賦：破城震擊（固定生效）');
 });
