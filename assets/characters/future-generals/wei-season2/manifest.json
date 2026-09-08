@@ -1,0 +1,151 @@
+{
+  "season": 2,
+  "faction": "魏國",
+  "status": "guide_only",
+  "characters": [
+    {
+      "order": 1,
+      "key": "tuntian-soldier",
+      "name": "屯田兵",
+      "status": "guide_only",
+      "playable": false,
+      "source_original": "assets/characters/future-generals/wei-season2/source-originals/01-tuntian-soldier.png",
+      "source_sha256": "47f75662fd1ade392d7e3bc3731803fa15eed2f809f0f0044081021d7b0a7f96",
+      "asset": "assets/characters/future-generals/wei-season2/tuntian-soldier.webp",
+      "mirrored": false,
+      "background_removed": true
+    },
+    {
+      "order": 2,
+      "key": "shield-soldier",
+      "name": "大盾兵",
+      "status": "guide_only",
+      "playable": false,
+      "source_original": "assets/characters/future-generals/wei-season2/source-originals/02-shield-soldier.png",
+      "source_sha256": "8fd1c0135f60ae8009e603d4c96332d3eb5c85fa211e839f4fba5345525a99c2",
+      "asset": "assets/characters/future-generals/wei-season2/shield-soldier.webp",
+      "mirrored": false,
+      "background_removed": false
+    },
+    {
+      "order": 3,
+      "key": "crossbow-soldier",
+      "name": "強弩兵",
+      "status": "guide_only",
+      "playable": false,
+      "source_original": "assets/characters/future-generals/wei-season2/source-originals/03-crossbow-soldier.png",
+      "source_sha256": "e3505c16c88302a7830dc583e2498be8590f5b96aaa19ac45263bfa1d1fa25a2",
+      "asset": "assets/characters/future-generals/wei-season2/crossbow-soldier.webp",
+      "mirrored": false,
+      "background_removed": false
+    },
+    {
+      "order": 4,
+      "key": "halberd-soldier",
+      "name": "長戟兵",
+      "status": "guide_only",
+      "playable": false,
+      "source_original": "assets/characters/future-generals/wei-season2/source-originals/04-halberd-soldier.png",
+      "source_sha256": "ddd8598851adb1a8b1d0e20afdf91e516b2f1c2685361f8e904f908570bfebb2",
+      "asset": "assets/characters/future-generals/wei-season2/halberd-soldier.webp",
+      "mirrored": false,
+      "background_removed": false
+    },
+    {
+      "order": 5,
+      "key": "xiahou-dun",
+      "name": "夏侯惇",
+      "status": "guide_only",
+      "playable": false,
+      "source_original": "assets/characters/future-generals/wei-season2/source-originals/05-xiahou-dun.png",
+      "source_sha256": "9ec1fbc2ccc6d0bdb8fa448e3a0fe81cfbfac952f378d1b79b180366d69e9b38",
+      "asset": "assets/characters/future-generals/wei-season2/xiahou-dun.webp",
+      "mirrored": false,
+      "background_removed": false
+    },
+    {
+      "order": 6,
+      "key": "dian-wei",
+      "name": "典韋",
+      "status": "guide_only",
+      "playable": false,
+      "source_original": "assets/characters/future-generals/wei-season2/source-originals/06-dian-wei.png",
+      "source_sha256": "20f8bfbd8c1f2a64623e31c03e5a75456e84187d72fa908cdd4a2b7b0ef4ddcc",
+      "asset": "assets/characters/future-generals/wei-season2/dian-wei.webp",
+      "mirrored": false,
+      "background_removed": false
+    },
+    {
+      "order": 7,
+      "key": "xu-chu",
+      "name": "許褚",
+      "status": "guide_only",
+      "playable": false,
+      "source_original": "assets/characters/future-generals/wei-season2/source-originals/07-xu-chu.png",
+      "source_sha256": "4b94c68b06173d1ecf76ab73cd79c16426b80c0ea0008b4f9548d60e46ad8e85",
+      "asset": "assets/characters/future-generals/wei-season2/xu-chu.webp",
+      "mirrored": false,
+      "background_removed": false
+    },
+    {
+      "order": 8,
+      "key": "zhang-liao",
+      "name": "張遼",
+      "status": "guide_only",
+      "playable": false,
+      "source_original": "assets/characters/future-generals/wei-season2/source-originals/08-zhang-liao.png",
+      "source_sha256": "270fbc6c152c3fbf24abef4324665ea02dbdf69851ef3f7c383aa49a7a96efd1",
+      "asset": "assets/characters/future-generals/wei-season2/zhang-liao.webp",
+      "mirrored": false,
+      "background_removed": false
+    },
+    {
+      "order": 9,
+      "key": "xu-huang",
+      "name": "徐晃",
+      "status": "guide_only",
+      "playable": false,
+      "source_original": "assets/characters/future-generals/wei-season2/source-originals/09-xu-huang.png",
+      "source_sha256": "f60770660b33d797fbf74359191edbb4de37031d4b28e3873e9e8e7c00982549",
+      "asset": "assets/characters/future-generals/wei-season2/xu-huang.webp",
+      "mirrored": false,
+      "background_removed": true
+    },
+    {
+      "order": 10,
+      "key": "guo-jia",
+      "name": "郭嘉",
+      "status": "guide_only",
+      "playable": false,
+      "source_original": "assets/characters/future-generals/wei-season2/source-originals/10-guo-jia.png",
+      "source_sha256": "5a86b1a69fc0ba2091d28b5dc351818539bda32f9f6d2c0a6a7f1578398be4bb",
+      "asset": "assets/characters/future-generals/wei-season2/guo-jia.webp",
+      "mirrored": false,
+      "background_removed": false
+    },
+    {
+      "order": 11,
+      "key": "sima-yi",
+      "name": "司馬懿",
+      "status": "guide_only",
+      "playable": false,
+      "source_original": "assets/characters/future-generals/wei-season2/source-originals/11-sima-yi.png",
+      "source_sha256": "52ab172b4c2788de0f1ddabca5f70a05039f2e9b74483f98829c2f4f6bb9e0d7",
+      "asset": "assets/characters/future-generals/wei-season2/sima-yi.webp",
+      "mirrored": false,
+      "background_removed": true
+    },
+    {
+      "order": 12,
+      "key": "cao-cao",
+      "name": "曹操",
+      "status": "guide_only",
+      "playable": false,
+      "source_original": "assets/characters/future-generals/wei-season2/source-originals/12-cao-cao.png",
+      "source_sha256": "816437379d79145a6f5335d5ca3d1b95acc3cfcb6b7f81a7fc3d6c74e5b02464",
+      "asset": "assets/characters/future-generals/wei-season2/cao-cao.webp",
+      "mirrored": false,
+      "background_removed": true
+    }
+  ]
+}
