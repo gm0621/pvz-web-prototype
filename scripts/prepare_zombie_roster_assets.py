@@ -9,7 +9,7 @@ SOURCE_DIR = ROOT / "assets/characters/source-originals/zombie-roster-20260907"
 OUTPUT_DIR = ROOT / "assets/characters/zombie-army/zombie-roster-v2"
 
 ROSTER = [
-    ("01-qin-emperor.png", "qin-emperor.webp", True, False),
+    ("01-qin-emperor.png", "qin-emperor.webp", False, False),
     ("02-red-band-grunt.png", "red-band-grunt.webp", False, False),
     ("03-iron-helmet-grunt.png", "iron-helmet-grunt.webp", False, True),
     ("04-giant-mace-brute.png", "giant-mace-brute.webp", False, True),

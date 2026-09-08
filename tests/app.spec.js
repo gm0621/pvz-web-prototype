@@ -443,6 +443,7 @@ test('the complete zombie roster uses the approved v2 art and memorable names', 
   const script=fs.readFileSync(scriptPath,'utf8');
   expect(script).toContain("ImageOps.mirror(source)");
   expect(script).toContain("remove_baked_background");
+  expect(script).toContain('(\"01-qin-emperor.png\", \"qin-emperor.webp\", False, False)');
   await openApp(page);
   const actual=await page.evaluate(async expected=>{
     const result={};

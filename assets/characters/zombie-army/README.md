@@ -17,6 +17,6 @@ Gimmy 於 2026-09-07 提供完整新版僵屍方角色素材，並於 2026-09-08
 | `qinEmperor` | 始皇屍帝・嬴政 | `zombie-roster-v2/qin-emperor.webp` |
 | `necromancer` | 冥火屍巫 | `zombie-roster-v2/netherfire-necromancer.webp` |
 
-原始上傳圖分別保存在 `assets/characters/source-originals/zombie-roster-20260907/` 與 `assets/characters/source-originals/zombie-roster-20260908/`，由專案根目錄的 `scripts/prepare_zombie_roster_assets.py` 可重製正式檔。圖3、4、6、9與冥火屍巫會移除烙入的黑底／棋盤格；始皇與烈焰屍車會水平鏡像，使攻擊朝左。
+原始上傳圖分別保存在 `assets/characters/source-originals/zombie-roster-20260907/` 與 `assets/characters/source-originals/zombie-roster-20260908/`，由專案根目錄的 `scripts/prepare_zombie_roster_assets.py` 可重製正式檔。圖3、4、6、9與冥火屍巫會移除烙入的黑底／棋盤格；始皇沿用原圖朝左方向，不再鏡像；烈焰屍車會水平鏡像，使攻擊朝左。
 
 既有 `zombie-army.json` 與舊 PNG/WebP 留作歷史素材；遊戲執行期不再引用舊的 11 位角色圖。
