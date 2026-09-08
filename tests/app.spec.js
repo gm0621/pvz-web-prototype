@@ -594,6 +594,69 @@ test('named generals gain random super-skill chance with level while strategists
   expect(result.ui.stats).toContain('25%（下級 27%）');
 });
 
+test('character guide lighting follows real campaign unlock progress instead of the selected level', async ({ page }) => {
+  await openApp(page);
+  const result=await page.evaluate(() => {
+    playerProfile=normalizeProfile({});
+    selectedLevel=10;
+    buildCharacterGrid('plants');
+    const before={
+      guanyu:document.querySelector('#characterGrid .type-firepea').classList.contains('locked'),
+      zhaoyun:document.querySelector('#characterGrid .type-zhaoyun').classList.contains('locked')
+    };
+    completeCampaignLevel('plants',1);
+    selectedLevel=1;
+    buildCharacterGrid('plants');
+    const afterFirst={
+      guanyu:document.querySelector('#characterGrid .type-firepea').classList.contains('locked'),
+      zhaoyun:document.querySelector('#characterGrid .type-zhaoyun').classList.contains('locked')
+    };
+    completeCampaignLevel('plants',2);
+    buildCharacterGrid('plants');
+    const afterSecond={zhaoyun:document.querySelector('#characterGrid .type-zhaoyun').classList.contains('locked')};
+    for(let level=3;level<=10;level++)completeCampaignLevel('plants',level);
+    buildCharacterGrid('zombies');
+    const attackStart={
+      normal:document.querySelector('#characterGrid .type-normal').classList.contains('locked'),
+      bucket:document.querySelector('#characterGrid .type-bucket').classList.contains('locked')
+    };
+    completeCampaignLevel('zombies',1);
+    buildCharacterGrid('zombies');
+    const afterAttackFirst={bucket:document.querySelector('#characterGrid .type-bucket').classList.contains('locked')};
+    return {before,afterFirst,afterSecond,attackStart,afterAttackFirst};
+  });
+  expect(result).toEqual({
+    before:{guanyu:true,zhaoyun:true},
+    afterFirst:{guanyu:false,zhaoyun:true},
+    afterSecond:{zhaoyun:false},
+    attackStart:{normal:false,bucket:true},
+    afterAttackFirst:{bucket:false}
+  });
+});
+
+test('character guide cards use a complete ability block and align their footer', async ({ page }) => {
+  await openApp(page);
+  const result=await page.evaluate(() => {
+    playerProfile=normalizeProfile({});
+    for(let level=1;level<=10;level++)completeCampaignLevel('plants',level);
+    buildCharacterGrid('plants');
+    const cards=[...document.querySelectorAll('#characterGrid .char-profile')];
+    const basic=document.querySelector('#characterGrid .type-peashooter');
+    const talented=document.querySelector('#characterGrid .type-firepea');
+    return {
+      allHaveAbility:cards.every(card=>!!card.querySelector('.ability-summary')),
+      basicText:basic.querySelector('.ability-summary')?.textContent||'',
+      talentText:talented.querySelector('.ability-summary')?.textContent||'',
+      footerDelta:Math.abs(basic.querySelector('.statusline').getBoundingClientRect().bottom-talented.querySelector('.statusline').getBoundingClientRect().bottom)
+    };
+  });
+  expect(result.allHaveAbility).toBeTruthy();
+  expect(result.basicText).toContain('招式：基礎遠程射箭');
+  expect(result.basicText).toContain('影響範圍：同一路全線');
+  expect(result.talentText).toContain('天賦：火焰效果');
+  expect(result.footerDelta).toBeLessThanOrEqual(1);
+});
+
 test('character guide cards explain every random super skill before opening details', async ({ page }) => {
   await openApp(page);
   const summaries = await page.evaluate(() => {
@@ -609,6 +672,75 @@ test('character guide cards explain every random super skill before opening deta
     expect(text).toContain('Lv.1 發動率 25%');
     expect(text).toContain('每升一級 +2%，最高 60%');
   }
+});
+
+test('character guide uses balanced ability sections and labels key zombie talents', async ({ page }) => {
+  await openApp(page);
+  const result=await page.evaluate(() => {
+    playerProfile=normalizeProfile({});
+    buildCharacterGrid('plants');
+    const plantCards=[...document.querySelectorAll('#characterGrid .char-profile')];
+    const plant={
+      allHaveAbility:plantCards.every(card=>card.querySelector('.ability-summary')),
+      basic:document.querySelector('#characterGrid .type-peashooter .ability-summary')?.textContent,
+      kongming:document.querySelector('#characterGrid .type-kongming .ability-summary')?.textContent,
+      pangtong:document.querySelector('#characterGrid .type-pangtong .ability-summary')?.textContent,
+      cardDisplay:getComputedStyle(plantCards[0]).display,
+      statusMargin:getComputedStyle(plantCards[0].querySelector('.statusline')).marginTop
+    };
+    buildCharacterGrid('zombies');
+    const zombieCards=[...document.querySelectorAll('#characterGrid .char-profile')];
+    const zombie={
+      allHaveAbility:zombieCards.every(card=>card.querySelector('.ability-summary')),
+      basic:document.querySelector('#characterGrid .type-normal .ability-summary')?.textContent,
+      talents:Object.fromEntries(['football','jester','bombJester','corpseTitan','fireCatapult','qinEmperor'].map(key=>[key,document.querySelector(`#characterGrid .type-${key} .ability-summary`)?.textContent]))
+    };
+    showCharacterDetail('zombies','corpseTitan');
+    zombie.detail=document.querySelector('#charModalSkill').textContent;
+    return {plant,zombie};
+  });
+  expect(result.plant.allHaveAbility).toBeTruthy();
+  expect(result.plant.basic).toContain('招式：');
+  expect(result.plant.kongming).toContain('天賦：雷鎖八門');
+  expect(result.plant.pangtong).toContain('天賦：鳳火燎原');
+  expect(result.plant.cardDisplay).toBe('flex');
+  expect(result.plant.statusMargin).toBe('0px');
+  expect(result.zombie.allHaveAbility).toBeTruthy();
+  expect(result.zombie.basic).toContain('招式：');
+  const expected={football:'屍王疾行',jester:'亂陣狂笑',bombJester:'終幕爆彈',corpseTitan:'破城震擊',fireCatapult:'烈焰轟石',qinEmperor:'兵馬俑召令'};
+  for(const [key,name] of Object.entries(expected))expect(result.zombie.talents[key]).toContain(`天賦：${name}`);
+  expect(result.zombie.detail).toContain('天賦：破城震擊（固定生效）');
+});
+
+test('Kongming and Pang Tong one-use talents apply slow and lingering burn', async ({ page }) => {
+  await openApp(page);
+  const result=await page.evaluate(() => {
+    playerProfile=normalizeProfile({});
+    for(let level=1;level<=7;level++)completeCampaignLevel('plants',level);
+    selectedLevel=7;
+    start('plants');
+    clearInterval(timer);
+    state.time=1000;
+    state.plants=[];
+    state.zombies=[{id:'target',type:'normal',r:2,c:6,hp:500,maxHp:500,last:0,bornAt:0,jumped:false,shootLast:-999999}];
+    addPlant('kongming',2,2);
+    actPlants();
+    const kongming={hp:state.zombies[0].hp,slowFor:state.zombies[0].slowUntil-state.time,expires:!!state.plants[0].expireAt};
+
+    state.time=5000;
+    state.plants=[];
+    state.zombies=[0,1,2,3,4].map(r=>({id:`z${r}`,type:'normal',r,c:6,hp:500,maxHp:500,last:0,bornAt:0,jumped:false,shootLast:-999999}));
+    addPlant('pangtong',2,2);
+    actPlants();
+    const afterStrike=state.zombies.map(z=>z.hp);
+    for(const time of [6000,7000,8000]){state.time=time;processLingeringEffects()}
+    const afterBurn=state.zombies.map(z=>z.hp);
+    return {kongming,afterStrike,afterBurn,pangtongExpires:!!state.plants[0].expireAt};
+  });
+  expect(result.kongming).toEqual({hp:350,slowFor:4000,expires:true});
+  expect(result.afterStrike).toEqual([500,270,270,270,500]);
+  expect(result.afterBurn).toEqual([500,195,195,195,500]);
+  expect(result.pangtongExpires).toBeTruthy();
 });
 
 test('defender removal mode frees an occupied cell without refunding grain', async ({ page }) => {
