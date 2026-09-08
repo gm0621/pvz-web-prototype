@@ -21,16 +21,11 @@ test('season-two preview has two ten-stage plans, valid independent unlocks and 
    const card=page.locator('.stage-plan').nth(i);
    await expect(card.locator('.stage-number')).toHaveText(`第 ${i+1} 關`);
    await expect(card.locator('.reward-name')).toHaveText(await page.evaluate(({mode,i})=>season2Roster(mode).find(d=>d.key===SEASON2_PLAN.rewards[mode][i]).name,{mode,i}));
-   if(i===0){
-    const cover=card.locator('.scene-art img');
-    await expect(cover).toHaveAttribute('src','assets/backgrounds/season2/s2-01.webp');
-    await cover.evaluate(im=>im.decode());
-    expect(await cover.evaluate(im=>[im.naturalWidth,im.naturalHeight])).toEqual([1672,941]);
-    await expect(card.locator('.scene-placeholder')).toBeHidden();
-   }else{
-    await expect(card.locator('.scene-placeholder')).toBeVisible();
-    await expect(card.locator('.scene-art img')).toHaveCount(0);
-   }
+   const cover=card.locator('.scene-art img');
+   await expect(cover).toHaveAttribute('src',`assets/backgrounds/season2/s2-${String(i+1).padStart(2,'0')}.webp`);
+   await cover.evaluate(im=>im.decode());
+   expect(await cover.evaluate(im=>[im.naturalWidth,im.naturalHeight])).toEqual([1672,i===4?940:941]);
+   await expect(card.locator('.scene-placeholder')).toBeHidden();
    await card.locator('summary').click();
    await expect(card.locator('.available-roster .unit-name')).toHaveCount(i+2);
    await expect(card.locator('.art-brief')).not.toBeEmpty();
@@ -52,7 +47,7 @@ test('season-two preview has two ten-stage plans, valid independent unlocks and 
     if(![...challenge.enemies,challenge.leader].every(k=>opponent.includes(k)))return false;
    }
   }
-  return p.stages.length===10&&new Set(p.stages.map(s=>s.name)).size===10&&p.stages[0].cardArt==='assets/backgrounds/season2/s2-01.webp'&&p.stages.slice(1).every(s=>s.cardArt===null)&&season2Available('attack',11).length===0&&season2Available('defense',0).length===0;
+  return p.stages.length===10&&new Set(p.stages.map(s=>s.name)).size===10&&p.stages.every((s,i)=>s.cardArt===`assets/backgrounds/season2/s2-${String(i+1).padStart(2,'0')}.webp`)&&season2Available('attack',11).length===0&&season2Available('defense',0).length===0;
  });
  expect(check).toBe(true);
  await page.locator('#backToGame').click();

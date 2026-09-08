@@ -30,7 +30,7 @@ const SEASON2_PLAN = {
       }
     },
     {
-      number:2, name:'石壘營門', region:'外圍防區', light:'陰天冷灰', hue:'#92a9b9', cardArt:null,
+      number:2, name:'石壘營門', region:'外圍防區', light:'陰天冷灰', hue:'#92a9b9', cardArt:'assets/backgrounds/season2/s2-02.webp',
       artBrief:'粗石堆砌的營門、木製橫樑、厚重石板路，兩側有破損旗架與箭孔。遠景是矮城壘，前景不用草地。',
       defense:{
         story:'第一批盾兵趕到營門，棺盾屍群也開始掩護後排。魏軍必須讓大盾承傷，為強弩爭取校射時間。',
@@ -46,7 +46,7 @@ const SEASON2_PLAN = {
       }
     },
     {
-      number:3, name:'拒馬長道', region:'外圍防區', light:'風起午後', hue:'#b7b3a2', cardArt:null,
+      number:3, name:'拒馬長道', region:'外圍防區', light:'風起午後', hue:'#b7b3a2', cardArt:'assets/backgrounds/season2/s2-03.webp',
       artBrief:'延伸向遠方的灰褐軍道，道路外側交錯木拒馬、削尖木樁與破車輪。背景塵土低揚，五路前景仍完整平坦。',
       defense:{
         story:'屍群沿長道加速推進，破門撞屍開始蓄勢。長戟兵接管缺口，讓衝擊停在軍陣前方。',
@@ -62,7 +62,7 @@ const SEASON2_PLAN = {
       }
     },
     {
-      number:4, name:'風沙糧倉', region:'軍需腹地', light:'砂金傍晚', hue:'#d6b382', cardArt:null,
+      number:4, name:'風沙糧倉', region:'軍需腹地', light:'砂金傍晚', hue:'#d6b382', cardArt:'assets/backgrounds/season2/s2-04.webp',
       artBrief:'北地夯土糧倉、堆疊糧袋、棚架、半埋風沙的石板，暖金夕照配冷藍旗幟。風沙只做遠景氣氛，不遮滿畫面。',
       defense:{
         story:'煙罐屍群趁風接近糧倉。夏侯惇守在煙霧出口，以近戰反擊接住第一波壓力，讓屯田兵繼續補給。',
@@ -78,7 +78,7 @@ const SEASON2_PLAN = {
       }
     },
     {
-      number:5, name:'乾谷斷橋', region:'軍需腹地', light:'峽谷斜光', hue:'#c5a58e', cardArt:null,
+      number:5, name:'乾谷斷橋', region:'軍需腹地', light:'峽谷斜光', hue:'#c5a58e', cardArt:'assets/backgrounds/season2/s2-05.webp',
       artBrief:'乾涸裂谷上的寬石橋，遠處有斷裂舊橋與峭壁。主戰線是完整橋面，不畫河水、船隻或棋盤破洞，水戰留給吳國。',
       defense:{
         story:'鉤鎖越過橋面拉扯前排。典韋要守住身後弩兵，但整條防線也必須預留重整位置。',
@@ -94,7 +94,7 @@ const SEASON2_PLAN = {
       }
     },
     {
-      number:6, name:'鐵爐兵坊', region:'軍需腹地', light:'爐火與鐵藍', hue:'#e6a575', cardArt:null,
+      number:6, name:'鐵爐兵坊', region:'軍需腹地', light:'爐火與鐵藍', hue:'#e6a575', cardArt:'assets/backgrounds/season2/s2-06.webp',
       artBrief:'石造軍械工坊、熔爐暖光、鐵砧、兵器架與煤灰。不是燃燒中的城市；中央保持深灰石板，火光放兩側與遠景。',
       defense:{
         story:'兵坊外的屍軍靠縫補維持戰力。許褚先卡住重兵，魏軍再集中弩火，避免各路零散傷害被補回。',
@@ -110,7 +110,7 @@ const SEASON2_PLAN = {
       }
     },
     {
-      number:7, name:'烽臺夜哨', region:'軍需腹地', light:'靛藍夜色', hue:'#90aaf0', cardArt:null,
+      number:7, name:'烽臺夜哨', region:'軍需腹地', light:'靛藍夜色', hue:'#90aaf0', cardArt:'assets/backgrounds/season2/s2-07.webp',
       artBrief:'高處石造烽火臺、城垛、冷月與稀疏橘色火盆。天空偏靛藍，剪影清楚；不用全黑或濃霧遮住角色。',
       defense:{
         story:'草偶與毒液拖慢夜哨的判斷。張遼標記真正威脅，帶同路火力優先處理噴屍，避免把所有弩箭耗在誘餌上。',
@@ -126,7 +126,7 @@ const SEASON2_PLAN = {
       }
     },
     {
-      number:8, name:'霜骨古道', region:'內城決戰', light:'雪後薄暮', hue:'#b4c9d8', cardArt:null,
+      number:8, name:'霜骨古道', region:'內城決戰', light:'雪後薄暮', hue:'#b4c9d8', cardArt:'assets/backgrounds/season2/s2-08.webp',
       artBrief:'古老石道、覆霜斷碑、枯松與散落盔甲，遠處出現高城牆輪廓。淡雪只是裝飾，不做冰面滑動或暴風特效。',
       defense:{
         story:'厚盾與急縫護盾層層掩護屍群。徐晃拆開防護，張遼與弩兵跟上；斷旗咒屍在最後試探軍陣的支援。',
@@ -142,7 +142,7 @@ const SEASON2_PLAN = {
       }
     },
     {
-      number:9, name:'魏武中軍', region:'內城決戰', light:'戰前暗金', hue:'#c2ad80', cardArt:null,
+      number:9, name:'魏武中軍', region:'內城決戰', light:'戰前暗金', hue:'#c2ad80', cardArt:'assets/backgrounds/season2/s2-09.webp',
       artBrief:'靛藍中軍帳、排列整齊的魏旗、戰鼓與木製議事臺，後方是高城牆。深藍布帳配少量金色晨光，不放人物大頭或文字。',
       defense:{
         story:'斷旗、草偶與醫官開始協同推進。郭嘉抓住施咒前搖，魏軍在技能空窗拆掉關鍵支援，迎接最後城門戰。',
@@ -158,7 +158,7 @@ const SEASON2_PLAN = {
       }
     },
     {
-      number:10, name:'北境鐵壁', region:'內城決戰', light:'破曉決戰', hue:'#aac3ee', cardArt:null,
+      number:10, name:'北境鐵壁', region:'內城決戰', light:'破曉決戰', hue:'#aac3ee', cardArt:'assets/backgrounds/season2/s2-10.webp',
       artBrief:'巨大北境要塞主門、層疊城牆、對稱城樓與靛藍魏旗，冷白破曉穿過雲層，少量戰火。宏大但保持乾淨中央前景，不畫河道與船。',
       defense:{
         story:'陷城屍督帶著破陣屍軍抵達主城門。司馬懿在護衛後方蓄謀，魏軍用卡位、破甲、集火與封策守住最後一線。',
