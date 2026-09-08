@@ -1,5 +1,5 @@
 const {test,expect}=require('@playwright/test');
-const names=['棺盾小屍','裂盾斧屍','煙罐小屍','鉤鎖屍卒','縫屍醫官','斷旗咒屍','替身偶屍','陷城屍督'];
+const names=['棺盾小屍','裂盾斧屍','煙罐小屍','鉤鎖屍卒','縫屍醫官','斷旗咒屍','替身偶屍','陷城屍督','鼠牙群屍','腐釘弩屍','毒囊噴屍','破門撞屍'];
 test('season-two zombie preview is separate, complete and never changes playable rosters',async({page})=>{
  const errors=[];page.on('pageerror',e=>errors.push(e.message));
  await page.route('https://cdn.jsdelivr.net/**',r=>r.abort());await page.goto('/');
@@ -11,7 +11,8 @@ test('season-two zombie preview is separate, complete and never changes playable
  await expect(page.locator('[data-roster=zombies]')).toHaveClass(/primary/);
  await expect(page.locator('[data-zombie-season="2"]')).toHaveAttribute('aria-pressed','true');
  await expect(page.locator('#zombieSeasonIntro')).toContainText('尚未開放出戰');
- await expect(page.locator('.zombie2-profile')).toHaveCount(8);
+ await expect(page.locator('#zombieSeasonIntro')).toContainText('12 位');
+ await expect(page.locator('.zombie2-profile')).toHaveCount(12);
  await expect(page.locator('#characterGrid h3')).toHaveText(names);
  await page.locator('.zombie2-profile img').evaluateAll(ims=>Promise.all(ims.map(im=>im.decode())));
  expect(await page.locator('.zombie2-profile img').evaluateAll(ims=>ims.every(im=>im.naturalWidth===1024&&im.naturalHeight===1024))).toBe(true);

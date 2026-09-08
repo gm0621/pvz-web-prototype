@@ -10,9 +10,11 @@ from prepare_zombie_roster_assets import normalize, remove_baked_background
 ROOT=Path(__file__).resolve().parents[1]
 BASE=ROOT/'assets/characters/zombie-army/season2'
 ROSTER=[('coffin-shield','棺盾小屍',True),('shield-cleaver','裂盾斧屍',True),('smoke-pot','煙罐小屍',True),('chain-hook','鉤鎖屍卒',False),('corpse-medic','縫屍醫官',True),('banner-hexer','斷旗咒屍',True),('decoy-puppet','替身偶屍',True),('siege-overseer','陷城屍督',True)]
+ROSTER += [('rat-fang','鼠牙群屍',True),('rot-nail-crossbow','腐釘弩屍',True),('venom-sac','毒囊噴屍',False),('gate-ram','破門撞屍',False)]
 # Reviewed source-coordinate seeds inside enclosed white background gaps.
 # Never globally threshold pale bandages, teeth, smoke or metal highlights.
 GAPS={
+ 'rot-nail-crossbow':[(704,96),(956,106),(790,107),(782,229),(279,531),(259,549)],
  'coffin-shield':[(1010,426),(531,773),(919,1015)],
  'shield-cleaver':[(1159,397),(270,987)],
  'smoke-pot':[(197,837)],

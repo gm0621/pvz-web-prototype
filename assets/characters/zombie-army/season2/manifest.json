@@ -184,6 +184,71 @@
           872
         ]
       ]
+    },
+    {
+      "key": "rat-fang",
+      "name": "鼠牙群屍",
+      "asset": "assets/characters/zombie-army/season2/rat-fang.webp",
+      "source_original": "assets/characters/zombie-army/season2/source-originals/09-rat-fang.png",
+      "source_sha256": "35449eef8c408ef732c7b48f4874d25333281e7d01c34b4092e57345cfdc0563",
+      "mirror": false,
+      "remove_background": true,
+      "enclosed_background_seeds": []
+    },
+    {
+      "key": "rot-nail-crossbow",
+      "name": "腐釘弩屍",
+      "asset": "assets/characters/zombie-army/season2/rot-nail-crossbow.webp",
+      "source_original": "assets/characters/zombie-army/season2/source-originals/10-rot-nail-crossbow.png",
+      "source_sha256": "be99b2d86a354366f04121fd79c6fa4e8ff3785c3a702b680c47057f4a8ef964",
+      "mirror": false,
+      "remove_background": true,
+      "enclosed_background_seeds": [
+        [
+          704,
+          96
+        ],
+        [
+          956,
+          106
+        ],
+        [
+          790,
+          107
+        ],
+        [
+          782,
+          229
+        ],
+        [
+          279,
+          531
+        ],
+        [
+          259,
+          549
+        ]
+      ]
+    },
+    {
+      "key": "venom-sac",
+      "name": "毒囊噴屍",
+      "asset": "assets/characters/zombie-army/season2/venom-sac.webp",
+      "source_original": "assets/characters/zombie-army/season2/source-originals/11-venom-sac.png",
+      "source_sha256": "a3a8cf8b70e60a3c00efa701cba7e2854de9881cde571f54a7296422857a79a9",
+      "mirror": false,
+      "remove_background": false,
+      "enclosed_background_seeds": []
+    },
+    {
+      "key": "gate-ram",
+      "name": "破門撞屍",
+      "asset": "assets/characters/zombie-army/season2/gate-ram.webp",
+      "source_original": "assets/characters/zombie-army/season2/source-originals/12-gate-ram.png",
+      "source_sha256": "6b1d437a087a165f89767fbe5336368b24f67705c1d7977617e78dde7e10b361",
+      "mirror": false,
+      "remove_background": false,
+      "enclosed_background_seeds": []
     }
   ]
 }
