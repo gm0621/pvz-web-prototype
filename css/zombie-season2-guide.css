@@ -1,0 +1,14 @@
+/* Season filters classify editorial artwork only; no battle selectors. */
+#zombieSeasonTabs[hidden],#zombieSeasonIntro[hidden]{display:none!important}
+.zombie-season-tabs{display:flex;gap:10px;flex-wrap:wrap;margin:12px 0 16px}
+.zombie-season-tabs button{flex:1;min-width:0;padding:12px;border:1px solid #bda2a2;border-radius:12px;background:#302026;color:#fff;font:inherit;cursor:pointer}
+.zombie-season-tabs button.active{background:#9f1239;border-color:#fda4af;box-shadow:0 0 0 2px #fda4af44}
+.zombie-season-tabs button:focus-visible{outline:3px solid #facc15;outline-offset:3px}
+#characters.zombie2-guide{background:radial-gradient(circle at 15% 10%,#9f123955,transparent 40%),linear-gradient(135deg,#29151d,#17121b)}
+.zombie-season-intro{padding:16px;border:1px solid #fda4af77;border-radius:16px;background:#4c1027;color:#ffe4e6;line-height:1.7}
+#characterGrid .zombie2-profile{border-color:#fda4af;background:linear-gradient(150deg,#fff1f2,#ffe4e6);color:#4c0519}
+.zombie2-profile .wei-role,.zombie2-profile .statusline,.zombie2-profile .wei-ability-summary b{color:#9f1239}
+.zombie2-profile .wei-preview-badge,.zombie2-profile .wei-ability-summary small{background:#881337;color:#fff1f2}
+.zombie2-profile .wei-ability-summary{border-color:#fda4af;background:#fff7f8;color:#502533}
+#charModal.zombie2-preview .char-detail-card{border-color:#fda4af;background:linear-gradient(135deg,#4c1027,#17121b)}
+#charModal.zombie2-preview .char-detail-head img{background:#ffe4e6}

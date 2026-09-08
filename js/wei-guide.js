@@ -21,13 +21,14 @@ function weiText(tag,text,className){
   if(className)el.className=className;
   return el;
 }
-function buildWeiCharacterGrid(){
+function buildWeiCharacterGrid(){return buildPreviewCharacterGrid('wei',WEI_GUIDE)}
+function buildPreviewCharacterGrid(roster,units){
   const grid=$('characterGrid');
   grid.replaceChildren();
-  WEI_GUIDE.forEach(d=>{
+  units.forEach(d=>{
     const card=document.createElement('article');
-    card.className='char-profile wei-profile';
-    card.dataset.weiKey=d.key;
+    card.className=`char-profile preview-profile ${roster==='wei'?'wei-profile':'zombie2-profile'}`;
+    if(roster==='wei')card.dataset.weiKey=d.key;else card.dataset.zombie2Key=d.key;
     card.tabIndex=0;
     card.setAttribute('role','button');
     card.setAttribute('aria-label',`查看${d.name}介紹`);
@@ -37,18 +38,20 @@ function buildWeiCharacterGrid(){
     if(d.skill)summary.append(weiText('b',`機率技能：${d.skill}`),weiText('span',d.skillEffect));
     else summary.append(weiText('small','小兵以固定天賦為主'));
     card.append(img,weiText('h3',d.name),weiText('div',d.role,'wei-role'),weiText('span','第二季預告｜尚未開放','wei-preview-badge'),weiText('p',d.intro),summary,weiText('div','查看普通行動與設計限制 →','statusline'));
-    card.onclick=()=>showCharacterDetail('wei',d.key);
+    card.onclick=()=>showCharacterDetail(roster,d.key);
     card.onkeydown=ev=>{if(ev.key==='Enter'||ev.key===' '){ev.preventDefault();card.click()}};
     grid.appendChild(card);
   });
 }
-function showWeiCharacterDetail(key){
-  const d=WEI_GUIDE.find(unit=>unit.key===key);
+function showWeiCharacterDetail(key){return showPreviewCharacterDetail('wei',WEI_GUIDE,key)}
+function showPreviewCharacterDetail(roster,units,key){
+  const d=units.find(unit=>unit.key===key);
   if(!d)return;
   $('charModal').classList.add('wei-preview');
+  $('charModal').classList.toggle('zombie2-preview',roster==='zombie2');
   $('charModalImg').src=d.asset;$('charModalImg').alt=d.name;
   $('charModalName').textContent=d.name;
-  $('charModalRole').textContent=`魏國｜第二季預告｜${d.role}`;
+  $('charModalRole').textContent=`${roster==='wei'?'魏國':'僵屍方'}｜第二季預告｜${d.role}`;
   $('charModalIntro').textContent=d.intro;
   $('charModalSkillTitle').textContent='天賦與技能提案';
   $('charModalStatsTitle').textContent='定位與設計限制';

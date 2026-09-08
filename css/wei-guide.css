@@ -4,14 +4,14 @@
 #characters .char-tabs button[data-roster="wei"].active{background:#1d4ed8!important;border-color:#93c5fd!important;color:#fff!important;box-shadow:0 0 18px #3b82f655!important}
 #characters.wei-guide{background:radial-gradient(circle at 15% 10%,#2563eb44,transparent 40%),linear-gradient(135deg,#101c3d,#0f172a)}
 .wei-roster-intro{padding:16px;border:1px solid #60a5fa66;border-radius:16px;background:#172554;color:#dbeafe;line-height:1.7}
-#characterGrid .wei-profile{border-color:#93c5fd;background:linear-gradient(150deg,#eff6ff,#dbeafe);color:#172554}
-.wei-profile .wei-role{color:#1e40af;font-size:14px;font-weight:800;min-height:42px;line-height:1.5}
-.wei-profile .wei-preview-badge{align-self:flex-start;background:#1e3a8a;color:#dbeafe;border-radius:999px;padding:5px 9px;font-size:12px;font-weight:800;margin:6px 0 10px}
-.wei-profile .wei-ability-summary{height:auto;min-height:150px;background:#f8fafc;border-color:#93c5fd;color:#334155}
-.wei-profile .wei-ability-summary b{color:#1e40af}
-.wei-profile .wei-ability-summary small{background:#1e3a8a;color:#dbeafe}
-.wei-profile .statusline{color:#1e40af}
-.wei-profile:focus-visible{outline:3px solid #facc15;outline-offset:4px}
+#characterGrid .preview-profile{border-color:#93c5fd;background:linear-gradient(150deg,#eff6ff,#dbeafe);color:#172554}
+.preview-profile .wei-role{color:#1e40af;font-size:14px;font-weight:800;min-height:42px;line-height:1.5}
+.preview-profile .wei-preview-badge{align-self:flex-start;background:#1e3a8a;color:#dbeafe;border-radius:999px;padding:5px 9px;font-size:12px;font-weight:800;margin:6px 0 10px}
+.preview-profile .wei-ability-summary{height:auto;min-height:150px;background:#f8fafc;border-color:#93c5fd;color:#334155}
+.preview-profile .wei-ability-summary b{color:#1e40af}
+.preview-profile .wei-ability-summary small{background:#1e3a8a;color:#dbeafe}
+.preview-profile .statusline{color:#1e40af}
+.preview-profile:focus-visible{outline:3px solid #facc15;outline-offset:4px}
 #charModal.wei-preview #charModalRange,#charModal.wei-preview .range-legend{display:none}
 #charModal.wei-preview .char-detail-card{border-color:#60a5fa;background:linear-gradient(135deg,#172554,#0f172a)}
 #charModal.wei-preview #charModalSkill{white-space:pre-line}

@@ -1,0 +1,189 @@
+{
+  "status": "season2_guide_preview",
+  "integrated_in_combat": false,
+  "characters": [
+    {
+      "key": "coffin-shield",
+      "name": "棺盾小屍",
+      "asset": "assets/characters/zombie-army/season2/coffin-shield.webp",
+      "source_original": "assets/characters/zombie-army/season2/source-originals/01-coffin-shield.png",
+      "source_sha256": "3f7d56881fb20484c23016ffcb3d7b8b6acd533d974f64a6d216ff7d3d6e8360",
+      "mirror": false,
+      "remove_background": true,
+      "enclosed_background_seeds": [
+        [
+          1010,
+          426
+        ],
+        [
+          531,
+          773
+        ],
+        [
+          919,
+          1015
+        ]
+      ]
+    },
+    {
+      "key": "shield-cleaver",
+      "name": "裂盾斧屍",
+      "asset": "assets/characters/zombie-army/season2/shield-cleaver.webp",
+      "source_original": "assets/characters/zombie-army/season2/source-originals/02-shield-cleaver.png",
+      "source_sha256": "ef0bafb68ec90c665ee4c172c816dfac7e2facf7355eac37f457a7c1cdf02253",
+      "mirror": false,
+      "remove_background": true,
+      "enclosed_background_seeds": [
+        [
+          1159,
+          397
+        ],
+        [
+          270,
+          987
+        ]
+      ]
+    },
+    {
+      "key": "smoke-pot",
+      "name": "煙罐小屍",
+      "asset": "assets/characters/zombie-army/season2/smoke-pot.webp",
+      "source_original": "assets/characters/zombie-army/season2/source-originals/03-smoke-pot.png",
+      "source_sha256": "7d6a55b6dbca4b9dbb0bed92352573bec0f0bbd719db763344516eb2a4bd5c3c",
+      "mirror": false,
+      "remove_background": true,
+      "enclosed_background_seeds": [
+        [
+          197,
+          837
+        ]
+      ]
+    },
+    {
+      "key": "chain-hook",
+      "name": "鉤鎖屍卒",
+      "asset": "assets/characters/zombie-army/season2/chain-hook.webp",
+      "source_original": "assets/characters/zombie-army/season2/source-originals/04-chain-hook.png",
+      "source_sha256": "622f2f37b62bc5cccd2176b3c349c346d135792c81c9926f0d5f8b10ecfc74ba",
+      "mirror": false,
+      "remove_background": false,
+      "enclosed_background_seeds": []
+    },
+    {
+      "key": "corpse-medic",
+      "name": "縫屍醫官",
+      "asset": "assets/characters/zombie-army/season2/corpse-medic.webp",
+      "source_original": "assets/characters/zombie-army/season2/source-originals/05-corpse-medic.png",
+      "source_sha256": "2c309c2691d77e039592dcde0a5b0ad2238e7bcc73638fd14ec1ee7d6c3e7935",
+      "mirror": false,
+      "remove_background": true,
+      "enclosed_background_seeds": [
+        [
+          617,
+          95
+        ],
+        [
+          886,
+          107
+        ],
+        [
+          785,
+          163
+        ],
+        [
+          967,
+          172
+        ],
+        [
+          144,
+          549
+        ]
+      ]
+    },
+    {
+      "key": "banner-hexer",
+      "name": "斷旗咒屍",
+      "asset": "assets/characters/zombie-army/season2/banner-hexer.webp",
+      "source_original": "assets/characters/zombie-army/season2/source-originals/06-banner-hexer.png",
+      "source_sha256": "fa504007d13333c66ad93b640d81d5020176c286a7043f1f5242342d2fdb3d90",
+      "mirror": false,
+      "remove_background": true,
+      "enclosed_background_seeds": [
+        [
+          678,
+          269
+        ],
+        [
+          460,
+          822
+        ],
+        [
+          437,
+          906
+        ]
+      ]
+    },
+    {
+      "key": "decoy-puppet",
+      "name": "替身偶屍",
+      "asset": "assets/characters/zombie-army/season2/decoy-puppet.webp",
+      "source_original": "assets/characters/zombie-army/season2/source-originals/07-decoy-puppet.png",
+      "source_sha256": "1f86f8c71c7e4158654e839e6f723648aabef238a8ae55d8ff11b22a343304a0",
+      "mirror": false,
+      "remove_background": true,
+      "enclosed_background_seeds": [
+        [
+          612,
+          54
+        ],
+        [
+          1137,
+          644
+        ]
+      ]
+    },
+    {
+      "key": "siege-overseer",
+      "name": "陷城屍督",
+      "asset": "assets/characters/zombie-army/season2/siege-overseer.webp",
+      "source_original": "assets/characters/zombie-army/season2/source-originals/08-siege-overseer.png",
+      "source_sha256": "a8194c7651ea4f1352a91f4ce810f2e5e41e0fc94f06997479957a6560beeafa",
+      "mirror": false,
+      "remove_background": true,
+      "enclosed_background_seeds": [
+        [
+          880,
+          6
+        ],
+        [
+          774,
+          132
+        ],
+        [
+          1098,
+          213
+        ],
+        [
+          516,
+          266
+        ],
+        [
+          942,
+          354
+        ],
+        [
+          414,
+          701
+        ],
+        [
+          497,
+          871
+        ],
+        [
+          413,
+          872
+        ]
+      ]
+    }
+  ]
+}
