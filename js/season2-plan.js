@@ -47,6 +47,7 @@ function planStageCard(stage,mode){
   content.append(planText('h4','配置限制與解法'),planText('p',challenge.counter));
   content.append(planText('h4','選關圖片製作說明'),planText('p',stage.artBrief,'art-brief'),planText('small',`建議檔名：s2-${String(stage.number).padStart(2,'0')}.webp｜16:9 橫圖；不加標題、按鈕或大頭角色。`,'art-file'));
   content.append(planText('p',stage.number===1?'關卡開放條件：本模式開放後可挑戰（預定）。':`關卡開放條件：通過本季${modeLabel}第 ${stage.number-1} 關（預定）。`,'planned-gate'));
+  if(stage.number===1){const play=planText('a',`開始第一關・${modeLabel}`,'play-stage-link');play.href=`index.html?season=2&faction=${mode==='defense'?'plants':'zombies'}`;body.append(play)}
   details.append(content);body.append(details);card.append(body);return card;
 }
 function renderSeason2Plan(mode){

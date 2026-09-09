@@ -9,6 +9,7 @@
     "test:desktop": "playwright test --project=desktop"
   },
   "devDependencies": {
+    "@electric-sql/pglite": "^0.5.8",
     "@playwright/test": "^1.55.0"
   }
 }

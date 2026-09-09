@@ -11,6 +11,7 @@
 <link rel="stylesheet" href="css/security.css">
 <link rel="stylesheet" href="css/wei-guide.css">
 <link rel="stylesheet" href="css/zombie-season2-guide.css">
+<link rel="stylesheet" href="css/season2-game.css">
 </head>
 <body>
 <section id="start" class="screen active hero menu-scene"><div class="menu-overlay"></div>
@@ -21,7 +22,7 @@
   </div>
   <div class="menu-title-block clean redesigned-title">
     <h1 class="game-logo logo-art"><img class="main-logo-img" src="assets/brand/sanguo-zombie-title-logo-transparent.webp" alt="三國萌將守城：屍潮來襲"></h1>
-    <div class="menu-news"><p><b>戰役消息</b> 第一季已開放｜<a id="season2PreviewLink" href="season2.html" style="color:#c5dfff;text-underline-offset:3px">第二季關卡預覽 →</a></p><p><b>音訊</b> 右上角可切換音樂與音效。</p><div class="progress-stats" id="menuProgressStats">🪙 金幣 0　⭐ 經驗 0</div></div>
+    <div class="menu-news"><div class="season2-entry"><button id="season2DefenseBtn">第二季・魏國守城</button><button id="season2AttackBtn">第二季・僵屍進攻</button></div><p><b>戰役消息</b> 第二季第一關已開放｜<a id="season2PreviewLink" href="season2.html" style="color:#c5dfff;text-underline-offset:3px">第二季關卡預覽 →</a></p><p><b>音訊</b> 右上角可切換音樂與音效。</p><div class="progress-stats" id="menuProgressStats">🪙 金幣 0　⭐ 經驗 0</div></div>
   </div>
   <section class="main-actions clean" aria-label="主要玩法">
     <article class="mode-banner resume-entry hidden" id="resumeBattleCard"><small>未完成戰局已暫停保存</small><strong>繼續遊戲</strong><button class="primary" id="resumeBattleBtn">▶ 回到戰場</button></article>
@@ -47,11 +48,15 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <div class="char-detail-modal" id="charModal"><div class="char-detail-card"><div class="char-detail-head"><img id="charModalImg" src="" alt=""><div><h2 id="charModalName"></h2><div class="char-detail-role" id="charModalRole"></div><p class="skill-copy" id="charModalIntro"></p></div><button class="char-detail-close" id="charModalClose" aria-label="關閉角色說明">×</button></div><div class="char-detail-body"><section class="char-detail-section"><h3 id="charModalSkillTitle">特殊技能 / 影響範圍</h3><p class="skill-copy" id="charModalSkill"></p><div class="range-board" id="charModalRange"></div><div class="range-legend"><span><i class="legend-origin"></i>角色位置</span><span><i class="legend-affect"></i>傷害/技能範圍</span><span><i class="legend-lane"></i>同一路/射程</span><span><i class="legend-support"></i>支援/召喚</span></div></section><section class="char-detail-section"><h3 id="charModalStatsTitle">能力數值</h3><div class="stat-grid" id="charModalStats"></div></section></div></div></div>
 <script src="js/data.js"></script>
+<script src="js/season2-plan-data.js"></script>
+<script src="js/season2-data.js"></script>
+<script src="js/season2-game.js"></script>
 <script src="js/cloud.js"></script>
 <script src="js/account.js"></script>
 <script src="js/shop.js"></script>
 <script src="js/wei-guide.js"></script>
 <script src="js/zombie-season2-guide.js"></script>
 <script src="js/app.js"></script>
+<script>initSeason2Entry();</script>
 </body>
 </html>

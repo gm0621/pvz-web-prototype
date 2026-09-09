@@ -1,4 +1,4 @@
-// Season 2 editorial preview only. Never add these records to combat/profile dictionaries.
+// Editorial identities remain independent; six mapped units now have first-stage combat definitions.
 const WEI_GUIDE = [
   {key:'tuntian-soldier',name:'屯田兵',role:'經濟與補給',attack:'定期生產軍糧。',intro:'保護後勤才能養出穩定的軍糧收益，是魏國持久戰的起點。',talent:'屯田積穀',effect:'一段時間沒有受傷，下一次補給增加；受傷後重新累積。',limit:'遭到遠程騷擾會打斷屯田收益。'},
   {key:'shield-soldier',name:'大盾兵',role:'軍陣前排',attack:'近距離盾擊。',intro:'架起大盾穩住正面戰線，讓身後弩兵有時間完成校射。',talent:'列盾',effect:'停止交戰一段時間後架盾，減少來自正面的傷害。',limit:'側路濺射、範圍傷害與持續消耗仍能威脅防線。'},
@@ -22,6 +22,7 @@ function weiText(tag,text,className){
   return el;
 }
 function buildWeiCharacterGrid(){return buildPreviewCharacterGrid('wei',WEI_GUIDE)}
+function previewCombatUnit(key){if(typeof SEASON2_GUIDE_KEYS==='undefined')return null;const entry=Object.entries(SEASON2_GUIDE_KEYS).find(([,guide])=>guide===key);if(!entry)return null;return PLANT_TYPES[entry[0]]||ZOMBIE_TYPES[entry[0]]}
 function buildPreviewCharacterGrid(roster,units){
   const grid=$('characterGrid');
   grid.replaceChildren();
@@ -37,7 +38,8 @@ function buildPreviewCharacterGrid(roster,units){
     summary.append(weiText('b',`天賦：${d.talent}`),weiText('span',d.effect));
     if(d.skill)summary.append(weiText('b',`機率技能：${d.skill}`),weiText('span',d.skillEffect));
     else summary.append(weiText('small','小兵以固定天賦為主'));
-    card.append(img,weiText('h3',d.name),weiText('div',d.role,'wei-role'),weiText('span','第二季預告｜尚未開放','wei-preview-badge'),weiText('p',d.intro),summary,weiText('div','查看普通行動與設計限制 →','statusline'));
+    const combat=previewCombatUnit(d.key),badge=combat?(combat.clearRequired?'第一關通關獎勵':'第一關初始角色'):'尚未開放';
+    card.append(img,weiText('h3',d.name),weiText('div',d.role,'wei-role'),weiText('span',`第二季預告與開放狀態｜${badge}`,'wei-preview-badge'),weiText('p',d.intro),summary,weiText('div','查看普通行動與設計限制 →','statusline'));
     card.onclick=()=>showCharacterDetail(roster,d.key);
     card.onkeydown=ev=>{if(ev.key==='Enter'||ev.key===' '){ev.preventDefault();card.click()}};
     grid.appendChild(card);
@@ -58,7 +60,9 @@ function showPreviewCharacterDetail(roster,units,key){
   $('charModalSkill').textContent=`普通行動：${d.attack}\n\n天賦：${d.talent}（固定生效）\n${d.effect}\n\n${d.skill?`機率技能：${d.skill}\n${d.skillEffect}`:'小兵以固定天賦為主，不另設機率大招。'}`;
   $('charModalRange').replaceChildren();
   $('charModalStats').replaceChildren();
-  [['開放狀態','僅供介紹，尚未開放出戰。'],['戰術定位',d.role],['設計限制',d.limit],['數值規劃','費用、血量、範圍、冷卻與機率尚未定案。']].forEach(([title,text])=>{
+  const combat=previewCombatUnit(key);
+  if(combat){$('charModalSkillTitle').textContent='已實裝天賦';$('charModalSkill').textContent=`普通行動：${d.attack}\n\n天賦：${d.talent}\n${combat.desc}`}
+  [['開放狀態',combat?(combat.clearRequired?'第一關通關獎勵：通過同模式第一關後可出戰。':'第一關初始角色：可由第二季第一關出戰。'):'僅供介紹，尚未開放出戰。'],['戰術定位',d.role],['設計限制',d.limit],[combat?'第一關基礎數值':'數值規劃',combat?`費用 ${combat.cost}｜生命值 ${combat.hp}｜${combat.desc}`:'費用、血量、範圍、冷卻與機率尚未定案。']].forEach(([title,text])=>{
     const item=document.createElement('div');item.className='stat-pill';item.append(weiText('b',title),weiText('span',text));$('charModalStats').appendChild(item);
   });
   $('charModal').classList.add('show');

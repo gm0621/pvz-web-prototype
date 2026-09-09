@@ -30,7 +30,7 @@ test('Wei preview guide has separate Shu Wei zombie tabs and cannot change the p
     await expect(page.locator('#charModalName')).toHaveText(names[i]);
     await expect(page.locator('#charModalRole')).toContainText('魏國');
     await expect(page.locator('#charModalSkill')).toContainText('天賦');
-    await expect(page.locator('#charModalStats')).toContainText('尚未開放出戰');
+    await expect(page.locator('#charModalStats')).toContainText(i<3?'第一關':'尚未開放出戰');
     await expect(page.locator('#charModalRange')).toBeHidden();
     await expect(page.locator('#charModalStats')).not.toContainText('下一級');
     if(i>=4) await expect(page.locator('#charModalSkill')).toContainText('機率技能');
