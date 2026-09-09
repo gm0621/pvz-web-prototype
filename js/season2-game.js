@@ -89,8 +89,25 @@ function processSeason2AttackEvents(){
  const cell=[2,1,3,0].find(c=>!plantAtCell(row,c));if(cell===undefined)return;
  state.bossSpawned=true;addPlant('s2Shield',cell,row);const leader=state.plants[state.plants.length-1];leader.boss=true;flash(leader,'大盾領隊');log('魏軍大盾領隊進入戰線；先留骨釘，再讓群屍近身破盾。');
 }
+function setSeasonPickerVisible(visible){
+ $('seasonPicker').classList.toggle('hidden',!visible);$('levelGrid').classList.toggle('hidden',visible);
+ $('campaignHeading').textContent=visible?'選擇季度':'選擇關卡';
+ $('backFactionBtn').setAttribute('aria-label',visible?'回陣營選擇':'回季度選擇');
+}
+function showSeasonPicker(faction,syncHistory=true){
+ if(!['plants','zombies'].includes(faction))return;
+ backToHome(false);currentFaction=faction;$('start').classList.remove('active');$('levelScreen').classList.add('active');$('levelScreen').classList.remove('season2-select');
+ setSeasonPickerVisible(true);$('chosenFactionText').textContent=`${faction==='plants'?'守城方':'攻城方'}｜選擇第一季或第二季，各季進度分開保存。`;
+ document.querySelectorAll('[data-season-choice]').forEach(button=>{
+  const season=Number(button.dataset.seasonChoice),open=isCampaignFactionUnlocked(faction,season);
+  button.disabled=!open;
+  button.querySelector('.season-status').textContent=!open?'🔒 完成第一季守城十關後解鎖':season===2?'第一關已開放・第二～十關預覽':'十關戰役・依通關進度逐關解鎖';
+  const art=campaignLevels(season)[1].cardArt||'assets/backgrounds/main-menu-battle-bg.webp';button.style.backgroundImage=`linear-gradient(0deg,rgba(6,15,25,.95),rgba(6,15,25,.18)),url("${art}")`;
+ });
+ refreshResumeBattleUI();playSceneMusic('stageSelect');if(syncHistory)syncAppHistory('season');
+}
 function initSeason2Entry(){
- bind('season2DefenseBtn',()=>chooseFaction('plants',2));bind('season2AttackBtn',()=>chooseFaction('zombies',2));
+ document.querySelectorAll('[data-season-choice]').forEach(button=>button.onclick=()=>chooseFaction(currentFaction,Number(button.dataset.seasonChoice)));
  $('characterRosterIntro').textContent='第二季預告與開放狀態｜屯田兵、強弩兵可從第一關出戰，大盾兵為守城第一關獎勵；其他魏國角色尚未開放出戰。';
  $('zombieSeasonIntro').textContent='第二季 12 位角色預告與開放狀態｜鼠牙群屍、腐釘弩屍可從第一關出戰，棺盾小屍為進攻第一關獎勵；其餘角色尚未開放出戰。';
  const query=new URLSearchParams(location.search);if(query.get('season')==='2'&&!(state?.season===2&&!state.over))chooseFaction(query.get('faction')==='zombies'?'zombies':'plants',2);

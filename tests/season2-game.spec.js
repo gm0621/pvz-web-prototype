@@ -2,8 +2,8 @@ const {test,expect}=require('@playwright/test');
 async function open(page){await page.route('https://cdn.jsdelivr.net/**',r=>r.fulfill({contentType:'application/javascript',body:''}));await page.goto('/');}
 test('second season first defense starts with its own two soldiers and no stage-two bypass',async({page})=>{
  await open(page);
- await expect(page.locator('#season2DefenseBtn')).toBeVisible();
- await page.locator('#season2DefenseBtn').click();
+ await page.locator('#plantStartBtn').click();
+ await page.locator('[data-season-choice="2"]').click();
  await expect(page.locator('#chosenFactionText')).toContainText('第二季');
  await expect(page.locator('#levelGrid button[data-jump-level="1"]')).toBeEnabled();
  await expect(page.locator('#levelGrid button[data-jump-level="2"]')).toBeDisabled();
@@ -31,7 +31,7 @@ test('Wei soldiers accumulate safe supplies, focus their target, and brace their
 });
 
 test('second-season attack uses Wei enemies, bone marks, pack damage and a breakable coffin shield',async({page})=>{
- await open(page);await page.locator('#season2AttackBtn').click();await page.locator('[data-jump-level="1"]').click();
+ await open(page);await page.locator('#zombieStartBtn').click();await page.locator('[data-season-choice="2"]').click();await page.locator('[data-jump-level="1"]').click();
  await expect(page.locator('#cards .name')).toHaveText(['鼠牙群屍','腐釘弩屍']);
  expect(await page.evaluate(()=>state.plants.every(p=>p.type.startsWith('s2')))).toBe(true);
  const result=await page.evaluate(()=>{
