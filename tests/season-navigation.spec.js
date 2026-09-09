@@ -15,7 +15,7 @@ test('faction entry offers seasons before levels while first-season attack stays
   await page.locator('#backFactionBtn').click();await expect(page.locator('#seasonPicker')).toBeVisible();
   await page.locator('#backFactionBtn').click();await expect(page.locator('#start')).toHaveClass(/active/);
  }
- await page.locator('#plantStartBtn').click();await page.locator('[data-season-choice="1"]').click();await page.locator('#levelGrid button').first().click();await expect(page.locator('#game')).toHaveClass(/active/); expect(await page.evaluate(()=>state.season)).toBe(1);
+ await page.locator('#plantStartBtn').click();await page.locator('[data-season-choice="1"]').click();await page.locator('#levelGrid button').first().click();await expect(page.locator('#storyDialog')).toBeVisible();await page.locator('#storySkip').click();await expect(page.locator('#game')).toHaveClass(/active/); expect(await page.evaluate(()=>state.season)).toBe(1);
 });
 test('browser back follows levels to seasons to home',async({page})=>{
  await page.route('https://cdn.jsdelivr.net/**',r=>r.fulfill({contentType:'application/javascript',body:''}));await page.goto('/');

@@ -9,6 +9,7 @@ test('season-two rewards survive reload without completing a first-season stage 
  await expect(page.locator('#cards [data-key="s2Shield"]')).toBeVisible();expect(await page.evaluate(()=>playerProfile.characterLevels.plants.s2Crossbow)).toEqual(progress.char);
  expect(await page.evaluate(()=>isCampaignLevelUnlocked('plants',2))).toBe(false);
  await page.evaluate(()=>backToHome());await page.locator('#plantStartBtn').click();await page.locator('[data-season-choice="1"]').click();await page.locator('[data-jump-level="1"]').click();
+ await expect(page.locator('#storyDialog')).toBeVisible();await page.locator('#storySkip').click();
  await expect(page.locator('#cards [data-key^="s2"]')).toHaveCount(0);expect(await page.evaluate(()=>state.season)).toBe(1);
 });
 test('refresh restores the correct second-season battle and talent state, paused',async({page})=>{

@@ -12,6 +12,7 @@
 <link rel="stylesheet" href="css/wei-guide.css">
 <link rel="stylesheet" href="css/zombie-season2-guide.css">
 <link rel="stylesheet" href="css/season2-game.css">
+<link rel="stylesheet" href="css/season1-story.css">
 </head>
 <body>
 <section id="start" class="screen active hero menu-scene"><div class="menu-overlay"></div>
@@ -48,6 +49,9 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <div class="char-detail-modal" id="charModal"><div class="char-detail-card"><div class="char-detail-head"><img id="charModalImg" src="" alt=""><div><h2 id="charModalName"></h2><div class="char-detail-role" id="charModalRole"></div><p class="skill-copy" id="charModalIntro"></p></div><button class="char-detail-close" id="charModalClose" aria-label="關閉角色說明">×</button></div><div class="char-detail-body"><section class="char-detail-section"><h3 id="charModalSkillTitle">特殊技能 / 影響範圍</h3><p class="skill-copy" id="charModalSkill"></p><div class="range-board" id="charModalRange"></div><div class="range-legend"><span><i class="legend-origin"></i>角色位置</span><span><i class="legend-affect"></i>傷害/技能範圍</span><span><i class="legend-lane"></i>同一路/射程</span><span><i class="legend-support"></i>支援/召喚</span></div></section><section class="char-detail-section"><h3 id="charModalStatsTitle">能力數值</h3><div class="stat-grid" id="charModalStats"></div></section></div></div></div>
 <script src="js/data.js"></script>
+<dialog id="storyDialog" aria-labelledby="storyTitle"><div class="story-shell"><header class="story-header"><p id="storyRoute"></p><h2 id="storyTitle"></h2><button id="storyClose" aria-label="關閉劇情，不開始戰鬥">×</button><nav id="storyReplayTabs" class="story-replay-tabs" aria-label="回看段落" hidden><button id="storyReplayOpening">開場</button><button id="storyReplayVictory">通關後</button></nav></header><div id="storyStage" class="story-stage"><span id="storySubtitle"></span><img id="storyPortrait" alt="" hidden></div><section class="story-dialogue" aria-live="polite"><div class="story-speaker-row"><strong id="storySpeaker"></strong><span id="storyCount"></span></div><p id="storyText"></p></section><footer class="story-actions"><button id="storyPrev">← 上一句</button><button id="storySkip">跳過，開始戰鬥</button><button id="storyNext">下一句 →</button></footer></div></dialog>
+<script src="js/season1-story-data.js"></script>
+<script src="js/season1-story.js"></script>
 <script src="js/season2-plan-data.js"></script>
 <script src="js/season2-data.js"></script>
 <script src="js/season2-game.js"></script>

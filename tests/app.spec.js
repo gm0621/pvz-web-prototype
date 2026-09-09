@@ -50,6 +50,11 @@ const mockSupabase = `
 })();`;
 
 async function openApp(page, query='test=1') {
+  // Existing gameplay cases use a returning reader; story-first flows have their own spec.
+  await page.addInitScript(() => {
+    const read={};for(const side of ['plants','zombies'])for(let level=1;level<=10;level++)for(const scene of ['opening','victory','defeat'])read[`${side}:${level}:${scene}`]=true;
+    localStorage.setItem('sgzStoryRead_v1',JSON.stringify(read));
+  });
   await page.route('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2', route => route.fulfill({contentType: 'application/javascript', body: mockSupabase}));
   await page.goto('/?' + query);
   await expect(page.locator('#start')).toHaveClass(/active/);
