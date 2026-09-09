@@ -10,7 +10,8 @@ test('attack story keeps the alternate timeline and normal unlock gate',async({p
 test('cloud pending waits before its ending; an older saved battle also gets its ending',async({page})=>{
  await openGame(page);await page.evaluate(()=>{selectedLevel=1;start('plants');clearInterval(timer);currentUser={id:'story-test'};claimCloudMatchReward=()=>new Promise(resolve=>window.__resolveStoryClaim=resolve);window.__ending=end(true,'防守成功','測試')});
  await expect(page.locator('#modalTitle')).toHaveText('⏳ 正在確認戰果');await expect(page.locator('#storyDialog')).not.toBeVisible();
- await page.evaluate(async()=>{window.__resolveStoryClaim(true);await window.__ending});await expect(page.locator('#storyDialog')).toBeVisible();
+ await expect(page.locator('#modalStory')).not.toBeVisible();
+ await page.evaluate(async()=>{window.__resolveStoryClaim(true);await window.__ending});await expect(page.locator('#storyDialog')).not.toBeVisible();await page.locator('#modalStory').click();await expect(page.locator('#storyDialog')).toBeVisible();
 });
 test('all ten stages have both routes and every scene renders with real portraits',async({page})=>{
  await openGame(page);
@@ -28,7 +29,7 @@ test('all ten stages have both routes and every scene renders with real portrait
  });expect(report).toEqual({scenes:60,issues:[]});
 });
 test('next stage opens its own story and closing it never starts or completes that stage',async({page})=>{
- await openGame(page);await chooseFirst(page);await page.locator('#storySkip').click();await page.evaluate(async()=>{clearInterval(timer);await end(true,'防守成功','結算')});await page.locator('#storySkip').click();
+ await openGame(page);await chooseFirst(page);await page.locator('#storySkip').click();await page.evaluate(async()=>{clearInterval(timer);await end(true,'防守成功','結算')});await page.locator('#modalStory').click();await page.locator('#storySkip').click();
  await page.locator('#modalNext').click();await expect(page.locator('#storyTitle')).toHaveText('第二關：軍糧小徑');await expect(page.locator('#storyDialog')).toBeVisible();
  await page.locator('#storyClose').click();expect(await page.evaluate(()=>({level:state.level,over:state.over,completed:isCampaignLevelCompleted('plants',2)}))).toEqual({level:1,over:true,completed:false});
  await expect(page.locator('#levelScreen')).toHaveClass(/active/);await page.locator('[data-jump-level="2"]').click();await page.locator('#storySkip').click();expect(await page.evaluate(()=>state.level)).toBe(2);
@@ -46,11 +47,15 @@ test('back and reload cancel unread intros while paused battles resume without r
 });
 test('locked scenes cannot be replayed and defeat never advances the campaign',async({page})=>{
  await openGame(page);expect(await page.evaluate(()=>replayCampaignStory('plants',2))).toBe(false);expect(await page.evaluate(()=>replayCampaignStory('plants',1,'victory'))).toBe(false);
- await chooseFirst(page);await page.locator('#storySkip').click();await page.evaluate(async()=>{clearInterval(timer);await end(false,'防守失敗','測試')});await expect(page.locator('#storyText')).toContainText('往城門退');
+ await chooseFirst(page);await page.locator('#storySkip').click();await page.evaluate(async()=>{clearInterval(timer);await end(false,'防守失敗','測試')});await expect(page.locator('#storyDialog')).not.toBeVisible();await expect(page.locator('#modalTitle')).toHaveText('防守失敗');await page.locator('#modalStory').click();await expect(page.locator('#storyText')).toContainText('往城門退');
  await page.locator('#storySkip').click();expect(await page.evaluate(()=>isCampaignLevelCompleted('plants',1))).toBe(false);await page.locator('#modalRestart').click();await expect(page.locator('#storyDialog')).not.toBeVisible();await expect(page.locator('#game')).toHaveClass(/active/);
 });
-test('verified victory opens its ending and replay never grants rewards or starts a battle',async({page})=>{
+test('victory shows results first, waits for Continue Story, and replay never grants rewards',async({page})=>{
  await openGame(page);await chooseFirst(page);await page.locator('#storySkip').click();await page.evaluate(async()=>{clearInterval(timer);await end(true,'防守成功','測試結算')});
+ await expect(page.locator('#modalTitle')).toHaveText('防守成功');await expect(page.locator('#rewardPanel')).toBeVisible();
+ await expect(page.locator('#storyDialog')).not.toBeVisible();await expect(page.locator('#modalStory')).toHaveText('繼續劇情 ▶');
+ const settled=await page.evaluate(()=>JSON.stringify(playerProfile));await page.locator('#modalStory').click();
+ expect(await page.evaluate(()=>JSON.stringify(playerProfile))).toBe(settled);
  await expect(page.locator('#storyDialog')).toBeVisible();await expect(page.locator('#storyText')).toContainText('鐵盔頭目');
  await page.locator('#storySkip').click();await page.locator('#modalMainMenu').click();
  await page.locator('#plantStartBtn').click();await page.locator('[data-season-choice="1"]').click();
@@ -58,6 +63,25 @@ test('verified victory opens its ending and replay never grants rewards or start
  await page.locator('#storyReplayVictory').click();await expect(page.locator('#storyText')).toContainText('鐵盔頭目');await page.locator('#storySkip').click();
  expect(await page.evaluate(()=>JSON.stringify(playerProfile))).toBe(before);await expect(page.locator('#levelScreen')).toHaveClass(/active/);
  await page.locator('[data-jump-level="1"]').click();await expect(page.locator('#storyDialog')).not.toBeVisible();await expect(page.locator('#game')).toHaveClass(/active/);
+});
+test('leaving results cancels the old story action and a new season cannot inherit it',async({page})=>{
+ await openGame(page);await chooseFirst(page);await page.locator('#storySkip').click();await page.evaluate(async()=>{clearInterval(timer);await end(true,'防守成功','結算');window.__oldStoryAction=document.getElementById('modalStory').onclick});
+ await page.locator('#modalMainMenu').click();expect(await page.evaluate(()=>window.__oldStoryAction())).toBe(false);await expect(page.locator('#storyDialog')).not.toBeVisible();
+ expect(await page.evaluate(()=>hasReadStory('plants',1,'victory'))).toBe(false);
+ await page.evaluate(()=>{chooseFaction('plants',2);startLevel('plants',1);clearInterval(timer)});await expect(page.locator('#modalStory')).not.toBeVisible();expect(await page.evaluate(()=>window.__oldStoryAction())).toBe(false);
+ await page.evaluate(()=>end(true,'通關','結算'));await expect(page.locator('#modalStory')).not.toBeVisible();await expect(page.locator('#storyDialog')).not.toBeVisible();
+});
+test('short landscape results stay on-screen and all exit controls remain reachable',async({page})=>{
+ await page.setViewportSize({width:844,height:390});await openGame(page);
+ await page.evaluate(async()=>{start('plants');clearInterval(timer);await end(true,'防守成功','結算')});
+ const bounds=await page.locator('#modal .modal-card').boundingBox();expect(bounds.y+bounds.height).toBeLessThanOrEqual(390);
+ await page.locator('#modalStory').click();await page.locator('#storySkip').click();await page.locator('#modalMainMenu').click();await expect(page.locator('#start')).toHaveClass(/active/);
+});
+test('closing a result story can reopen it and reading it does not duplicate rewards',async({page})=>{
+ await openGame(page);await chooseFirst(page);await page.locator('#storySkip').click();await page.evaluate(async()=>{clearInterval(timer);await end(true,'防守成功','結算')});
+ const before=await page.evaluate(()=>JSON.stringify(playerProfile));await page.locator('#modalStory').click();await page.locator('#storyClose').click();await expect(page.locator('#modalStory')).toBeVisible();
+ await page.locator('#modalStory').click();await page.locator('#storySkip').click();await expect(page.locator('#modalStory')).not.toBeVisible();expect(await page.evaluate(()=>JSON.stringify(playerProfile))).toBe(before);
+ await expect(page.locator('#modalNext')).toBeVisible();
 });
 test('first-season opening blocks simulation and cloud match creation until skipped',async({page})=>{
  await openGame(page);await page.evaluate(()=>{window.__storyStarts=0;startCloudMatch=()=>{window.__storyStarts++}});await chooseFirst(page);

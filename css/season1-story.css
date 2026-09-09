@@ -1,4 +1,4 @@
-#storyDialog{padding:0;border:1px solid #d9b974;border-radius:22px;width:min(940px,94vw);max-width:94vw;max-height:94dvh;background:#111c25;color:#fff4dd;box-shadow:0 28px 100px #000b;font-family:inherit;overflow:hidden}
+#storyDialog{position:fixed;left:50vw;top:50dvh;right:auto;bottom:auto;margin:0;transform:translate(-50%,-50%);padding:0;border:1px solid #d9b974;border-radius:22px;width:min(940px,94vw);max-width:94vw;max-height:94dvh;background:#111c25;color:#fff4dd;box-shadow:0 28px 100px #000b;font-family:inherit;overflow:hidden}
 #storyDialog::backdrop{background:#06101bdb;backdrop-filter:blur(7px)}
 #storyDialog:not([open]){display:none}
 .story-shell{height:min(710px,90dvh);display:flex;flex-direction:column;overflow:hidden}
@@ -27,6 +27,9 @@
 .story-replay-tabs{display:flex;gap:8px;margin-top:10px}
 .story-replay-tabs button{border:1px solid #b8a06466;background:#102632;color:#e6d9ba;border-radius:6px;padding:7px 13px;font:inherit;cursor:pointer}
 .story-replay-tabs button[aria-pressed=true]{background:#e3ba6a;color:#251d0d}
+/* Keep result actions reachable on short screens, including landscape phones. */
+#modal{width:100vw;height:100dvh}
+#modal .modal-card{max-height:calc(100dvh - 40px);overflow-y:auto;overscroll-behavior:contain}
 .story-replay-tabs[hidden]{display:none}
 @media(max-width:600px){#storyDialog{border-radius:16px;width:94vw}.story-shell{height:min(710px,91dvh)}.story-header{padding:15px 53px 12px 17px}#storyRoute{font-size:11px;line-height:1.5}#storyTitle{font-size:21px}#storyClose{right:10px;top:13px;min-width:36px;min-height:36px}.story-stage{min-height:120px}#storyPortrait{left:0;width:58%;height:93%}#storySubtitle{right:6%;top:12%;font-size:27px;max-width:48%;writing-mode:vertical-rl;max-height:85%;line-height:1.35}.story-dialogue{padding:15px 18px 12px}#storyText{font-size:17px;min-height:100px;max-height:25dvh;line-height:1.75}#storySpeaker{font-size:18px}.story-actions{gap:7px;flex-wrap:wrap;padding:10px 14px 15px}.story-actions button{font-size:14px;padding:10px}#storyNext{min-width:112px;flex:1}#storyPrev{margin-right:0}#storySkip{font-size:12px}.story-replay-tabs button{font-size:13px}}
 @media(max-height:500px){.story-shell{height:94dvh}.story-header{padding-top:9px;padding-bottom:9px}#storyRoute{margin-bottom:2px}#storyTitle{font-size:18px}.story-stage{min-height:45px}#storySubtitle{font-size:21px;writing-mode:horizontal-tb;top:8%}.story-dialogue{padding:9px 18px}#storyText{min-height:42px;max-height:23dvh;font-size:16px}.story-speaker-row{margin-bottom:3px}.story-actions{padding:7px 16px}.story-actions button{min-height:40px}}

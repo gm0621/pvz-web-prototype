@@ -23,9 +23,13 @@ async function checkControls(page){
   await page.locator('#backBtn').click();await page.locator('#resumeBattleBtn').click();assert(await page.evaluate(()=>state.paused));await expect(page.locator('#storyDialog')).not.toBeVisible();
   await page.locator('#pauseBtn').click();assert.equal(await page.evaluate(()=>state.paused),false);
   await page.locator('#fullscreenBtn').click();
-  // Injected loss verifies only result/story UI; not a claim of natural combat completion.
-  await page.evaluate(async()=>{clearInterval(timer);await end(false,'防守失敗','UI smoke')});await expect(page.locator('#storyDialog')).toBeVisible();await checkControls(page);
+  // Injected victory verifies result/story UI only, not natural combat completion.
+  await page.evaluate(async()=>{clearInterval(timer);await end(true,'防守成功','本關已完成，先確認戰果，再繼續故事。')});
+  await expect(page.locator('#storyDialog')).not.toBeVisible();await expect(page.locator('#modalTitle')).toHaveText('防守成功');
+  await page.locator('#modalStory').scrollIntoViewIfNeeded();await expect(page.locator('#game')).not.toHaveClass(/fullscreen-mode/);
+  const resultImage=path.join(output,`${label}-result-before-story.png`);await page.screenshot({path:resultImage});
+  await page.locator('#modalStory').click();await expect(page.locator('#storyDialog')).toBeVisible();await checkControls(page);
   await page.locator('#storySkip').click();await page.locator('#modalMainMenu').click();await expect(page.locator('#start')).toHaveClass(/active/);
-  assert.deepEqual(errors,[]);console.log(JSON.stringify({status:'PASS',label,url,image,checks:['story control hit targets','portrait decode','legal deployment','paused resume','fullscreen result dialog','home return','zero page errors']}));await context.close();
+  assert.deepEqual(errors,[]);console.log(JSON.stringify({status:'PASS',label,url,image,resultImage,checks:['results before story','explicit continue story','story control hit targets','portrait decode','legal deployment','paused resume','fullscreen result dialog','home return','zero page errors']}));await context.close();
  }}finally{await browser.close()}
 })().catch(e=>{console.error(e);process.exitCode=1});

@@ -118,7 +118,7 @@ function restoreBattleIfAvailable(){
  if(state.bossSpawned&&state.nextAI===null)state.nextAI=Infinity;
  ['start','accountScreen','levelScreen','characters','profile','shop'].forEach(id=>$(id)?.classList.remove('active'));$('game').classList.add('active');$('modal')?.classList.remove('show');$('log').innerHTML='';playSceneMusic('battle');buildGrid();$('board').classList.toggle('night',!!lv.nightMode);$('game').classList.toggle('level-2-night',!!lv.nightMode);applySeasonBattleTheme();buildCards();updateBattleActionUI();applyPausedBattleUI();updateHUD();render();timer=setInterval(tick,50);log('未完成戰局已還原並保持暫停，按「繼續」後才會推進。');return true
 }
-function start(faction){
+function start(faction){resetBattleStoryResult();
   if(!isCampaignLevelUnlocked(faction,selectedLevel)){backToHome();return false}
   applyActiveSkins(faction);
   clearBattleSave();clearInterval(timer);syncAppHistory('battle');playSceneMusic('battle');const lv=campaignLevels()[selectedLevel];
