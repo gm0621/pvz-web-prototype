@@ -2,11 +2,11 @@
 // no enemy deletion, injected victory, inflated resources or altered combat HP.
 const {chromium}=require('@playwright/test');
 (async()=>{const browser=await chromium.launch();try{
- for(const faction of ['plants','zombies'])for(const seed of [7,42,99]){
-  const page=await browser.newPage();await page.route('https://cdn.jsdelivr.net/**',r=>r.fulfill({body:'',contentType:'application/javascript'}));await page.goto('http://127.0.0.1:8091/');
-  const out=await page.evaluate(({faction,seed})=>{
+ for(const level of [1,2])for(const faction of ['plants','zombies'])for(const seed of [7,42,99]){
+  const page=await browser.newPage();await page.route('https://cdn.jsdelivr.net/**',r=>r.fulfill({body:'',contentType:'application/javascript'}));await page.goto(process.env.GAME_URL||'http://127.0.0.1:4174/');
+  const out=await page.evaluate(({faction,seed,level})=>{
    let rnd=seed;Math.random=()=>((rnd=rnd*48271%2147483647)/2147483647);
-   playerProfile=normalizeProfile({});chooseFaction(faction,2);startLevel(faction,1);clearInterval(timer);
+   playerProfile=normalizeProfile({});if(level===2)completeCampaignLevel(faction,1,2);markStoryRead(faction,level,'opening',2);chooseFaction(faction,2);startLevel(faction,level);clearInterval(timer);
    const originalRender=render,originalHUD=updateHUD;render=()=>{};updateHUD=()=>{};
    const can=key=>!isCooling(key)&&state.resource>=effectiveUnit(faction,key).cost;
    const placeUnit=(key,r,c)=>{if(can(key))deploySelected(key,r,c)};
@@ -20,14 +20,15 @@ const {chromium}=require('@playwright/test');
       const r=[2,0,4].find(r=>!plantAtCell(r,0));if(r!==undefined)placeUnit('s2Tuntian',r,0);
      }
      if(missing===undefined){for(const r of rows){if(!plantAtCell(r,2)){placeUnit('s2Crossbow',r,2);break}}}
+     if(level===2&&missing===undefined){const row=threatened.find(r=>!plantAtCell(r,4));if(row!==undefined)placeUnit('s2Shield',row,4)}
     }else{
-     const wave=['s2Rat','s2Nail','s2Rat','s2Rat','s2Nail'],key=wave[(state.probeStep||0)%wave.length];
+     const wave=level===2?['s2Coffin','s2Nail','s2Rat','s2Rat','s2Nail']:['s2Rat','s2Nail','s2Rat','s2Rat','s2Nail'],key=wave[(state.probeStep||0)%wave.length];
      if(can(key)){deploySelected(key,1,7);state.probeStep=(state.probeStep||0)+1}
     }
     tick();
    }
    render=originalRender;updateHUD=originalHUD;render();updateHUD();
-   return {faction,seed,time:state.time,over:state.over,won:playerProfile.season2Progress[faction].highestLevel===1,boss:state.bossSpawned,spawned:state.enemiesSpawned,resource:state.resource,used:state.usedUnits[faction],remaining:{plants:state.plants.length,zombies:state.zombies.length}};
-  },{faction,seed});console.log(JSON.stringify(out));await page.close();
+   return {level,faction,seed,time:state.time,over:state.over,won:playerProfile.season2Progress[faction].highestLevel===level,boss:state.bossSpawned,spawned:state.enemiesSpawned,resource:state.resource,used:state.usedUnits[faction],remaining:{plants:state.plants.length,zombies:state.zombies.length}};
+  },{faction,seed,level});console.log(JSON.stringify(out));await page.close();
  }
 }finally{await browser.close()}})().catch(e=>{console.error(e);process.exit(1)});

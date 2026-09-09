@@ -34,16 +34,27 @@ const sleep=ms=>new Promise(r=>setTimeout(r,ms));
   await rpc('sgz_start_match',{...args,p_faction:'zombies'},'FACTION_LOCKED');
   const attack=await rpc('sgz_start_season2_match',{...args,p_faction:'zombies'});await sleep(9000);
   result=await rpc('sgz_claim_level_reward',{p_device_id:device,p_match_id:attack,p_character_key:'s2Rat'});assert.equal(result.profile.season2Progress.zombies.highestLevel,1);assert.equal(result.profile.highestLevel||0,0);
+  for(const faction of ['plants','zombies']){
+   await rpc('sgz_start_season2_match',{...args,p_faction:faction,p_level:3},'LEVEL_LOCKED');
+   const match2=await rpc('sgz_start_season2_match',{...args,p_faction:faction,p_level:2});
+   await sleep(faction==='plants'?43000:9000);
+   await rpc('sgz_claim_level_reward',{p_device_id:device,p_match_id:match2,p_character_key:faction==='plants'?'s2Halberd':'s2Cleaver'},'INVALID_CHARACTER');
+   result=await rpc('sgz_claim_level_reward',{p_device_id:device,p_match_id:match2,p_character_key:faction==='plants'?'s2Shield':'s2Coffin'});
+   assert.equal(result.profile.season2Progress[faction].highestLevel,2);assert.equal(result.profile.highestLevel||0,0);
+   await rpc('sgz_claim_level_reward',{p_device_id:device,p_match_id:match2,p_character_key:null},'REWARD_ALREADY_CLAIMED');
+  }
+  const beforeSave=structuredClone(result.profile.season2Progress);
+  result=await rpc('sgz_save_profile',{p_device_id:device,p_profile:{...result.profile,season2Progress:{}},p_expected_version:result.save_version});assert.deepEqual(result.profile.season2Progress,beforeSave);
   const denied=await req('/rest/v1/rpc/sgz_start_season2_match',anon,null,'POST',args);assert(denied.status>=400);assert.notEqual(denied.data.code,'PGRST202','RPC must resolve');
   await rpc('sgz_release_device',{p_device_id:device});console.log('HOSTED_RPC_PASS: two modes, future-stage/device/timing/duplicate/forged-save guards, first-season isolation, anonymous denial');
   browser=await chromium.launch();const page=await browser.newPage({viewport:{width:1365,height:900}});const errors=[];page.on('pageerror',e=>errors.push(e.message));
   await page.goto(process.env.GAME_URL||'http://127.0.0.1:8091/');await page.waitForFunction(()=>typeof initSupabaseClient==='function'&&!!initSupabaseClient());
   await page.evaluate(async s=>{const {error}=await initSupabaseClient().auth.setSession({access_token:s.access_token,refresh_token:s.refresh_token});if(error)throw Error('Fixture browser session failed')},session);
-  await page.waitForFunction(()=>currentUser&&cloudLockOwned&&playerProfile.season2Progress?.zombies?.highestLevel===1);
+  await page.waitForFunction(()=>currentUser&&cloudLockOwned&&playerProfile.season2Progress?.zombies?.highestLevel===2);
   for(const faction of ['plants','zombies']){
-   await page.evaluate(f=>chooseFaction(f,2),faction);await page.locator('#levelGrid button').first().click();await page.waitForFunction(()=>state?.season===2&&!!cloudMatchId);
+   await page.evaluate(f=>{backToHome();chooseFaction(f,2)},faction);await page.locator('[data-jump-level="2"]').click();await page.locator('#storySkip').click();await page.waitForFunction(()=>state?.season===2&&state.level===2&&!!cloudMatchId);
    await page.evaluate(()=>pauseAndSaveBattle('verification'));await page.reload();await page.waitForFunction(()=>state?.season===2&&state.paused&&document.querySelector('#game.active'));
-   assert.equal(await page.evaluate(()=>state.faction),faction);assert.equal(await page.locator('#cards .card').count(),3);
+   assert.equal(await page.evaluate(()=>state.faction),faction);assert.equal(await page.locator('#cards .card').count(),4);
    await page.locator('#cards img').evaluateAll(ims=>Promise.all(ims.map(im=>im.decode())));
    await page.screenshot({path:`/tmp/season2-hosted-${faction}.png`,fullPage:true});
   }

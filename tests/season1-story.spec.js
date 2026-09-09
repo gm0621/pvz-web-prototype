@@ -68,8 +68,8 @@ test('leaving results cancels the old story action and a new season cannot inher
  await openGame(page);await chooseFirst(page);await page.locator('#storySkip').click();await page.evaluate(async()=>{clearInterval(timer);await end(true,'防守成功','結算');window.__oldStoryAction=document.getElementById('modalStory').onclick});
  await page.locator('#modalMainMenu').click();expect(await page.evaluate(()=>window.__oldStoryAction())).toBe(false);await expect(page.locator('#storyDialog')).not.toBeVisible();
  expect(await page.evaluate(()=>hasReadStory('plants',1,'victory'))).toBe(false);
- await page.evaluate(()=>{chooseFaction('plants',2);startLevel('plants',1);clearInterval(timer)});await expect(page.locator('#modalStory')).not.toBeVisible();expect(await page.evaluate(()=>window.__oldStoryAction())).toBe(false);
- await page.evaluate(()=>end(true,'通關','結算'));await expect(page.locator('#modalStory')).not.toBeVisible();await expect(page.locator('#storyDialog')).not.toBeVisible();
+ await page.evaluate(()=>{chooseFaction('plants',2);selectedLevel=1;start('plants');clearInterval(timer)});await expect(page.locator('#modalStory')).not.toBeVisible();expect(await page.evaluate(()=>window.__oldStoryAction())).toBe(false);
+ await page.evaluate(()=>end(true,'通關','結算'));await expect(page.locator('#modalStory')).toBeVisible();await expect(page.locator('#storyDialog')).not.toBeVisible();
 });
 test('short landscape results stay on-screen and all exit controls remain reachable',async({page})=>{
  await page.setViewportSize({width:844,height:390});await openGame(page);

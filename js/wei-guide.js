@@ -38,7 +38,7 @@ function buildPreviewCharacterGrid(roster,units){
     summary.append(weiText('b',`天賦：${d.talent}`),weiText('span',d.effect));
     if(d.skill)summary.append(weiText('b',`機率技能：${d.skill}`),weiText('span',d.skillEffect));
     else summary.append(weiText('small','小兵以固定天賦為主'));
-    const combat=previewCombatUnit(d.key),badge=combat?(combat.clearRequired?'第一關通關獎勵':'第一關初始角色'):'尚未開放';
+    const combat=previewCombatUnit(d.key),badge=combat?(combat.clearRequired?`第${levelLabel(combat.clearRequired)}關通關獎勵`:'第一關初始角色'):'尚未開放';
     card.append(img,weiText('h3',d.name),weiText('div',d.role,'wei-role'),weiText('span',`第二季預告與開放狀態｜${badge}`,'wei-preview-badge'),weiText('p',d.intro),summary,weiText('div','查看普通行動與設計限制 →','statusline'));
     card.onclick=()=>showCharacterDetail(roster,d.key);
     card.onkeydown=ev=>{if(ev.key==='Enter'||ev.key===' '){ev.preventDefault();card.click()}};
@@ -62,7 +62,7 @@ function showPreviewCharacterDetail(roster,units,key){
   $('charModalStats').replaceChildren();
   const combat=previewCombatUnit(key);
   if(combat){$('charModalSkillTitle').textContent='已實裝天賦';$('charModalSkill').textContent=`普通行動：${d.attack}\n\n天賦：${d.talent}\n${combat.desc}`}
-  [['開放狀態',combat?(combat.clearRequired?'第一關通關獎勵：通過同模式第一關後可出戰。':'第一關初始角色：可由第二季第一關出戰。'):'僅供介紹，尚未開放出戰。'],['戰術定位',d.role],['設計限制',d.limit],[combat?'第一關基礎數值':'數值規劃',combat?`費用 ${combat.cost}｜生命值 ${combat.hp}｜${combat.desc}`:'費用、血量、範圍、冷卻與機率尚未定案。']].forEach(([title,text])=>{
+  [['開放狀態',combat?(combat.clearRequired?`第${levelLabel(combat.clearRequired)}關通關獎勵：通過同模式第${levelLabel(combat.clearRequired)}關後可出戰。`:'第一關初始角色：可由第二季第一關出戰。'):'僅供介紹，尚未開放出戰。'],['戰術定位',d.role],['設計限制',d.limit],[combat?'基礎數值':'數值規劃',combat?`費用 ${combat.cost}｜生命值 ${combat.hp}｜${combat.desc}`:'費用、血量、範圍、冷卻與機率尚未定案。']].forEach(([title,text])=>{
     const item=document.createElement('div');item.className='stat-pill';item.append(weiText('b',title),weiText('span',text));$('charModalStats').appendChild(item);
   });
   $('charModal').classList.add('show');

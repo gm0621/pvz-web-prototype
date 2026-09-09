@@ -2,7 +2,7 @@ const {test,expect}=require('@playwright/test');
 test('season-two cloud match uses its dedicated RPC and only server-returned progress unlocks the reward',async({page})=>{
  await page.route('https://cdn.jsdelivr.net/**',r=>r.fulfill({contentType:'application/javascript',body:''}));await page.goto('/');
  const result=await page.evaluate(async()=>{
-  chooseFaction('plants',2);startLevel('plants',1);clearInterval(timer);
+  markStoryRead('plants',1,'opening',2);chooseFaction('plants',2);startLevel('plants',1);clearInterval(timer);
   const calls=[];currentUser={id:'test-user'};cloudLockOwned=true;
   const server=normalizeProfile({gold:53,season2Progress:{plants:{completedLevels:{1:1}}}});
   supabaseClient={rpc:async(name,args)=>{calls.push({name,args});if(name==='sgz_start_season2_match')return {data:'test-match',error:null};if(name==='sgz_claim_level_reward')return {data:{profile:server,save_version:99,active_device_id:getDeviceId()},error:null};return {data:null,error:{message:'UNEXPECTED_RPC'}}}};
