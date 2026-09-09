@@ -6,6 +6,7 @@ test('faction entry offers seasons before levels while first-season attack stays
   await page.locator(faction==='plants'?'#plantStartBtn':'#zombieStartBtn').click();
   await expect(page.locator('#seasonPicker')).toBeVisible();await expect(page.locator('#levelGrid')).toBeHidden();
   await expect(page.locator('#seasonPicker [data-season-choice]')).toHaveCount(2);
+  await expect(page.locator('[data-season-choice="1"] .season-name')).toHaveText('蜀國篇．屍潮來襲');
   await page.locator('[data-season-choice]').evaluateAll(buttons=>Promise.all(buttons.map(async button=>{const src=getComputedStyle(button).backgroundImage.match(/url\("?([^"\)]+)/)?.[1];if(!src||src.includes('undefined'))throw Error('Missing season artwork');const image=new Image();image.src=src;await image.decode()})));
   if(faction==='zombies')await expect(page.locator('[data-season-choice="1"]')).toBeDisabled();
   else await expect(page.locator('[data-season-choice="1"]')).toBeEnabled();
