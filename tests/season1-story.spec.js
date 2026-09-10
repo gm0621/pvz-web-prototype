@@ -85,9 +85,10 @@ test('closing a result story can reopen it and reading it does not duplicate rew
 });
 test('first-season opening blocks simulation and cloud match creation until skipped',async({page})=>{
  await openGame(page);await page.evaluate(()=>{window.__storyStarts=0;startCloudMatch=()=>{window.__storyStarts++}});await chooseFirst(page);
- await expect(page.getByRole('dialog',{name:'第一關：草坪試煉'})).toBeVisible();await expect(page.locator('#storyText')).toContainText('午後');
+ await expect(page.getByRole('dialog',{name:'第一關：草坪試煉'})).toBeVisible();await expect(page.locator('#storyText')).toContainText('古戰場');
  expect(await page.evaluate(()=>({starts:window.__storyStarts,playing:!!state&&!state.over&&!state.paused}))).toEqual({starts:0,playing:false});
- await page.locator('#storyNext').click();await expect(page.locator('#storySpeaker')).toHaveText('蜀軍弓兵');await expect(page.locator('#storyPortrait')).toBeVisible();
+ const firstSoldier=await page.evaluate(()=>activeCampaignStory.lines.findIndex(x=>x.speaker==='蜀軍弓兵'));expect(firstSoldier).toBeGreaterThan(0);
+ for(let i=0;i<firstSoldier;i++)await page.locator('#storyNext').click();await expect(page.locator('#storySpeaker')).toHaveText('蜀軍弓兵');await expect(page.locator('#storyPortrait')).toBeVisible();
  await page.locator('#storySkip').click();await expect(page.locator('#storyDialog')).not.toBeVisible();await expect(page.locator('#game')).toHaveClass(/active/);
  expect(await page.evaluate(()=>window.__storyStarts)).toBe(1);expect(await page.evaluate(()=>state.time)).toBeLessThan(2000);
 });
