@@ -874,7 +874,7 @@ test('defender removal mode frees an occupied cell without refunding grain', asy
   expect(result).toEqual({remaining:0,resource:200,mode:null,buttonText:'🪏 移除武將'});
 });
 
-test('only Zhao Yun and Ma Chao can change to an adjacent lane for 40 grain after cooldown', async ({ page }) => {
+test('permanent defenders can change to an adjacent lane for 20 grain without waiting', async ({ page }) => {
   await openApp(page);
   const result = await page.evaluate(() => {
     for (let level=1; level<4; level++) completeCampaignLevel('plants', level);
@@ -905,12 +905,12 @@ test('only Zhao Yun and Ma Chao can change to an adjacent lane for 40 grain afte
     showCharacterDetail('plants','zhaoyun');
     return {moved,cooling,wallnutSelected,skillText:document.querySelector('#charModalSkill').textContent};
   });
-  expect([result.moved.r,result.moved.c,result.moved.resource]).toEqual([1,2,60]);
-  expect([result.cooling.r,result.cooling.c,result.cooling.resource]).toEqual([1,2,60]);
-  expect(result.wallnutSelected).toBeNull();
+  expect([result.moved.r,result.moved.c,result.moved.resource]).toEqual([1,2,80]);
+  expect([result.cooling.r,result.cooling.c,result.cooling.resource]).toEqual([0,2,60]);
+  expect(result.wallnutSelected).toBeTruthy();
   expect(result.skillText).toContain('可調動到同欄相鄰一路');
-  expect(result.skillText).toContain('消耗 40 軍糧');
-  expect(result.skillText).toContain('冷卻 8 秒');
+  expect(result.skillText).toContain('消耗 20 軍糧');
+  expect(result.skillText).toContain('無需等待');
 });
 
 test('defense stages last through larger finite zombie armies instead of fixed survival timers', async ({ page }) => {
