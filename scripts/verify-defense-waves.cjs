@@ -1,0 +1,17 @@
+// Ad-hoc rendered-wave smoke: controlled late-stage fixture, NOT a natural win.
+const {chromium,devices,expect}=require('@playwright/test');const fs=require('fs'),os=require('os'),path=require('path');
+(async()=>{const dir=fs.mkdtempSync(path.join(os.tmpdir(),'pvz-waves-live-')),browser=await chromium.launch();try{
+ for(const [name,options] of [['desktop',{viewport:{width:1440,height:900}}],['phone',{...devices['iPhone 13']}],['landscape',{...devices['iPhone 13'],viewport:{width:844,height:390}}]]){
+  const context=await browser.newContext(options),page=await context.newPage(),errors=[];page.on('pageerror',e=>errors.push(e.message));
+  await page.route('https://cdn.jsdelivr.net/**',r=>r.fulfill({body:''}));await page.goto(process.env.GAME_URL||'http://127.0.0.1:4173/');await expect(page.locator('#plantStartBtn')).toBeVisible();
+  await page.evaluate(()=>{for(let l=1;l<10;l++)completeCampaignLevel('plants',l);saveProfile();selectedLevel=10;start('plants');clearInterval(timer);state.openingQueue=[];state.time=130000;state.enemiesSpawned=state.waveDirector.plan[2].after;state.waveDirector.index=2;for(let r=0;r<5;r++){addPlant('sunflower',0,r);addPlant('peashooter',1,r)}aiAct();render();updateHUD()});
+  await expect(page.locator('#waveStatus')).toContainText('第 3/3 波');await page.locator('#waveStatus').scrollIntoViewIfNeeded();await page.screenshot({path:path.join(dir,`${name}-warning.png`)});
+  const data=await page.evaluate(()=>{const food=state.resource;for(let i=0;i<180;i++)tick();clearInterval(timer);return{count:state.enemiesSpawned,rows:[...new Set(state.zombies.map(z=>z.r))],phase:document.getElementById('waveStatus').dataset.phase,wave:state.waveDirector,brain:state.aiResource}});
+  expect(data.rows.length).toBeGreaterThanOrEqual(3);expect(data.count).toBeGreaterThan(29);expect(data.brain).toBeGreaterThanOrEqual(0);expect(data.phase).toBe('active');
+  await page.locator('#fullscreenBtn').click({timeout:5000}).catch(async e=>{console.log('LAYOUT',await page.evaluate(()=>{const b=document.getElementById('fullscreenBtn'),r=b.getBoundingClientRect();return{rect:r.toJSON(),w:innerWidth,scroll:[scrollX,scrollY],hit:document.elementFromPoint(Math.min(r.x+r.width/2,innerWidth-1),Math.max(0,r.y+r.height/2))?.outerHTML.slice(0,300)}}));await page.screenshot({path:path.join(dir,'click-failure.png')});console.log(dir);throw e});await page.locator('#waveStatus').scrollIntoViewIfNeeded();await page.screenshot({path:path.join(dir,`${name}-wave.png`)});
+  const saved=await page.evaluate(()=>{persistBattleState();return JSON.parse(localStorage.getItem(BATTLE_SAVE_KEY)).state.waveDirector});await page.reload();
+  expect(await page.evaluate(()=>state.waveDirector)).toEqual(saved);expect(await page.evaluate(()=>state.paused)).toBe(true);expect(errors).toEqual([]);
+  console.log(JSON.stringify({name,status:'PASS',count:data.count,rows:data.rows,phase:data.phase,resume:'exact',errors}));await context.close();
+ }
+ console.log('SCREENSHOTS '+dir);
+}finally{await browser.close()}})().catch(e=>{console.error(e);process.exitCode=1});

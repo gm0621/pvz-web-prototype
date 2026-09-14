@@ -1,0 +1,6 @@
+.wave-status{margin:3px 0;padding:6px 10px;border:1px solid #b79c57;border-radius:8px;background:#292316;color:#fff3cd;font-size:13px;font-weight:700;line-height:1.4;pointer-events:none;overflow-wrap:anywhere}
+.wave-status[hidden]{display:none}
+.wave-status[data-phase="warning"],.wave-status[data-phase="boss"]{background:#6b151b;border-color:#ffbd69;color:#fff1da;box-shadow:inset 4px 0 #ffd166}
+.wave-status[data-phase="active"]{background:#542313;border-color:#f5a65b;color:#fff4d6}
+@media(min-width:721px) and (max-width:1100px){.game:has(#waveStatus:not([hidden])) .hud{grid-template-columns:minmax(0,1fr);min-width:0}.game:has(#waveStatus:not([hidden])) .cards-panel{min-width:0}.game:has(#waveStatus:not([hidden])) .top-toolbar{flex-wrap:wrap}.game .board-wrap:has(#waveStatus:not([hidden])){grid-template-columns:minmax(0,1fr)}.game .board-wrap:has(#waveStatus:not([hidden]))>.sidebar{grid-column:1}}
+@media(max-width:600px),(max-height:500px){.wave-status{font-size:11px;padding:3px 6px;margin:2px 0}}
