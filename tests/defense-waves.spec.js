@@ -46,6 +46,7 @@ test('wave HUD stays readable and grid taps work in portrait, landscape and full
  }
  await page.locator('#fullscreenBtn').click();await expect.poll(()=>page.evaluate(()=>!!document.fullscreenElement||document.body.classList.contains('is-fullscreen'))).toBe(true);
  await expect(page.locator('#waveStatus')).toBeVisible();await page.locator('.cell[data-r="4"][data-c="3"]').click();await page.screenshot({path:testInfo.outputPath('wave-fullscreen.png')});
+ const geo=await page.evaluate(()=>({board:document.getElementById('board').getBoundingClientRect().bottom,cards:document.querySelector('.cards-panel').getBoundingClientRect().top}));expect(geo.board).toBeLessThanOrEqual(geo.cards);
  expect(errors).toEqual([]);
 });
 test('attack mode has no defense wave controller or banner',async({page})=>{await setup(page,2);expect(await page.evaluate(()=>{start('zombies');clearInterval(timer);updateHUD();return !state.waveDirector&&document.getElementById('waveStatus').hidden})).toBe(true)});
