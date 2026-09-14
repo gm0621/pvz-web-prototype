@@ -1,5 +1,19 @@
 .wave-status{margin:3px 0;padding:6px 10px;border:1px solid #b79c57;border-radius:8px;background:#292316;color:#fff3cd;font-size:13px;font-weight:700;line-height:1.4;pointer-events:none;overflow-wrap:anywhere}
-.wave-status[hidden]{display:none}
+.wave-status[hidden],#waveStory[hidden],#waveBrief[hidden]{display:none}
+#waveBrief{color:#ffe4a3;font-weight:500}
+#waveStory{display:flex;align-items:center;gap:6px;margin-top:3px;color:#fff7e8;font-weight:500}
+#waveStoryPortrait{width:30px;height:30px;object-fit:contain;flex:none;border-radius:6px;background:#ffffff12}
+#waveStoryText{flex:1;min-width:0;line-height:1.4;overflow-wrap:anywhere}
+#waveStorySkip{pointer-events:auto;flex:none;min-width:42px;min-height:30px;padding:3px 5px;background:#ffffff15;border:1px solid #e3c583;border-radius:6px;color:#fff7e8;font-size:12px;cursor:pointer}
+@media(max-height:500px){
+ .wave-status[data-phase="calm"]:has(#waveBrief:not([hidden])) #waveSummary{display:none}
+ .wave-status[data-phase="warning"] #waveBrief{display:none}
+ :is(.game.fullscreen-mode,.game:fullscreen):has(#waveStatus:not([hidden])) .compact-battle-info{min-height:32px;padding:2px 6px}
+ :is(.game.fullscreen-mode,.game:fullscreen):has(#waveStatus:not([hidden])) .battle-pill{padding:2px 7px}
+ :is(.game.fullscreen-mode,.game:fullscreen):has(#waveStatus:not([hidden])) .battle-pill strong{font-size:22px}
+ :is(.game.fullscreen-mode,.game:fullscreen):has(#waveStatus:not([hidden])) .battle-pill .orb{width:22px;height:22px;font-size:18px}
+ #waveStoryPortrait{width:24px;height:24px}#waveStorySkip{min-height:26px}#waveStory{gap:4px;margin-top:1px}
+}
 .wave-status[data-phase="warning"],.wave-status[data-phase="boss"]{background:#6b151b;border-color:#ffbd69;color:#fff1da;box-shadow:inset 4px 0 #ffd166}
 .wave-status[data-phase="active"]{background:#542313;border-color:#f5a65b;color:#fff4d6}
 @media(min-width:721px) and (max-width:1100px){.game:has(#waveStatus:not([hidden])) .hud{grid-template-columns:minmax(0,1fr);min-width:0}.game:has(#waveStatus:not([hidden])) .cards-panel{min-width:0}.game:has(#waveStatus:not([hidden])) .top-toolbar{flex-wrap:wrap}.game .board-wrap:has(#waveStatus:not([hidden])){grid-template-columns:minmax(0,1fr)}.game .board-wrap:has(#waveStatus:not([hidden]))>.sidebar{grid-column:1}}

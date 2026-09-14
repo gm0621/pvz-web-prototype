@@ -10,12 +10,13 @@ function createDefenseWaves(lv){
   {after:Math.floor(n*.52),count:Math.floor(n*.18)},
   {after:Math.floor(n*.75),count:n-Math.floor(n*.75)}
  ];
- return {version:1,plan,index:0,active:null,restUntil:0};
+ return {version:1,plan,index:0,active:null,restUntil:0,story:{version:1,seen:{},event:null}};
 }
 function updateDefenseWaves(){
  const director=state.waveDirector,lv=state.levelConfig;
  if(!director||state.faction!=='plants')return false;
  if(state.over||state.paused||state.bossSpawned)return true;
+ prepareDefenseWaveStory();
  if(state.enemiesSpawned>=lv.enemyCount)return true;
  if(state.openingQueue.length)return false;
  if(state.time<director.restUntil)return true;
@@ -53,6 +54,7 @@ function updateDefenseWaves(){
  state.aiResource-=d.cost;state.lastAI[key]=state.time;
  addZombie(key,8.8,row);if(state.season===2)state.lastSpawnedZombie=key;
  state.enemiesSpawned++;wave.sent++;
+ if(wave.sent===1)emitDefenseWaveStory('charge',director.index);
  log(`第 ${wave.id} 波 ${wave.sent}/${wave.count}：${d.name} 進攻第 ${row+1} 路（總數 ${state.enemiesSpawned}/${lv.enemyCount}）。`);
  wave.nextAt=state.time+(lv.enemyCount<25?1700:1100);
  if(wave.sent>=wave.count){
@@ -74,7 +76,12 @@ function updateDefenseWaveHUD(){
  else if(state.enemiesSpawned>=lv.enemyCount){text=`最後一波已出陣｜${Math.max(0,Math.ceil((state.nextAI-state.time)/1000))} 秒後頭目登場`;phase='warning'}
  else if(state.time<d.restUntil){text=`本波已出陣，補陣空檔 ${Math.ceil((d.restUntil-state.time)/1000)} 秒｜已完成 ${d.index}/${d.plan.length} 波`}
  else{text=`零散試探｜大波進攻 ${d.index}/${d.plan.length}`}
- const label=`${text} · 敵軍 ${state.enemiesSpawned}/${lv.enemyCount}`;
- if(el.textContent!==label)el.textContent=label;
+ const label=`${text} · 敵軍 ${state.enemiesSpawned}/${lv.enemyCount}`+(d.story&&wave&&!wave.rallied?` · 本波 ${wave.count} 名`:'');
+ if(!el.querySelector('#waveSummary')){
+  el.innerHTML='<div id="waveSummary"></div><div id="waveBrief" hidden></div><div id="waveStory" hidden><img id="waveStoryPortrait" alt=""><span id="waveStoryText"></span><button id="waveStorySkip" type="button" aria-label="略過這段戰場對話">略過</button></div>';
+  document.getElementById('waveStorySkip').onclick=dismissDefenseWaveStory;
+ }
+ const summary=document.getElementById('waveSummary');if(summary.textContent!==label)summary.textContent=label;
+ renderDefenseWaveStory();
  el.dataset.phase=phase;
 }
