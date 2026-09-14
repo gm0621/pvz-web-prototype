@@ -40,6 +40,7 @@ function dismissDefenseWaveStory(){
 }
 function renderDefenseWaveStory(){
  const d=state.waveDirector,story=d?.story,el=document.getElementById('waveStory'),brief=document.getElementById('waveBrief');
+ document.getElementById('waveStatus').dataset.story=story?'on':'off';
  const event=story?.event,visible=!!event&&!event.dismissed&&state.time<event.until&&!state.over;
  el.hidden=!visible;
  if(visible){

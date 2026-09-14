@@ -1,4 +1,8 @@
 .wave-status{margin:3px 0;padding:6px 10px;border:1px solid #b79c57;border-radius:8px;background:#292316;color:#fff3cd;font-size:13px;font-weight:700;line-height:1.4;pointer-events:none;overflow-wrap:anywhere}
+/* Keep the battlefield anchored while narrative/forecast rows appear or expire.
+   Short landscape uses the existing single military-info row plus dialogue. */
+.wave-status[data-story="on"]{height:92px;box-sizing:border-box;flex-shrink:0}
+@media(max-height:500px){.wave-status[data-story="on"]{height:52px}}
 .wave-status[hidden],#waveStory[hidden],#waveBrief[hidden]{display:none}
 #waveBrief{color:#ffe4a3;font-weight:500}
 #waveStory{display:flex;align-items:center;gap:6px;margin-top:3px;color:#fff7e8;font-weight:500}
