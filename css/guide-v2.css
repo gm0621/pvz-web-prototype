@@ -1,0 +1,55 @@
+/* Shared character details: presentation only, scoped away from the battle. */
+#charModal.guide-v2{padding:16px;z-index:1100}
+#charModal.guide-v2 .char-detail-card{width:min(1100px,100%);max-height:calc(100dvh - 32px);overflow:auto;color:#e6eff7;background:linear-gradient(140deg,#142b3d,#101b2b);border:1px solid #64899d;border-radius:22px;scrollbar-gutter:stable}
+#charModal.guide-v2 .char-detail-head{display:grid;grid-template-columns:104px minmax(0,1fr) 44px;gap:16px;align-items:start;padding:20px;border-bottom:1px solid #456072}
+#charModal.guide-v2 .char-detail-head img{width:104px;height:104px;object-fit:contain;border-radius:16px;background:#dce8ec}
+#charModal.guide-v2 .char-detail-head h2{margin:0 0 8px;font-size:26px}
+#charModal.guide-v2 .char-detail-head p{margin:8px 0 0;font-size:14px;line-height:1.65}
+#charModal.guide-v2 .char-detail-role{color:#a7d5ef;line-height:1.6;font-size:13px}
+#charModal.guide-v2 .char-detail-close{position:fixed;top:26px;right:max(28px,calc((100vw - 1100px)/2 + 22px));width:44px;height:44px;min-width:44px;padding:0;z-index:4;background:#253c51;color:#fff;border:1px solid #7996aa}
+#charModal.guide-v2 .char-detail-body{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(0,1fr);gap:22px;padding:20px}
+#charModal.guide-v2 h3{font-size:17px;color:#f7dfa4;margin:0 0 12px}
+#charModal.guide-v2 .guide-main,#charModal.guide-v2 .guide-side{min-width:0;overflow-wrap:anywhere}
+#charModal.guide-v2 .guide-field{display:flex;flex-direction:column;gap:8px;font-size:13px;font-weight:700;color:#bfd1e0;margin:12px 0}
+#charModal.guide-v2 select{font:inherit;background:#0e1c2a;color:#f5f7ff;border:1px solid #6a8498;border-radius:9px;min-height:44px;padding:8px;max-width:100%;width:100%}
+#charModal.guide-v2 button{font:inherit;min-height:44px;border:1px solid #7297a8;background:#254a5e;color:#fff;border-radius:9px;padding:8px 12px;cursor:pointer}
+#charModal.guide-v2 button:focus-visible,#charModal.guide-v2 select:focus-visible{outline:3px solid #ffd57d;outline-offset:2px}
+#charModal.guide-v2 .stat-grid{display:grid;grid-template-columns:1fr;gap:8px}
+#charModal.guide-v2 .stat-pill{display:flex;flex-direction:column;gap:5px;background:#21374a;border:1px solid #456073;border-radius:10px;padding:11px 13px;min-width:0}
+#charModal.guide-v2 .stat-pill b{color:#acd8ec;font-size:12px}
+#charModal.guide-v2 .stat-pill span{color:#f2f4f8;font-size:14px;line-height:1.65;white-space:normal;overflow-wrap:anywhere}
+#charModal.guide-v2 .guide-ability-info{display:grid;gap:7px;margin-bottom:18px}
+#charModal.guide-v2 #charModalSkill{font-size:13px;color:#bfd1e0;line-height:1.6;white-space:normal}
+#charModal.guide-v2 #guideDemo{border:1px solid #658391;border-radius:14px;background:#0f2230;padding:12px}
+#charModal.guide-v2 .guide-demo-heading{display:flex;justify-content:space-between;gap:8px;align-items:center;margin-bottom:10px;flex-wrap:wrap}
+#charModal.guide-v2 #guideDemoBadge{font-size:11px;color:#ffdd88;background:#493c22;padding:5px 8px;border-radius:6px}
+#charModal.guide-v2 #charModalRange{display:block!important;padding:0;border:1px solid #57717e;border-radius:10px;overflow:hidden;background:#172b36;width:100%;aspect-ratio:9/5;min-height:0;margin:0}
+#charModal.guide-v2 #charModalRange svg{display:block;width:100%;height:100%}
+#charModal.guide-v2 .guide-range-note{font-size:12px;line-height:1.7;color:#c3d7df;min-height:4em;margin:8px 0}
+#charModal.guide-v2 .guide-demo-controls{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px;align-items:end}
+#charModal.guide-v2 .guide-demo-controls button{padding:7px 3px;font-size:13px}
+#charModal.guide-v2 .guide-demo-controls label{font-size:11px;color:#bfd1e0}
+#charModal.guide-v2 .guide-timeline{display:flex;list-style:none;padding:0;gap:5px;margin:12px 0;font-size:12px}
+#charModal.guide-v2 .guide-timeline li{flex:1;text-align:center;background:#263e51;padding:7px 0;border-radius:5px;color:#b7cad9}
+#charModal.guide-v2 .guide-timeline .current{background:#f1c868;color:#17212c;font-weight:800}
+#charModal.guide-v2 #guideDemoCaption{font-size:14px;line-height:1.8;min-height:9em;max-height:12em;overflow:auto;margin:0;color:#fff}
+#charModal.guide-v2 .guide-disclaimer{font-size:11px;color:#a8bccb;line-height:1.7;margin:8px 0 0}
+#charModal.guide-v2 #guideSummons{display:flex;flex-wrap:wrap;gap:8px;margin:16px 0}
+#charModal.guide-v2 #guideSummons h3{width:100%;margin:0}
+#charModal.guide-v2 #guideNotes,#charModal.guide-v2 #guideRandomNote{font-size:14px;line-height:1.8;color:#c8d7e3}
+#charModal.guide-v2 #guideDemo[data-paused="true"] *{animation-play-state:paused}
+.guide-bolt{animation:guide-bolt .75s ease-in-out}
+.guide-impact{animation:guide-impact .6s ease-out}
+@keyframes guide-bolt{to{transform:translateX(var(--guide-travel))}}
+@keyframes guide-impact{50%{opacity:.45}to{opacity:1}}
+@media(max-width:720px){
+ #charModal.guide-v2{padding:8px}
+ #charModal.guide-v2 .char-detail-card{max-height:calc(100dvh - 16px);border-radius:16px;scrollbar-gutter:auto}
+ #charModal.guide-v2 .char-detail-head{grid-template-columns:64px minmax(0,1fr) 44px;gap:9px;padding:12px}
+ #charModal.guide-v2 .char-detail-head img{width:64px;height:64px}
+ #charModal.guide-v2 .char-detail-head h2{font-size:20px}
+ #charModal.guide-v2 .char-detail-body{grid-template-columns:minmax(0,1fr);padding:12px;gap:18px}
+ #charModal.guide-v2 .guide-side{border-top:1px solid #496476;padding-top:18px}
+ #charModal.guide-v2 .char-detail-close{top:16px;right:18px}
+}
+@media(prefers-reduced-motion:reduce){#charModal.guide-v2 *{animation:none!important;transition:none!important}}

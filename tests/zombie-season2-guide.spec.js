@@ -20,12 +20,12 @@ test('season-two zombie preview is separate, complete and never changes playable
   const card=page.locator('.zombie2-profile').nth(i);await expect(card).toContainText('第二季預告');await card.focus();await card.press('Enter');
   await expect(page.locator('#charModalName')).toHaveText(names[i]);await expect(page.locator('#charModalRole')).toContainText('僵屍方｜第二季');
   await expect(page.locator('#charModalSkill')).toContainText('天賦：');await expect(page.locator('#charModalStats')).toContainText(['棺盾小屍','鼠牙群屍','腐釘弩屍'].includes(names[i])?'第一關':names[i]==='裂盾斧屍'?'第二關':'尚未開放出戰');
-  await expect(page.locator('#charModalRange')).toBeHidden();expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
+  await expect(page.locator('#charModalRange')).toBeVisible();expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
   await page.locator('#charModalClose').click();
  }
  await page.locator('[data-zombie-season="1"]').click();await expect(page.locator('#characterGrid .char-profile')).toHaveCount(12);
  await expect(page.locator('.zombie2-profile')).toHaveCount(0);await page.locator('#characterGrid .type-normal').click();
- await expect(page.locator('#charModalRange')).toBeVisible();await expect(page.locator('#charModalStatsTitle')).toHaveText('能力數值');await page.locator('#charModalClose').click();
+ await expect(page.locator('#charModalRange')).toBeVisible();await expect(page.locator('#charModalStatsTitle')).toHaveText('Lv.1 目前能力');await page.locator('#charModalClose').click();
  await page.locator('[data-roster=wei]').click();await expect(page.locator('#zombieSeasonTabs')).toBeHidden();await expect(page.locator('#zombieSeasonIntro')).toBeHidden();
  await expect(page.locator('.wei-profile')).toHaveCount(12);await page.locator('.wei-profile').first().click();await expect(page.locator('#charModalRole')).toContainText('魏國');await expect(page.locator('#charModal')).not.toHaveClass(/zombie2-preview/);await page.locator('#charModalClose').click();
  await page.locator('[data-roster=plants]').click();await expect(page.locator('.zombie2-profile')).toHaveCount(0);await expect(page.locator('#characterRosterIntro')).toBeHidden();

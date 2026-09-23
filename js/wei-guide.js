@@ -39,7 +39,7 @@ function buildPreviewCharacterGrid(roster,units){
     if(d.skill)summary.append(weiText('b',`機率技能：${d.skill}`),weiText('span',d.skillEffect));
     else summary.append(weiText('small','小兵以固定天賦為主'));
     const combat=previewCombatUnit(d.key),badge=combat?(combat.clearRequired?`第${levelLabel(combat.clearRequired)}關通關獎勵`:'第一關初始角色'):'尚未開放';
-    card.append(img,weiText('h3',d.name),weiText('div',d.role,'wei-role'),weiText('span',`第二季預告與開放狀態｜${badge}`,'wei-preview-badge'),weiText('p',d.intro),summary,weiText('div','查看普通行動與設計限制 →','statusline'));
+    card.append(img,weiText('h3',d.name),weiText('div',d.role,'wei-role'),weiText('span',`第二季預告與開放狀態｜${badge}`,'wei-preview-badge'),weiText('p',d.intro),summary,weiText('div','動畫分鏡與範圍 →','statusline'));
     card.onclick=()=>showCharacterDetail(roster,d.key);
     card.onkeydown=ev=>{if(ev.key==='Enter'||ev.key===' '){ev.preventDefault();card.click()}};
     grid.appendChild(card);
