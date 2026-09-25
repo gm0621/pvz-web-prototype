@@ -1,0 +1,36 @@
+/* Shared native/fallback layout. The tray is in flow, never laid over the fifth lane. */
+html.battle-fullscreen-open{overflow:hidden;overscroll-behavior:none}
+#game.screen.game.fullscreen-mode{position:fixed;top:var(--battle-view-top,0px);left:var(--battle-view-left,0px);width:var(--battle-view-width,100vw);height:var(--battle-view-height,100vh)!important;min-height:0!important;max-width:none;display:grid!important;grid-template-columns:minmax(0,1fr);grid-template-rows:auto minmax(0,1fr) auto;gap:6px;overflow:hidden;z-index:50;padding:6px max(8px,env(safe-area-inset-right)) max(8px,env(safe-area-inset-bottom)) max(8px,env(safe-area-inset-left))!important}
+#game.screen.game.fullscreen-mode .hud{display:contents!important}
+#game.screen.game.fullscreen-mode .top-toolbar{grid-row:1;grid-column:1;min-width:0;flex-wrap:wrap;padding:5px 6px 5px 110px;gap:5px;margin:0}
+#game.screen.game.fullscreen-mode .top-toolbar button{height:36px!important;font-size:12px!important;padding:0 9px!important}
+#game.screen.game.fullscreen-mode .board-wrap{grid-row:2;grid-column:1;display:flex!important;flex-direction:column;min-height:0;min-width:0;height:auto!important;margin:0!important;gap:4px;overflow:hidden}
+#game.screen.game.fullscreen-mode .battle-resource-strip{flex:none;margin:0}
+#game.screen.game.fullscreen-mode .board{flex:1;min-height:0!important;min-width:0;max-height:none;height:auto!important;width:100%;align-self:stretch;aspect-ratio:auto}
+#game.screen.game.fullscreen-mode .grid{height:100%!important;grid-template-rows:repeat(5,minmax(0,1fr))!important}
+#game.screen.game.fullscreen-mode .sidebar{display:none!important}
+#game.screen.game.fullscreen-mode .cards-panel{grid-row:3;grid-column:1;position:relative;inset:auto;margin:0!important;width:100%;height:118px;max-height:none;min-height:0;padding:6px 8px!important;overflow:hidden;box-shadow:none}
+#game.screen.game.fullscreen-mode .cards-panel::before{display:none}
+#game.screen.game.fullscreen-mode .cards{min-height:0;height:100%;margin:0;align-items:start}
+#game.screen.game.fullscreen-mode .card{height:98px;min-height:98px}
+#game.screen.game.fullscreen-mode .card .statusline{display:none}
+#game.screen.game.fullscreen-mode .floating-back{top:8px;left:max(8px,env(safe-area-inset-left));height:36px;padding:0 8px}
+@media(max-width:600px){
+ #game.screen.game.fullscreen-mode .top-toolbar{padding:44px 4px 4px}
+ #game.screen.game.fullscreen-mode .top-toolbar button{height:30px!important;padding:0 6px!important}
+ #game.screen.game.fullscreen-mode .cards-panel{height:108px}
+ #game.screen.game.fullscreen-mode .card{height:88px;min-height:88px}
+}
+@media(max-height:500px){
+ #game.screen.game.fullscreen-mode{gap:3px;padding-top:3px!important}
+ #game.screen.game.fullscreen-mode .top-toolbar{padding:3px 4px 3px 103px;gap:3px}
+ #game.screen.game.fullscreen-mode .top-toolbar button{height:28px!important;padding:0 6px!important;font-size:11px!important}
+ #game.screen.game.fullscreen-mode .cards-panel{height:86px;padding:3px 6px!important}
+ #game.screen.game.fullscreen-mode .card{height:76px;min-height:76px;padding:3px}
+ #game.screen.game.fullscreen-mode .card .card-img{width:32px;height:32px}
+ #game.screen.game.fullscreen-mode .compact-battle-info{min-height:30px;padding:2px 6px}
+ #game.screen.game.fullscreen-mode .battle-pill{padding:2px 7px}
+ #game.screen.game.fullscreen-mode .battle-pill strong{font-size:20px}
+ #game.screen.game.fullscreen-mode .battle-pill .orb{width:20px;height:20px;font-size:16px}
+ #game.screen.game.fullscreen-mode .compact-level-title{font-size:13px}
+}
