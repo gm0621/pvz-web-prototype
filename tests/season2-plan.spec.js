@@ -47,7 +47,7 @@ test('season-two preview has two ten-stage plans, valid independent unlocks and 
     if(![...challenge.enemies,challenge.leader].every(k=>opponent.includes(k)))return false;
    }
   }
-  return p.stages.length===10&&new Set(p.stages.map(s=>s.name)).size===10&&p.stages.every((s,i)=>s.cardArt===`assets/backgrounds/season2/s2-${String(i+1).padStart(2,'0')}.webp`)&&season2Available('attack',11).length===0&&season2Available('defense',0).length===0;
+  return p.status==='design_complete_unimplemented'&&p.progression.modesIndependent===true&&p.storyArc.phases.length===3&&p.difficultyCurve.length===5&&p.stages.length===10&&p.stages.every(s=>['defense','attack'].every(mode=>s[mode].beats.length===3&&s[mode].beats.every(Boolean)))&&new Set(p.stages.map(s=>s.name)).size===10&&p.stages.every((s,i)=>s.cardArt===`assets/backgrounds/season2/s2-${String(i+1).padStart(2,'0')}.webp`)&&season2Available('attack',11).length===0&&season2Available('defense',0).length===0;
  });
  expect(check).toBe(true);
  await page.locator('#backToGame').click();

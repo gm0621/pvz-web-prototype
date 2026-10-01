@@ -17,15 +17,17 @@ for(const mode of ['defense','attack']){
 const out=[
  '# 第二季「北境鐵壁」— 關卡設計與製圖交接',
  '',
- '> 設計預覽，尚未開放遊玩。此文件由 `node scripts/export_season2_plan.cjs` 產生，資料來源為 `js/season2-plan-data.js`。不是已完成的戰鬥規格或通關實測。',
+ '> **第二季 1～10 關設計定稿；目前僅第 1～2 關已開放遊玩，第 3～10 關尚待戰鬥實裝。** 此文件由 `node scripts/export_season2_plan.cjs` 產生，資料來源為 `js/season2-plan-data.js`。定稿不代表數值平衡、自然通關或正式站部署已完成。',
  '',
  '## 範圍與進度規則',
  '',
  '- 共十處場景；魏國守城十關、僵屍進攻十關，各有獨立進度。圖片可由攻守共用，敵軍配置與教學目標不同。',
  '- 第二季採魏國／第二季僵屍獨立出戰設計，第四季再跨季合流；共用角色身份與收集資料，不複製帳號。',
  '- 每個模式初始 2 位角色；每關首次通關後取得 1 位，十關全破收齊該側 12 位。重玩不重複解鎖或發首次通關獎勵。',
- '- 暫定沿用第一季的順序：本季守城全破後開放本季進攻。第二季整體入口是否要求第一季全破，仍待 Gimmy 確認。',
- '- 曹操與陷城屍督分別是守城／進攻第十關通關後獎勵，不能在該模式的首次第十關使用。',
+ `- ${plan.progression.entry}`,
+ `- ${plan.progression.stageRule}`,
+ `- ${plan.progression.rewardRule}`,
+ `- ${plan.progression.finalRewardRule}`,
  '- 預覽所有關卡不表示已解鎖。此頁沒有通關模擬、資源寫入、雲端 RPC 或可啟動的第二季戰鬥。',
  '- 實裝時須獨立儲存 season / mode 進度；前端入口、部署卡、AI、match-start 與獎勵 RPC 一致驗證。禁止把本設計案直接塞入第一季 LEVELS 或以假存檔全開。',
  '',
@@ -33,6 +35,20 @@ const out=[
  '',
  `- 守城：${names('defense',plan.initial.defense)}。`,
  `- 進攻：${names('attack',plan.initial.attack)}。腦力沿用自動補給概念，不依賴尚不存在的經濟兵。`,
+ '',
+ '## 主線與三幕推進',
+ '',
+ `- **危機起點：**${plan.storyArc.premise}`,
+ `- **魏國守城目標：**${plan.storyArc.defenseGoal}`,
+ `- **僵屍進攻目標：**${plan.storyArc.attackGoal}`,
+ ...plan.storyArc.phases.map(phase=>`- **第 ${phase.stages} 關｜${phase.name}：**${phase.beat}`),
+ `- **季末銜接：**${plan.storyArc.ending}`,
+ '',
+ '## 難度曲線',
+ '',
+ '| 關卡 | 定位 | 壓力與教學原則 |',
+ '|---|---|---|',
+ ...plan.difficultyCurve.map(row=>`| ${row.stages} | ${row.band} | ${row.pressure} |`),
  '',
  '## 十關總表（獎勵均為通關後取得）',
  '',
@@ -49,13 +65,20 @@ const out=[
  '- 收到圖片後保留原圖並轉 WebP，設定對應 stage.cardArt，例如 `assets/backgrounds/season2/s2-01.webp`。載入失敗仍顯示佔位。',
  '- 這批圖是選關卡片。未來戰鬥盤面另做可讀性設計，不直接把橋洞、拒馬或風沙變成隨機封格、遮擋、扣血與滑動規則。',
  '',
+ '## 波次短劇情與提前軍情',
+ '',
+ '- 每關每個模式都採「準備期情報 → 主波戰術變化 → 領隊／頭目到達」三段短劇情；不開阻塞戰鬥的大視窗。',
+ '- 軍情在大波抵達前顯示並保留可讀的波數、倒數與威脅類型；略過台詞不會移除戰術情報。',
+ '- 只預告排程已確定的敵軍數量、路線或能力；若兵種仍由出兵當下隨機決定，就只能預告「多路／重兵／支援」，不可假報特定兵種。',
+ '- 波次對話不改兵力、資源、冷卻或獎勵；暫停與續玩必須保存已播放進度，不能重複發放增援資源。',
+ '',
  '## 各關設計與圖片說明'
 ];
 for(const s of plan.stages){
  out.push('',`### ${String(s.number).padStart(2,'0')}｜${s.name} — ${s.region}`,'',`**製圖／${s.light}：**${s.artBrief}`,`建議檔名：\`s2-${String(s.number).padStart(2,'0')}.webp\``);
  for(const mode of ['defense','attack']){
   const c=s[mode],other=mode==='defense'?'attack':'defense';
-  out.push('',`**${mode==='defense'?'魏國守城':'僵屍進攻'}**`,c.story,'',`- 重點：${c.focus}`,`- 首次挑戰可用：${names(mode,[...plan.initial[mode],...plan.rewards[mode].slice(0,s.number-1)])}。`,`- 主要對手：${names(other,c.enemies)}。`,`- ${s.number===10?'最終頭目':'末段領隊'}：${name(other,c.leader)}。`,`- 通關後解鎖：${name(mode,plan.rewards[mode][s.number-1])}。`,`- 限制／反制：${c.counter}`);
+  out.push('',`**${mode==='defense'?'魏國守城':'僵屍進攻'}**`,c.story,'',`- 重點：${c.focus}`,`- 波次短劇情：${c.beats.map((beat,index)=>`${index+1}. ${beat}`).join(' → ')}`,`- 首次挑戰可用：${names(mode,[...plan.initial[mode],...plan.rewards[mode].slice(0,s.number-1)])}。`,`- 主要對手：${names(other,c.enemies)}。`,`- ${s.number===10?'最終頭目':'末段領隊'}：${name(other,c.leader)}。`,`- 通關後解鎖：${name(mode,plan.rewards[mode][s.number-1])}。`,`- 限制／反制：${c.counter}`);
  }
 }
 out.push('', '## 戰鬥實裝的驗收門檻（尚未完成）', '',
