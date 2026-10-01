@@ -10,12 +10,14 @@ test('season-two preview has two ten-stage plans, valid independent unlocks and 
  const defs=await page.evaluate(()=>JSON.stringify({plants:PLANT_TYPES,zombies:ZOMBIE_TYPES,levels:LEVELS}));
  await page.locator('#season2PreviewLink').click();
  await expect(page).toHaveURL(/season2\.html/);
- await expect(page.locator('#previewNotice')).toContainText('尚未開放遊玩');
+ await expect(page.locator('#previewNotice')).toContainText('第一、二關已開放｜第三～十關尚未開放遊玩');
  await expect(page.locator('#season2Title')).toContainText('北境鐵壁');
  for(const mode of ['defense','attack']){
   await page.locator(`[data-plan-mode="${mode}"]`).click();
   await expect(page.locator(`[data-plan-mode="${mode}"]`)).toHaveAttribute('aria-pressed','true');
   await expect(page.locator('.stage-plan')).toHaveCount(10);
+  await expect(page.locator('.play-stage-link')).toHaveCount(2);
+  await expect(page.locator('.stage-plan').nth(1).locator('.play-stage-link')).toHaveText(`前往第二關・${mode==='defense'?'守城':'進攻'}`);
   await expect(page.locator('#starterRoster .unit-chip')).toHaveCount(2);
   for(let i=0;i<10;i++){
    const card=page.locator('.stage-plan').nth(i);
