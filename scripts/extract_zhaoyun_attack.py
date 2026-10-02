@@ -7,6 +7,7 @@ import hashlib
 ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / "assets/characters/future-generals/zhaoyun"
 SOURCE = OUT / "source-attack-sheet.png"
+IDLE_SOURCE = ROOT / "assets/characters/future-generals/ice-zhaoyun.webp"
 EXPECTED_SHA256 = "b48ee013865603707a9809704e825afeb29f15bebff8b2f5212273de6b905736"
 BOUNDS = [
     (0, 55, 448, 475),
@@ -21,6 +22,28 @@ BOUNDS = [
 CANVAS = 1024
 BASELINE = 920
 SCALE = 1.72
+IDLE_VISIBLE_HEIGHT = 663
+
+
+def build_battle_idle():
+    image = Image.open(IDLE_SOURCE).convert("RGBA")
+    visible_box = image.getchannel("A").point(
+        [255 if value > 8 else 0 for value in range(256)]
+    ).getbbox()
+    if not visible_box:
+        raise SystemExit("Zhao Yun idle source has no visible pixels")
+    visible = image.crop(visible_box)
+    ratio = IDLE_VISIBLE_HEIGHT / visible.height
+    visible = visible.resize(
+        (round(visible.width * ratio), IDLE_VISIBLE_HEIGHT),
+        Image.Resampling.LANCZOS,
+    )
+    canvas = Image.new("RGBA", (CANVAS, CANVAS), (0, 0, 0, 0))
+    canvas.alpha_composite(
+        visible,
+        ((CANVAS - visible.width) // 2, BASELINE - visible.height),
+    )
+    canvas.save(OUT / "idle.webp", "WEBP", lossless=True, method=6)
 
 
 def main():
@@ -32,6 +55,7 @@ def main():
     if image.size != (1774, 887):
         raise SystemExit(f"Unexpected source dimensions: {image.size}")
     OUT.mkdir(parents=True, exist_ok=True)
+    build_battle_idle()
     alpha = image.getchannel("A")
     binary = alpha.point([255 if value > 8 else 0 for value in range(256)])
     for index, box in enumerate(BOUNDS):

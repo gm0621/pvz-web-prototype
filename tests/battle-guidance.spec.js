@@ -7,9 +7,17 @@ async function battle(page,{faction='zombies',season=1,level=1}={}){
 }
 test('attack countdown, warning, pause and reload preserve simulation time; deadline loses',async({page})=>{
  await battle(page);await expect(page.locator('#attackTimer')).toHaveText('02:00');
+ const pause=page.locator('#pauseBtn');
+ await expect(pause).toHaveText('⏸ 暫停遊戲');await expect(pause).toHaveClass(/pause-action/);await expect(pause).toHaveAttribute('aria-pressed','false');
+ const pauseStyle=await pause.evaluate(el=>{const s=getComputedStyle(el);return {height:el.getBoundingClientRect().height,border:parseFloat(s.borderTopWidth),weight:Number(s.fontWeight)}});
+ expect(pauseStyle.height).toBeGreaterThanOrEqual(48);expect(pauseStyle.border).toBeGreaterThanOrEqual(2);expect(pauseStyle.weight).toBeGreaterThanOrEqual(800);
  await page.evaluate(()=>{state.time=90000;updateHUD()});await expect(page.locator('#attackStatus')).toHaveClass(/warning/);
  await expect(page.locator('#attackStatus')).toContainText('未突破就失敗');
  await page.locator('#pauseBtn').click();expect(await page.evaluate(()=>{const t=state.time;tick();return state.time===t})).toBe(true);
+ await expect(pause).toHaveText('▶ 繼續遊戲');await expect(pause).toHaveClass(/resume/);await expect(pause).toHaveAttribute('aria-pressed','true');
+ await expect(page.locator('#pauseResumeBtn')).toBeVisible();
+ await page.locator('#pauseResumeBtn').click();expect(await page.evaluate(()=>state.paused)).toBe(false);
+ await pause.click();
  await expect(page.locator('#attackStatus')).toContainText('已暫停');
  await page.evaluate(()=>persistBattleState());await page.reload();
  await expect(page.locator('#attackTimer')).toHaveText('00:30');expect(await page.evaluate(()=>state.paused)).toBe(true);

@@ -1109,7 +1109,7 @@ test('manual pause and background restore preserve the unfinished battle without
     value.pausedAfterContinue = state.paused;
     return value;
   });
-  expect(restored).toEqual({level:1,time:12350,resource:333,plants:1,zombies:1,paused:true,pauseLabel:'繼續',timeAfterPausedTick:12350,pausedAfterContinue:false});
+  expect(restored).toEqual({level:1,time:12350,resource:333,plants:1,zombies:1,paused:true,pauseLabel:'▶ 繼續遊戲',timeAfterPausedTick:12350,pausedAfterContinue:false});
 });
 
 test('visible battle action controls work by tap and stay disabled for attackers', async ({ page }) => {
