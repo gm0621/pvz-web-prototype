@@ -91,6 +91,8 @@ function guideV2Season2Abilities(m,add){
  if(k==='s2Shield')Object.assign(a,{kind:'guard',damage:0,shape:'self',reach:0,rangeText:'自身受擊',effect:'架盾時傷害 ×0.6；列盾被削弱期間 ×0.85。實際程式未分前後方向。',condition:'脫離近戰目標 4 秒；近戰受擊／接敵即收盾。',timing:'脫戰等待 4 秒；不是持續 40% 減傷。',limits:'不把生命當護甲；目前直接傷害函式沒有方向檢查，近戰會先收盾。'});
  if(k==='s2Crossbow')Object.assign(a,{kind:'projectile',damage:Math.round(d.damage*1.6),effect:`連續同目標：${[0,1,2,3].map(n=>Math.round(d.damage*(1+.2*n))).join(' → ')}，上限三層 +60%。示範為滿層一箭。`,condition:'持續鎖定同一目標；換目標或找不到目標歸零。',timing:first.timing,limits:'判定於射擊時，不是命中才加層；實際彈丸可能先撞到路上另一目標。'});
  if(k==='s2Halberd')Object.assign(a,{damage:55,kind:'attack',effect:'追加 55 攔截傷害，中止本次突進。',condition:'非頭目敵人在 1.6 格內快速移動／跳入；最近 100ms 的位移至少 0.4 格。',timing:'獨立冷卻 6 秒；普通戟刺週期另算。',limits:'普通步行不觸發，頭目不攔截；不把 55 當每次普攻附加。'});
+ if(k==='s2Xiahou')Object.assign(a,{kind:'mark',damage:0,effect:`受到敵方直接傷害累積怒氣；滿怒後下一刀追加 60 傷害。`,condition:'敵方直接傷害造成 HP 損失；每次受擊增加怒氣，100 滿怒。',timing:'滿怒前持續累積；觸發重刀後歸零。',limits:'反傷、自傷或零傷害不累積；沒有目標時保留怒氣。'});
+ if(k==='s2Smoke'){Object.assign(a,{kind:'guard',damage:0,shape:'line',reach:1.35,rangeText:'同路自身前後約 1.35 格',effect:'煙霧內友軍受到普通遠程直射傷害降低 25%。',condition:'煙罐小屍仍存活，友軍與它在同一路煙霧範圍內。',timing:'持續被動；離開煙霧立即失效。',limits:'近戰、陷阱與範圍傷害不減免；煙霧不疊加。'});first.effect=`${first.effect} 固定天賦另使煙霧內友軍受到的普通遠程直射傷害降低 25%。`}
  if(k==='s2Rat')Object.assign(a,{damage:d.damage*1.25,effect:`協攻 ${d.damage*1.25} 傷害（普通 ${d.damage} ×1.25）。`,condition:'另一名存活鼠牙群屍也在同路同一守軍的近戰範圍。',limits:'程式要求鼠牙同伴，不是任意僵屍；不隨數量疊加。'});
  if(k==='s2Nail')Object.assign(a,{kind:'mark',damage:0,effect:'射中後留骨釘；友軍後續近戰消耗一枚，追加 20 傷害。',condition:'腐釘命中且守軍仍存活，之後在期限內受到友軍近戰。',timing:'標記維持 5 秒，最多 2 枚；再次命中刷新期限。',limits:'此頁展示標記與後續追加；不是腐釘本身每擊直接多 20。'});
  if(k==='s2Coffin')Object.assign(a,{kind:'guard',damage:0,reach:.9,shape:'behind',rangeText:'自身與同路身後距離 ≤ 0.9 格的友軍',effect:`獨立 ${d.shieldHp} 耐久，吸收直射傷害 60%，餘額扣被保護者 HP。`,condition:'盾牌仍有耐久、普通直射彈丸命中自身或緊鄰身後友軍。',timing:'被動吸收至盾破，不再生。',limits:'護盾耗盡後剩餘傷害會扣 HP；不是近戰全面減傷。'});
@@ -98,6 +100,7 @@ function guideV2Season2Abilities(m,add){
  add('talent',`天賦｜${e.talent}`,a);
  if(k==='s2Nail')add('skill',`機率技能｜${e.skill}`,{...first,id:'skill',label:`機率技能｜${e.skill}`,chance:20,damage:d.damage*2,effect:`一次雙釘彈丸 ${d.damage*2} 傷害，最多留下兩枚骨釘。`,condition:'每次合法射擊判定一次 20%。',timing:`依射擊間隔 ${guideSeconds(d.rate)}；不隨角色等級提高機率。`,limits:'不突破兩枚標記上限；不再額外發射普通一箭。'});
  if(k==='s2Cleaver')add('skill',`機率技能｜${e.skill}`,{...a,id:'skill',label:`機率技能｜${e.skill}`,chance:20,kind:'shield',effect:`獨立盾耗改為 ${d.damage*3}；若只有列盾、無獨立盾，該次傷害為 ${d.damage*2}。`,condition:'命中時目標有獨立護盾或正架盾，才判定一次 20%。',timing:'依普通攻擊週期；沒有另外一個技能冷卻。',limits:'無盾且未架盾不抽籤；不重複追加通用 1.8 倍爆擊。'});
+ if(k==='s2Xiahou')add('skill',`條件技能｜${e.skill}`,{...a,id:'skill',label:`條件技能｜${e.skill}`,kind:'attack',damage:60,effect:'滿怒重刀追加 60 傷害，並進入 3 秒不屈狀態。',condition:'怒氣達 100，下一次合法近戰攻擊自動觸發。',timing:'重刀命中後不屈 3 秒；怒氣歸零後重新累積。',limits:'不是每次攻擊抽籤；未滿怒不觸發。'});
 }
 function guideV2PreviewAbilities(m,add){
  const {key:k,d,editorial:e}=m,first=m.abilities[0];

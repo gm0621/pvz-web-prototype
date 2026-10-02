@@ -1,7 +1,7 @@
 const {test,expect}=require('@playwright/test');
 const {PGlite}=require('@electric-sql/pglite');
 const fs=require('node:fs');const path=require('node:path');
-const migration=path.join(__dirname,'../supabase/migrations/202609090002_season2_second_stage.sql');
+const migration=path.join(__dirname,'../supabase/migrations/202610020001_season2_full_campaign.sql');
 test('PostgreSQL season-two migration is idempotent and enforces isolated authoritative rewards',async({},info)=>{
  test.skip(info.project.name!=='desktop','SQL runs once, independently of viewport');
  expect(fs.existsSync(migration)).toBe(true);
@@ -26,7 +26,7 @@ test('PostgreSQL season-two migration is idempotent and enforces isolated author
   const sql=fs.readFileSync(migration,'utf8');await db.exec(sql);
   const read=async()=> (await db.query('select profile,save_version from sgz_profiles where user_id=$1',[uid])).rows[0];
   const seeded=await read();await db.exec(sql);expect(await read()).toEqual(seeded);
-  expect(seeded.profile.characterLevels.plants.peashooter).toEqual({level:3,xp:21});expect(seeded.profile.characterLevels.zombies.s2Coffin).toEqual({level:1,xp:0});
+  expect(seeded.profile.characterLevels.plants.peashooter).toEqual({level:3,xp:21});expect(seeded.profile.characterLevels.zombies.s2Coffin).toEqual({level:1,xp:0});expect(seeded.profile.characterLevels.plants.s2CaoCao).toEqual({level:1,xp:0});expect(seeded.profile.characterLevels.zombies.s2Overseer).toEqual({level:1,xp:0});
   await db.query("select set_config('request.jwt.claim.sub',$1,false)",[uid]);
   await db.query("select sgz_claim_device('test-device','SQL fixture',false,null)");
   await expect(db.query("select sgz_start_season2_match('test-device',2,'plants')")).rejects.toThrow(/LEVEL_LOCKED/);
@@ -44,17 +44,16 @@ test('PostgreSQL season-two migration is idempotent and enforces isolated author
   expect((await read()).profile.season2Progress).toEqual(won.profile.season2Progress);expect((await read()).profile.gold).toBe(553);
   const attack=await start('zombies');await db.query("update sgz_matches set started_at=now()-interval '9 seconds' where id=$1",[attack]);await db.query("select sgz_claim_level_reward('test-device',$1,'s2Rat')",[attack]);
   const both=await read();expect(both.profile.season2Progress.zombies.highestLevel).toBe(1);expect(both.profile.campaignProgress).toEqual(first);
-  for(const side of ['plants','zombies']){
-   await expect(db.query("select sgz_start_season2_match('test-device',3,$1)",[side])).rejects.toThrow(/LEVEL_LOCKED/);
-   const match2=(await db.query("select sgz_start_season2_match('test-device',2,$1) as id",[side])).rows[0].id;
-   await db.query("update sgz_matches set started_at=now()-interval '1 minute' where id=$1",[match2]);
-   const reward=side==='plants'?'s2Halberd':'s2Cleaver';
-   await expect(db.query("select sgz_claim_level_reward('test-device',$1,$2)",[match2,reward])).rejects.toThrow(/INVALID_CHARACTER/);
-   await db.query("select sgz_claim_level_reward('test-device',$1,$2)",[match2,side==='plants'?'s2Shield':'s2Coffin']);
-   expect((await read()).profile.season2Progress[side].highestLevel).toBe(2);
-   await expect(db.query("select sgz_claim_level_reward('test-device',$1,$2)",[match2,reward])).rejects.toThrow(/REWARD_ALREADY_CLAIMED/);
-   const replay=await start(side);await db.query("update sgz_matches set started_at=now()-interval '1 minute' where id=$1",[replay]);await db.query("select sgz_claim_level_reward('test-device',$1,$2)",[replay,reward]);
+  const rosters={plants:['s2Tuntian','s2Crossbow','s2Shield','s2Halberd','s2Xiahou','s2DianWei','s2XuChu','s2ZhangLiao','s2XuHuang','s2GuoJia','s2SimaYi','s2CaoCao'],zombies:['s2Rat','s2Nail','s2Coffin','s2Cleaver','s2Smoke','s2Hook','s2Medic','s2Venom','s2Decoy','s2Hexer','s2Ram','s2Overseer']};
+  for(const side of ['plants','zombies'])for(let level=2;level<=10;level++){
+   if(level<10)await expect(db.query("select sgz_start_season2_match('test-device',$1,$2)",[level+1,side])).rejects.toThrow(/LEVEL_LOCKED/);
+   const id=(await db.query("select sgz_start_season2_match('test-device',$1,$2) as id",[level,side])).rows[0].id;
+   await db.query("update sgz_matches set started_at=now()-interval '10 minutes' where id=$1",[id]);
+   await expect(db.query("select sgz_claim_level_reward('test-device',$1,$2)",[id,rosters[side][level+1]])).rejects.toThrow(/INVALID_CHARACTER/);
+   await db.query("select sgz_claim_level_reward('test-device',$1,$2)",[id,rosters[side][level]]);
+   expect((await read()).profile.season2Progress[side].highestLevel).toBe(level);
   }
+  for(const side of ['plants','zombies']){const replay=await start(side);await db.query("update sgz_matches set started_at=now()-interval '1 minute' where id=$1",[replay]);await db.query("select sgz_claim_level_reward('test-device',$1,$2)",[replay,rosters[side][11]]);}
   const latest=await read();await db.exec(sql);expect(await read()).toEqual(latest);expect(latest.profile.campaignProgress).toEqual(first);
   await expect(db.query("select sgz_start_match('test-device',1,'zombies')")).rejects.toThrow(/FACTION_LOCKED/);
   expect((await db.query("select has_function_privilege('anon','sgz_start_season2_match(text,integer,text)','EXECUTE') as ok")).rows[0].ok).toBe(false);

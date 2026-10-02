@@ -41,8 +41,8 @@ test('Zhao Yun chooses nearest living front target: sword up close, unchanged ic
  await fixture(page);
  const out=await page.evaluate(()=>{
   const saved=rollSuperSkill;const run=(distance,proc)=>{
-   rollSuperSkill=()=>proc;state.plants=[];state.zombies=[];state.projectiles=[];state.time=10000;
-   addPlant('zhaoyun',2,2);const p=state.plants[0];addZombie('normal',6,2);const near=addZombie('bucket',2+distance,2);const hp=near.hp;const d=activeUnit('plants','zhaoyun');actPlants();
+   rollSuperSkill=()=>proc;state.plants=[];state.zombies=[];state.projectiles=[];state.pendingPlantShots=[];state.time=10000;
+   addPlant('zhaoyun',2,2);const p=state.plants[0];addZombie('normal',6,2);const near=addZombie('bucket',2+distance,2);const hp=near.hp;const d=activeUnit('plants','zhaoyun');actPlants();state.time+=d.attackHitAt;processPendingPlantShots();
    return {damage:hp-near.hp,expected:proc?superSkillDamage(d.meleeDamage):d.meleeDamage,shots:state.projectiles.map(x=>({damage:x.damage,slow:x.slow,critical:x.critical})),slow:near.slowUntil>state.time,sword:p.attackStyle,fx:!!document.querySelector('.zhaoyun-sword-fx'),ranged:d.damage};
   };
   const a=run(.5,false),b=run(1.2,true),c=run(1.21,false);rollSuperSkill=saved;return{a,b,c};

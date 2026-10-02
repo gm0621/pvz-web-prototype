@@ -10,14 +10,14 @@ test('season-two preview has two ten-stage plans, valid independent unlocks and 
  const defs=await page.evaluate(()=>JSON.stringify({plants:PLANT_TYPES,zombies:ZOMBIE_TYPES,levels:LEVELS}));
  await page.locator('#season2PreviewLink').click();
  await expect(page).toHaveURL(/season2\.html/);
- await expect(page.locator('#previewNotice')).toContainText('第一、二關已開放｜第三～十關尚未開放遊玩');
+ await expect(page.locator('#previewNotice')).toContainText('全十關已開放遊玩');
  await expect(page.locator('#season2Title')).toContainText('北境鐵壁');
  for(const mode of ['defense','attack']){
   await page.locator(`[data-plan-mode="${mode}"]`).click();
   await expect(page.locator(`[data-plan-mode="${mode}"]`)).toHaveAttribute('aria-pressed','true');
   await expect(page.locator('.stage-plan')).toHaveCount(10);
-  await expect(page.locator('.play-stage-link')).toHaveCount(2);
-  await expect(page.locator('.stage-plan').nth(1).locator('.play-stage-link')).toHaveText(`前往第二關・${mode==='defense'?'守城':'進攻'}`);
+  await expect(page.locator('.play-stage-link')).toHaveCount(10);
+  await expect(page.locator('.stage-plan').nth(1).locator('.play-stage-link')).toHaveText(`前往第 2 關・${mode==='defense'?'守城':'進攻'}`);
   await expect(page.locator('#starterRoster .unit-chip')).toHaveCount(2);
   for(let i=0;i<10;i++){
    const card=page.locator('.stage-plan').nth(i);
@@ -49,7 +49,7 @@ test('season-two preview has two ten-stage plans, valid independent unlocks and 
     if(![...challenge.enemies,challenge.leader].every(k=>opponent.includes(k)))return false;
    }
   }
-  return p.status==='design_complete_unimplemented'&&p.progression.modesIndependent===true&&p.storyArc.phases.length===3&&p.difficultyCurve.length===5&&p.stages.length===10&&p.stages.every(s=>['defense','attack'].every(mode=>s[mode].beats.length===3&&s[mode].beats.every(Boolean)))&&new Set(p.stages.map(s=>s.name)).size===10&&p.stages.every((s,i)=>s.cardArt===`assets/backgrounds/season2/s2-${String(i+1).padStart(2,'0')}.webp`)&&season2Available('attack',11).length===0&&season2Available('defense',0).length===0;
+  return p.status==='playable_complete'&&p.progression.modesIndependent===true&&p.storyArc.phases.length===3&&p.difficultyCurve.length===5&&p.stages.length===10&&p.stages.every(s=>['defense','attack'].every(mode=>s[mode].beats.length===3&&s[mode].beats.every(Boolean)))&&new Set(p.stages.map(s=>s.name)).size===10&&p.stages.every((s,i)=>s.cardArt===`assets/backgrounds/season2/s2-${String(i+1).padStart(2,'0')}.webp`)&&season2Available('attack',11).length===0&&season2Available('defense',0).length===0;
  });
  expect(check).toBe(true);
  await page.locator('#backToGame').click();

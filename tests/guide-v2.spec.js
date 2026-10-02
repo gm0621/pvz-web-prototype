@@ -17,8 +17,7 @@ test('Wei detail range, values, ability demo, unmet condition and timer isolatio
  expect(await page.locator('#guideDemo').evaluate(el=>JSON.parse(el.dataset.result).damage)).toBe(55);
  await page.locator('#guideScenario').selectOption('unmet');for(let i=0;i<3;i++)await page.locator('#guideStep').click();expect(await page.locator('#guideDemo').evaluate(el=>JSON.parse(el.dataset.result).damage)).toBe(0);
  await page.locator('#guideReplay').click();expect(await page.evaluate(()=>guideDemoTimer!==null)).toBe(true);await page.locator('#guidePlay').click();expect(await page.evaluate(()=>guideDemoTimer)).toBeNull();await page.locator('#guidePlay').click();expect(await page.evaluate(()=>guideDemoTimer!==null)).toBe(true);await page.locator('#charModalClose').click();expect(await page.evaluate(()=>guideDemoTimer)).toBeNull();
- await page.locator('[data-wei-key="xiahou-dun"]').click();await expect(page.locator('#charModalStats')).toContainText('尚未開放出戰');await expect(page.locator('#charModalStats')).toContainText('候選');await page.locator('#guideAbility').selectOption('skill');await expect(page.locator('#guideAbilityInfo')).toContainText('滿怒');
- await expect(page.locator('#guideDemoCaption')).toContainText('概念');
+ await page.locator('[data-wei-key="xiahou-dun"]').click();await expect(page.locator('#charModalStats')).toContainText('已實裝');await expect(page.locator('#charModalStats')).toContainText('第三關通關獎勵');await page.locator('#guideAbility').selectOption('skill');await expect(page.locator('#guideAbilityInfo')).toContainText('滿怒');
 });
 test('melee/ranged, support, summons, fractional ranges and all faction switches remain usable',async({page})=>{
  await open(page);await page.evaluate(()=>showCharacterDetail('plants','zhaoyun'));await expect(page.locator('#guideAbility option')).toContainText(['近戰','遠程','天賦','機率技能']);
@@ -26,7 +25,7 @@ test('melee/ranged, support, summons, fractional ranges and all faction switches
  const d=await page.evaluate(()=>({actual:effectiveUnit('plants','zhaoyun').meleeDamage,model:guideV2Model('plants','zhaoyun').abilities.find(a=>a.id==='melee').damage}));expect(d.model).toBe(d.actual);
  await page.evaluate(()=>showCharacterDetail('plants','liubei'));await page.locator('[data-guide-summon="swordSoldier"]').click();await expect(page.locator('#charModalName')).toHaveText('蜀軍鄉勇');await expect(page.locator('#charModalStats')).toContainText('召喚物');
  await page.evaluate(()=>showCharacterDetail('zombies','normal'));expect(await page.locator('#charModalRange').getAttribute('data-direction')).toBe('-1');
- await page.evaluate(()=>showCharacterDetail('zombie2','smoke-pot'));await expect(page.locator('#guideAbilityInfo')).toContainText('待定');await expect(page.locator('#guideDemoCaption')).toContainText('概念');
+ await page.evaluate(()=>showCharacterDetail('zombie2','smoke-pot'));await expect(page.locator('#guideAbilityInfo')).toContainText('25%');await expect(page.locator('#charModalStats')).toContainText('已實裝');
  for(const [side,key]of [['wei','crossbow-soldier'],['plants','sunflower'],['zombies','fireCatapult'],['zombie2','rat-fang']]){
   await page.evaluate(([s,k])=>showCharacterDetail(s,k),[side,key]);await expect(page.locator('#charModalRange')).toBeVisible();expect(await page.locator('.char-detail-card').evaluate(el=>el.scrollWidth<=el.clientWidth+1)).toBe(true);
  }

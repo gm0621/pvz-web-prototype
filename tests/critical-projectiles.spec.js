@@ -3,8 +3,8 @@ async function setup(page){await page.route('https://cdn.jsdelivr.net/**',r=>r.f
 test('only actual ranged super hits produce larger highlighted balls without changing damage or rolls',async({page})=>{
  await setup(page);
  const result=await page.evaluate(()=>{
-  const run=(type,roll)=>{state.time=10000;state.plants=[];state.zombies=[];state.projectiles=[];addPlant(type,2,2);state.plants[0].last=0;for(const r of [1,2,3])addZombie('normal',4,r);
-   const original=Math.random;let rolls=0;Math.random=()=>{rolls++;return roll};try{actPlants()}finally{Math.random=original}render();
+  const run=(type,roll)=>{state.time=10000;state.plants=[];state.zombies=[];state.projectiles=[];state.pendingPlantShots=[];addPlant(type,2,2);state.plants[0].last=0;for(const r of [1,2,3])addZombie('normal',4,r);
+   const original=Math.random;let rolls=0;Math.random=()=>{rolls++;return roll};try{actPlants();if(type==='firepea'||type==='zhaoyun'){state.time+=PLANT_TYPES[type].attackHitAt;processPendingPlantShots()}}finally{Math.random=original}render();
    return{rolls,shots:state.projectiles.map(p=>({damage:p.damage,critical:p.critical,fire:!!p.fire,slow:!!p.slow})),visuals:[...document.querySelectorAll('.projectile')].map(e=>({critical:e.classList.contains('critical'),width:parseFloat(getComputedStyle(e).width),background:getComputedStyle(e).backgroundImage,shadow:getComputedStyle(e).boxShadow})),base:PLANT_TYPES[type].damage,bonus:superSkillDamage(PLANT_TYPES[type].damage)};
   };return Object.fromEntries(['peashooter','firepea','zhaoyun','huangzhong'].map(t=>[t,{ordinary:run(t,.99),proc:run(t,0)}]));
  });

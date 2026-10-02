@@ -22,7 +22,7 @@ test('finite waves cover all defense stages without changing quotas or introduci
    if(state.aiResource<0)issues.push('negative budget');
    runs.push({season,level:lv.level,issues,count:troops.length,waves:warnings.length,duration:state.time});
   }return runs;
- });expect(runs).toHaveLength(12);for(const r of runs){expect(r.issues,JSON.stringify(r)).toEqual([]);expect(r.waves).toBeGreaterThanOrEqual(2)}
+ });expect(runs).toHaveLength(20);for(const r of runs){expect(r.issues,JSON.stringify(r)).toEqual([]);expect(r.waves).toBeGreaterThanOrEqual(2)}
 });
 test('warning and rally resume exactly, repeated HUD updates grant nothing, old snapshots retain old pacing',async({page})=>{
  await setup(page,1,6);

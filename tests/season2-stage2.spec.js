@@ -15,6 +15,6 @@ test('second stage releases only after same-route first clear, rewards fourth un
  await open(page);const r=await page.evaluate(()=>{chooseFaction('plants',2);const locked=!isCampaignLevelUnlocked('plants',2);completeCampaignLevel('plants',1,2);return {locked,open:isCampaignLevelUnlocked('plants',2),other:isCampaignLevelUnlocked('zombies',2),future:isCampaignLevelUnlocked('plants',3)}});expect(r).toEqual({locked:true,open:true,other:false,future:false});
  await page.evaluate(()=>{selectedLevel=2;start('plants');clearInterval(timer)});await expect(page.locator('#cards .name')).toHaveText(['屯田兵','大盾兵','強弩兵']);await expect(page.locator('#modeTitle')).toContainText('石壘營門');
  await page.evaluate(async()=>{await end(true,'勝利','')});await expect(page.locator('#modalText')).toContainText('長戟兵');await expect(page.locator('#modalNext')).not.toContainText('全破');await page.reload();
- expect(await page.evaluate(()=>({done:playerProfile.season2Progress.plants.highestLevel,first:playerProfile.campaignProgress.plants.highestLevel,future:isCampaignLevelUnlocked('plants',3,2)}))).toEqual({done:2,first:0,future:false});
+ expect(await page.evaluate(()=>({done:playerProfile.season2Progress.plants.highestLevel,first:playerProfile.campaignProgress.plants.highestLevel,future:isCampaignLevelUnlocked('plants',3,2)}))).toEqual({done:2,first:0,future:true});
  await page.evaluate(()=>{chooseFaction('plants',2);selectedLevel=2;start('plants');clearInterval(timer)});await expect(page.locator('#cards .name')).toHaveText(['屯田兵','大盾兵','強弩兵','長戟兵']);
 });

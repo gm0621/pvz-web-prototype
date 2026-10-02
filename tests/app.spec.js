@@ -1152,6 +1152,7 @@ test('general talents always apply while random super skills only add their stro
       state.plants = [];
       state.zombies = [];
       state.projectiles = [];
+      state.pendingPlantShots = [];
       document.querySelectorAll(effectSelector).forEach(node => node.remove());
       addPlant(key, 2, 2);
       const hero = state.plants[0];
@@ -1163,6 +1164,10 @@ test('general talents always apply while random super skills only add their stro
       const savedRandom = Math.random;
       Math.random = () => roll;
       actPlants();
+      if(key === 'firepea' || key === 'zhaoyun'){
+        state.time += PLANT_TYPES[key].attackHitAt;
+        processPendingPlantShots();
+      }
       Math.random = savedRandom;
       render();
       return {

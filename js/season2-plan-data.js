@@ -3,7 +3,7 @@
 const SEASON2_PLAN = {
   season: 2,
   name: '北境鐵壁',
-  status: 'design_complete_unimplemented',
+  status: 'playable_complete',
   progression: {
     entry: '第二季卡片直接顯示；魏國守城與僵屍進攻都可各自從第一關開始。',
     modesIndependent: true,

@@ -38,16 +38,16 @@ function planStageCard(stage,mode){
   const focus=planText('p','','stage-focus');focus.append(planText('strong','本關重點'),planText('span',challenge.focus));body.append(focus);
   const rewardKey=SEASON2_PLAN.rewards[mode][stage.number-1],reward=planCharacter(mode,rewardKey);
   const rewardBox=planText('div','','stage-reward'),img=document.createElement('img');img.src=reward.asset;img.alt=reward.name;img.width=76;img.height=76;
-  const rewardText=planText('div','');rewardText.append(planText('small',`通過本關後解鎖 · ${stage.number===10?'全破獎勵':'預定'}`),planText('strong',reward.name,'reward-name'),planText('span',reward.role));rewardBox.append(img,rewardText);body.append(rewardBox);
+  const rewardText=planText('div','');rewardText.append(planText('small',`通過本關後解鎖${stage.number===10?' · 全破獎勵':''}`),planText('strong',reward.name,'reward-name'),planText('span',reward.role));rewardBox.append(img,rewardText);body.append(rewardBox);
   const details=document.createElement('details'),summary=planText('summary','查看配置與製圖說明');details.append(summary);
   const content=planText('div','','stage-details');
-  content.append(planText('h4','首次挑戰可用角色（預定）'),planRosterNames(mode,season2Available(mode,stage.number),'available-roster'));
+  content.append(planText('h4','首次挑戰可用角色'),planRosterNames(mode,season2Available(mode,stage.number),'available-roster'));
   content.append(planText('h4',mode==='defense'?'主要敵軍':'主要魏國守軍'),planRosterNames(opponent,challenge.enemies,'enemy-roster'));
   content.append(planText('p',`${stage.number===10?'最終頭目':'末段領隊'}：${planCharacter(opponent,challenge.leader).name}`,'leader-note'));
   content.append(planText('h4','配置限制與解法'),planText('p',challenge.counter));
   content.append(planText('h4','選關圖片製作說明'),planText('p',stage.artBrief,'art-brief'),planText('small',`建議檔名：s2-${String(stage.number).padStart(2,'0')}.webp｜16:9 橫圖；不加標題、按鈕或大頭角色。`,'art-file'));
-  content.append(planText('p',stage.number===1?'關卡開放條件：本模式開放後可挑戰（預定）。':`關卡開放條件：通過本季${modeLabel}第 ${stage.number-1} 關（預定）。`,'planned-gate'));
-  if(stage.number<=2){const play=planText('a',`${stage.number===1?'開始第一關':'前往第二關'}・${modeLabel}`,'play-stage-link');play.href=`index.html?season=2&faction=${mode==='defense'?'plants':'zombies'}`;body.append(play)}
+  content.append(planText('p',stage.number===1?'關卡開放條件：本模式開放後即可挑戰。':`關卡開放條件：通過本季${modeLabel}第 ${stage.number-1} 關。`,'planned-gate'));
+  const play=planText('a',`前往第 ${stage.number} 關・${modeLabel}`,'play-stage-link');play.href=`index.html?season=2&faction=${mode==='defense'?'plants':'zombies'}&level=${stage.number}`;body.append(play);
   details.append(content);body.append(details);card.append(body);return card;
 }
 function renderSeason2Plan(mode){
