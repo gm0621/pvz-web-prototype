@@ -8,6 +8,7 @@ import hashlib
 ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / "assets/characters/future-generals/guanyu"
 SOURCE = OUT / "source-attack-sheet.png"
+IDLE_SOURCE = ROOT / "assets/characters/guanyu-fire-general.webp"
 EXPECTED_SHA256 = "08f04e5090bd82caebb6ab498e97df8436e43e78f7f053f2004a75e79821b2e5"
 BOUNDS = [
     (0, 92, 432, 478),
@@ -22,6 +23,21 @@ BOUNDS = [
 CANVAS = 1024
 SCALE = 1.72
 BASELINE = 920
+IDLE_VISIBLE_HEIGHT = 620
+
+
+def normalize_idle():
+    """Match the idle character's visible body scale and foot line to the slash frames."""
+    image = Image.open(IDLE_SOURCE).convert("RGBA")
+    visible_box = image.getchannel("A").getbbox()
+    if not visible_box:
+        raise SystemExit("Empty Guan Yu idle source")
+    visible = image.crop(visible_box)
+    ratio = IDLE_VISIBLE_HEIGHT / visible.height
+    visible = visible.resize((round(visible.width * ratio), IDLE_VISIBLE_HEIGHT), Image.Resampling.LANCZOS)
+    canvas = Image.new("RGBA", (CANVAS, CANVAS), (0, 0, 0, 0))
+    canvas.alpha_composite(visible, ((CANVAS - visible.width) // 2, BASELINE - visible.height))
+    canvas.save(OUT / "idle.webp", "WEBP", lossless=True, method=6)
 
 
 def main():
@@ -33,6 +49,7 @@ def main():
     if image.size != (1774, 887):
         raise SystemExit(f"Unexpected source dimensions: {image.size}")
     OUT.mkdir(parents=True, exist_ok=True)
+    normalize_idle()
 
     alpha = image.getchannel("A")
     binary = alpha.point([255 if value > 8 else 0 for value in range(256)])
@@ -59,7 +76,7 @@ def main():
         canvas = Image.new("RGBA", (CANVAS, CANVAS), (0, 0, 0, 0))
         canvas.alpha_composite(frame, ((CANVAS - frame.width) // 2, BASELINE - frame.height))
         canvas.save(OUT / f"attack-{index:02d}.webp", "WEBP", lossless=True, method=6)
-    print(f"generated {len(BOUNDS)} frames in {OUT}")
+    print(f"generated idle and {len(BOUNDS)} attack frames in {OUT}")
 
 
 if __name__ == "__main__":

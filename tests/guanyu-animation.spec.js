@@ -28,6 +28,23 @@ test('Guan Yu uses eight aligned slash frames and releases his fire shot on the 
  expect(result.after).toBe(result.before);
  expect(result.shots).toBe(1);
  expect(result.hitSrc).toMatch(/attack-04\.webp$/);
+ const visibleBounds=await page.evaluate(async()=>{
+  const bounds=async src=>{
+   const image=new Image();image.src=src;await image.decode();
+   const canvas=document.createElement('canvas');canvas.width=image.naturalWidth;canvas.height=image.naturalHeight;
+   const context=canvas.getContext('2d');context.drawImage(image,0,0);
+   const {data,width,height}=context.getImageData(0,0,canvas.width,canvas.height);
+   let left=width,top=height,right=-1,bottom=-1;
+   for(let y=0;y<height;y++)for(let x=0;x<width;x++)if(data[(y*width+x)*4+3]>8){left=Math.min(left,x);top=Math.min(top,y);right=Math.max(right,x);bottom=Math.max(bottom,y)}
+   return {width:right-left+1,height:bottom-top+1,bottom:bottom+1,canvasHeight:height};
+  };
+  return {idle:await bounds(PLANT_TYPES.firepea.battleAsset),first:await bounds(PLANT_TYPES.firepea.attackFrames[0]),last:await bounds(PLANT_TYPES.firepea.attackFrames[7])};
+ });
+ for(const frame of [visibleBounds.first,visibleBounds.last]){
+  expect(visibleBounds.idle.height/frame.height).toBeGreaterThan(.92);
+  expect(visibleBounds.idle.height/frame.height).toBeLessThan(1.08);
+  expect(Math.abs(visibleBounds.idle.bottom-frame.bottom)/frame.canvasHeight).toBeLessThan(.02);
+ }
  for(const src of result.frames){
   const response=await page.request.get(new URL(src,page.url()).href);
   expect(response.ok(),src).toBe(true);
