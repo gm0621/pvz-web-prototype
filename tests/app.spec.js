@@ -836,6 +836,8 @@ test('Kongming and Pang Tong one-use talents apply slow and lingering burn', asy
     state.zombies=[{id:'target',type:'normal',r:2,c:6,hp:500,maxHp:500,last:0,bornAt:0,jumped:false,shootLast:-999999}];
     addPlant('kongming',2,2);
     actPlants();
+    state.time+=PLANT_TYPES.kongming.attackHitAt;
+    processPendingPlantShots();
     const kongming={hp:state.zombies[0].hp,slowFor:state.zombies[0].slowUntil-state.time,expires:!!state.plants[0].expireAt};
 
     state.time=5000;
@@ -843,8 +845,10 @@ test('Kongming and Pang Tong one-use talents apply slow and lingering burn', asy
     state.zombies=[0,1,2,3,4].map(r=>({id:`z${r}`,type:'normal',r,c:6,hp:500,maxHp:500,last:0,bornAt:0,jumped:false,shootLast:-999999}));
     addPlant('pangtong',2,2);
     actPlants();
+    state.time+=PLANT_TYPES.pangtong.attackHitAt;
+    processPendingPlantShots();
     const afterStrike=state.zombies.map(z=>z.hp);
-    for(const time of [6000,7000,8000]){state.time=time;processLingeringEffects()}
+    for(const time of [state.time+1000,state.time+2000,state.time+3000]){state.time=time;processLingeringEffects()}
     const afterBurn=state.zombies.map(z=>z.hp);
     return {kongming,afterStrike,afterBurn,pangtongExpires:!!state.plants[0].expireAt};
   });
@@ -1164,7 +1168,7 @@ test('general talents always apply while random super skills only add their stro
       const savedRandom = Math.random;
       Math.random = () => roll;
       actPlants();
-      if(key === 'firepea' || key === 'zhaoyun'){
+      if(PLANT_TYPES[key].attackHitAt){
         state.time += PLANT_TYPES[key].attackHitAt;
         processPendingPlantShots();
       }
