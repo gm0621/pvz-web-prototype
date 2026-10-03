@@ -39,7 +39,7 @@ function actSeason2Plants(){
   if(p.type==='s2SimaYi')damage=Math.round(damage*(1+Math.min(.6,(state.time-p.bornAt)/45000*.6)));
   if(p.type==='s2ZhangLiao'){target.breakMarkedUntil=state.time+5000;flash(target,'破陣標記')}
   if((d.range||0)>2){state.projectiles.push({x:p.c+.72,y:p.r+.5,r:p.r,dir:1,damage,from:'plant',speed:.11,targetId:target.id});sfx('shoot')}
-  else if(p.type==='s2Xiahou'&&d.attackHitAt){state.pendingHits=state.pendingHits||[];state.pendingHits.push({sourceId:p.id,targetId:target.id,damage,at:state.time+d.attackHitAt,fx:'slash'})}
+  else if(d.attackHitAt){state.pendingHits=state.pendingHits||[];state.pendingHits.push({sourceId:p.id,targetId:target.id,damage,at:state.time+d.attackHitAt,fx:'slash'})}
   else{target.hp-=damage;attackFx(target,'slash');sfx('hit')}
  }
 }

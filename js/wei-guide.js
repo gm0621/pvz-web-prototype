@@ -23,6 +23,7 @@ function weiText(tag,text,className){
 }
 function buildWeiCharacterGrid(){return buildPreviewCharacterGrid('wei',WEI_GUIDE)}
 function previewCombatUnit(key){if(typeof SEASON2_GUIDE_KEYS==='undefined')return null;const entry=Object.entries(SEASON2_GUIDE_KEYS).find(([,guide])=>guide===key);if(!entry)return null;return PLANT_TYPES[entry[0]]||ZOMBIE_TYPES[entry[0]]}
+function previewCharacterAsset(d){return previewCombatUnit(d.key)?.guideAsset||d.asset}
 function buildPreviewCharacterGrid(roster,units){
   const grid=$('characterGrid');
   grid.replaceChildren();
@@ -33,7 +34,7 @@ function buildPreviewCharacterGrid(roster,units){
     card.tabIndex=0;
     card.setAttribute('role','button');
     card.setAttribute('aria-label',`查看${d.name}介紹`);
-    const img=document.createElement('img');img.src=d.asset;img.alt=d.name;img.decoding='async';
+    const img=document.createElement('img');img.src=previewCharacterAsset(d);img.alt=d.name;img.decoding='async';
     const summary=document.createElement('div');summary.className='ability-summary wei-ability-summary';
     summary.append(weiText('b',`天賦：${d.talent}`),weiText('span',d.effect));
     if(d.skill)summary.append(weiText('b',`機率技能：${d.skill}`),weiText('span',d.skillEffect));
@@ -51,7 +52,7 @@ function showPreviewCharacterDetail(roster,units,key){
   if(!d)return;
   $('charModal').classList.add('wei-preview');
   $('charModal').classList.toggle('zombie2-preview',roster==='zombie2');
-  $('charModalImg').src=d.asset;$('charModalImg').alt=d.name;
+  $('charModalImg').src=previewCharacterAsset(d);$('charModalImg').alt=d.name;
   $('charModalName').textContent=d.name;
   $('charModalRole').textContent=`${roster==='wei'?'魏國':'僵屍方'}｜第二季預告｜${d.role}`;
   $('charModalIntro').textContent=d.intro;

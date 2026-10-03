@@ -20,7 +20,7 @@ function guideV2Model(roster,key,mode='current'){
  if(!base&&!editorial)return null;
  const d=base?(mode==='base'?{...base}:effectiveUnit(side,combatKey,mode==='next'?1:0)):{...candidate,name:editorial.name,asset:editorial.asset};
  const season=editorial?2:1,preview=!base,level=base?charLevel(side,combatKey)+(mode==='next'?1:0):1;
- const m={roster,key,side,combatKey,base,d,editorial,season,preview,level,mode,name:editorial?.name||d.name,asset:editorial?.asset||base.guideAsset||base.asset,abilities:[]};
+ const m={roster,key,side,combatKey,base,d,editorial,season,preview,level,mode,name:editorial?.name||d.name,asset:base?.guideAsset||editorial?.asset||base?.asset,abilities:[]};
  if(preview){m.status='設計預覽｜尚未開放出戰';m.statusDetail=candidate?'候選數值・未平衡驗證，不代表已實裝。':'能力方向預覽；費用、生命值、範圍、冷卻與機率待定。';}
  else if(base.hidden){m.status='召喚物｜不可獨立部署';m.statusDetail='由召喚者產生，不新增卡片或解鎖。';}
  else if(season===2){const n=base.clearRequired,open=!n||isCampaignLevelCompleted(side,n,2);m.status=open?'已實裝・已解鎖':'已實裝・尚未解鎖';m.statusDetail=n?`第${levelLabel(n)}關通關獎勵：通過第二季同模式第${levelLabel(n)}關後可用。`:'第一關初始角色。';}
