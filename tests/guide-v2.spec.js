@@ -20,6 +20,15 @@ test('Wei detail uses character attack animation without condition scenarios and
  await page.locator('[data-wei-key="xiahou-dun"]').click();await expect(page.locator('#charModalStats')).toContainText('已實裝');await expect(page.locator('#charModalStats')).toContainText('第三關通關獎勵');await page.locator('#guideAbility').selectOption('skill');await expect(page.locator('#guideAbilityInfo')).toContainText('滿怒');
  const idle=await page.locator('.guide-actor-image').getAttribute('href');await page.locator('#guideStep').click();const attack=await page.locator('.guide-actor-image').getAttribute('href');expect(idle).toContain('idle.webp');expect(attack).toContain('attack-00.webp');
 });
+test('skill demonstrations render visible effects with the character animation',async({page})=>{
+ await open(page);
+ for(const [key,ability,fx]of [['zhaoyun','skill','guide-fx-ice'],['kongming','talent','guide-fx-kongming'],['pangtong','talent','guide-fx-pangtong']]){
+  await page.evaluate(k=>showCharacterDetail('plants',k),key);await page.locator('#guideAbility').selectOption(ability);
+  for(let i=0;i<5;i++)await page.locator('#guideStep').click();
+  await expect(page.locator(`.guide-skill-fx.${fx}`)).toHaveCount(1);
+  expect(await page.locator(`.guide-skill-fx.${fx}`).evaluate(el=>getComputedStyle(el).opacity)).toBe('1');
+ }
+});
 test('melee/ranged, support, summons, fractional ranges and all faction switches remain usable',async({page})=>{
  await open(page);await page.evaluate(()=>showCharacterDetail('plants','zhaoyun'));await expect(page.locator('#guideAbility option')).toContainText(['近戰','遠程','天賦','技能攻擊']);
  await page.locator('#guideAbility').selectOption('ranged');await expect(page.locator('#guideAbilityInfo')).toContainText('1.2');

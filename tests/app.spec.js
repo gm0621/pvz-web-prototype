@@ -823,7 +823,7 @@ test('character guide uses balanced ability sections and labels key zombie talen
   expect(result.zombie.detail).toContain('天賦：破城震擊（固定生效）');
 });
 
-test('Kongming and Pang Tong one-use talents apply slow and lingering burn', async ({ page }) => {
+test('Kongming and Pang Tong wait for targets, cast once, remain, and provide support', async ({ page }) => {
   await openApp(page);
   const result=await page.evaluate(() => {
     playerProfile=normalizeProfile({});
@@ -831,31 +831,42 @@ test('Kongming and Pang Tong one-use talents apply slow and lingering burn', asy
     selectedLevel=7;
     start('plants');
     clearInterval(timer);
-    state.time=1000;
-    state.plants=[];
-    state.zombies=[{id:'target',type:'normal',r:2,c:6,hp:500,maxHp:500,last:0,bornAt:0,jumped:false,shootLast:-999999}];
+    state.time=1000;state.plants=[];state.zombies=[];state.pendingPlantShots=[];
     addPlant('kongming',2,2);
+    actPlants();
+    const waits={used:!!state.plants[0].used,pending:state.pendingPlantShots.length};
+    state.zombies=[{id:'target',type:'normal',r:2,c:6,hp:500,maxHp:500,last:0,bornAt:0,jumped:false,shootLast:-999999}];
     actPlants();
     state.time+=PLANT_TYPES.kongming.attackHitAt;
     processPendingPlantShots();
-    const kongming={hp:state.zombies[0].hp,slowFor:state.zombies[0].slowUntil-state.time,expires:!!state.plants[0].expireAt};
+    const firstKongming={hp:state.zombies[0].hp,slowFor:state.zombies[0].slowUntil-state.time,alive:state.plants[0].hp>0,expires:!!state.plants[0].expireAt,pending:state.pendingPlantShots.length};
+    state.zombies.push({id:'late',type:'normal',r:4,c:6,hp:500,maxHp:500,last:0,bornAt:0,jumped:false,shootLast:-999999});
+    state.time+=PLANT_TYPES.kongming.supportRate;actPlants();
+    const kongmingSupport={lateSlowFor:state.zombies[1].slowUntil-state.time,pending:state.pendingPlantShots.length,alive:state.plants[0].hp>0};
 
-    state.time=5000;
-    state.plants=[];
+    state.time=5000;state.plants=[];state.pendingPlantShots=[];
     state.zombies=[0,1,2,3,4].map(r=>({id:`z${r}`,type:'normal',r,c:6,hp:500,maxHp:500,last:0,bornAt:0,jumped:false,shootLast:-999999}));
     addPlant('pangtong',2,2);
     actPlants();
     state.time+=PLANT_TYPES.pangtong.attackHitAt;
     processPendingPlantShots();
-    const afterStrike=state.zombies.map(z=>z.hp);
+    const afterStrike=state.zombies.map(z=>z.hp),pangtongAlive=state.plants[0].hp>0,pangtongExpires=!!state.plants[0].expireAt;
     for(const time of [state.time+1000,state.time+2000,state.time+3000]){state.time=time;processLingeringEffects()}
     const afterBurn=state.zombies.map(z=>z.hp);
-    return {kongming,afterStrike,afterBurn,pangtongExpires:!!state.plants[0].expireAt};
+    const late={id:'late-fire',type:'normal',r:1,c:6,hp:500,maxHp:500,last:0,bornAt:0,jumped:false,shootLast:-999999};state.zombies.push(late);
+    state.time+=PLANT_TYPES.pangtong.supportRate;actPlants();
+    const pangtongSupport={burnFor:late.burnUntil-state.time,burnDamage:late.burnDamage,pending:state.pendingPlantShots.length,alive:state.plants[0].hp>0,rowFireCount:document.querySelectorAll('.row-fire').length};
+    state.time+=1000;processLingeringEffects();const supportTick={oldTarget:state.zombies[1].hp,lateTarget:late.hp};
+    return {waits,firstKongming,kongmingSupport,afterStrike,afterBurn,pangtongAlive,pangtongExpires,pangtongSupport,supportTick};
   });
-  expect(result.kongming).toEqual({hp:350,slowFor:4000,expires:true});
+  expect(result.waits).toEqual({used:false,pending:0});
+  expect(result.firstKongming).toEqual({hp:350,slowFor:4000,alive:true,expires:false,pending:0});
+  expect(result.kongmingSupport).toEqual({lateSlowFor:1500,pending:0,alive:true});
   expect(result.afterStrike).toEqual([500,270,270,270,500]);
   expect(result.afterBurn).toEqual([500,195,195,195,500]);
-  expect(result.pangtongExpires).toBeTruthy();
+  expect(result.pangtongAlive).toBeTruthy();expect(result.pangtongExpires).toBeFalsy();
+  expect(result.pangtongSupport).toEqual({burnFor:2000,burnDamage:15,pending:0,alive:true,rowFireCount:0});
+  expect(result.supportTick).toEqual({oldTarget:180,lateTarget:485});
 });
 
 test('defender removal mode frees an occupied cell without refunding grain', async ({ page }) => {

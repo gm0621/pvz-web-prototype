@@ -50,7 +50,7 @@ test('six Shu heroes use eight aligned frames and resolve gameplay on the fifth 
  expect(result.pangtong.afterHp.every((hp,i)=>hp<result.pangtong.beforeHp[i])).toBe(true);
  for(const key of ['kongming','pangtong']){
   expect(result[key].heroAlive).toBe(true);
-  expect(result[key].expireAt).toBeGreaterThanOrEqual(result[key].attackUntil);
+  expect(result[key].expireAt).toBeFalsy();
  }
  for(const key of HEROES)for(const src of result[key].frames){
   const response=await page.request.get(new URL(src,page.url()).href);expect(response.ok(),src).toBe(true);

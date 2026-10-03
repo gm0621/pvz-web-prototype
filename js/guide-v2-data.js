@@ -42,7 +42,7 @@ function guideV2Model(roster,key,mode='current'){
   const unit=side==='plants'?'swordSoldier':'terracottaSoldier';
   add('ordinary','普通行動｜召喚',{...common,kind:'summon',damage:0,summons:[unit],effect:`召喚一名${(side==='plants'?PLANT_TYPES:ZOMBIE_TYPES)[unit].name}；召喚者不發射普通傷害彈。`,condition:`同路前方 ${d.range} 格內有敵人、召喚間隔已到。`,timing:`召喚間隔 ${guideSeconds(d.summonRate)}。`,limits:side==='plants'?'鄉勇出現在同路前方；召喚物屬性可另點查看。':'秦俑出現在同路身後位置（朝左推進）；無接敵目標不召喚。'});
  }else if(d.oneUse){
-  add('ordinary','普通行動｜一次性施放',{...common,shape:d.oneUse==='global'?'all':'rows',rows:d.oneUse==='global'?4:1,reach:9,rangeText:d.oneUse==='global'?'全棋盤所有敵人':'自身路及相鄰上下路，全列、不分前後',condition:'部署後首次可行動時施放，不需要抽籤。',effect:`範圍內每名敵人 ${d.damage} 傷害；施放後退場。`,timing:'一次性；重用需再次部署，受卡片冷卻限制。',limits:'邊路會裁切，不會繞到另一側；不是週期普攻。'});
+  add('ordinary','普通行動｜首次大招',{...common,shape:d.oneUse==='global'?'all':'rows',rows:d.oneUse==='global'?4:1,reach:9,rangeText:d.oneUse==='global'?'全棋盤所有敵人':'自身路及相鄰上下路，全列、不分前後',condition:'場上有範圍內敵人時才施放；沒有目標會待機，不消耗大招。',effect:`範圍內每名敵人 ${d.damage} 傷害；施放後留場轉為輔助。`,timing:'首次大招只施放一次；之後每 5 秒檢查輔助效果。',limits:'邊路會裁切，不會繞到另一側；留場後不會重複首次大招。'});
  }else if(combatKey==='potato'){
   add('ordinary','普通行動｜伏兵陷阱',{...common,reach:.42,shape:'around',rangeText:'同路，以自身為中心、距離小於 0.42 格',condition:`部署超過 ${guideSeconds(d.armedAfter)} 後，敵人進入觸發距離。`,timing:`啟動等待 ${guideSeconds(d.armedAfter)}；只觸發一次。`,effect:`單體 ${d.damage} 傷害，伏兵消耗。`,limits:'準備中不能引爆；不造成九宮格傷害。'});
  }else if(d.damage){
@@ -67,8 +67,8 @@ function guideV2Model(roster,key,mode='current'){
    if(d.meleeDamage)add('skill-melee','機率技能｜近戰冰龍爆擊',{...m.abilities.find(a=>a.id==='skill'),id:'skill-melee',label:'機率技能｜近戰冰龍爆擊',kind:'attack',reach:1.2,min:0,condition:'同路最近存活敵人在前方 1.2 格內；近戰優先，合法攻擊時判定技能機率。',rangeText:'同路前方 ≤ 1.2 格',damage:superSkillDamage(d.meleeDamage),effect:`青釭劍爆擊 ${superSkillDamage(d.meleeDamage)} 傷害，緩速 3.2 秒。`});
   }else if(fixed){
    const o={...first,damage:0,kind:'control',effect:fixed.effect};
-   if(key==='kongming')Object.assign(o,{effect:'倖存敵人緩速 4 秒，移速為原本 45%。',condition:'八陣雷擊結算後敵人仍存活。'});
-   if(key==='pangtong')Object.assign(o,{damage:25,kind:'dot',effect:'倖存敵人每秒灼燒 25，持續 3 秒。',condition:'三列鳳火後敵人仍存活。',timing:'每 1 秒一跳，持續 3 秒；同目標刷新、不無限疊加。'});
+   if(key==='kongming')Object.assign(o,{effect:'首次八陣雷擊使倖存敵人緩速 4 秒；留場後每 5 秒以輔陣讓全場敵人緩速 1.5 秒。',condition:'首次雷擊後留場；輔陣週期到且場上有敵人。',timing:'首次緩速 4 秒；之後每 5 秒輔助一次，持續 1.5 秒。'});
+   if(key==='pangtong')Object.assign(o,{damage:25,kind:'dot',effect:'首次鳳火每秒灼燒 25、持續 3 秒；留場後每 5 秒以餘燼對三列施加每秒 15、持續 2 秒。',condition:'首次鳳火後留場；餘燼週期到且三列內有敵人。',timing:'首次每 1 秒一跳共 3 秒；輔助餘燼每 5 秒檢查一次。'});
    if(key==='football')Object.assign(o,{kind:'move',shape:'self',reach:0,rangeText:'所在路朝左推進',condition:'前方沒有可近戰守軍，且未被推車清除。',effect:`每遊戲步移動 ${d.speed} 格；緩速時乘 0.45。`,timing:'依遊戲步前進，不是瞬移。'});
    if(key==='jester')Object.assign(o,{shape:'line',reach:3.2,rangeText:'同路向左前方 3.2 格，全部目標',damage:d.laughDamage,effect:`每名 ${d.laughDamage} 傷害、混亂 ${guideSeconds(d.laughStun)}。`,condition:'範圍內有守軍且狂笑冷卻已到。',timing:`冷卻 ${guideSeconds(d.laughRate)}。`});
    if(key==='bombJester')Object.assign(o,{shape:'around',reach:1,rows:1,rangeText:'死亡位置為中心，上下各一路、前後各一格',damage:d.bombDamage,effect:`每名 ${d.bombDamage} 傷害；只爆一次。`,condition:'本體生命歸零、死亡清理時。',timing:'死亡時觸發，無存活期間技能冷卻。'});

@@ -126,5 +126,28 @@ function guideDrawBoard(m,a,result){
   node('line',{x1:origin,y1:cy,x2:targetX,y2:cy,stroke:'#ffe79b','stroke-width':7,'stroke-dasharray':'12 9','class':'guide-motion-line'});
   node('circle',{cx:origin,cy,r:14,fill:'#ffe29b','class':'guide-bolt',style:`--guide-travel:${targetX-origin}px`});
  }
+ if(result.hit){
+  const text=`${m.key} ${a.label} ${a.effect}`;
+  const fxType=m.key==='kongming'?'kongming':m.key==='pangtong'?'pangtong':/冰|緩速|寒/.test(text)?'ice':/火|燃|灼/.test(text)?'fire':a.kind==='summon'?'summon':a.id.startsWith('skill')?'skill':'';
+  if(fxType){
+   const g=node('g',{'class':`guide-skill-fx guide-fx-${fxType}`});
+   if(fxType==='kongming'){
+    node('circle',{cx:450,cy:250,r:185,fill:'#6d28d9','fill-opacity':.18,stroke:'#c4b5fd','stroke-width':8,'stroke-dasharray':'18 10'},g);
+    for(const [x,y]of[[260,140],[450,105],[640,140],[260,360],[450,395],[640,360]])node('text',{x,y,'text-anchor':'middle','font-size':44},g,'⚡');
+    node('text',{x:450,y:270,'text-anchor':'middle',fill:'#f5f3ff','font-size':46,'font-weight':900},g,'八陣雷擊');
+   }else if(fxType==='pangtong'){
+    for(const y of[150,250,350]){node('path',{d:`M ${origin+dir*45} ${y+20} Q 450 ${y-95} ${targetX} ${y}`,fill:'none',stroke:'#fb923c','stroke-width':18,'stroke-linecap':'round'},g);node('text',{x:targetX,y:y+12,'text-anchor':'middle','font-size':54},g,'🔥')}
+    node('text',{x:450,y:72,'text-anchor':'middle',fill:'#fef3c7','font-size':40,'font-weight':900},g,'三列鳳火');
+   }else if(fxType==='ice'){
+    node('path',{d:`M ${origin+dir*35} ${cy} Q 450 ${cy-125} ${targetX} ${cy}`,fill:'none',stroke:'#7dd3fc','stroke-width':22,'stroke-linecap':'round'},g);node('text',{x:(origin+targetX)/2,y:cy-48,'text-anchor':'middle','font-size':58},g,'❄️🐉');
+   }else if(fxType==='fire'){
+    node('circle',{cx:targetX,cy,r:82,fill:'#f97316','fill-opacity':.34,stroke:'#fde047','stroke-width':10},g);node('text',{x:targetX,y:cy+20,'text-anchor':'middle','font-size':68},g,'🔥');
+   }else if(fxType==='summon'){
+    node('circle',{cx:targetX,cy,r:72,fill:'#22c55e','fill-opacity':.24,stroke:'#fde68a','stroke-width':9,'stroke-dasharray':'12 8'},g);node('text',{x:targetX,y:cy+18,'text-anchor':'middle','font-size':58},g,'⚔️');
+   }else{
+    node('circle',{cx:targetX,cy,r:78,fill:'#facc15','fill-opacity':.28,stroke:'#fff7ae','stroke-width':10},g);node('text',{x:targetX,y:cy+18,'text-anchor':'middle','font-size':58},g,'✦');
+   }
+  }
+ }
  const board=$('charModalRange');board.dataset.direction=String(dir);board.dataset.reach=String(a.reach);board.replaceChildren(svg);
 }

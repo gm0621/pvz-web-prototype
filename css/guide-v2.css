@@ -37,10 +37,17 @@
 #charModal.guide-v2 #guideSummons{display:flex;flex-wrap:wrap;gap:8px;margin:16px 0}
 #charModal.guide-v2 #guideSummons h3{width:100%;margin:0}
 #charModal.guide-v2 #guideNotes,#charModal.guide-v2 #guideRandomNote{font-size:14px;line-height:1.8;color:#c8d7e3}
-#charModal.guide-v2 #guideDemo[data-paused="true"] *{animation-play-state:paused}
+#charModal.guide-v2 #guideDemo[data-paused="true"] *{animation-play-state:paused!important}
+#charModal.guide-v2 #guideDemo[data-paused="true"] .guide-skill-fx{animation:none!important;opacity:1;transform:none}
 .guide-bolt{animation:guide-bolt .75s ease-in-out}
 .guide-impact{animation:guide-impact .6s ease-out}
-.guide-actor-motion{transform-box:fill-box;transform-origin:center;animation:guide-actor-motion .5s ease-in-out}
+.guide-skill-fx{transform-box:fill-box;transform-origin:center;pointer-events:none;animation:guide-skill-pop .78s cubic-bezier(.16,.84,.24,1)}
+.guide-fx-kongming{filter:drop-shadow(0 0 16px #a78bfa)}
+.guide-fx-pangtong,.guide-fx-fire{filter:drop-shadow(0 0 16px #f97316)}
+.guide-fx-ice{filter:drop-shadow(0 0 16px #38bdf8)}
+.guide-fx-summon{filter:drop-shadow(0 0 16px #22c55e)}
+.guide-actor-motion{transform-box:fill-box;transform-origin:center;animation:guide-actor-motion .5s ease-out}
+@keyframes guide-skill-pop{0%{opacity:0;transform:scale(.45) rotate(-6deg)}42%{opacity:1;transform:scale(1.08) rotate(2deg)}100%{opacity:1;transform:scale(1) rotate(0)}}
 @keyframes guide-bolt{to{transform:translateX(var(--guide-travel))}}
 @keyframes guide-impact{50%{opacity:.45}to{opacity:1}}
 @keyframes guide-actor-motion{0%,100%{transform:translateX(0) scale(1)}50%{transform:translateX(28px) scale(1.08)}}
