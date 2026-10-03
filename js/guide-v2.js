@@ -4,11 +4,11 @@ function guideNode(tag,text,cls){const el=document.createElement(tag);if(text!=n
 function guideStopDemo(){if(guideDemoTimer!==null)clearTimeout(guideDemoTimer);guideDemoTimer=null;if($('guideDemo'))$('guideDemo').dataset.paused='true';const b=$('guidePlay');if(b)b.textContent='▶ 播放'}
 function guideV2Init(){
  const modal=$('charModal');modal.classList.add('guide-v2');modal.setAttribute('role','dialog');modal.setAttribute('aria-modal','true');modal.setAttribute('aria-labelledby','charModalName');
- modal.querySelector('.char-detail-body').innerHTML=`<section class="guide-main"><h3 id="charModalSkillTitle">普通行動、天賦與技能</h3><p id="charModalSkill" class="skill-copy"></p><label class="guide-field">選擇招式<select id="guideAbility"></select></label><div id="guideAbilityInfo" class="guide-ability-info"></div><section id="guideDemo" aria-label="獨立教學示範"><div class="guide-demo-heading"><strong>範圍與動作教學</strong><span id="guideDemoBadge"></span></div><div id="charModalRange" class="range-board"></div><p class="guide-range-note" id="guideRangeNote"></p><label class="guide-field">示範情境<select id="guideScenario"><option value="success">條件成立（教學指定成功）</option><option value="unmet">條件不成立</option><option value="cooldown">尚未就緒／冷卻中</option><option value="miss">符合條件但機率未中</option></select></label><div class="guide-demo-controls"><button id="guidePlay" type="button">▶ 播放</button><button id="guideStep" type="button">下一步</button><button id="guideReplay" type="button">↺ 重播</button><label>速度<select id="guideSpeed" aria-label="動畫速度"><option value="1">正常</option><option value="2">慢速</option></select></label></div><ol class="guide-timeline"><li>站位</li><li>條件</li><li>動作</li><li>結算</li><li>後續</li></ol><p id="guideDemoCaption" aria-live="polite"></p><p class="guide-disclaimer">獨立教學分鏡，非完整戰鬥模擬；示範時間經過壓縮，不扣資源、不改存檔。實戰數值以所選模式與條件為準。</p></section></section><aside class="guide-side"><h3 id="charModalStatsTitle">能力數值</h3><label class="guide-field">數值模式<select id="guideStatMode"><option value="current">目前等級＋裝備</option><option value="base">基礎數值</option><option value="next">下一級預覽（不升級）</option></select></label><div class="stat-grid" id="charModalStats"></div><div id="guideSummons"></div><h3>配置與限制</h3><p id="guideNotes"></p><p id="guideRandomNote"></p></aside>`;
+ modal.querySelector('.char-detail-body').innerHTML=`<section class="guide-main"><h3 id="charModalSkillTitle">普通行動、天賦與技能</h3><p id="charModalSkill" class="skill-copy"></p><label class="guide-field">選擇招式<select id="guideAbility"></select></label><div id="guideAbilityInfo" class="guide-ability-info"></div><section id="guideDemo" aria-label="角色動畫示範"><div class="guide-demo-heading"><strong>角色動畫示範</strong><span id="guideDemoBadge"></span></div><div id="charModalRange" class="range-board"></div><p class="guide-range-note" id="guideRangeNote"></p><div class="guide-demo-controls"><button id="guidePlay" type="button">▶ 播放</button><button id="guideStep" type="button">下一幀</button><button id="guideReplay" type="button">↺ 重播</button><label>速度<select id="guideSpeed" aria-label="動畫速度"><option value="1">正常</option><option value="2">慢速</option></select></label></div><ol class="guide-timeline"><li>待機</li><li>鎖定</li><li>攻擊</li><li>命中</li><li>收招</li></ol><p id="guideDemoCaption" aria-live="polite"></p><p class="guide-disclaimer">角色動畫與效果為獨立示範，不扣資源、不改存檔；實戰數值仍以目前等級、裝備與技能規則為準。</p></section></section><aside class="guide-side"><h3 id="charModalStatsTitle">能力數值</h3><label class="guide-field">數值模式<select id="guideStatMode"><option value="current">目前等級＋裝備</option><option value="base">基礎數值</option><option value="next">下一級預覽（不升級）</option></select></label><div class="stat-grid" id="charModalStats"></div><div id="guideSummons"></div><h3>配置與限制</h3><p id="guideNotes"></p><p id="guideRandomNote"></p></aside>`;
  $('guideAbility').onchange=()=>guideChooseAbility();
- $('guideScenario').onchange=()=>{guideStopDemo();guideDemoFrame=0;guideDrawDemo()};
+
  $('guideStatMode').onchange=()=>{const m=guideDemoModel,id=guideDemoAbility.id;showGuideV2(m.roster,m.key,$('guideStatMode').value,id)};
- $('guidePlay').onclick=()=>{if(guideDemoTimer!==null){guideStopDemo();return}if(matchMedia('(prefers-reduced-motion: reduce)').matches){guideAdvance();return}if(guideDemoFrame>=4)guideDemoFrame=0;guideTick()};
+ $('guidePlay').onclick=()=>{if(guideDemoTimer!==null){guideStopDemo();return}if(matchMedia('(prefers-reduced-motion: reduce)').matches){guideAdvance();return}if(guideDemoFrame>=8)guideDemoFrame=0;guideTick()};
  $('guideStep').onclick=()=>{guideStopDemo();guideAdvance()};
  $('guideReplay').onclick=()=>{guideStopDemo();guideDemoFrame=0;guideDrawDemo();if(!matchMedia('(prefers-reduced-motion: reduce)').matches)guideTick()};
  $('charModalClose').addEventListener('click',()=>{guideStopDemo();guideLastFocus?.focus?.()});
@@ -44,7 +44,7 @@ function showGuideV2(roster,key,mode='current',abilityId=null){
  ].map(([k,v])=>guideStat(k,v)));
  if(skills[0]?.chance){const chance=skills[0].chance,next=m.season===1?Math.round(superSkillChance(key,(mode==='base'?1:m.level)+1)*100):m.preview?Math.min(60,chance+2):chance;$('charModalStats').append(guideStat(m.preview?'機率技能候選':'機率技能發動率',`${chance}%（下級 ${next}%）${m.preview?'・尚未實裝':''}`))}
  $('guideNotes').textContent=m.notes;$('guideRandomNote').textContent=m.randomNote;
- const selector=$('guideAbility');selector.replaceChildren(...m.abilities.map(a=>{const o=guideNode('option',a.label);o.value=a.id;return o}));if(abilityId&&m.abilities.some(a=>a.id===abilityId))selector.value=abilityId;
+ const selector=$('guideAbility');selector.replaceChildren(...m.abilities.map(a=>{const label=a.id.startsWith('skill')?a.label.replace(/^(機率|條件)?技能/,'技能攻擊'):a.label;const o=guideNode('option',label);o.value=a.id;return o}));if(abilityId&&m.abilities.some(a=>a.id===abilityId))selector.value=abilityId;
  const summons=$('guideSummons');summons.replaceChildren();
  const keys=[...new Set(m.abilities.flatMap(a=>a.summons||[]))];if(keys.length){summons.append(guideNode('h3','召喚物詳細資料'));for(const k of keys){const base=(m.side==='plants'?PLANT_TYPES:ZOMBIE_TYPES)[k],b=guideNode('button',`查看 ${base.name}`);b.dataset.guideSummon=k;b.onclick=()=>showGuideV2(m.side,k);summons.append(b)}}
  modal.classList.add('show');guideChooseAbility();modal.querySelector('.char-detail-card').scrollTop=0;$('charModalClose').focus({preventScroll:true});
@@ -53,27 +53,32 @@ function guideChooseAbility(){
  guideStopDemo();guideDemoFrame=0;const m=guideDemoModel,a=m.abilities.find(a=>a.id===$('guideAbility').value);guideDemoAbility=a;
  const details=[['發動條件',a.condition],['攻擊／影響範圍',a.rangeText],['傷害與效果',a.effect],['間隔／持續／冷卻',a.timing],['限制與例外',a.limits]];
  $('guideAbilityInfo').replaceChildren(...details.map(([k,v])=>guideStat(k,v)));
- $('guideScenario').value='success';$('guideScenario').querySelector('[value="miss"]').disabled=!a.chance&&!(m.preview&&a.id==='skill');
- $('guideDemoBadge').textContent=m.preview?'概念預覽・未實裝':'教學示意・非實戰';
- $('guideRangeNote').textContent=`${a.rangeText}。${a.reach===null?'範圍未定，不繪製假射程。':'金色為招式範圍、藍色為角色、紅色為示範目標；半格／小數以色帶端點為準。'}`;
+ const animationLabel=a.id.startsWith('skill')?'技能攻擊動畫':a.id==='talent'?'天賦動畫':'普通攻擊動畫';
+ $('guideDemoBadge').textContent=m.preview?`${animationLabel}・概念預覽`:animationLabel;
+ $('guideRangeNote').textContent=`${a.rangeText}。${a.reach===null?'範圍未定，不繪製假射程。':'金色為招式範圍、藍色為角色、紅色為示範目標；角色會播放目前實際攻擊圖幀。'}`;
  guideDrawDemo();
 }
-function guideAdvance(){guideDemoFrame=(guideDemoFrame+1)%5;guideDrawDemo()}
-function guideTick(){if(document.hidden||!$('charModal').classList.contains('show'))return guideStopDemo();$('guideDemo').dataset.paused='false';guideAdvance();if(guideDemoFrame>=4)return guideStopDemo();$('guidePlay').textContent='Ⅱ 暫停';guideDemoTimer=setTimeout(guideTick,850*Number($('guideSpeed').value))}
-function guideDemoResult(m,a,frame,scenario){
- const success=scenario==='success',hit=frame>=3&&success;
- // Numeric deltas only where an explicit quantity is known; concept effects use captions.
+function guideDemoFrames(m){return m.base?.attackFrames||m.d?.attackFrames||null}
+function guideDemoHitFrame(m){const d=m.base||m.d||{},frames=guideDemoFrames(m);if(!frames)return 3;return Math.max(2,Math.min(7,Math.round((d.attackHitAt??(d.attackFrameMs||90)*4)/(d.attackFrameMs||90))+1))}
+function guideDemoActorAsset(m,frame){const frames=guideDemoFrames(m);return frame===0||!frames?.length?m.asset:frames[Math.min(frame-1,frames.length-1)]}
+function guideAdvance(){guideDemoFrame=(guideDemoFrame+1)%9;guideDrawDemo()}
+function guideTick(){if(document.hidden||!$('charModal').classList.contains('show'))return guideStopDemo();$('guideDemo').dataset.paused='false';guideAdvance();if(guideDemoFrame>=8)return guideStopDemo();$('guidePlay').textContent='Ⅱ 暫停';guideDemoTimer=setTimeout(guideTick,150*Number($('guideSpeed').value))}
+function guideDemoResult(m,a,frame){
+ const hitFrame=guideDemoHitFrame(m),hit=frame>=hitFrame;
  const damage=hit?Number((a.damage||0).toFixed(3)):0;
- return {frame,scenario,hit,damage,hp:Math.max(0,600-damage),resource:hit?(a.amount||0):0,shieldLoss:hit&&a.kind==='shield'?(m.key==='xu-huang'&&a.id==='skill'?100:m.combatKey==='s2Cleaver'?m.d.damage*(a.id==='skill'?3:2):0):0,effect:hit?a.effect:'尚未施加效果'};
+ return {frame,hitFrame,hit,damage,hp:Math.max(0,600-damage),resource:hit?(a.amount||0):0,shieldLoss:hit&&a.kind==='shield'?(m.key==='xu-huang'&&a.id==='skill'?100:m.combatKey==='s2Cleaver'?m.d.damage*(a.id==='skill'?3:2):0):0,effect:hit?a.effect:'角色準備動作'};
 }
 function guideDrawDemo(){
  const m=guideDemoModel,a=guideDemoAbility;if(!m||!a)return;
- const scenario=$('guideScenario').value,result=guideDemoResult(m,a,guideDemoFrame,scenario),f=guideDemoFrame;
+ const result=guideDemoResult(m,a,guideDemoFrame),f=guideDemoFrame,hitFrame=result.hitFrame;
  $('guideDemo').dataset.result=JSON.stringify(result);
- const blocked={unmet:'條件不成立：本招不發動；普通行動是否繼續，依實戰規則。',cooldown:'尚未就緒／冷卻中：本招不發動，不提前重置冷卻。',miss:'符合條件，但這次機率未中：保留原本普通行動與固定天賦。'};
- const lead=m.preview?'概念教學（未實裝）':'獨立教學';
- const captions=[`${lead}｜站位：${a.rangeText}`,`${lead}｜檢查條件：${a.condition}`,`${lead}｜${scenario==='success'?(a.chance?'教學指定成功，不代表實戰必定觸發。':'條件成立，準備動作。'):blocked[scenario]}`,`${lead}｜${result.hit?`${a.effect}${result.damage?` 示範目標 HP：600 → ${result.hp}（本次 ${result.damage}）。`:''}`:blocked[scenario]}`,`${lead}｜後續：${a.timing} ${a.limits}`];
- $('guideDemoCaption').textContent=captions[f];document.querySelectorAll('.guide-timeline li').forEach((el,i)=>{el.classList.toggle('current',i===f);el.setAttribute('aria-current',i===f?'step':'false')});
+ const lead=m.preview?'概念角色動畫（未實裝）':'角色動畫';
+ let phase=0,caption=`${lead}｜${m.name} 待機，招式範圍：${a.rangeText}`;
+ if(f>0&&f<hitFrame-1){phase=1;caption=`${lead}｜${m.name} 鎖定目標，開始準備${a.id.startsWith('skill')?'技能攻擊':'普通攻擊'}。`}
+ else if(f===hitFrame-1){phase=2;caption=`${lead}｜攻擊動作展開。`}
+ else if(f>=hitFrame&&f<8){phase=3;caption=`${lead}｜${a.effect}${result.damage?` 示範目標 HP：600 → ${result.hp}（本次 ${result.damage}）。`:''}`}
+ else if(f===8){phase=4;caption=`${lead}｜收招並回到待機；${a.timing}`}
+ $('guideDemoCaption').textContent=caption;document.querySelectorAll('.guide-timeline li').forEach((el,i)=>{el.classList.toggle('current',i===phase);el.setAttribute('aria-current',i===phase?'step':'false')});
  guideDrawBoard(m,a,result);
 }
 function guideDrawBoard(m,a,result){
@@ -92,12 +97,12 @@ function guideDrawBoard(m,a,result){
   else if(a.shape==='target'){const end=Math.max(0,Math.min(900,origin+dir*a.reach*100));band(Math.min(origin,end),200,Math.abs(end-origin),100);band(target-100,100,200,300)}
   else {const toward=a.shape==='behind'?-dir:dir,end=Math.max(0,Math.min(900,origin+toward*a.reach*100)),start=origin+toward*(a.min||0)*100;band(Math.min(start,end),200-a.rows*100,Math.abs(end-start),(1+2*a.rows)*100)}
  }
- const portrait=(asset,x,y,label,tag,affected=false)=>{
-  const g=node('g',{'class':affected?'guide-impact':''});node('rect',{x:x-36,y:y-40,width:72,height:80,rx:12,fill:tag==='我'?'#39798a':'#753c44','fill-opacity':.9},g);
-  node('image',{href:asset,x:x-48,y:y-58,width:96,height:96,preserveAspectRatio:'xMidYMid meet'},g);
+ const portrait=(asset,x,y,label,tag,affected=false,actor=false)=>{
+  const cls=[affected?'guide-impact':'',actor?'guide-actor':'',actor&&!guideDemoFrames(m)&&result.frame>0&&result.frame<8?'guide-actor-motion':''].filter(Boolean).join(' '),g=node('g',{'class':cls});node('rect',{x:x-36,y:y-40,width:72,height:80,rx:12,fill:tag==='我'?'#39798a':'#753c44','fill-opacity':.9},g);
+  node('image',{href:asset,x:x-58,y:y-68,width:116,height:116,preserveAspectRatio:'xMidYMid meet','class':actor?'guide-actor-image':''},g);
   node('text',{x,y:y+51,'text-anchor':'middle',fill:'#fff','font-size':18,'font-weight':700},g,label);return g;
  };
- portrait(m.asset,origin,cy,m.name,'我');
+ portrait(guideDemoActorAsset(m,result.frame),origin,cy,m.name,'我',false,true);
  const enemy=m.side==='plants'?ZOMBIE_TYPES.normal:PLANT_TYPES.wallnut;
  const supportive=['guard','supply','summon','mark'].includes(a.kind)&&!a.damage;
  const targetX=a.shape==='behind'?origin-dir*80:target;
@@ -117,7 +122,7 @@ function guideDrawBoard(m,a,result){
   }
   if(a.rows&&a.damage)for(const dy of [-100,100]){portrait(enemy.asset,targetX,cy+dy,'範圍內目標','敵',result.hit);if(result.hit)node('text',{x:targetX+68,y:cy+dy,fill:'#ffe08b','font-size':24},svg,`−${Number((a.splash??a.damage).toFixed(2))}`)}
  }
- if(result.frame===2&&result.scenario==='success'){
+ if(result.frame===result.hitFrame-1){
   node('line',{x1:origin,y1:cy,x2:targetX,y2:cy,stroke:'#ffe79b','stroke-width':7,'stroke-dasharray':'12 9','class':'guide-motion-line'});
   node('circle',{cx:origin,cy,r:14,fill:'#ffe29b','class':'guide-bolt',style:`--guide-travel:${targetX-origin}px`});
  }

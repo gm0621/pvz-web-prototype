@@ -40,8 +40,10 @@
 #charModal.guide-v2 #guideDemo[data-paused="true"] *{animation-play-state:paused}
 .guide-bolt{animation:guide-bolt .75s ease-in-out}
 .guide-impact{animation:guide-impact .6s ease-out}
+.guide-actor-motion{transform-box:fill-box;transform-origin:center;animation:guide-actor-motion .5s ease-in-out}
 @keyframes guide-bolt{to{transform:translateX(var(--guide-travel))}}
 @keyframes guide-impact{50%{opacity:.45}to{opacity:1}}
+@keyframes guide-actor-motion{0%,100%{transform:translateX(0) scale(1)}50%{transform:translateX(28px) scale(1.08)}}
 @media(max-width:720px){
  #charModal.guide-v2{padding:8px}
  #charModal.guide-v2 .char-detail-card{max-height:calc(100dvh - 16px);border-radius:16px;scrollbar-gutter:auto}
@@ -51,5 +53,6 @@
  #charModal.guide-v2 .char-detail-body{grid-template-columns:minmax(0,1fr);padding:12px;gap:18px}
  #charModal.guide-v2 .guide-side{border-top:1px solid #496476;padding-top:18px}
  #charModal.guide-v2 .char-detail-close{top:16px;right:18px}
+ #charModal.guide-v2 .guide-demo-heading{padding-right:62px}
 }
 @media(prefers-reduced-motion:reduce){#charModal.guide-v2 *{animation:none!important;transition:none!important}}
