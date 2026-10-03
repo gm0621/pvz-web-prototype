@@ -3,11 +3,11 @@
 from pathlib import Path
 from PIL import Image, ImageChops, ImageDraw
 import hashlib
-import shutil
 
 ROOT = Path(__file__).resolve().parents[1]
-SOURCE = Path.home() / ".hermes/image_cache/img_e6e924cdb809.png"
 OUT = ROOT / "assets/characters/future-generals/wei-season2/xiahou-dun"
+SOURCE = OUT / "source-attack-sheet.png"
+IDLE_SOURCE = OUT.parent / "xiahou-dun.webp"
 EXPECTED_SHA256 = "84724606b37fb72e5ca276589bd8aabfc5d63f0b240933278ac41710fdf7981a"
 # Connected visible-component bounds, ordered top-left to bottom-right.
 BOUNDS = [
@@ -21,8 +21,27 @@ BOUNDS = [
     (1368, 492, 1772, 850),
 ]
 CANVAS = 1024
-SCALE = 1.8
-BASELINE = 900
+TARGET_VISIBLE_HEIGHT = 760
+BASELINE = 920
+
+
+def render_aligned(frame):
+    scale = TARGET_VISIBLE_HEIGHT / frame.height
+    width = round(frame.width * scale)
+    frame = frame.resize((width, TARGET_VISIBLE_HEIGHT), Image.Resampling.LANCZOS)
+    if frame.width > CANVAS:
+        raise SystemExit(f"Normalized frame is wider than the canvas: {frame.size}")
+    canvas = Image.new("RGBA", (CANVAS, CANVAS), (0, 0, 0, 0))
+    canvas.alpha_composite(frame, ((CANVAS - frame.width) // 2, BASELINE - frame.height))
+    return canvas
+
+
+def build_idle():
+    image = Image.open(IDLE_SOURCE).convert("RGBA")
+    box = image.getchannel("A").point([255 if value > 8 else 0 for value in range(256)]).getbbox()
+    if not box:
+        raise SystemExit("Xiahou Dun idle portrait has no visible pixels")
+    render_aligned(image.crop(box)).save(OUT / "idle.webp", "WEBP", lossless=True, method=6)
 
 
 def main():
@@ -34,7 +53,6 @@ def main():
     if image.size != (1774, 887):
         raise SystemExit(f"Unexpected source dimensions: {image.size}")
     OUT.mkdir(parents=True, exist_ok=True)
-    shutil.copyfile(SOURCE, OUT / "source-attack-sheet.png")
     alpha = image.getchannel("A")
     binary = alpha.point([255 if value > 8 else 0 for value in range(256)])
     for index, box in enumerate(BOUNDS):
@@ -59,16 +77,9 @@ def main():
         component_box = isolated.getbbox()
         if not component_box:
             raise SystemExit(f"Empty connected component for frame {index}")
-        frame = isolated.crop(component_box)
-        frame = frame.resize(
-            (round(frame.width * SCALE), round(frame.height * SCALE)),
-            Image.Resampling.LANCZOS,
-        )
-        canvas = Image.new("RGBA", (CANVAS, CANVAS), (0, 0, 0, 0))
-        x = (CANVAS - frame.width) // 2
-        y = BASELINE - frame.height
-        canvas.alpha_composite(frame, (x, y))
+        canvas = render_aligned(isolated.crop(component_box))
         canvas.save(OUT / f"attack-{index:02d}.webp", "WEBP", lossless=True, method=6)
+    build_idle()
     print(f"generated {len(BOUNDS)} frames in {OUT}")
 
 

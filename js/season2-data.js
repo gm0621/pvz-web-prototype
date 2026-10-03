@@ -14,7 +14,7 @@ const SEASON2_UNITS={
   s2Crossbow:{name:'強弩兵',cost:100,emoji:'🏹',hp:160,damage:32,rate:2000,range:9,cooldown:4800,desc:'校射：連續射擊同一目標，每次傷害提高 20%，最多 60%；換目標歸零。'},
   s2Shield:{name:'大盾兵',cost:75,emoji:'🛡️',hp:470,damage:14,rate:1400,range:.8,cooldown:7000,clearRequired:1,desc:'列盾：脫離交戰 4 秒後架盾，正面傷害減少 40%。'},
   s2Halberd:{name:'長戟兵',cost:125,emoji:'🔱',hp:260,damage:38,rate:1500,range:1.6,cooldown:6500,clearRequired:2,desc:'拒馬列戟：攔截快速突進，追加 55 傷害並中止突進。'},
-  s2Xiahou:{name:'夏侯惇',cost:150,emoji:'⚔️',hp:440,damage:58,rate:1450,range:1.05,cooldown:8000,clearRequired:3,attackFrames:Array.from({length:8},(_,index)=>`assets/characters/future-generals/wei-season2/xiahou-dun/attack-${String(index).padStart(2,'0')}.webp`),attackFrameDurations:[90,80,100,65,150,65,80,100],attackHitAt:335,desc:'拔矢不屈：受傷累積怒氣；滿怒後下一刀追加 60 傷害並短暫減傷。'},
+  s2Xiahou:{name:'夏侯惇',cost:150,emoji:'⚔️',hp:440,damage:58,rate:1450,range:1.05,cooldown:8000,clearRequired:3,battleAsset:'assets/characters/future-generals/wei-season2/xiahou-dun/idle.webp',attackFrames:Array.from({length:8},(_,index)=>`assets/characters/future-generals/wei-season2/xiahou-dun/attack-${String(index).padStart(2,'0')}.webp`),attackFrameDurations:[90,80,100,65,150,65,80,100],attackHitAt:335,desc:'拔矢不屈：受傷累積怒氣；滿怒後下一刀追加 60 傷害並短暫減傷。'},
   s2DianWei:{name:'典韋',cost:165,emoji:'🗡️',hp:560,damage:52,rate:1350,range:1,cooldown:8500,clearRequired:4,desc:'帳前死衛：替同路緊鄰後方友軍分擔 35% 傷害，並以雙戟重擊反擊。'},
   s2XuChu:{name:'許褚',cost:185,emoji:'🔨',hp:720,damage:70,rate:2100,range:.9,cooldown:9500,clearRequired:5,desc:'虎軀鎮關：高生命重坦，重錘有機率讓一般敵人短暫停步。'},
   s2ZhangLiao:{name:'張遼',cost:180,emoji:'🏇',hp:400,damage:62,rate:1300,range:1.4,cooldown:8500,clearRequired:6,desc:'先登破陣：標記首次接戰目標，使同路友軍對它造成更高傷害。'},

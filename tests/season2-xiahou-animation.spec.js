@@ -33,3 +33,17 @@ test('Xiahou Dun uses eight aligned attack frames and lands damage on the fifth 
   expect(response.ok(),src).toBe(true);
  }
 });
+
+test('Xiahou Dun keeps one visual scale and baseline from idle through every attack frame',async({page})=>{
+ await open(page);
+ const visible=await page.evaluate(async()=>{
+  const bounds=async src=>{const image=new Image();image.src=src;await image.decode();const canvas=document.createElement('canvas');canvas.width=image.naturalWidth;canvas.height=image.naturalHeight;const context=canvas.getContext('2d');context.drawImage(image,0,0);const {data,width,height}=context.getImageData(0,0,canvas.width,canvas.height);let left=width,top=height,right=-1,bottom=-1;for(let y=0;y<height;y++)for(let x=0;x<width;x++)if(data[(y*width+x)*4+3]>8){left=Math.min(left,x);top=Math.min(top,y);right=Math.max(right,x);bottom=Math.max(bottom,y)}return {width:right-left+1,height:bottom-top+1,bottom:bottom+1,canvasHeight:height}};
+  const d=SEASON2_UNITS.plants.s2Xiahou;
+  return {idle:await bounds(d.battleAsset||d.asset),frames:await Promise.all(d.attackFrames.map(bounds))};
+ });
+ for(const [index,frame] of visible.frames.entries()){
+  expect(frame.height/visible.idle.height,`frame ${index+1} visible height`).toBeGreaterThan(.92);
+  expect(frame.height/visible.idle.height,`frame ${index+1} visible height`).toBeLessThan(1.08);
+  expect(Math.abs((frame.canvasHeight-frame.bottom)-(visible.idle.canvasHeight-visible.idle.bottom)),`frame ${index+1} baseline`).toBeLessThanOrEqual(4);
+ }
+});
