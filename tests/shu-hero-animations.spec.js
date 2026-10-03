@@ -92,3 +92,19 @@ test('six Shu battle idle images match their opening and closing attack footprin
   expect(Math.abs(frames.idle.bottom-frame.bottom)/frame.canvasHeight,key).toBeLessThan(.025);
  }
 });
+
+test('Liu Bei uses the updated idle artwork in battle and the character guide',async({page})=>{
+ await open(page);
+ const assets=await page.evaluate(()=>{
+  buildCharacterGrid('plants');
+  return {
+   battle:PLANT_TYPES.liubei.battleAsset,
+   guide:guideV2Model('plants','liubei').asset,
+   card:document.querySelector('#characterGrid .type-liubei img')?.getAttribute('src'),
+  };
+ });
+ const expected='assets/characters/future-generals/liubei/idle.webp';
+ expect(assets).toEqual({battle:expected,guide:expected,card:expected});
+ const response=await page.request.get(new URL(expected,page.url()).href);
+ expect(response.ok()).toBe(true);
+});

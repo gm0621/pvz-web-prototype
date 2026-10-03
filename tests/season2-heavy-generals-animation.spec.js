@@ -5,6 +5,9 @@ const generals=[
  {key:'s2XuChu',slug:'xu-chu'},
  {key:'s2ZhangLiao',slug:'zhang-liao'},
  {key:'s2XuHuang',slug:'xu-huang'},
+ {key:'s2GuoJia',slug:'guo-jia'},
+ {key:'s2SimaYi',slug:'sima-yi'},
+ {key:'s2CaoCao',slug:'cao-cao'},
 ];
 
 async function open(page){
@@ -12,7 +15,7 @@ async function open(page){
  await page.goto('/');
 }
 
-test('four Wei heavy generals use eight attack frames and land damage on the fifth frame',async({page})=>{
+test('seven Wei generals use eight attack frames and resolve their attack on the fifth frame',async({page})=>{
  await open(page);
  const result=await page.evaluate(keys=>{
   playerProfile.season2Progress.plants={completedLevels:{1:1,2:1,3:1},highestLevel:3};markStoryRead('plants',4,'opening',2);currentSeason=2;selectedLevel=4;start('plants');clearInterval(timer);
@@ -22,11 +25,11 @@ test('four Wei heavy generals use eight attack frames and land damage on the fif
    addPlant(key,2,2);const hero=state.plants.at(-1);const target=addZombie('s2Rat',2.8,2);
    hero.last=0;const before=target.hp;actPlants();render();
    const firstSrc=document.querySelector(`#board .type-${key} .char-img`)?.getAttribute('src');
-   const beforeHit={hp:target.hp,pending:state.pendingHits.length,started:hero.attackStartedAt};
+   const beforeHit={hp:target.hp,pending:state.pendingHits.length,projectiles:state.projectiles.length,started:hero.attackStartedAt};
    const data=SEASON2_UNITS.plants[key];state.time=hero.attackStartedAt+data.attackHitAt;
    processSeason2PendingHits();render();
    const hitSrc=document.querySelector(`#board .type-${key} .char-img`)?.getAttribute('src');
-   out[key]={frames:data.attackFrames,battleAsset:data.battleAsset,before,firstSrc,beforeHit,after:target.hp,hitSrc};
+   out[key]={frames:data.attackFrames,battleAsset:data.battleAsset,before,firstSrc,beforeHit,after:target.hp,projectiles:state.projectiles.length,ranged:data.range>2,hitSrc};
   }
   return out;
  },generals.map(({key})=>key));
@@ -39,8 +42,10 @@ test('four Wei heavy generals use eight attack frames and land damage on the fif
   expect(value.firstSrc).toMatch(/attack-00\.webp$/);
   expect(value.beforeHit.hp).toBe(value.before);
   expect(value.beforeHit.pending).toBe(1);
+  expect(value.beforeHit.projectiles).toBe(0);
   expect(value.beforeHit.started).toBe(3000);
-  expect(value.after).toBeLessThan(value.before);
+  if(value.ranged){expect(value.after).toBe(value.before);expect(value.projectiles).toBe(1)}
+  else{expect(value.after).toBeLessThan(value.before);expect(value.projectiles).toBe(0)}
   expect(value.hitSrc).toMatch(/attack-04\.webp$/);
   for(const src of [value.battleAsset,...value.frames]){
    const response=await page.request.get(new URL(src,page.url()).href);
@@ -52,7 +57,7 @@ test('four Wei heavy generals use eight attack frames and land damage on the fif
 test('updated Wei battle art is also used by the character guide',async({page})=>{
  await open(page);
  const assets=await page.evaluate(()=>{
-  const slugs=['xiahou-dun','dian-wei','xu-chu','zhang-liao','xu-huang'];
+  const slugs=['xiahou-dun','dian-wei','xu-chu','zhang-liao','xu-huang','guo-jia','sima-yi','cao-cao'];
   buildCharacterGrid('wei');
   return slugs.map(slug=>({
    slug,
@@ -69,7 +74,7 @@ test('updated Wei battle art is also used by the character guide',async({page})=
  }
 });
 
-test('four Wei heavy generals have transparent aligned frames in one runtime box',async({page})=>{
+test('seven Wei generals have transparent aligned frames in one runtime box',async({page})=>{
  await open(page);
  const result=await page.evaluate(async keys=>{
   const inspect=async src=>{const image=new Image();image.src=src;await image.decode();const canvas=document.createElement('canvas');canvas.width=image.naturalWidth;canvas.height=image.naturalHeight;const context=canvas.getContext('2d');context.drawImage(image,0,0);const {data,width,height}=context.getImageData(0,0,canvas.width,canvas.height);let opaque=0,bottom=-1;for(let y=0;y<height;y++)for(let x=0;x<width;x++){const alpha=data[(y*width+x)*4+3];if(alpha>8){opaque++;bottom=Math.max(bottom,y)}}return {width,height,opaque,bottom,cornerAlpha:[data[3],data[(width-1)*4+3],data[((height-1)*width)*4+3],data[(height*width-1)*4+3]]}};

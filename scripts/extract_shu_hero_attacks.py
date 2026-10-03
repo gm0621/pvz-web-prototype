@@ -7,9 +7,12 @@ from low-alpha valleys instead of blindly slicing equal rectangles.
 """
 from pathlib import Path
 from collections import deque
+import hashlib
 
 import numpy as np
 from PIL import Image
+
+from extract_wei_heavy_attacks import checkerboard_alpha, keep_main_component
 
 ROOT = Path(__file__).resolve().parents[1]
 ASSET_ROOT = ROOT / "assets/characters/future-generals"
@@ -17,6 +20,7 @@ CANVAS_SIZE = 1024
 BASELINE = 970
 FRAME_SCALE = 2.0
 ALPHA_THRESHOLD = 8
+LIUBEI_SOURCE_SHA256 = "216506dd36c6c927c3ec8563b45f4e8f5cec1826a8d6339d065f71556219b10e"
 
 HEROES = {
     "machao": ASSET_ROOT / "pierce-machao.webp",
@@ -122,8 +126,78 @@ def split_sheet(sheet, key):
     return frames
 
 
+def fade_edge(image, edge, width=36):
+    rgba = np.asarray(image).copy()
+    if edge in ("left", "right"):
+        width = min(width, rgba.shape[1])
+        fade = np.linspace(0.0, 1.0, width, dtype=np.float32)
+        if edge == "right":
+            fade = fade[::-1]
+        section = slice(0, width) if edge == "left" else slice(-width, None)
+        rgba[:, section, 3] = np.rint(rgba[:, section, 3] * fade).astype(np.uint8)
+    elif edge == "top":
+        width = min(width, rgba.shape[0])
+        fade = np.linspace(0.0, 1.0, width, dtype=np.float32)[:, None]
+        rgba[:width, :, 3] = np.rint(rgba[:width, :, 3] * fade).astype(np.uint8)
+    return Image.fromarray(rgba, "RGBA")
+
+
+def clear_and_fade_edge(image, edge, clear=18, fade_width=36):
+    rgba = np.asarray(image).copy()
+    if edge in ("left", "right"):
+        clear = min(clear, rgba.shape[1])
+        fade_width = min(fade_width, rgba.shape[1] - clear)
+        if edge == "left":
+            rgba[:, :clear, 3] = 0
+            fade = np.linspace(0.0, 1.0, fade_width, dtype=np.float32)
+            rgba[:, clear:clear + fade_width, 3] = np.rint(rgba[:, clear:clear + fade_width, 3] * fade).astype(np.uint8)
+        else:
+            rgba[:, -clear:, 3] = 0
+            fade = np.linspace(1.0, 0.0, fade_width, dtype=np.float32)
+            rgba[:, -(clear + fade_width):-clear, 3] = np.rint(rgba[:, -(clear + fade_width):-clear, 3] * fade).astype(np.uint8)
+    else:
+        clear = min(clear, rgba.shape[0])
+        fade_width = min(fade_width, rgba.shape[0] - clear)
+        rgba[:clear, :, 3] = 0
+        fade = np.linspace(0.0, 1.0, fade_width, dtype=np.float32)[:, None]
+        rgba[clear:clear + fade_width, :, 3] = np.rint(rgba[clear:clear + fade_width, :, 3] * fade).astype(np.uint8)
+    return Image.fromarray(rgba, "RGBA")
+
+
+def split_liubei_jpeg(sheet):
+    width, height = sheet.size
+    xs = [round(index * width / 4) for index in range(5)]
+    ys = [0, round(height / 2), height]
+    frames = []
+    for index in range(8):
+        row, column = divmod(index, 4)
+        left_extension = 40 if index == 1 else 0
+        crop = sheet.crop((max(0, xs[column] - left_extension), ys[row], xs[column + 1], ys[row + 1]))
+        rgba = crop.convert("RGBA")
+        rgba.putalpha(checkerboard_alpha(crop))
+        rgba = keep_main_component(rgba)
+        if index in (4, 5, 6):
+            rgba = fade_edge(rgba, "left")
+        if index in (3, 4, 5, 6):
+            rgba = fade_edge(rgba, "right")
+        if index in (2, 4, 5):
+            rgba = clear_and_fade_edge(rgba, "top", 12, 36)
+        if index == 2:
+            rgba = fade_edge(rgba, "left")
+            rgba = clear_and_fade_edge(rgba, "right", 18, 36)
+        if index == 6:
+            rgba = clear_and_fade_edge(rgba, "top", 24, 40)
+        if index == 7:
+            rgba = clear_and_fade_edge(rgba, "left", 24, 36)
+        box = visible_box(rgba)
+        if not box:
+            raise RuntimeError("Detected an empty Liu Bei animation cell")
+        frames.append(rgba.crop(box))
+    return frames
+
+
 def build_idle(idle_source, output_dir, target_height):
-    image = Image.open(idle_source).convert("RGBA")
+    image = idle_source.convert("RGBA") if isinstance(idle_source, Image.Image) else Image.open(idle_source).convert("RGBA")
     box = visible_box(image)
     if not box:
         raise RuntimeError(f"Idle source has no visible pixels: {idle_source}")
@@ -139,9 +213,15 @@ def build_idle(idle_source, output_dir, target_height):
 def main():
     for key, idle_source in HEROES.items():
         output_dir = ASSET_ROOT / key
-        source = output_dir / "source-attack-sheet.png"
-        sheet = Image.open(source).convert("RGBA")
-        frames = split_sheet(sheet, key)
+        if key == "liubei":
+            source = output_dir / "source-attack-sheet.jpg"
+            if hashlib.sha256(source.read_bytes()).hexdigest() != LIUBEI_SOURCE_SHA256:
+                raise RuntimeError("Unexpected Liu Bei source image")
+            frames = split_liubei_jpeg(Image.open(source).convert("RGB"))
+        else:
+            source = output_dir / "source-attack-sheet.png"
+            sheet = Image.open(source).convert("RGBA")
+            frames = split_sheet(sheet, key)
         rendered = []
         for index, crop in enumerate(frames):
             frame = paste_aligned(crop)
@@ -152,7 +232,7 @@ def main():
             box = visible_box(frame)
             edge_heights.append(box[3] - box[1])
         target_height = round(sum(edge_heights) / len(edge_heights))
-        build_idle(idle_source, output_dir, target_height)
+        build_idle(frames[0] if key == "liubei" else idle_source, output_dir, target_height)
         print(f"{key}: 8 frames, idle visible height {target_height}px")
 
 

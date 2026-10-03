@@ -20,6 +20,7 @@ function processSeason2PendingHits(){
   const source=state.plants.find(unit=>unit.id===hit.sourceId&&unit.hp>0);
   const target=state.zombies.find(unit=>unit.id===hit.targetId&&unit.hp>0);
   if(!source||!target)continue;
+  if(hit.projectile){state.projectiles.push({x:source.c+.72,y:source.r+.5,r:source.r,dir:1,damage:hit.damage,from:'plant',speed:.11,targetId:target.id});sfx('shoot');continue}
   target.hp-=hit.damage;attackFx(target,hit.fx||'slash');sfx('hit');flash(target,'重刀命中');
  }
  state.pendingHits=waiting;
@@ -38,8 +39,8 @@ function actSeason2Plants(){
   if(p.type==='s2XuHuang'){p.armorStacks=p.armorTarget===target.id?Math.min(3,(p.armorStacks||0)+1):0;p.armorTarget=target.id;damage=Math.round(damage*(1+p.armorStacks*.18))}
   if(p.type==='s2SimaYi')damage=Math.round(damage*(1+Math.min(.6,(state.time-p.bornAt)/45000*.6)));
   if(p.type==='s2ZhangLiao'){target.breakMarkedUntil=state.time+5000;flash(target,'破陣標記')}
-  if((d.range||0)>2){state.projectiles.push({x:p.c+.72,y:p.r+.5,r:p.r,dir:1,damage,from:'plant',speed:.11,targetId:target.id});sfx('shoot')}
-  else if(d.attackHitAt){state.pendingHits=state.pendingHits||[];state.pendingHits.push({sourceId:p.id,targetId:target.id,damage,at:state.time+d.attackHitAt,fx:'slash'})}
+  if(d.attackHitAt){state.pendingHits=state.pendingHits||[];state.pendingHits.push({sourceId:p.id,targetId:target.id,damage,at:state.time+d.attackHitAt,fx:'slash',projectile:(d.range||0)>2})}
+  else if((d.range||0)>2){state.projectiles.push({x:p.c+.72,y:p.r+.5,r:p.r,dir:1,damage,from:'plant',speed:.11,targetId:target.id});sfx('shoot')}
   else{target.hp-=damage;attackFx(target,'slash');sfx('hit')}
  }
 }

@@ -25,10 +25,14 @@ EXPECTED = {
     "xu-chu": "a18c657dae311d5d101bd4c2209ab850e6b0ac9c908070a85a69a186191b32aa",
     "zhang-liao": "8e8b28c6c73e4e1a577c61e04abb15c1e0e3ca2b82762345aea0e69b0b484725",
     "xu-huang": "f3d39bb5ac7bfea59094d9f85ada7bfa363423ef5e2a5aec68922e999ba7be73",
+    "guo-jia": "897d00986adb049efc10897eb9dd82827035bb4582c843b688caba3af7ce23c9",
+    "sima-yi": "10584d09adbd67113043ca2b333e63e4ba8b7937d67ba00c50b38e988f0176cf",
+    "cao-cao": "c3b0d8397b1b0aa442b61bd9739b7ff4f24ade64b26e99f3327a123919ccb2e7",
 }
 FRAME_BOUNDS = {
     "xu-chu": {2: (-65, 20)},
     "xu-huang": {2: (-20, 0)},
+    "sima-yi": {1: (-40, 0)},
 }
 LEFT_EDGE_CLEAR = {
     ("dian-wei", 6): 30,
@@ -37,6 +41,7 @@ LEFT_EDGE_CLEAR = {
     ("zhang-liao", 5): 30,
     ("xu-huang", 3): 30,
     ("xu-huang", 5): 30,
+    ("guo-jia", 5): 20,
 }
 RIGHT_EDGE_FADE = {
     ("xu-chu", 2),
@@ -45,7 +50,12 @@ RIGHT_EDGE_FADE = {
     ("xu-huang", 2),
     ("xu-huang", 4),
 }
-TOP_EDGE_CLEAR = {("xu-huang", 6): 36}
+TOP_EDGE_CLEAR = {
+    ("xu-huang", 6): 36,
+    ("guo-jia", 6): 20,
+    ("sima-yi", 6): 20,
+    ("cao-cao", 6): 20,
+}
 
 
 def sha256(path: Path) -> str:
