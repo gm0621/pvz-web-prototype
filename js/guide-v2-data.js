@@ -88,7 +88,7 @@ function guideV2Model(roster,key,mode='current'){
 function guideV2Season2Abilities(m,add){
  const {combatKey:k,d,editorial:e}=m,first=m.abilities[0];let a={...first,id:'talent',label:`天賦｜${e.talent}`,condition:first.condition,limits:e.limit};
  if(k==='s2Tuntian')Object.assign(a,{kind:'supply',amount:d.produce+15,effect:`安全補給 ${d.produce+15} 軍糧（普通 ${d.produce} +15）。`,condition:'連續 8 秒沒有受到傷害，且本次補給週期已到。',timing:`補給每 ${guideSeconds(d.rate)}；受傷重新累積安全時間。`});
- if(k==='s2Shield')Object.assign(a,{kind:'guard',damage:0,shape:'self',reach:0,rangeText:'自身受擊',effect:'架盾時傷害 ×0.6；列盾被削弱期間 ×0.85。實際程式未分前後方向。',condition:'脫離近戰目標 4 秒；近戰受擊／接敵即收盾。',timing:'脫戰等待 4 秒；不是持續 40% 減傷。',limits:'不把生命當護甲；目前直接傷害函式沒有方向檢查，近戰會先收盾。'});
+ if(k==='s2Shield')Object.assign(a,{kind:'guard',damage:0,shape:'self',reach:0,rangeText:'同列接敵前跳躍推進／近身阻擋',effect:'不會攻擊；常駐減傷 40%，列盾被削弱期間仍減傷 15%。',condition:`同列前方有敵人且尚未接敵時，每 ${guideSeconds(d.hopRate)} 向前跳 ${d.hopDistance} 格；接敵後停下阻擋。`,timing:'沒有普通攻擊週期；跳躍與減傷為常駐定位。',limits:'不會穿過同列敵人；裂盾斧屍連續命中仍可讓減傷暫時降至 15%。'});
  if(k==='s2Crossbow')Object.assign(a,{kind:'projectile',damage:Math.round(d.damage*1.6),effect:`連續同目標：${[0,1,2,3].map(n=>Math.round(d.damage*(1+.2*n))).join(' → ')}，上限三層 +60%。示範為滿層一箭。`,condition:'持續鎖定同一目標；換目標或找不到目標歸零。',timing:first.timing,limits:'判定於射擊時，不是命中才加層；實際彈丸可能先撞到路上另一目標。'});
  if(k==='s2Halberd')Object.assign(a,{damage:55,kind:'attack',effect:'追加 55 攔截傷害，中止本次突進。',condition:'非頭目敵人在 1.6 格內快速移動／跳入；最近 100ms 的位移至少 0.4 格。',timing:'獨立冷卻 6 秒；普通戟刺週期另算。',limits:'普通步行不觸發，頭目不攔截；不把 55 當每次普攻附加。'});
  if(k==='s2Xiahou')Object.assign(a,{kind:'mark',damage:0,effect:`受到敵方直接傷害累積怒氣；滿怒後下一刀追加 60 傷害。`,condition:'敵方直接傷害造成 HP 損失；每次受擊增加怒氣，100 滿怒。',timing:'滿怒前持續累積；觸發重刀後歸零。',limits:'反傷、自傷或零傷害不累積；沒有目標時保留怒氣。'});

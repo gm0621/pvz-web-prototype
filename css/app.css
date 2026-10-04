@@ -134,6 +134,9 @@ body[class*="battlefield-"] #board::after{position:absolute;z-index:20;inset:0;d
 #pauseResumeBtn{min-width:220px;min-height:58px;margin-top:8px;padding:12px 24px;border:3px solid #dcfce7;border-radius:18px;background:linear-gradient(135deg,#4ade80,#16a34a);color:#052e16;font-size:21px;font-weight:1000;box-shadow:0 8px 0 #14532d,0 16px 30px #000a;cursor:pointer}
 #pauseResumeBtn:hover,#pauseResumeBtn:focus-visible{filter:brightness(1.12);transform:translateY(-2px);outline:3px solid #fff;outline-offset:3px}
 @keyframes resumeControlPulse{from{filter:brightness(1);box-shadow:0 8px 0 #14532d,0 13px 24px #0009,0 0 0 4px #4ade8038}to{filter:brightness(1.14);box-shadow:0 8px 0 #14532d,0 13px 24px #0009,0 0 0 8px #4ade8066}}
+.entity.type-s2Shield.hopping .sprite{animation:shieldHop .42s cubic-bezier(.2,.75,.32,1)}
+@keyframes shieldHop{0%{transform:translateY(0) rotate(0)}42%{transform:translateY(-18px) rotate(-3deg)}72%{transform:translateY(-7px) rotate(2deg)}100%{transform:translateY(0) rotate(0)}}
+@media(prefers-reduced-motion:reduce){.entity.type-s2Shield.hopping .sprite{animation:none}}
 @media(max-width:900px) and (min-width:721px){.game .top-toolbar{gap:6px}.game .top-toolbar button{padding-left:9px!important;padding-right:9px!important;font-size:13px}.game .top-toolbar .pause-action{min-width:126px!important;padding:0 12px!important}.game .top-toolbar .fullscreen-action{min-width:132px!important}}
 @media(max-width:720px){.game .top-toolbar .pause-action{min-width:126px!important;height:48px!important;padding:0 12px!important}.pause-overlay.show strong{font-size:27px}#pauseResumeBtn{min-width:190px;min-height:56px}}
 

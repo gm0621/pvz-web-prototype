@@ -30,6 +30,36 @@ test('Wei soldiers accumulate safe supplies, focus their target, and brace their
  expect(result.safeSupply).toBe(40);expect(result.first).toBe(32);expect(result.second).toBeGreaterThan(result.first);expect(result.changed).toBe(32);expect(result.braced).toBe(true);
 });
 
+test('battle cards use the same current idle art as deployed Wei generals',async({page})=>{
+ await open(page);const result=await page.evaluate(()=>{
+  for(let level=1;level<=3;level++)completeCampaignLevel('plants',level,2);
+  chooseFaction('plants',2);state={faction:'plants',season:2,level:4,time:0,over:false,paused:false,resource:9999,lastHuman:{},plants:[],zombies:[],projectiles:[],lawnmowers:[]};
+  buildCards();const d=PLANT_TYPES.s2Xiahou,img=document.querySelector('#cards [data-key="s2Xiahou"] .card-img');
+  return {card:img?.getAttribute('src'),battle:d.battleAsset,legacy:d.asset};
+ });
+ expect(result.card).toBe(result.battle);expect(result.card).not.toBe(result.legacy);
+});
+
+test('Wei shield soldier never attacks, repeatedly hops forward, and keeps high defense',async({page})=>{
+ await open(page);const result=await page.evaluate(()=>{
+  chooseFaction('plants',2);startLevel('plants',1);clearInterval(timer);state.plants=[];state.zombies=[];
+  addPlant('s2Shield',2,2);const shield=state.plants[0];const enemy=addZombie('s2Rat',6,2),enemyHp=enemy.hp,positions=[];
+  for(const time of [700,1400,2100]){state.time=time;actPlants();positions.push(shield.c)}
+  render();const hopping=document.querySelector('.type-s2Shield')?.classList.contains('hopping');
+  for(const time of [2800,3500,4200,4900,5600]){state.time=time;actPlants()}
+  const afterHops={enemyHp:enemy.hp,attackStartedAt:shield.attackStartedAt,hopUntil:shield.hopUntil,expectedEnemyHp:enemyHp};
+  const hpBefore=shield.hp;damageSeason2Plant(shield,100,true);const normalLoss=hpBefore-shield.hp;
+  shield.armorWeakenedUntil=state.time+1000;const weakenedBefore=shield.hp;damageSeason2Plant(shield,100,true);const weakenedLoss=weakenedBefore-shield.hp;
+  render();
+  return {nonAttacking:PLANT_TYPES.s2Shield.nonAttacking,positions,stoppedAt:shield.c,afterHops,normalLoss,weakenedLoss,hopping};
+ });
+ expect(result.nonAttacking).toBe(true);
+ expect(result.positions[0]).toBeGreaterThan(2);expect(result.positions[1]).toBeGreaterThan(result.positions[0]);expect(result.positions[2]).toBeGreaterThan(result.positions[1]);
+ expect(result.stoppedAt).toBeGreaterThan(5);expect(result.stoppedAt).toBeLessThanOrEqual(5.2);
+ expect(result.afterHops.enemyHp).toBe(result.afterHops.expectedEnemyHp);expect(result.afterHops.attackStartedAt).toBeUndefined();
+ expect(result.normalLoss).toBe(60);expect(result.weakenedLoss).toBe(85);expect(result.hopping).toBe(true);
+});
+
 test('second-season attack uses Wei enemies, bone marks, pack damage and a breakable coffin shield',async({page})=>{
  await open(page);await page.locator('#zombieStartBtn').click();await page.locator('[data-season-choice="2"]').click();await page.locator('[data-jump-level="1"]').click();
  await expect(page.locator('#cards .name')).toHaveText(['鼠牙群屍','腐釘弩屍']);
@@ -43,6 +73,6 @@ test('second-season attack uses Wei enemies, bone marks, pack damage and a break
   for(let i=0;i<3;i++){state.projectiles=[{x:shield.c+.42,r:1,dir:1,from:'plant',damage:100,speed:.08}];moveProjectiles()}
   return {marks,packDamage,remaining:p.boneMarks,firstShield,finalShield:shield.shieldHp};
  });
- expect(result.marks).toBe(1);expect(result.packDamage).toBe(60);expect(result.remaining).toBe(0);
+ expect(result.marks).toBe(1);expect(result.packDamage).toBe(36);expect(result.remaining).toBe(0);
  expect(result.firstShield).toEqual({hp:220,shield:80});expect(result.finalShield).toBe(0);
 });

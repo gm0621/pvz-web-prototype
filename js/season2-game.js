@@ -25,12 +25,21 @@ function processSeason2PendingHits(){
  }
  state.pendingHits=waiting;
 }
+function advanceSeason2Shield(p,d){
+ p.braced=true;
+ const enemy=state.zombies.filter(z=>z.hp>0&&z.r===p.r&&z.c>p.c).sort((a,b)=>a.c-b.c)[0];
+ if(!enemy)return false;
+ const stopAt=enemy.c-(d.range||.8),lastHop=p.lastHopAt??p.bornAt;
+ if(stopAt<=p.c+.05||state.time-lastHop<d.hopRate)return false;
+ p.c=Math.min(stopAt,p.c+d.hopDistance);p.lastHopAt=state.time;p.hopUntil=state.time+d.hopDuration;p.movementKind='hop';p.movementAt=state.time;
+ return true;
+}
 function actSeason2Plants(){
  for(const p of state.plants){
   if(p.hp<=0)continue;const d=activeUnit('plants',p.type);if(!d)continue;
+  if(p.type==='s2Shield'){advanceSeason2Shield(p,d);continue}
   const target=state.zombies.filter(z=>z.hp>0&&z.r===p.r&&z.c>p.c&&z.c-p.c<=(d.range||1)).sort((a,b)=>a.c-b.c)[0];
   if(p.type==='s2Tuntian'&&state.time-p.last>=d.rate){const safe=state.time-(p.lastDamagedAt??p.bornAt)>=8000,gain=d.produce+(safe?15:0);p.last=state.time;if(state.faction==='plants')state.resource+=gain;else state.aiResource+=gain;flash(p,`🌾 +${gain}`);continue}
-  if(p.type==='s2Shield'){if(target)p.lastCombatAt=state.time;p.braced=state.time-(p.lastCombatAt??p.bornAt)>=4000}
   if(p.type==='s2Halberd'){const incoming=state.zombies.find(z=>z.hp>0&&!z.boss&&z.r===p.r&&z.c>=p.c&&z.c-p.c<=d.range&&['dash','jump'].includes(z.movementKind)&&state.time-z.movementAt<=100&&z.previousC-z.c>=.4);if(incoming&&state.time-(p.lastIntercept??-6000)>=6000){p.lastIntercept=state.time;incoming.hp-=55;incoming.movementKind=null;incoming.c=Math.max(incoming.c,p.c+.8);flash(p,'拒馬列戟')}}
   if(!target||state.time-p.last<d.rate)continue;
   p.last=state.time;markAttack(p);let damage=d.damage;
@@ -46,8 +55,8 @@ function actSeason2Plants(){
 }
 function damageSeason2Plant(p,amount,melee=false){
  if(p.hp<=0)return;let damage=amount;
- if(melee){p.braced=false;p.lastCombatAt=state.time;if(p.boneMarks>0&&state.time<(p.boneExpires||0)){p.boneMarks--;damage+=20;flash(p,'骨釘引爆')}}
- if(p.type==='s2Shield'&&p.braced)damage*=state.time<(p.armorWeakenedUntil||0)?.85:.6;
+ if(melee){if(p.type!=='s2Shield'){p.braced=false;p.lastCombatAt=state.time}if(p.boneMarks>0&&state.time<(p.boneExpires||0)){p.boneMarks--;damage+=20;flash(p,'骨釘引爆')}}
+ if(p.type==='s2Shield'){const d=PLANT_TYPES.s2Shield,reduction=state.time<(p.armorWeakenedUntil||0)?d.weakenedDamageReduction:d.damageReduction;damage*=1-reduction}
  if(p.unyieldingUntil&&state.time<p.unyieldingUntil)damage*=.7;
  const guard=p.type!=='s2DianWei'&&state.plants.find(g=>g.hp>0&&g.type==='s2DianWei'&&g.r===p.r&&g.c<p.c&&p.c-g.c<=1.2);
  if(guard){const shared=Math.min(damage*.35,guard.hp-1);guard.hp-=shared;damage-=shared;flash(guard,'帳前死衛')}
@@ -55,7 +64,7 @@ function damageSeason2Plant(p,amount,melee=false){
  if(p.hp<=0){if(state.faction==='zombies')state.resource+=50;else state.aiResource+=50}
 }
 function season2CleaverHit(z,p,d){
- const protectedTarget=(p.shieldHp||0)>0||p.type==='s2Shield'&&p.braced;
+ const protectedTarget=(p.shieldHp||0)>0||p.type==='s2Shield';
  const heavy=protectedTarget&&Math.random()<.2;
  if(p.type==='s2Shield'){
   z.armorHits=z.armorTarget===p.id&&state.time-(z.armorHitAt||0)<=4000?(z.armorHits||0)+1:1;
