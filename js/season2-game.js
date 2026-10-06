@@ -80,7 +80,7 @@ function actSeason2Zombies(){
  for(const z of state.zombies){
   if(z.hp<=0)continue;const d=activeUnit('zombies',z.type);if(!d)continue;z.previousC=z.c;
   if(z.type==='s2Medic'&&state.time-(z.lastHeal||0)>=5000){const ally=state.zombies.filter(a=>a!==z&&a.type!=='s2Medic'&&a.hp>0&&a.r===z.r&&a.hp<a.maxHp&&Math.abs(a.c-z.c)<2.2).sort((a,b)=>a.hp/a.maxHp-b.hp/b.maxHp)[0];if(ally){z.lastHeal=state.time;ally.hp=Math.min(ally.maxHp,ally.hp+55);flash(ally,'補肉 +55')}}
-  const target=state.plants.filter(p=>p.hp>0&&p.r===z.r&&p.c<z.c&&z.c-p.c<=(d.range||.8)).sort((a,b)=>b.c-a.c)[0];
+  const target=zombieEnteredBattlefield(z)?state.plants.filter(p=>p.hp>0&&p.r===z.r&&p.c<z.c&&z.c-p.c<=(d.range||.8)).sort((a,b)=>b.c-a.c)[0]:null;
   if(!target){if(z.type==='s2Ram')z.charge=Math.min(90,(z.charge||0)+.06);z.c-=(z.slowUntil&&state.time<z.slowUntil?d.speed*.5:d.speed);if(z.c<=.25){triggerMower(z.r);if(z.hp<=0)continue}if(z.c<0)return end(state.faction==='zombies',state.faction==='zombies'?'突破成功！':'防線被突破！',`${state.levelConfig.shortName}${state.faction==='zombies'?'攻破！':'失守，可調整陣形再試。'}`);continue}
   if(z.type==='s2Hook'&&state.time-(z.lastHook||0)>=8000){const occupied=state.plants.some(p=>p.hp>0&&p.r===target.r&&Math.round(p.c)===Math.round(target.c+1));if(!occupied&&target.type!=='s2XuChu'){z.lastHook=state.time;target.c=Math.min(z.c-.8,target.c+1);target.slowUntil=state.time+2200;flash(target,'纏鏈拖行')}}
   if(state.time-z.last<d.rate)continue;z.last=state.time;markAttack(z);let damage=d.damage;

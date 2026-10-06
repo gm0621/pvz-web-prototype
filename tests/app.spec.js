@@ -622,6 +622,37 @@ test('netherfire necromancer boss curses three lanes while the catapult stays a 
   expect(result.summary).toContain('上、中、下三路');
 });
 
+test('all ranged zombies wait until entering the rightmost visible cell before attacking', async ({ page }) => {
+  await openApp(page);
+  const result=await page.evaluate(() => {
+    playerProfile=normalizeProfile({});
+    for(let level=1;level<10;level++)completeCampaignLevel('plants',level);
+    currentSeason=1;selectedLevel=10;start('plants');clearInterval(timer);
+    const attempt=(type,season=1)=>{
+      state.season=season;state.time=10000;state.plants=[];state.zombies=[];state.projectiles=[];
+      addPlant('wallnut',4,2);
+      const target=state.plants[0],zombie=addZombie(type,8.8,2),before=target.hp;
+      actZombies();
+      const offscreen={hp:target.hp,stunUntil:target.stunUntil||0,projectiles:state.projectiles.length,c:zombie.c};
+      zombie.c=8;state.time=10100;actZombies();
+      return {before,offscreen,entered:{hp:target.hp,stunUntil:target.stunUntil||0,projectiles:state.projectiles.length,c:zombie.c}};
+    };
+    return {
+      fireCatapult:attempt('fireCatapult'),
+      peaZombie:attempt('peaZombie'),
+      necromancer:attempt('necromancer'),
+      season2Nail:attempt('s2Nail',2)
+    };
+  });
+  for(const unit of Object.values(result)){
+    expect(unit.offscreen.hp).toBe(unit.before);
+    expect(unit.offscreen.stunUntil).toBe(0);
+    expect(unit.offscreen.projectiles).toBe(0);
+    expect(unit.offscreen.c).toBeGreaterThan(8);
+    expect(unit.entered.hp<unit.before||unit.entered.stunUntil>0||unit.entered.projectiles>0).toBeTruthy();
+  }
+});
+
 test('Qin emperor attacks by summoning one terracotta soldier or three black-armour guards', async ({ page }) => {
   await openApp(page);
   const result=await page.evaluate(() => {
