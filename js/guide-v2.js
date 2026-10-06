@@ -2,6 +2,7 @@
 let guideDemoTimer=null,guideDemoFrame=0,guideDemoModel=null,guideDemoAbility=null,guideLastFocus=null;
 function guideNode(tag,text,cls){const el=document.createElement(tag);if(text!=null)el.textContent=text;if(cls)el.className=cls;return el}
 function guideStopDemo(){if(guideDemoTimer!==null)clearTimeout(guideDemoTimer);guideDemoTimer=null;if($('guideDemo'))$('guideDemo').dataset.paused='true';const b=$('guidePlay');if(b)b.textContent='▶ 播放'}
+function guideScheduleDemo(delay=520){guideStopDemo();if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;guideDemoTimer=setTimeout(()=>{guideDemoTimer=null;guideTick()},delay)}
 function guideV2Init(){
  const modal=$('charModal');modal.classList.add('guide-v2');modal.setAttribute('role','dialog');modal.setAttribute('aria-modal','true');modal.setAttribute('aria-labelledby','charModalName');
  modal.querySelector('.char-detail-body').innerHTML=`<section class="guide-main"><h3 id="charModalSkillTitle">普通行動、天賦與技能</h3><p id="charModalSkill" class="skill-copy"></p><label class="guide-field">選擇招式<select id="guideAbility"></select></label><div id="guideAbilityInfo" class="guide-ability-info"></div><section id="guideDemo" aria-label="角色動畫示範"><div class="guide-demo-heading"><strong>角色動畫示範</strong><span id="guideDemoBadge"></span></div><div id="charModalRange" class="range-board"></div><p class="guide-range-note" id="guideRangeNote"></p><div class="guide-demo-controls"><button id="guidePlay" type="button">▶ 播放</button><button id="guideStep" type="button">下一幀</button><button id="guideReplay" type="button">↺ 重播</button><label>速度<select id="guideSpeed" aria-label="動畫速度"><option value="1">正常</option><option value="2">慢速</option></select></label></div><ol class="guide-timeline"><li>待機</li><li>鎖定</li><li>攻擊</li><li>命中</li><li>收招</li></ol><p id="guideDemoCaption" aria-live="polite"></p><p class="guide-disclaimer">角色動畫與效果為獨立示範，不扣資源、不改存檔；實戰數值仍以目前等級、裝備與技能規則為準。</p></section></section><aside class="guide-side"><h3 id="charModalStatsTitle">能力數值</h3><label class="guide-field">數值模式<select id="guideStatMode"><option value="current">目前等級＋裝備</option><option value="base">基礎數值</option><option value="next">下一級預覽（不升級）</option></select></label><div class="stat-grid" id="charModalStats"></div><div id="guideSummons"></div><h3>配置與限制</h3><p id="guideNotes"></p><p id="guideRandomNote"></p></aside>`;
@@ -53,10 +54,10 @@ function guideChooseAbility(){
  guideStopDemo();guideDemoFrame=0;const m=guideDemoModel,a=m.abilities.find(a=>a.id===$('guideAbility').value);guideDemoAbility=a;
  const details=[['發動條件',a.condition],['攻擊／影響範圍',a.rangeText],['傷害與效果',a.effect],['間隔／持續／冷卻',a.timing],['限制與例外',a.limits]];
  $('guideAbilityInfo').replaceChildren(...details.map(([k,v])=>guideStat(k,v)));
- const animationLabel=a.id.startsWith('skill')?'技能攻擊動畫':a.id==='talent'?'天賦動畫':'普通攻擊動畫';
+ const animationLabel=a.id.startsWith('skill')?'機率技能｜只有發動時出現強化特效':a.id==='talent'?'固定天賦｜每次符合條件都生效':'普通攻擊｜每次合法攻擊';
  $('guideDemoBadge').textContent=m.preview?`${animationLabel}・概念預覽`:animationLabel;
  $('guideRangeNote').textContent=`${a.rangeText}。${a.reach===null?'範圍未定，不繪製假射程。':'金色為招式範圍、藍色為角色、紅色為示範目標；角色會播放目前實際攻擊圖幀。'}`;
- guideDrawDemo();
+ guideDrawDemo();guideScheduleDemo();
 }
 function guideDemoFrames(m){return m.base?.attackFrames||m.d?.attackFrames||null}
 function guideDemoHitFrame(m){const d=m.base||m.d||{},frames=guideDemoFrames(m);if(!frames)return 3;return Math.max(2,Math.min(7,Math.round((d.attackHitAt??(d.attackFrameMs||90)*4)/(d.attackFrameMs||90))+1))}
@@ -76,12 +77,12 @@ function guideDrawDemo(){
  let phase=0,caption=`${lead}｜${m.name} 待機，招式範圍：${a.rangeText}`;
  if(f>0&&f<hitFrame-1){phase=1;caption=`${lead}｜${m.name} 鎖定目標，開始準備${a.id.startsWith('skill')?'技能攻擊':'普通攻擊'}。`}
  else if(f===hitFrame-1){phase=2;caption=`${lead}｜攻擊動作展開。`}
- else if(f>=hitFrame&&f<8){phase=3;caption=`${lead}｜${a.effect}${result.damage?` 示範目標 HP：600 → ${result.hp}（本次 ${result.damage}）。`:''}`}
+ else if(f>=hitFrame&&f<8){phase=3;caption=`${lead}｜${a.effect}${m.key==='huangzhong'&&a.id==='talent'?' 三路箭矢是固定天賦，每次合法攻擊都會出現。':''}${m.key==='huangzhong'&&a.id.startsWith('skill')?' 金色強化箭雨只有機率技能發動時才出現。':''}${result.damage?` 示範目標 HP：600 → ${result.hp}（本次 ${result.damage}）。`:''}`}
  else if(f===8){phase=4;caption=`${lead}｜收招並回到待機；${a.timing}`}
  $('guideDemoCaption').textContent=caption;document.querySelectorAll('.guide-timeline li').forEach((el,i)=>{el.classList.toggle('current',i===phase);el.setAttribute('aria-current',i===phase?'step':'false')});
  guideDrawBoard(m,a,result);
 }
-function guideDrawBoard(m,a,result){
+function guideDrawBoard(m,a,result,board=$('charModalRange')){
  const ns='http://www.w3.org/2000/svg',svg=document.createElementNS(ns,'svg');svg.setAttribute('viewBox','0 0 900 500');svg.setAttribute('role','img');svg.setAttribute('aria-label',`${m.name}：${a.rangeText}`);
  const node=(tag,attrs,parent=svg,text)=>{const el=document.createElementNS(ns,tag);for(const [k,v]of Object.entries(attrs))el.setAttribute(k,String(v));if(text!=null)el.textContent=text;parent.append(el);return el};
  node('title',{},svg,`${a.label}｜${a.rangeText}`);
@@ -122,9 +123,8 @@ function guideDrawBoard(m,a,result){
   }
   if(a.rows&&a.damage)for(const dy of [-100,100]){portrait(enemy.asset,targetX,cy+dy,'範圍內目標','敵',result.hit);if(result.hit)node('text',{x:targetX+68,y:cy+dy,fill:'#ffe08b','font-size':24},svg,`−${Number((a.splash??a.damage).toFixed(2))}`)}
  }
- if(result.frame===result.hitFrame-1){
-  node('line',{x1:origin,y1:cy,x2:targetX,y2:cy,stroke:'#ffe79b','stroke-width':7,'stroke-dasharray':'12 9','class':'guide-motion-line'});
-  node('circle',{cx:origin,cy,r:14,fill:'#ffe29b','class':'guide-bolt',style:`--guide-travel:${targetX-origin}px`});
+ if(result.frame>=result.hitFrame-1&&result.frame<=result.hitFrame){
+  const paths=a.rows?[-1,0,1]:[0];for(const row of paths){const y=cy+row*100;node('line',{x1:origin+dir*28,y1:y,x2:targetX,y2:y,stroke:a.id.startsWith('skill')?'#facc15':'#ffe79b','stroke-width':a.id.startsWith('skill')?10:7,'stroke-dasharray':'12 9','class':'guide-motion-line guide-flight-path'});node('text',{x:origin+dir*Math.abs(targetX-origin)*.58,y:y+10,'text-anchor':'middle','font-size':a.id.startsWith('skill')?42:34,'class':'guide-projectile'},svg,m.key==='huangzhong'?(dir>0?'➶':'➷'):'➤')}
  }
  if(result.hit){
   const text=`${m.key} ${a.label} ${a.effect}`;
@@ -149,5 +149,11 @@ function guideDrawBoard(m,a,result){
    }
   }
  }
- const board=$('charModalRange');board.dataset.direction=String(dir);board.dataset.reach=String(a.reach);board.replaceChildren(svg);
+ if(m.key==='huangzhong'&&result.hit){const g=node('g',{'class':a.id.startsWith('skill')?'guide-critical-volley':'guide-fixed-volley'});for(const y of[150,250,350])node('text',{x:targetX,y:y+12,'text-anchor':'middle','font-size':a.id.startsWith('skill')?58:42,fill:a.id.startsWith('skill')?'#facc15':'#fff1a8','font-weight':900},g,a.id.startsWith('skill')?'✦➶✦':'➶')}
+ board.dataset.direction=String(dir);board.dataset.reach=String(a.reach);board.replaceChildren(svg);
+}
+function attachUnlockAbilityDemo(reveal,roster,key){
+ const host=reveal?.querySelector('.unlock-demo-board'),m=guideV2Model(roster,key);if(!host||!m)return false;const a=m.abilities.find(x=>x.id==='talent')||m.abilities.find(x=>x.id==='skill')||m.abilities[0];if(!a)return false;
+ let frame=0,timer=null;const stop=()=>{if(timer!==null)clearTimeout(timer);timer=null};const draw=()=>{const result=guideDemoResult(m,a,frame);guideDrawBoard(m,a,result,host);const status=reveal.querySelector('.unlock-demo-status');if(status)status.textContent=frame>=result.hitFrame?`${a.label}｜${a.effect}`:`${a.label}｜正在示範攻擊方式與範圍`};const tick=()=>{if(!reveal.isConnected)return stop();frame=(frame+1)%9;draw();if(frame<8)timer=setTimeout(tick,180)};
+ reveal.querySelector('.unlock-demo-replay').onclick=()=>{stop();frame=0;draw();timer=setTimeout(tick,220)};reveal.querySelector('.unlock-demo-detail').onclick=()=>showGuideV2(roster,key,'current',a.id);draw();timer=setTimeout(tick,420);reveal._stopUnlockDemo=stop;return true;
 }

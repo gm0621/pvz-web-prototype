@@ -34,8 +34,17 @@ test('a first clear shows a celebratory character unlock reveal with skill, repl
   await open(page);await page.evaluate(()=>{chooseFaction('plants',2);completeCampaignLevel('plants',1,2);completeCampaignLevel('plants',2,2);markStoryRead('plants',3,'opening',2);selectedLevel=3;start('plants');clearInterval(timer)});
   await page.evaluate(async()=>{await end(true,'勝利','fixture')});
   await expect(page.locator('#unlockReveal')).toBeVisible();await expect(page.locator('#unlockReveal')).toContainText('恭喜解鎖');await expect(page.locator('#unlockReveal')).toContainText('夏侯惇');await expect(page.locator('#unlockReveal')).toContainText('拔矢不屈');await expect(page.locator('#unlockReveal img')).toHaveAttribute('src',/xiahou-dun\.webp/);
+  await expect(page.locator('#unlockReveal .unlock-demo-board svg')).toBeVisible();await expect(page.locator('#unlockReveal .unlock-demo-replay')).toBeVisible();await expect(page.locator('#unlockReveal .unlock-demo-detail')).toBeVisible();
   await page.evaluate(()=>{backToLevelSelect();markStoryRead('plants',3,'opening',2);selectedLevel=3;start('plants');clearInterval(timer)});await page.evaluate(async()=>{await end(true,'勝利','fixture')});
   await expect(page.locator('#unlockReveal')).toHaveCount(0);
+});
+
+test('first-season unlocks also show an immediate ability demonstration',async({page})=>{
+ await open(page);await page.evaluate(()=>{chooseFaction('plants',1);for(let level=1;level<5;level++)completeCampaignLevel('plants',level,1);markStoryRead('plants',5,'opening',1);selectedLevel=5;start('plants');clearInterval(timer)});
+ await page.evaluate(async()=>{await end(true,'勝利','fixture')});
+ await expect(page.locator('#unlockReveal')).toContainText('黃忠');
+ await expect(page.locator('#unlockReveal .unlock-demo-board svg')).toBeVisible();
+ await expect(page.locator('#unlockReveal .unlock-demo-status')).toContainText('天賦');
 });
 
 test('season-two selector and preview state the complete campaign is playable',async({page})=>{

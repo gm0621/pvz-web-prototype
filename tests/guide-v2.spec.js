@@ -29,6 +29,19 @@ test('skill demonstrations render visible effects with the character animation',
   expect(await page.locator(`.guide-skill-fx.${fx}`).evaluate(el=>getComputedStyle(el).opacity)).toBe('1');
  }
 });
+test('guide auto-plays battle-like paths and separates Huang Zhong talent from proc skill',async({page})=>{
+ await open(page);await page.evaluate(()=>showGuideV2('plants','huangzhong','current','talent'));
+ await expect(page.locator('#guideDemoBadge')).toContainText('固定天賦');
+ await expect.poll(()=>page.evaluate(()=>guideDemoTimer!==null)).toBe(true);
+ await page.evaluate(()=>{guideStopDemo();guideDemoFrame=guideDemoHitFrame(guideDemoModel);guideDrawDemo()});
+ await expect(page.locator('#charModalRange .guide-flight-path')).toHaveCount(3);
+ await expect(page.locator('#charModalRange .guide-fixed-volley')).toHaveCount(1);
+ await page.locator('#guideAbility').selectOption('skill');
+ await expect(page.locator('#guideDemoBadge')).toContainText('機率技能');
+ await page.evaluate(()=>{guideStopDemo();guideDemoFrame=guideDemoHitFrame(guideDemoModel);guideDrawDemo()});
+ await expect(page.locator('#charModalRange .guide-critical-volley')).toHaveCount(1);
+ await expect(page.locator('#guideDemoCaption')).toContainText('只有機率技能發動');
+});
 test('melee/ranged, support, summons, fractional ranges and all faction switches remain usable',async({page})=>{
  await open(page);await page.evaluate(()=>showCharacterDetail('plants','zhaoyun'));await expect(page.locator('#guideAbility option')).toContainText(['近戰','遠程','天賦','技能攻擊']);
  await page.locator('#guideAbility').selectOption('ranged');await expect(page.locator('#guideAbilityInfo')).toContainText('1.2');
