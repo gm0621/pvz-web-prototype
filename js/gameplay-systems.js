@@ -29,7 +29,14 @@ function createBattleReportState(initialized=true){
 }
 function createBattleTelegraphState(){return {nextId:1,active:[]}}
 function createTacticalOrderState(){return {selected:[],offer:null,history:[],nextOfferId:1,attackMilestones:[]}}
-function createGameplayState(){return {version:GAMEPLAY_STATE_VERSION,telemetry:createBattleTelemetry(),report:createBattleReportState(),telegraphs:createBattleTelegraphState(),orders:createTacticalOrderState()}}
+function gameplayStageRuleContext(context){
+ if(context)return context;
+ if(typeof state!=='undefined'&&state?.levelConfig)return {season:state.season??1,faction:state.faction,level:state.level,levelConfig:state.levelConfig,time:state.time||0,zombies:state.zombies||[],bossSpawned:!!state.bossSpawned,qinBossAlive:!!state.zombies?.some(unit=>unit.boss&&unit.type==='qinEmperor'&&unit.hp>0)};
+ const season=typeof currentSeason==='number'?currentSeason:1,faction=typeof currentFaction==='string'?currentFaction:'plants',level=typeof selectedLevel==='number'?selectedLevel:1;
+ let levelConfig=null;try{levelConfig=typeof campaignLevels==='function'?campaignLevels(season)?.[level]:null}catch(error){}
+ return {season,faction,level,levelConfig,time:0,zombies:[],bossSpawned:false,qinBossAlive:false};
+}
+function createGameplayState(context){const ruleContext=gameplayStageRuleContext(context);return {version:GAMEPLAY_STATE_VERSION,telemetry:createBattleTelemetry(),report:createBattleReportState(),telegraphs:createBattleTelegraphState(),orders:createTacticalOrderState(),stageRule:createStageRuleRuntime(ruleContext)}}
 function finiteNonnegative(value){value=Number(value);return Number.isFinite(value)&&value>=0?value:0}
 function normalizeSource(raw){
  if(!raw||typeof raw!=='object'||Array.isArray(raw))return null;
@@ -104,9 +111,10 @@ function normalizeTacticalOrders(raw){
  result.attackMilestones=Array.isArray(raw.attackMilestones)?[...new Set(raw.attackMilestones.filter(id=>['defender-break','time-pressure'].includes(id)))]:[];
  return result;
 }
-function normalizeGameplayState(raw){
- if(!raw||typeof raw!=='object'||Array.isArray(raw)||raw.version!==GAMEPLAY_STATE_VERSION)return createGameplayState();
- const gameplay={version:GAMEPLAY_STATE_VERSION,telemetry:normalizeBattleTelemetry(raw.telemetry),report:normalizeBattleReport(raw.report),telegraphs:normalizeBattleTelegraphs(raw.telegraphs),orders:normalizeTacticalOrders(raw.orders)};
+function normalizeGameplayState(raw,context){
+ const ruleContext=gameplayStageRuleContext(context);
+ if(!raw||typeof raw!=='object'||Array.isArray(raw)||raw.version!==GAMEPLAY_STATE_VERSION)return createGameplayState(ruleContext);
+ const gameplay={version:GAMEPLAY_STATE_VERSION,telemetry:normalizeBattleTelemetry(raw.telemetry),report:normalizeBattleReport(raw.report),telegraphs:normalizeBattleTelegraphs(raw.telegraphs),orders:normalizeTacticalOrders(raw.orders),stageRule:normalizeStageRuleRuntime(raw.stageRule,ruleContext)};
  if(!Object.prototype.hasOwnProperty.call(raw,'report'))gameplay.report.initialized=false;
  return gameplay;
 }
