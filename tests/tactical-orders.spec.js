@@ -72,3 +72,77 @@ test('battle-local order state normalizes safely and modifiers combine additivel
  expect(result.before).toBe(1.12);
  expect(result.clamped).toBe(1.5);
 });
+
+test('completing a defense wave persists one three-card order offer and freezes battle time',async({page})=>{
+ await openApp(page);
+ const before=await page.evaluate(()=>{
+  currentSeason=1;currentFaction='plants';selectedLevel=6;for(let level=1;level<6;level++)completeCampaignLevel('plants',level);saveProfile();
+  start('plants');clearInterval(timer);state.openingQueue=[];state.time=80000;state.aiResource=1000;
+  state.waveDirector.active={id:1,count:1,sent:0,warnedAt:state.time-5000,nextAt:state.time,rallied:true,rows:[]};
+  updateDefenseWaves();updateHUD();
+  const saved=JSON.parse(localStorage.getItem(BATTLE_SAVE_KEY));
+  return {time:state.time,paused:state.paused,offer:structuredClone(state.gameplay.orders.offer),savedOffer:saved?.state?.gameplay?.orders?.offer||null};
+ });
+ expect(before.paused).toBe(true);
+ expect(before.offer).toHaveLength(3);
+ expect(new Set(before.offer).size).toBe(3);
+ expect(before.savedOffer).toEqual(before.offer);
+ await expect(page.getByRole('dialog',{name:'選擇軍令'})).toBeVisible();
+ await expect(page.locator('#game')).toHaveAttribute('inert','');
+ await expect(page.locator('[data-tactical-order]')).toHaveCount(3);
+ expect(await page.evaluate(t=>{tick();return state.time===t},before.time)).toBe(true);
+ await page.evaluate(()=>backToLevelSelect(false));
+ await expect(page.getByRole('dialog',{name:'選擇軍令'})).toBeHidden();
+ expect(await page.evaluate(()=>{const restored=restoreBattleIfAvailable();clearInterval(timer);return restored})).toBe(true);
+ await expect(page.getByRole('dialog',{name:'選擇軍令'})).toBeVisible();
+});
+
+test('restored order offer cannot reroll, resolves once, and hands focus to the paused battle',async({page})=>{
+ await openApp(page);
+ const offered=await page.evaluate(()=>{
+  currentSeason=1;currentFaction='plants';selectedLevel=6;for(let level=1;level<6;level++)completeCampaignLevel('plants',level);saveProfile();
+  start('plants');clearInterval(timer);state.openingQueue=[];state.time=80000;state.aiResource=1000;
+  state.waveDirector.active={id:2,count:1,sent:0,warnedAt:state.time-5000,nextAt:state.time,rallied:true,rows:[]};
+  updateDefenseWaves();
+  const ids=[...state.gameplay.orders.offer];
+  state=null;$('game').classList.remove('active');
+  if(!restoreBattleIfAvailable())throw new Error('battle did not restore');
+  clearInterval(timer);return {ids,restored:[...state.gameplay.orders.offer]};
+ });
+ expect(offered.restored).toEqual(offered.ids);
+ await expect(page.getByRole('dialog',{name:'選擇軍令'})).toBeVisible();
+ await expect(page.locator('#pauseOverlay')).not.toHaveClass(/show/);
+ await expect(page.locator('#storyDialog')).not.toHaveAttribute('open','');
+ await page.locator('[data-tactical-order]').first().click();
+ const resolved=await page.evaluate(id=>({
+  selected:state.gameplay.orders.selected.filter(value=>value===id).length,
+  history:state.gameplay.orders.history.filter(value=>value===id).length,
+  offer:state.gameplay.orders.offer,
+  secondAttempt:chooseTacticalOrder(id),
+  active:Object.entries(tacticalOrderById(id).modifiers).every(([key,value])=>effectiveBattleModifier(key)===value),
+  activeId:document.activeElement?.id,
+  paused:state.paused,
+ }),offered.ids[0]);
+ expect(resolved).toEqual({selected:1,history:1,offer:null,secondAttempt:false,active:true,activeId:'pauseResumeBtn',paused:true});
+ await expect(page.getByRole('dialog',{name:'選擇軍令'})).toBeHidden();
+ await expect(page.locator('#game')).not.toHaveAttribute('inert','');
+ await expect(page.locator('#pauseOverlay')).toHaveClass(/show/);
+});
+
+test('order cards stay readable at desktop, portrait phone, and landscape phone sizes',async({page},testInfo)=>{
+ await openApp(page);
+ await page.evaluate(()=>{
+  currentSeason=1;currentFaction='plants';selectedLevel=6;for(let level=1;level<6;level++)completeCampaignLevel('plants',level);saveProfile();
+  start('plants');clearInterval(timer);createTacticalOrderOffer(1);
+ });
+ for(const [name,viewport] of [['desktop',{width:1440,height:900}],['portrait',{width:390,height:844}],['landscape',{width:844,height:390}]]){
+  await page.setViewportSize(viewport);
+  const dialog=page.getByRole('dialog',{name:'選擇軍令'}),shell=dialog.locator('.tactical-order-shell');
+  await expect(dialog).toBeVisible();await expect(dialog.locator('[data-tactical-order]')).toHaveCount(3);
+  await expect(dialog.locator('.benefit')).toHaveCount(3);await expect(dialog.locator('.cost')).toHaveCount(3);
+  const geometry=await shell.evaluate(element=>{const box=element.getBoundingClientRect();return {left:box.left,top:box.top,right:box.right,bottom:box.bottom,scrollOk:element.scrollHeight<=element.clientHeight+1}});
+  expect(geometry.left).toBeGreaterThanOrEqual(0);expect(geometry.top).toBeGreaterThanOrEqual(0);
+  expect(geometry.right).toBeLessThanOrEqual(viewport.width+1);expect(geometry.bottom).toBeLessThanOrEqual(viewport.height+1);expect(geometry.scrollOk).toBe(true);
+  await page.screenshot({path:testInfo.outputPath(`tactical-orders-${name}.png`)});
+ }
+});

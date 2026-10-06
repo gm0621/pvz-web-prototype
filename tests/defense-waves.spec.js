@@ -9,7 +9,7 @@ test('finite waves cover all defense stages without changing quotas or introduci
    currentSeason=season;for(let l=1;l<lv.level;l++)completeCampaignLevel('plants',l,season);saveProfile();selectedLevel=lv.level;start('plants');clearInterval(timer);
    if(!state.waveDirector)throw Error('missing wave director');
    const spawns=[],warnings=[],old=addZombie;addZombie=(k,c,r)=>{const z=old(k,c,r);spawns.push({t:state.time,k,r,w:!!state.waveDirector.active});return z};
-   try{for(let t=0;t<600000&&!state.bossSpawned;t+=50){state.time=t;income();processLevelEvents();aiAct();const w=state.waveDirector.active;if(w&&!warnings.some(x=>x.id===w.id))warnings.push({id:w.id,t:w.warnedAt,first:w.nextAt});}}
+   try{for(let t=0;t<600000&&!state.bossSpawned;t+=50){state.time=t;income();processLevelEvents();aiAct();if(state.gameplay.orders.offer)chooseTacticalOrder(state.gameplay.orders.offer[0]);const w=state.waveDirector.active;if(w&&!warnings.some(x=>x.id===w.id))warnings.push({id:w.id,t:w.warnedAt,first:w.nextAt});}}
    finally{addZombie=old}
    const troops=spawns.slice(0,-1),waveTroops=troops.filter(x=>x.w),issues=[];
    if(troops.length!==lv.enemyCount||state.zombies.filter(z=>z.boss).length!==1)issues.push('quota/boss');
@@ -20,6 +20,7 @@ test('finite waves cover all defense stages without changing quotas or introduci
    if(!waveTroops.some((x,i)=>i&&x.t-waveTroops[i-1].t<lv.minSpawnSpacing))issues.push('no burst');
    if(new Set(waveTroops.map(x=>x.r)).size<3)issues.push('lanes');
    if(state.aiResource<0)issues.push('negative budget');
+   if(state.gameplay.orders.history.length!==warnings.length)issues.push('orders');
    runs.push({season,level:lv.level,issues,count:troops.length,waves:warnings.length,duration:state.time});
   }return runs;
  });expect(runs).toHaveLength(20);for(const r of runs){expect(r.issues,JSON.stringify(r)).toEqual([]);expect(r.waves).toBeGreaterThanOrEqual(2)}

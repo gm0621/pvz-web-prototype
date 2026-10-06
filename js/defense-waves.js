@@ -66,6 +66,7 @@ function updateDefenseWaves(){
   director.restUntil=state.time+(lv.enemyCount<25?10000:8000);
   state.nextAI=director.restUntil;
   log(state.enemiesSpawned>=lv.enemyCount?'最後一波已全數出陣，準備迎戰大魔王！':'本波已全數出陣，敵軍暫停增援；趁空檔補陣。');
+  createTacticalOrderOffer(wave.id);
  }
  persistBattleState();return true;
 }

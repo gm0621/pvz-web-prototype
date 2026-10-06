@@ -99,7 +99,7 @@ function normalizeTacticalOrders(raw){
  result.selected=uniqueKnown(raw.selected);
  result.history=uniqueKnown(raw.history);
  const offer=uniqueKnown(raw.offer);
- if(offer.length===3)result.offer=offer;
+ if(offer.length===3){result.offer=offer;result.resumeAfterSelection=raw.resumeAfterSelection===true}
  result.nextOfferId=Math.max(1,Math.floor(finiteNonnegative(raw.nextOfferId)||1));
  return result;
 }
@@ -116,6 +116,57 @@ function effectiveBattleModifier(key){
  let value=1;
  for(const id of selected){const modifier=Number(tacticalOrderById(id)?.modifiers?.[key]);if(Number.isFinite(modifier))value+=modifier-1}
  return Math.round(Math.max(.5,Math.min(1.5,value))*10000)/10000;
+}
+function tacticalOrderState(){
+ if(!state)return null;
+ if(!state.gameplay||state.gameplay.version!==GAMEPLAY_STATE_VERSION)state.gameplay=normalizeGameplayState(state.gameplay);
+ if(!state.gameplay.orders)state.gameplay.orders=createTacticalOrderState();
+ return state.gameplay.orders;
+}
+function createTacticalOrderOffer(triggerId){
+ const orders=tacticalOrderState();
+ if(!orders||orders.offer||state.faction!=='plants'||state.over||typeof activeCampaignStory!=='undefined'&&activeCampaignStory)return false;
+ let pool=TACTICAL_ORDERS.map(order=>order.id).filter(id=>!orders.selected.includes(id));
+ if(pool.length<3)pool=TACTICAL_ORDERS.map(order=>order.id);
+ const seed=(Number(state.season)||1)*17+(Number(state.level)||1)*7+orders.nextOfferId*3+(Number(triggerId)||0);
+ const offset=((seed%pool.length)+pool.length)%pool.length;
+ orders.offer=Array.from({length:3},(_,index)=>pool[(offset+index)%pool.length]);
+ orders.resumeAfterSelection=!state.paused;
+ orders.nextOfferId++;
+ state.paused=true;state.actionMode=null;state.movingPlantId=null;
+ applyPausedBattleUI();updateBattleActionUI();renderTacticalOrderOffer();persistBattleState();
+ return orders.offer;
+}
+function chooseTacticalOrder(id){
+ const orders=tacticalOrderState();
+ if(!orders?.offer?.includes(id))return false;
+ if(!orders.selected.includes(id))orders.selected.push(id);
+ if(!orders.history.includes(id))orders.history.push(id);
+ const resume=orders.resumeAfterSelection===true;
+ orders.offer=null;delete orders.resumeAfterSelection;
+ state.paused=!resume;
+ renderTacticalOrderOffer();applyPausedBattleUI();updateBattleActionUI();updateHUD();persistBattleState();
+ const focusTarget=document.getElementById(state.paused?'pauseResumeBtn':'pauseBtn');focusTarget?.focus({preventScroll:true});
+ log(`軍令生效：${tacticalOrderById(id)?.name||id}。`);sfx('click');
+ return true;
+}
+function renderTacticalOrderOffer(){
+ const dialog=document.getElementById('tacticalOrderDialog');if(!dialog)return;
+ const game=document.getElementById('game'),offer=state?.gameplay?.orders?.offer,visible=Array.isArray(offer)&&offer.length===3&&!state.over&&game?.classList.contains('active');
+ if(game)game.inert=visible;
+ dialog.hidden=!visible;dialog.classList.toggle('show',visible);
+ const options=dialog.querySelector('.tactical-order-options');
+ if(!visible){options?.replaceChildren();if(options)delete options.dataset.offerSignature;return}
+ const signature=offer.join('|');
+ if(options.dataset.offerSignature!==signature){
+  options.replaceChildren(...offer.map(id=>{
+   const order=tacticalOrderById(id),button=document.createElement('button');button.type='button';button.className='tactical-order-card';button.dataset.tacticalOrder=id;
+   const title=document.createElement('strong'),benefit=document.createElement('span'),cost=document.createElement('span'),duration=document.createElement('small');
+   title.textContent=order.name;benefit.className='benefit';benefit.textContent=`收益｜${order.benefit}`;cost.className='cost';cost.textContent=`代價｜${order.cost}`;duration.textContent=order.duration==='battle'?'作用時間｜本局永久':`作用時間｜${order.duration}`;
+   button.append(title,benefit,cost,duration);button.onclick=()=>chooseTacticalOrder(id);return button;
+  }));options.dataset.offerSignature=signature;
+ }
+ queueMicrotask(()=>options.querySelector('button')?.focus({preventScroll:true}));
 }
 function jsonSafeEvent(raw){
  const event={};
