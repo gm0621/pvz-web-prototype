@@ -19,7 +19,7 @@
   - [x] Task 0.2：純觀測 battle event 與 telemetry API
   - [x] Gate：focused、canonical suite、commit、push
 - [ ] Phase 1：戰鬥爽感與波次戰報
-  - [ ] Task 1.1：每波／攻城里程碑非阻塞戰報
+  - [x] Task 1.1：波次／里程碑戰報
   - [ ] Task 1.2：命中回饋與精簡特效設定
   - [ ] Gate：desktop／mobile／短橫向 browser screenshots + full suite
 - [ ] Phase 2：敵人預警與反制
@@ -53,8 +53,13 @@
   - [ ] Gate：canonical 0 failed / 0 flaky + production smoke
 - [ ] PROJECT COMPLETE
 
+## 當前狀態
+
+- Phase 1 進行中；Task 1.1 已完成並通過 focused 6/6、相關回歸 38/38、node syntax 與 `git diff --check`。桌面、390×844、844×390 實際 Chromium DOM／screenshot 驗收皆無水平溢位，戰報 `pointer-events: none` 且可關閉；下一步為 Task 1.2 命中回饋與精簡特效設定。
+
 ## 已完成提交
 
+- `78f3f89` — feat: add battle milestone reports
 - `4656a9e` — docs: clarify fair challenge and medal authority
 - `7c73fa3` — feat: add gameplay systems state foundation
 - `6c5fd29` — feat: add battle telemetry foundation
