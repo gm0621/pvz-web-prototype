@@ -24,10 +24,10 @@
   - [x] Task 1.1：波次／里程碑戰報
   - [x] Task 1.2：命中回饋與精簡特效設定
   - [x] Gate：desktop／mobile／短橫向 browser screenshots + full suite
-- [ ] Phase 2：敵人預警與反制
+- [x] Phase 2：敵人預警與反制
   - [x] Task 2.1：資料驅動、可序列化預警模型
-  - [ ] Task 2.2：預警視覺與無障礙語意
-  - [ ] Gate：預警→反制／命中→cleanup 全鏈測試
+  - [x] Task 2.2：預警視覺與無障礙語意
+  - [x] Gate：預警→反制／命中→cleanup 全鏈測試
 - [ ] Phase 3：大波次後三選一軍令
   - [ ] Task 3.1：9 張軍令與 modifier API
   - [ ] Task 3.2：守城軍令三選一 UI
@@ -62,6 +62,8 @@
 - Task 1.2 focused／related tests 與 tablet fullscreen 回歸均通過；canonical suite 為 419 passed／5 skipped，desktop 1440×900、portrait 390×844、landscape 844×390 實畫與 DOM 驗收無水平溢位或重要遮擋。
 - Task 2.1 已完成：第一、二季危險敵技改採 `state.time` 兩階段預警／結算，支援換列與擊殺施術者反制、exactly-once 清除及暫停／背景／讀檔一致性；並保留第二季拖行既有落點、控制時長與攻擊節奏。RED 先確認危險技仍立即命中／缺少預警；focused `tests/enemy-telegraphs.spec.js` 12/12、第二季與共用系統 related 40/40，canonical 為 431 passed／5 skipped／0 failed／0 flaky，`git diff --check` 與相關 JS `node --check` 全數通過。
 - Task 2.1 browser evidence：desktop 1440×900、portrait 390×844、landscape 844×390 實際 DOM／截圖均顯示預警 banner 與九宮格、無水平溢位、警示不攔截 pointer。390×844 的下方警示區仍會被既有卡片抽屜遮住，列入下一個 Task 2.2 的可讀性修正，不提前勾選。
+- Task 2.2 與 Phase 2 Gate 已完成：危險技加入各自圖示、斜紋、文字／語意化 `<time>` 倒數與固定反制提示；預警層保持 `pointer-events:none`，手機有預警時依卡片抽屜位置縮放棋盤，390×844 與 fullscreen 的最下方九宮格完整可見。RED 先確認缺少 `.telegraph-icon`／`time.telegraph-countdown`；focused `tests/enemy-telegraphs.spec.js` 18/18、related（共用系統、第二季、秦皇、操作提示、tablet fullscreen）93 passed／1 skipped，新增全技能反制／未反制命中／cleanup gate；canonical 為 437 passed／5 skipped／0 failed／0 flaky，`git diff --check` 與相關 JS `node --check` 全數通過。
+- Task 2.2 browser evidence：desktop 1440×900、portrait 390×844、landscape 844×390、portrait fullscreen 實際 DOM／截圖均無水平溢位、卡片遮擋或 pointer 攔截；圖示、文字倒數、lane／九宮格圖樣與反制 banner 清楚可辨。
 
 ## 已完成提交
 
@@ -70,3 +72,4 @@
 - `7c73fa3` — feat: add gameplay systems state foundation
 - `6c5fd29` — feat: add battle telemetry foundation
 - `5fb36c8` — feat: telegraph dangerous enemy attacks
+- `a7ecee1` — feat: improve enemy telegraph readability
