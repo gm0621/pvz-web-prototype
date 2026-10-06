@@ -26,17 +26,17 @@ test('guest recorded final clear opens first-season attack without inventing mis
  expect(await page.evaluate(()=>({unlocked:isCampaignFactionUnlocked('zombies',1),gap4:isCampaignLevelCompleted('plants',4,1),gap5:isCampaignLevelCompleted('plants',5,1),frontier:campaignSideProgress('plants',1).highestLevel}))).toEqual({unlocked:true,gap4:false,gap5:false,frontier:3});
 });
 
-test('sparse guest final victory CTA starts attack and keeps unearned zombie characters locked',async({page})=>{
+test('sparse guest final victory CTA starts the Qin finale and keeps unearned zombie characters locked',async({page})=>{
  await openGuest(page,{gap:true,final:false});
  await page.evaluate(()=>{completeCampaignLevel('plants',9,1);saveProfile(false,false);markStoryRead('plants',10,'opening')});
  await page.locator('#plantStartBtn').click();await page.locator('[data-season-choice="1"]').click();
  await page.locator('[data-jump-level="10"]').click();
  await page.evaluate(()=>{clearInterval(timer);end(true,'防守成功！','隔離結算流程測試')});
  await expect(page.locator('#modalNext')).toBeEnabled();
- await expect(page.locator('#modalNext')).toContainText('開始攻城');
- await page.locator('#modalNext').click();await page.locator('#storySkip').click();
+ await expect(page.locator('#modalNext')).toContainText('挑戰秦皇');
+ await page.locator('#modalNext').click();
  await expect(page.locator('#game')).toHaveClass(/active/);
- expect(await page.evaluate(()=>({faction:state.faction,level:state.level,final:isCampaignLevelCompleted('plants',10,1),missing:isCampaignLevelCompleted('plants',5,1)}))).toEqual({faction:'zombies',level:1,final:true,missing:false});
+ expect(await page.evaluate(()=>({faction:state.faction,level:state.level,final:isCampaignLevelCompleted('plants',10,1),missing:isCampaignLevelCompleted('plants',5,1)}))).toEqual({faction:'plants',level:11,final:true,missing:false});
  await page.evaluate(()=>backToHome());await page.locator('#charactersBtn').click();await page.locator('[data-roster="zombies"]').click();
  const actual=await page.evaluate(()=>Object.keys(UNLOCK_LEVEL.zombies).filter(k=>!ZOMBIE_TYPES[k].hidden).map(k=>({key:k,unlocked:isCharacterGuideUnlocked('zombies',k),expected:UNLOCK_LEVEL.zombies[k]===1&&!isFinalRewardUnit('zombies',k)})));
  for(const row of actual)expect(row.unlocked,row.key).toBe(row.expected);
