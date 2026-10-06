@@ -18,6 +18,8 @@
   - [x] Task 0.1：battle-local state 與舊存檔 migration
   - [x] Task 0.2：純觀測 battle event 與 telemetry API
   - [x] Gate：focused、canonical suite、commit、push
+- [x] 秦皇終章 hotfix：通關紀錄、跨列軍令、軍陣減傷、三虎符／8 秒破陣、舊戰局恢復與 responsive UI
+  - [x] Gate：desktop／mobile focused、1440×900／390×844／844×390 DOM＋screenshots、canonical suite
 - [ ] Phase 1：戰鬥爽感與波次戰報
   - [x] Task 1.1：波次／里程碑戰報
   - [ ] Task 1.2：命中回饋與精簡特效設定
@@ -55,7 +57,8 @@
 
 ## 當前狀態
 
-- Phase 1 進行中；Task 1.1 已完成並通過 focused 6/6、相關回歸 38/38、node syntax 與 `git diff --check`。桌面、390×844、844×390 實際 Chromium DOM／screenshot 驗收皆無水平溢位，戰報 `pointer-events: none` 且可關閉；下一步為 Task 1.2 命中回饋與精簡特效設定。
+- 秦皇終章 hotfix 已完成：通關會寫入並在主選單／終章卡永久顯示；秦皇依階段與軍令循環跨列，未破陣時減傷 45%，三枚虎符開啟 8 秒全傷害窗口；舊 snapshot 自動補齊護體與 lane cycle。focused 15 passed／1 skipped，canonical 411 passed／5 skipped，三尺寸實畫無水平裁切。
+- Phase 1 仍在進行中；Task 1.1 已完成，秦皇封版後續接 Task 1.2 命中回饋與精簡特效設定。
 
 ## 已完成提交
 
