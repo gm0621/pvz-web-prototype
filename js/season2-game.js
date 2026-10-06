@@ -20,8 +20,8 @@ function processSeason2PendingHits(){
   const source=state.plants.find(unit=>unit.id===hit.sourceId&&unit.hp>0);
   const target=state.zombies.find(unit=>unit.id===hit.targetId&&unit.hp>0);
   if(!source||!target)continue;
-  if(hit.projectile){state.projectiles.push({x:source.c+.72,y:source.r+.5,r:source.r,dir:1,damage:hit.damage,from:'plant',speed:.11,targetId:target.id});sfx('shoot');continue}
-  target.hp-=hit.damage;attackFx(target,hit.fx||'slash');sfx('hit');flash(target,'重刀命中');
+  if(hit.projectile){state.projectiles.push({x:source.c+.72,y:source.r+.5,r:source.r,dir:1,damage:hit.damage,from:'plant',speed:.11,targetId:target.id,sourceId:source.id,sourceType:source.type});sfx('shoot');continue}
+  damageZombie(target,hit.damage,{source,kind:'melee'});attackFx(target,hit.fx||'slash');sfx('hit');flash(target,'重刀命中');
  }
  state.pendingHits=waiting;
 }
@@ -39,8 +39,8 @@ function actSeason2Plants(){
   if(p.hp<=0)continue;const d=activeUnit('plants',p.type);if(!d)continue;
   if(p.type==='s2Shield'){advanceSeason2Shield(p,d);continue}
   const target=state.zombies.filter(z=>z.hp>0&&z.r===p.r&&z.c>p.c&&z.c-p.c<=(d.range||1)).sort((a,b)=>a.c-b.c)[0];
-  if(p.type==='s2Tuntian'&&state.time-p.last>=d.rate){const safe=state.time-(p.lastDamagedAt??p.bornAt)>=8000,gain=d.produce+(safe?15:0);p.last=state.time;if(state.faction==='plants')state.resource+=gain;else state.aiResource+=gain;flash(p,`🌾 +${gain}`);continue}
-  if(p.type==='s2Halberd'){const incoming=state.zombies.find(z=>z.hp>0&&!z.boss&&z.r===p.r&&z.c>=p.c&&z.c-p.c<=d.range&&['dash','jump'].includes(z.movementKind)&&state.time-z.movementAt<=100&&z.previousC-z.c>=.4);if(incoming&&state.time-(p.lastIntercept??-6000)>=6000){p.lastIntercept=state.time;incoming.hp-=55;incoming.movementKind=null;incoming.c=Math.max(incoming.c,p.c+.8);flash(p,'拒馬列戟')}}
+  if(p.type==='s2Tuntian'&&state.time-p.last>=d.rate){const safe=state.time-(p.lastDamagedAt??p.bornAt)>=8000,gain=d.produce+(safe?15:0);p.last=state.time;changeBattleResource('plants',gain,'produce');flash(p,`🌾 +${gain}`);continue}
+  if(p.type==='s2Halberd'){const incoming=state.zombies.find(z=>z.hp>0&&!z.boss&&z.r===p.r&&z.c>=p.c&&z.c-p.c<=d.range&&['dash','jump'].includes(z.movementKind)&&state.time-z.movementAt<=100&&z.previousC-z.c>=.4);if(incoming&&state.time-(p.lastIntercept??-6000)>=6000){p.lastIntercept=state.time;damageZombie(incoming,55,{source:p,kind:'intercept'});incoming.movementKind=null;incoming.c=Math.max(incoming.c,p.c+.8);if(incoming.hp>0)recordBattleControl(incoming,{source:p,sourceSide:'plants',kind:'intercept',duration:0});flash(p,'拒馬列戟')}}
   if(!target||state.time-p.last<d.rate)continue;
   p.last=state.time;markAttack(p);let damage=d.damage;
   if(p.type==='s2Crossbow'){p.focusStacks=p.focusId===target.id?Math.min(3,(p.focusStacks||0)+1):0;p.focusId=target.id;damage=Math.round(damage*(1+.2*p.focusStacks))}
@@ -49,19 +49,19 @@ function actSeason2Plants(){
   if(p.type==='s2SimaYi')damage=Math.round(damage*(1+Math.min(.6,(state.time-p.bornAt)/45000*.6)));
   if(p.type==='s2ZhangLiao'){target.breakMarkedUntil=state.time+5000;flash(target,'破陣標記')}
   if(d.attackHitAt){state.pendingHits=state.pendingHits||[];state.pendingHits.push({sourceId:p.id,targetId:target.id,damage,at:state.time+d.attackHitAt,fx:'slash',projectile:(d.range||0)>2})}
-  else if((d.range||0)>2){state.projectiles.push({x:p.c+.72,y:p.r+.5,r:p.r,dir:1,damage,from:'plant',speed:.11,targetId:target.id});sfx('shoot')}
-  else{target.hp-=damage;attackFx(target,'slash');sfx('hit')}
+  else if((d.range||0)>2){state.projectiles.push({x:p.c+.72,y:p.r+.5,r:p.r,dir:1,damage,from:'plant',speed:.11,targetId:target.id,sourceId:p.id,sourceType:p.type});sfx('shoot')}
+  else{damageZombie(target,damage,{source:p,kind:'melee'});attackFx(target,'slash');sfx('hit')}
  }
 }
-function damageSeason2Plant(p,amount,melee=false){
+function damageSeason2Plant(p,amount,melee=false,context={}){
  if(p.hp<=0)return;let damage=amount;
  if(melee){if(p.type!=='s2Shield'){p.braced=false;p.lastCombatAt=state.time}if(p.boneMarks>0&&state.time<(p.boneExpires||0)){p.boneMarks--;damage+=20;flash(p,'骨釘引爆')}}
  if(p.type==='s2Shield'){const d=PLANT_TYPES.s2Shield,reduction=state.time<(p.armorWeakenedUntil||0)?d.weakenedDamageReduction:d.damageReduction;damage*=1-reduction}
  if(p.unyieldingUntil&&state.time<p.unyieldingUntil)damage*=.7;
  const guard=p.type!=='s2DianWei'&&state.plants.find(g=>g.hp>0&&g.type==='s2DianWei'&&g.r===p.r&&g.c<p.c&&p.c-g.c<=1.2);
- if(guard){const shared=Math.min(damage*.35,guard.hp-1);guard.hp-=shared;damage-=shared;flash(guard,'帳前死衛')}
- p.lastDamagedAt=state.time;p.hp-=damage;if(p.type==='s2Xiahou')p.rage=Math.min(100,(p.rage||0)+damage*.8);attackFx(p,'slash');
- if(p.hp<=0){if(state.faction==='zombies')state.resource+=50;else state.aiResource+=50}
+ if(guard){const shared=Math.min(damage*.35,guard.hp-1);applyBattleDamage(guard,shared,{sourceSide:'zombies',targetSide:'plants',kind:'guard-share',...context});damage-=shared;flash(guard,'帳前死衛')}
+ p.lastDamagedAt=state.time;applyBattleDamage(p,damage,{sourceSide:'zombies',targetSide:'plants',...context});if(p.type==='s2Xiahou')p.rage=Math.min(100,(p.rage||0)+damage*.8);attackFx(p,'slash');
+ if(p.hp<=0)changeBattleResource('zombies',50,'eat')
 }
 function season2CleaverHit(z,p,d){
  const protectedTarget=(p.shieldHp||0)>0||p.type==='s2Shield';
@@ -74,7 +74,7 @@ function season2CleaverHit(z,p,d){
  let damage=d.damage;
  if((p.shieldHp||0)>0){const shieldDamage=damage*(heavy?3:2),absorbed=Math.min(p.shieldHp,shieldDamage);p.shieldHp-=absorbed;damage*=1-absorbed/shieldDamage}
  else if(heavy)damage+=d.damage;
- if(heavy)flash(z,'斷盾重劈');damageSeason2Plant(p,damage,true);
+ if(heavy)flash(z,'斷盾重劈');damageSeason2Plant(p,damage,true,{source:z,kind:'cleaver'});
 }
 function actSeason2Zombies(){
  for(const z of state.zombies){
@@ -82,16 +82,16 @@ function actSeason2Zombies(){
   if(z.type==='s2Medic'&&state.time-(z.lastHeal||0)>=5000){const ally=state.zombies.filter(a=>a!==z&&a.type!=='s2Medic'&&a.hp>0&&a.r===z.r&&a.hp<a.maxHp&&Math.abs(a.c-z.c)<2.2).sort((a,b)=>a.hp/a.maxHp-b.hp/b.maxHp)[0];if(ally){z.lastHeal=state.time;ally.hp=Math.min(ally.maxHp,ally.hp+55);flash(ally,'補肉 +55')}}
   const target=zombieEnteredBattlefield(z)?state.plants.filter(p=>p.hp>0&&p.r===z.r&&p.c<z.c&&z.c-p.c<=(d.range||.8)).sort((a,b)=>b.c-a.c)[0]:null;
   if(!target){if(z.type==='s2Ram')z.charge=Math.min(90,(z.charge||0)+.06);z.c-=(z.slowUntil&&state.time<z.slowUntil?d.speed*.5:d.speed);if(z.c<=.25){triggerMower(z.r);if(z.hp<=0)continue}if(z.c<0)return end(state.faction==='zombies',state.faction==='zombies'?'突破成功！':'防線被突破！',`${state.levelConfig.shortName}${state.faction==='zombies'?'攻破！':'失守，可調整陣形再試。'}`);continue}
-  if(z.type==='s2Hook'&&state.time-(z.lastHook||0)>=8000){const occupied=state.plants.some(p=>p.hp>0&&p.r===target.r&&Math.round(p.c)===Math.round(target.c+1));if(!occupied&&target.type!=='s2XuChu'){z.lastHook=state.time;target.c=Math.min(z.c-.8,target.c+1);target.slowUntil=state.time+2200;flash(target,'纏鏈拖行')}}
+  if(z.type==='s2Hook'&&state.time-(z.lastHook||0)>=8000){const occupied=state.plants.some(p=>p.hp>0&&p.r===target.r&&Math.round(p.c)===Math.round(target.c+1));if(!occupied&&target.type!=='s2XuChu'){z.lastHook=state.time;target.c=Math.min(z.c-.8,target.c+1);target.slowUntil=state.time+2200;recordBattleControl(target,{source:z,sourceSide:'zombies',kind:'hook',duration:2200});flash(target,'纏鏈拖行')}}
   if(state.time-z.last<d.rate)continue;z.last=state.time;markAttack(z);let damage=d.damage;
   if(z.type==='s2Rat'&&state.zombies.some(a=>a.hp>0&&a!==z&&a.r===z.r&&Math.abs(a.c-z.c)<1.5))damage=Math.round(damage*1.25);
   if(z.type==='s2Cleaver'){season2CleaverHit(z,target,d);continue}
-  if(z.type==='s2Nail'){state.projectiles.push({x:z.c-.1,y:z.r+.5,r:z.r,dir:-1,damage,from:'zombie',speed:.085,targetId:target.id,nail:true,marks:1});sfx('shoot');continue}
-  if(z.type==='s2Venom'){for(const p of state.plants.filter(p=>p.hp>0&&p.r===target.r&&Math.abs(p.c-target.c)<=1))damageSeason2Plant(p,damage,p===target);flash(target,'腐液殘留');continue}
+  if(z.type==='s2Nail'){state.projectiles.push({x:z.c-.1,y:z.r+.5,r:z.r,dir:-1,damage,from:'zombie',speed:.085,targetId:target.id,nail:true,marks:1,sourceId:z.id,sourceType:z.type});sfx('shoot');continue}
+  if(z.type==='s2Venom'){for(const p of state.plants.filter(p=>p.hp>0&&p.r===target.r&&Math.abs(p.c-target.c)<=1))damageSeason2Plant(p,damage,p===target,{source:z,kind:'venom'});flash(target,'腐液殘留');continue}
   if(z.type==='s2Ram'&&(z.charge||0)>0){damage+=Math.round(z.charge);z.charge=0;flash(z,'蓄勢破門')}
   if(z.type==='s2Hexer'){target.buffBlockedUntil=state.time+4000;flash(target,'孤軍咒')}
   if(z.type==='s2Overseer'){for(const ally of state.zombies.filter(a=>a.hp>0&&a.r===z.r&&Math.abs(a.c-z.c)<2.5))ally.hasteUntil=state.time+3000;flash(z,'破陣號令')}
-  damageSeason2Plant(target,damage,true);attackFx(target,'slash');sfx('hit');
+  damageSeason2Plant(target,damage,true,{source:z,kind:'melee'});attackFx(target,'slash');sfx('hit');
  }
 }
 function moveSeason2Projectiles(){
@@ -103,9 +103,9 @@ function moveSeason2Projectiles(){
   if(pr.from==='plant'){
    const shield=state.zombies.filter(z=>z.hp>0&&z.type==='s2Coffin'&&(z.shieldHp??ZOMBIE_TYPES.s2Coffin.shieldHp)>0&&z.r===target.r&&z.c<=target.c&&target.c-z.c<=.9).sort((a,b)=>a.c-b.c)[0];
    let damage=pr.damage;if(shield){shield.shieldHp??=ZOMBIE_TYPES.s2Coffin.shieldHp;const absorbed=Math.min(shield.shieldHp,damage*.6);shield.shieldHp-=absorbed;damage-=absorbed;flash(shield,shield.shieldHp>0?'棺板掩護':'棺盾破裂')}
-   target.hp-=damage;attackFx(target,'slash');
+   damageZombie(target,damage,{sourceId:pr.sourceId,sourceType:pr.sourceType,kind:'projectile'});attackFx(target,'slash');
   }else{
-   damageSeason2Plant(target,pr.damage);if(pr.nail&&target.hp>0){target.boneMarks=Math.min(2,(state.time<(target.boneExpires||0)?target.boneMarks||0:0)+(pr.marks||1));target.boneExpires=state.time+5000;flash(target,`骨釘 ${target.boneMarks}`)}
+   damageSeason2Plant(target,pr.damage,false,{sourceSide:'zombies',sourceId:pr.sourceId,sourceType:pr.sourceType,kind:'projectile'});if(pr.nail&&target.hp>0){target.boneMarks=Math.min(2,(state.time<(target.boneExpires||0)?target.boneMarks||0:0)+(pr.marks||1));target.boneExpires=state.time+5000;flash(target,`骨釘 ${target.boneMarks}`)}
   }
  }
 }
