@@ -28,11 +28,11 @@
   - [x] Task 2.1：資料驅動、可序列化預警模型
   - [x] Task 2.2：預警視覺與無障礙語意
   - [x] Gate：預警→反制／命中→cleanup 全鏈測試
-- [ ] Phase 3：大波次後三選一軍令
+- [x] Phase 3：大波次後三選一軍令
   - [x] Task 3.1：9 張軍令與 modifier API
   - [x] Task 3.2：守城軍令三選一 UI
-  - [ ] Task 3.3：攻城里程碑軍令
-  - [ ] Gate：兩季攻守、save/reload、mobile/fullscreen/cloud suites
+  - [x] Task 3.3：攻城里程碑軍令
+  - [x] Gate：兩季攻守、save/reload、mobile/fullscreen/cloud suites
 - [ ] Phase 4：關卡專屬規則
   - [ ] Task 4.1：stage-rule registry 與目標文字單一來源
   - [ ] Task 4.2：六關 tracer-bullet 試點
@@ -66,6 +66,7 @@
 - Task 2.2 browser evidence：desktop 1440×900、portrait 390×844、landscape 844×390、portrait fullscreen 實際 DOM／截圖均無水平溢位、卡片遮擋或 pointer 攔截；圖示、文字倒數、lane／九宮格圖樣與反制 banner 清楚可辨。
 - Task 3.1 已完成：新增 9 張全局內軍令資料，每張均有明確收益與代價；`state.gameplay.orders` 可序列化並會清理未知／重複 id，`effectiveBattleModifier()` 以加法疊加並限制在 0.5–1.5，不修改角色基礎資料。RED 先確認 API 與 battle-local order state 缺失；focused 4/4、related（gameplay systems、敵技預警、第二季存檔）36/36，fresh canonical 441 passed／5 skipped／0 failed／0 flaky，`git diff --check` 與相關 JS `node --check` 通過。Task 3.1 無玩家 UI 變更，未要求 screenshot。
 - Task 3.2 已完成：每個守城波次完成後建立並立即保存三張不重複軍令；選擇期間以 battle-time 暫停，reload 保留原 offer、不重抽，選擇 exactly-once 並立即啟用 modifier。恢復中的 offer 保持安全暫停，pause overlay、story/result modal、navigation、focus 與背景 `inert` 已協調。RED 先確認缺少三選一 UI、焦點回復與 navigation cleanup；focused 10/10，related 130/130，canonical 447 passed／5 skipped／0 failed／0 flaky，`git diff --check` 與相關 JS `node --check` 通過。desktop 1440×900、portrait 390×844、landscape 844×390 的實際 DOM／截圖均顯示三卡完整可讀、無裁切／重疊／水平溢位或背景互動；下一項為 Task 3.3。
+- Task 3.3 與 Phase 3 Gate 已完成：第一、二季攻城在首次擊破守軍與剩餘 40% 時間壓力各觸發一次三選一軍令，每局最多兩次；已觸發 milestone 與 pending offer 都隨 battle-local snapshot 保存，reload 不重抽，拖時間不會重複觸發，攻城失敗後重開會建立全新軍令狀態。deadline 會先結算失敗，不會在 00:00 彈出無效軍令。RED 為 desktop／mobile 4 failed；focused 14/14，Phase Gate 34/34，canonical 451 passed／5 skipped／0 failed／0 flaky，`git diff --check` 與相關 JS `node --check` 全數通過。desktop 1440×900、portrait 390×844、landscape 844×390 的實際 DOM／截圖均顯示三張軍令完整可讀、無裁切／重疊／水平溢位；下一項為 Task 4.1。
 
 ## 已完成提交
 
@@ -77,3 +78,4 @@
 - `a7ecee1` — feat: improve enemy telegraph readability
 - `ed9218b` — feat: add tactical order modifier foundation
 - `49974a0` — feat: add defense tactical order selection
+- `f8a0a65` — feat: add attack tactical order milestones
