@@ -9,10 +9,15 @@ function createBattleTelemetry(){
   nextEventId:1,
   events:[],
   totals:{damageDealt:emptySideNumber(),damageTaken:emptySideNumber(),kills:emptySideNumber(),control:emptyControl(),resources:emptyResources(),waves:{started:0,completed:0,current:0}},
-  bySource:{}
+  bySource:{},
+  byTarget:{}
  };
 }
-function createGameplayState(){return {version:GAMEPLAY_STATE_VERSION,telemetry:createBattleTelemetry()}}
+function createBattleReportState(){
+ const telemetry=createBattleTelemetry();
+ return {baseline:{totals:telemetry.totals,bySource:telemetry.bySource,byTarget:telemetry.byTarget,eventCount:0},current:null,attackMilestones:[]};
+}
+function createGameplayState(){return {version:GAMEPLAY_STATE_VERSION,telemetry:createBattleTelemetry(),report:createBattleReportState()}}
 function finiteNonnegative(value){value=Number(value);return Number.isFinite(value)&&value>=0?value:0}
 function normalizeSource(raw){
  if(!raw||typeof raw!=='object'||Array.isArray(raw))return null;
@@ -43,13 +48,25 @@ function normalizeBattleTelemetry(raw){
  telemetry.totals.waves.completed=finiteNonnegative(totals.waves?.completed);
  telemetry.totals.waves.current=finiteNonnegative(totals.waves?.current);
  if(raw.bySource&&typeof raw.bySource==='object'&&!Array.isArray(raw.bySource))for(const [id,value] of Object.entries(raw.bySource)){const source=normalizeSource(value);if(source)telemetry.bySource[id]=source}
+ if(raw.byTarget&&typeof raw.byTarget==='object'&&!Array.isArray(raw.byTarget))for(const [id,value] of Object.entries(raw.byTarget)){
+  if(!value||typeof value!=='object'||Array.isArray(value))continue;
+  telemetry.byTarget[id]={side:BATTLE_SIDES.includes(value.side)?value.side:null,type:typeof value.type==='string'?value.type:null,damageTaken:finiteNonnegative(value.damageTaken)};
+ }
  if(Array.isArray(raw.events))telemetry.events=raw.events.filter(event=>event&&typeof event==='object'&&!Array.isArray(event)).map(event=>jsonSafeEvent(event));
  telemetry.nextEventId=Math.max(finiteNonnegative(raw.nextEventId)||1,...telemetry.events.map(event=>finiteNonnegative(event.id)+1));
  return telemetry;
 }
+function normalizeBattleReport(raw){
+ const report=createBattleReportState();
+ if(!raw||typeof raw!=='object'||Array.isArray(raw))return report;
+ if(raw.baseline&&typeof raw.baseline==='object'&&!Array.isArray(raw.baseline))report.baseline=JSON.parse(JSON.stringify(raw.baseline));
+ if(raw.current&&typeof raw.current==='object'&&!Array.isArray(raw.current))report.current=JSON.parse(JSON.stringify(raw.current));
+ if(Array.isArray(raw.attackMilestones))report.attackMilestones=raw.attackMilestones.map(Number).filter(value=>[30,60,90].includes(value));
+ return report;
+}
 function normalizeGameplayState(raw){
  if(!raw||typeof raw!=='object'||Array.isArray(raw)||raw.version!==GAMEPLAY_STATE_VERSION)return createGameplayState();
- return {version:GAMEPLAY_STATE_VERSION,telemetry:normalizeBattleTelemetry(raw.telemetry)};
+ return {version:GAMEPLAY_STATE_VERSION,telemetry:normalizeBattleTelemetry(raw.telemetry),report:normalizeBattleReport(raw.report)};
 }
 function jsonSafeEvent(raw){
  const event={};
@@ -60,7 +77,7 @@ function jsonSafeEvent(raw){
 }
 function gameplayTelemetry(){
  if(!state)return null;
- state.gameplay=normalizeGameplayState(state.gameplay);
+ if(!state.gameplay||state.gameplay.version!==GAMEPLAY_STATE_VERSION)state.gameplay=normalizeGameplayState(state.gameplay);
  return state.gameplay.telemetry;
 }
 function sourceStats(telemetry,payload){
@@ -72,6 +89,15 @@ function sourceStats(telemetry,payload){
  telemetry.bySource[id]=current;
  return current;
 }
+function targetStats(telemetry,payload){
+ const id=typeof payload.targetId==='string'&&payload.targetId?payload.targetId:(typeof payload.targetType==='string'&&payload.targetType?`type:${payload.targetType}`:null);
+ if(!id)return null;
+ const current=telemetry.byTarget[id]||{side:BATTLE_SIDES.includes(payload.targetSide)?payload.targetSide:null,type:typeof payload.targetType==='string'?payload.targetType:null,damageTaken:0};
+ if(!current.side&&BATTLE_SIDES.includes(payload.targetSide))current.side=payload.targetSide;
+ if(!current.type&&typeof payload.targetType==='string')current.type=payload.targetType;
+ telemetry.byTarget[id]=current;
+ return current;
+}
 function recordBattleEvent(type,payload={}){
  const telemetry=gameplayTelemetry();
  if(!telemetry||!['damage','kill','control','resource','wave'].includes(type))return false;
@@ -80,6 +106,7 @@ function recordBattleEvent(type,payload={}){
   const amount=finiteNonnegative(clean.amount);if(!amount||!BATTLE_SIDES.includes(clean.sourceSide)||!BATTLE_SIDES.includes(clean.targetSide))return false;
   telemetry.totals.damageDealt[clean.sourceSide]+=amount;telemetry.totals.damageTaken[clean.targetSide]+=amount;
   const source=sourceStats(telemetry,clean);if(source)source.damage+=amount;
+  const target=targetStats(telemetry,clean);if(target)target.damageTaken+=amount;
  }else if(type==='kill'){
   if(!BATTLE_SIDES.includes(clean.sourceSide))return false;
   telemetry.totals.kills[clean.sourceSide]++;const source=sourceStats(telemetry,clean);if(source)source.kills++;
@@ -98,7 +125,7 @@ function recordBattleEvent(type,payload={}){
 }
 function battleStatsSnapshot(){
  const telemetry=gameplayTelemetry()||createBattleTelemetry();
- return JSON.parse(JSON.stringify({totals:telemetry.totals,bySource:telemetry.bySource,eventCount:telemetry.events.length}));
+ return JSON.parse(JSON.stringify({totals:telemetry.totals,bySource:telemetry.bySource,byTarget:telemetry.byTarget,eventCount:telemetry.events.length}));
 }
 function battleEntitySide(entity){
  if(!state||!entity)return null;
@@ -124,4 +151,91 @@ function recordBattleControl(target,context={}){
 function changeBattleResource(side,amount,reason='unknown'){
  if(!state||!BATTLE_SIDES.includes(side)||!Number.isFinite(Number(amount)))return false;
  const playerSide=state.faction,field=side===playerSide?'resource':'aiResource';state[field]+=Number(amount);recordBattleEvent('resource',{side,amount:Number(amount),reason});return true;
+}
+function initializeBattleReports(){
+ if(!state)return false;
+ state.gameplay=normalizeGameplayState(state.gameplay);
+ if(!state.gameplay.report.baseline)state.gameplay.report.baseline=battleStatsSnapshot();
+ return true;
+}
+function beginBattleReportSegment(kind,segmentId,label){
+ if(!state)return false;
+ initializeBattleReports();
+ state.gameplay.report.baseline=battleStatsSnapshot();
+ state.gameplay.report.segment={kind,segmentId,label};
+ return true;
+}
+function reportLeader(current,baseline,side,metric){
+ let leader=null;
+ for(const [id,value] of Object.entries(current||{})){
+  if(value.side!==side)continue;
+  const amount=finiteNonnegative(value[metric])-finiteNonnegative(baseline?.[id]?.[metric]);
+  if(amount>0&&(!leader||amount>leader.amount))leader={id,type:value.type,amount};
+ }
+ return leader;
+}
+function unitReportName(side,type){
+ const unit=(side==='plants'?PLANT_TYPES:ZOMBIE_TYPES)?.[type];
+ return unit?.name||null;
+}
+function completeBattleReportSegment(kind,segmentId,label){
+ if(!state)return false;
+ initializeBattleReports();
+ const report=state.gameplay.report,baseline=report.baseline||battleStatsSnapshot(),current=battleStatsSnapshot(),side=state.faction;
+ const outputLeader=reportLeader(current.bySource,baseline.bySource,side,'damage');
+ const takenLeader=reportLeader(current.byTarget,baseline.byTarget,side,'damageTaken');
+ const controlLeader=reportLeader(current.bySource,baseline.bySource,side,'controlDuration');
+ report.current={
+  kind,segmentId,label,
+  damageDealt:finiteNonnegative(current.totals.damageDealt[side])-finiteNonnegative(baseline.totals?.damageDealt?.[side]),
+  damageTaken:finiteNonnegative(current.totals.damageTaken[side])-finiteNonnegative(baseline.totals?.damageTaken?.[side]),
+  kills:finiteNonnegative(current.totals.kills[side])-finiteNonnegative(baseline.totals?.kills?.[side]),
+  controlDuration:finiteNonnegative(current.totals.control[side].duration)-finiteNonnegative(baseline.totals?.control?.[side]?.duration),
+  resourceNet:Number(current.totals.resources[side].net||0)-Number(baseline.totals?.resources?.[side]?.net||0),
+  outputLeader:outputLeader?{...outputLeader,name:unitReportName(side,outputLeader.type)}:null,
+  takenLeader:takenLeader?{...takenLeader,name:unitReportName(side,takenLeader.type)}:null,
+  controlLeader:controlLeader?{...controlLeader,name:unitReportName(side,controlLeader.type)}:null,
+  shownAt:finiteNonnegative(state.time),expiresAt:finiteNonnegative(state.time)+6000,dismissed:false
+ };
+ report.baseline=current;
+ renderBattleReport();
+ return report.current;
+}
+function updateAttackMilestoneReports(){
+ if(!state||state.faction!=='zombies'||state.over)return false;
+ initializeBattleReports();
+ const report=state.gameplay.report,limit=Number(state.levelConfig?.attackTimeLimit)||0;
+ if(!limit)return false;
+ let changed=false;
+ for(const milestone of [30,60,90]){
+  if(report.attackMilestones.includes(milestone)||state.time<limit*milestone/100)continue;
+  report.attackMilestones.push(milestone);
+  completeBattleReportSegment('attack-milestone',milestone,`攻城 ${milestone}%`);
+  changed=true;
+ }
+ if(changed)persistBattleState();
+ return changed;
+}
+function dismissBattleReport(){
+ const current=state?.gameplay?.report?.current;if(!current)return false;
+ current.dismissed=true;renderBattleReport();persistBattleState();return true;
+}
+function reportNumber(value){return Math.round(finiteNonnegative(value))}
+function renderBattleReport(){
+ const el=document.getElementById('waveReport');if(!el)return;
+ const current=state?.gameplay?.report?.current;
+ const visible=!!current&&!current.dismissed&&finiteNonnegative(state.time)<finiteNonnegative(current.expiresAt);
+ el.hidden=!visible;if(!visible)return;
+ const title=current.kind==='attack-milestone'?`${current.label} 戰報`:`${current.label}戰報`;
+ const rows=[];
+ const outputName=current.outputLeader?unitReportName(state.faction,current.outputLeader.type):null;
+ const takenName=current.takenLeader?unitReportName(state.faction,current.takenLeader.type):null;
+ const controlName=current.controlLeader?unitReportName(state.faction,current.controlLeader.type):null;
+ if(outputName)rows.push(`<span><b>最高輸出</b>${outputName} ${reportNumber(current.outputLeader.amount)}</span>`);
+ if(takenName)rows.push(`<span><b>最高承傷</b>${takenName} ${reportNumber(current.takenLeader.amount)}</span>`);
+ if(controlName)rows.push(`<span><b>控制貢獻</b>${controlName} ${(finiteNonnegative(current.controlLeader.amount)/1000).toFixed(1)} 秒</span>`);
+ rows.push(`<span><b>擊殺</b>${reportNumber(current.kills)}</span>`);
+ const net=Number(current.resourceNet)||0;rows.push(`<span><b>資源淨變化</b>${net>=0?'+':''}${Math.round(net)}</span>`);
+ el.querySelector('.wave-report-title').textContent=title;
+ el.querySelector('.wave-report-stats').innerHTML=rows.join('');
 }

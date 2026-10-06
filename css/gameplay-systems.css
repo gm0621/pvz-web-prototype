@@ -1,0 +1,15 @@
+.wave-report{position:relative;display:flex;align-items:center;gap:10px;margin:3px 0;padding:7px 38px 7px 10px;border:1px solid #e8bd58;border-radius:8px;background:linear-gradient(90deg,#183d35,#102a28);color:#fff8dc;box-shadow:inset 4px 0 #58d4ae,0 2px 8px #0006;font-size:12px;line-height:1.35;pointer-events:none;overflow:hidden}
+.wave-report[hidden]{display:none}
+.wave-report-title{flex:none;color:#ffe391;font-size:13px;white-space:nowrap}
+.wave-report-stats{display:flex;flex:1;align-items:center;gap:7px;min-width:0;overflow-x:auto;scrollbar-width:none}
+.wave-report-stats::-webkit-scrollbar{display:none}
+.wave-report-stats span{display:flex;gap:4px;flex:none;padding:2px 6px;border-radius:999px;background:#ffffff12;white-space:nowrap}
+.wave-report-stats b{color:#7ee8ca}
+#waveReportClose{position:absolute;right:5px;top:50%;width:30px;height:30px;min-width:30px;padding:0;transform:translateY(-50%);border:1px solid #ffffff55;border-radius:50%;background:#081b1acc;color:#fff;font-size:20px;line-height:1;pointer-events:auto;cursor:pointer}
+@media(max-width:600px),(max-height:500px){
+ .wave-report{gap:6px;margin:2px 0;padding:4px 34px 4px 6px;font-size:10px}
+ .wave-report-title{font-size:11px}
+ .wave-report-stats{gap:4px}
+ .wave-report-stats span{gap:3px;padding:1px 4px}
+ #waveReportClose{width:28px;height:28px;min-width:28px}
+}
