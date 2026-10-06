@@ -60,7 +60,7 @@ function normalizeBattleTelemetry(raw){
 function normalizeBattleReport(raw){
  const report=createBattleReportState();
  if(!raw||typeof raw!=='object'||Array.isArray(raw))return report;
- report.initialized=raw.initialized!==false;
+ report.initialized=Object.prototype.hasOwnProperty.call(raw,'initialized')?raw.initialized!==false:false;
  if(raw.baseline&&typeof raw.baseline==='object'&&!Array.isArray(raw.baseline))report.baseline=JSON.parse(JSON.stringify(raw.baseline));
  if(raw.current&&typeof raw.current==='object'&&!Array.isArray(raw.current))report.current=JSON.parse(JSON.stringify(raw.current));
  if(Array.isArray(raw.attackMilestones))report.attackMilestones=raw.attackMilestones.map(Number).filter(value=>[30,60,90].includes(value));

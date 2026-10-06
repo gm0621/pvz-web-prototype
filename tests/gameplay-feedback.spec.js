@@ -81,7 +81,7 @@ test('attack milestones report at 30 60 90 percent once and persist through relo
  expect(after.text).toContain('攻城 90% 戰報');
 });
 
-test('attack report initialization is stable and migrated elapsed milestones do not emit fake reports',async({page})=>{
+test('attack report initialization is stable and every legacy report shape consumes elapsed milestones',async({page})=>{
  await open(page);await unlockAttack(page,1);
  const result=await page.evaluate(()=>{
   currentSeason=1;selectedLevel=1;start('zombies');clearInterval(timer);
@@ -89,14 +89,23 @@ test('attack report initialization is stable and migrated elapsed milestones do 
   for(let i=0;i<20;i++)updateAttackMilestoneReports();
   const stable=state.gameplay===originalGameplay&&state.gameplay.telemetry===originalTelemetry&&state.gameplay.report===originalReport;
   const limit=state.levelConfig.attackTimeLimit;
-  state.time=Math.ceil(limit*.7);state.gameplay={version:GAMEPLAY_STATE_VERSION,telemetry:state.gameplay.telemetry};
-  state.gameplay=normalizeGameplayState(state.gameplay);updateAttackMilestoneReports();
-  return {stable,milestones:state.gameplay.report.attackMilestones,current:state.gameplay.report.current,baselineEvents:state.gameplay.report.baseline.eventCount};
+  const migratedResults=[];
+  for(const legacyGameplay of [
+   {version:GAMEPLAY_STATE_VERSION,telemetry:state.gameplay.telemetry},
+   {...state.gameplay,report:{...state.gameplay.report,attackMilestones:[],current:null}}
+  ]){
+   delete legacyGameplay.report?.initialized;
+   state.time=Math.ceil(limit*.7);state.gameplay=normalizeGameplayState(legacyGameplay);updateAttackMilestoneReports();
+   migratedResults.push({milestones:[...state.gameplay.report.attackMilestones],current:state.gameplay.report.current,baselineEvents:state.gameplay.report.baseline.eventCount});
+  }
+  return {stable,migratedResults};
  });
  expect(result.stable).toBe(true);
- expect(result.milestones).toEqual([30,60]);
- expect(result.current).toBeNull();
- expect(result.baselineEvents).toBeGreaterThanOrEqual(0);
+ for(const migrated of result.migratedResults){
+  expect(migrated.milestones).toEqual([30,60]);
+  expect(migrated.current).toBeNull();
+  expect(migrated.baselineEvents).toBeGreaterThanOrEqual(0);
+ }
 });
 
 test('report live region renders once with text nodes and ignores serialized markup',async({page})=>{
