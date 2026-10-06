@@ -65,10 +65,10 @@ test('battle-local order state normalizes safely and modifiers combine additivel
   const clamped=typeof window.effectiveBattleModifier==='function'?effectiveBattleModifier('attackSpeed'):null;
   return {fresh,combined,normalized,json,before,clamped};
  });
- expect(result.fresh).toEqual({selected:[],offer:null,history:[],nextOfferId:1});
+ expect(result.fresh).toEqual({selected:[],offer:null,history:[],nextOfferId:1,attackMilestones:[]});
  expect(result.combined).toEqual({resourceIncome:1.25,damage:.9,attackSpeed:1.12,healing:1.3,unknown:1});
- expect(result.normalized).toEqual({selected:['tuntian','medical-camp'],offer:null,history:['last-stand'],nextOfferId:1});
- expect(result.json).toEqual({selected:['tuntian','last-stand','medical-camp'],offer:null,history:[],nextOfferId:1});
+ expect(result.normalized).toEqual({selected:['tuntian','medical-camp'],offer:null,history:['last-stand'],nextOfferId:1,attackMilestones:[]});
+ expect(result.json).toEqual({selected:['tuntian','last-stand','medical-camp'],offer:null,history:[],nextOfferId:1,attackMilestones:[]});
  expect(result.before).toBe(1.12);
  expect(result.clamped).toBe(1.5);
 });
@@ -127,6 +127,59 @@ test('restored order offer cannot reroll, resolves once, and hands focus to the 
  await expect(page.getByRole('dialog',{name:'選擇軍令'})).toBeHidden();
  await expect(page.locator('#game')).not.toHaveAttribute('inert','');
  await expect(page.locator('#pauseOverlay')).toHaveClass(/show/);
+});
+
+test('attack milestones offer at most two orders from a defender break and time pressure across both seasons',async({page})=>{
+ await openApp(page);
+ const results=[];
+ for(const season of [1,2])results.push(await page.evaluate(season=>{
+  currentSeason=season;
+  for(let level=1;level<=10;level++)completeCampaignLevel('plants',level,season);
+  selectedLevel=1;start('zombies');clearInterval(timer);state.nextAI=Infinity;state.aiResource=0;
+  const defender=state.plants[0],attacker=addZombie(season===2?'s2Rat':'normal',5,defender.r);
+  applyBattleDamage(defender,defender.hp,{source:attacker,kind:'test-break'});cleanup();tick();
+  const first=structuredClone(state.gameplay.orders.offer);
+  const firstMilestones=[...(state.gameplay.orders.attackMilestones||[])];
+  chooseTacticalOrder(first?.[0]);
+  state.time=Math.ceil(state.levelConfig.attackTimeLimit*.6);tick();
+  const second=structuredClone(state.gameplay.orders.offer);
+  chooseTacticalOrder(second?.[0]);
+  const afterTwo={nextOfferId:state.gameplay.orders.nextOfferId,milestones:[...(state.gameplay.orders.attackMilestones||[])]};
+  for(let i=0;i<20;i++){state.time=Math.ceil(state.levelConfig.attackTimeLimit*.75);tick()}
+  return {season,first,firstMilestones,second,afterTwo,stalled:{offer:state.gameplay.orders.offer,nextOfferId:state.gameplay.orders.nextOfferId,milestones:[...(state.gameplay.orders.attackMilestones||[])]}};
+ },season));
+ for(const result of results){
+  expect(result.first).toHaveLength(3);
+  expect(result.firstMilestones).toEqual(['defender-break']);
+  expect(result.second).toHaveLength(3);
+  expect(result.afterTwo).toEqual({nextOfferId:3,milestones:['defender-break','time-pressure']});
+  expect(result.stalled).toEqual({offer:null,nextOfferId:3,milestones:['defender-break','time-pressure']});
+ }
+});
+
+test('attack order offer survives reload and a retry starts with no prior attack milestones',async({page})=>{
+ await openApp(page);
+ const before=await page.evaluate(()=>{
+  currentSeason=1;for(let level=1;level<=10;level++)completeCampaignLevel('plants',level,1);saveProfile();
+  selectedLevel=1;start('zombies');clearInterval(timer);state.nextAI=Infinity;state.aiResource=0;
+  state.time=Math.ceil(state.levelConfig.attackTimeLimit*.6);tick();
+  const offer=[...(state.gameplay.orders.offer||[])],milestones=[...(state.gameplay.orders.attackMilestones||[])];
+  persistBattleState();return {offer,milestones};
+ });
+ expect(before.offer).toHaveLength(3);
+ expect(before.milestones).toEqual(['time-pressure']);
+ await page.reload();
+ const restored=await page.evaluate(()=>({paused:state.paused,offer:[...(state.gameplay.orders.offer||[])],milestones:[...(state.gameplay.orders.attackMilestones||[])]}));
+ expect(restored).toEqual({paused:true,offer:before.offer,milestones:['time-pressure']});
+ const failed=await page.evaluate(()=>{
+  clearInterval(timer);chooseTacticalOrder(state.gameplay.orders.offer[0]);state.paused=false;
+  state.time=state.levelConfig.attackTimeLimit-50;tick();
+  return {over:state.over,offer:state.gameplay.orders.offer,nextOfferId:state.gameplay.orders.nextOfferId,milestones:[...state.gameplay.orders.attackMilestones]};
+ });
+ expect(failed).toEqual({over:true,offer:null,nextOfferId:2,milestones:['time-pressure']});
+ await expect(page.locator('#modalTitle')).toHaveText('進攻失敗');
+ const retry=await page.evaluate(()=>{selectedLevel=1;start('zombies');clearInterval(timer);return structuredClone(state.gameplay.orders)});
+ expect(retry).toEqual({selected:[],offer:null,history:[],nextOfferId:1,attackMilestones:[]});
 });
 
 test('order cards stay readable at desktop, portrait phone, and landscape phone sizes',async({page},testInfo)=>{

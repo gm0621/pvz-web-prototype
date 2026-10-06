@@ -28,7 +28,7 @@ function createBattleReportState(initialized=true){
  return {initialized,baseline:{totals:telemetry.totals,bySource:telemetry.bySource,byTarget:telemetry.byTarget,eventCount:0},current:null,attackMilestones:[]};
 }
 function createBattleTelegraphState(){return {nextId:1,active:[]}}
-function createTacticalOrderState(){return {selected:[],offer:null,history:[],nextOfferId:1}}
+function createTacticalOrderState(){return {selected:[],offer:null,history:[],nextOfferId:1,attackMilestones:[]}}
 function createGameplayState(){return {version:GAMEPLAY_STATE_VERSION,telemetry:createBattleTelemetry(),report:createBattleReportState(),telegraphs:createBattleTelegraphState(),orders:createTacticalOrderState()}}
 function finiteNonnegative(value){value=Number(value);return Number.isFinite(value)&&value>=0?value:0}
 function normalizeSource(raw){
@@ -101,6 +101,7 @@ function normalizeTacticalOrders(raw){
  const offer=uniqueKnown(raw.offer);
  if(offer.length===3){result.offer=offer;result.resumeAfterSelection=raw.resumeAfterSelection===true}
  result.nextOfferId=Math.max(1,Math.floor(finiteNonnegative(raw.nextOfferId)||1));
+ result.attackMilestones=Array.isArray(raw.attackMilestones)?[...new Set(raw.attackMilestones.filter(id=>['defender-break','time-pressure'].includes(id)))]:[];
  return result;
 }
 function normalizeGameplayState(raw){
@@ -125,7 +126,7 @@ function tacticalOrderState(){
 }
 function createTacticalOrderOffer(triggerId){
  const orders=tacticalOrderState();
- if(!orders||orders.offer||state.faction!=='plants'||state.over||typeof activeCampaignStory!=='undefined'&&activeCampaignStory)return false;
+ if(!orders||orders.offer||!BATTLE_SIDES.includes(state.faction)||state.over||typeof activeCampaignStory!=='undefined'&&activeCampaignStory)return false;
  let pool=TACTICAL_ORDERS.map(order=>order.id).filter(id=>!orders.selected.includes(id));
  if(pool.length<3)pool=TACTICAL_ORDERS.map(order=>order.id);
  const seed=(Number(state.season)||1)*17+(Number(state.level)||1)*7+orders.nextOfferId*3+(Number(triggerId)||0);
@@ -136,6 +137,17 @@ function createTacticalOrderOffer(triggerId){
  state.paused=true;state.actionMode=null;state.movingPlantId=null;
  applyPausedBattleUI();updateBattleActionUI();renderTacticalOrderOffer();persistBattleState();
  return orders.offer;
+}
+function updateAttackTacticalOrders(){
+ if(!state||state.faction!=='zombies'||state.over)return false;
+ const orders=tacticalOrderState();
+ if(!orders||orders.offer||orders.attackMilestones.length>=2)return false;
+ const limit=Number(state.levelConfig?.attackTimeLimit)||0;
+ let milestone=null,triggerId=0;
+ if(!orders.attackMilestones.includes('defender-break')&&finiteNonnegative(state.gameplay?.telemetry?.totals?.kills?.zombies)>0){milestone='defender-break';triggerId=101}
+ else if(!orders.attackMilestones.includes('time-pressure')&&limit>0&&finiteNonnegative(state.time)>=limit*.6){milestone='time-pressure';triggerId=102}
+ if(!milestone||!createTacticalOrderOffer(triggerId))return false;
+ orders.attackMilestones.push(milestone);persistBattleState();return true;
 }
 function chooseTacticalOrder(id){
  const orders=tacticalOrderState();
