@@ -1,13 +1,13 @@
 const GAMEPLAY_STATE_VERSION=1;
 const ENEMY_TELEGRAPH_RULES=Object.freeze({
- 'fire-catapult':{duration:1200,label:'烈焰落石',counter:'換列離開九宮格，或在落石前擊倒烈焰屍車'},
- 'necromancer-curse':{duration:1000,label:'幽冥禁咒',counter:'換列離開標記路線，或優先擊倒冥火屍巫'},
- 'jester-laugh':{duration:800,label:'狂笑混亂',counter:'換列離開該路，或在狂笑前擊倒鈴鐺丑屍'},
- 'titan-smash':{duration:800,label:'破城重槌',counter:'換列離開九宮格，或在落槌前擊倒屍旗大胖'},
- 'qin-unification':{duration:1400,label:'天下一統',counter:'換列離開被標記路線'},
- 's2-shield-break':{duration:700,label:'斷盾重劈',counter:'換列，或在重劈前擊倒劈盾屍'},
- 's2-hook-drag':{duration:800,label:'纏鏈拖行',counter:'換列、卡住前方位置、派許褚免疫，或擊倒纏鏈屍'},
- 's2-ram-charge':{duration:900,label:'蓄勢衝撞',counter:'換列，或在衝撞前擊倒衝車屍'}
+ 'fire-catapult':{duration:1200,label:'烈焰落石',icon:'☄',counter:'換列離開九宮格，或在落石前擊倒烈焰屍車'},
+ 'necromancer-curse':{duration:1000,label:'幽冥禁咒',icon:'咒',counter:'換列離開標記路線，或優先擊倒冥火屍巫'},
+ 'jester-laugh':{duration:800,label:'狂笑混亂',icon:'鈴',counter:'換列離開該路，或在狂笑前擊倒鈴鐺丑屍'},
+ 'titan-smash':{duration:800,label:'破城重槌',icon:'槌',counter:'換列離開九宮格，或在落槌前擊倒屍旗大胖'},
+ 'qin-unification':{duration:1400,label:'天下一統',icon:'令',counter:'換列離開被標記路線'},
+ 's2-shield-break':{duration:700,label:'斷盾重劈',icon:'斬',counter:'換列，或在重劈前擊倒劈盾屍'},
+ 's2-hook-drag':{duration:800,label:'纏鏈拖行',icon:'鏈',counter:'換列、卡住前方位置、派許褚免疫，或擊倒纏鏈屍'},
+ 's2-ram-charge':{duration:900,label:'蓄勢衝撞',icon:'衝',counter:'換列，或在衝撞前擊倒衝車屍'}
 });
 const BATTLE_SIDES=['plants','zombies'];
 
@@ -117,7 +117,7 @@ function gameplayTelegraphs(){
 }
 function createEnemyTelegraph(kind,{source=null,sourceId=null,sourceType=null,duration=null,targets=[],cancelOnSourceDeath=true,data={}}={}){
  const telegraphs=gameplayTelegraphs();if(!telegraphs||typeof kind!=='string'||!kind)return null;
- const rule=ENEMY_TELEGRAPH_RULES[kind]||{},createdAt=finiteNonnegative(state.time),delay=finiteNonnegative(duration??rule.duration),safeData={...jsonSafeEvent(data),label:rule.label||data.label||kind,counter:rule.counter||data.counter||''},item={id:telegraphs.nextId++,kind,sourceId:sourceId||source?.id||null,sourceType:sourceType||source?.type||null,createdAt,executeAt:createdAt+delay,duration:delay,cancelOnSourceDeath:cancelOnSourceDeath!==false,targets:Array.isArray(targets)?targets.map(target=>jsonSafeEvent(target)):[],data:safeData};
+ const rule=ENEMY_TELEGRAPH_RULES[kind]||{},createdAt=finiteNonnegative(state.time),delay=finiteNonnegative(duration??rule.duration),safeData={...jsonSafeEvent(data),label:rule.label||data.label||kind,icon:rule.icon||data.icon||'!',counter:rule.counter||data.counter||''},item={id:telegraphs.nextId++,kind,sourceId:sourceId||source?.id||null,sourceType:sourceType||source?.type||null,createdAt,executeAt:createdAt+delay,duration:delay,cancelOnSourceDeath:cancelOnSourceDeath!==false,targets:Array.isArray(targets)?targets.map(target=>jsonSafeEvent(target)):[],data:safeData};
  telegraphs.active.push(item);return item;
 }
 function cancelEnemyTelegraphsForSource(sourceId){

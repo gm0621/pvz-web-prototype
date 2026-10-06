@@ -137,6 +137,90 @@ test('第二季斷盾、拖行與衝撞 telegraph for 0.7–1.0 seconds before r
  expect(result[2].after).toBeLessThan(result[2].before);
 });
 
+test('every listed telegraph supports its declared counter and cleans up exactly once',async({page})=>{
+ await openApp(page);await startDefense(page);
+ const result=await page.evaluate(()=>{
+  const countered=[];
+  const reset=(type,id)=>{const p={id:`${id}-target`,type:'wallnut',r:2,c:4,hp:800,maxHp:800,last:0,bornAt:0};state.plants=[p];state.zombies=[];state.gameplay.telegraphs.active=[];const z=addZombie(type,7,2);z.id=id;z.last=-999999;return {p,z,before:p.hp}};
+  let setup=reset('corpseTitan','counter-titan');setup.z.smashLast=-999999;titanSiegeSmash(setup.z,ZOMBIE_TYPES.corpseTitan,setup.p);let warning=state.gameplay.telegraphs.active[0];setup.z.hp=0;state.time=warning.executeAt;processEnemyTelegraphs();countered.push({kind:warning.kind,unchanged:setup.p.hp===setup.before,remaining:state.gameplay.telegraphs.active.length});
+  state.time+=2000;setup=reset('jester','counter-jester');setup.z.laughLast=-999999;jesterLaugh(setup.z,ZOMBIE_TYPES.jester);warning=state.gameplay.telegraphs.active[0];setup.z.hp=0;state.time=warning.executeAt;processEnemyTelegraphs();countered.push({kind:warning.kind,unchanged:setup.p.hp===setup.before,remaining:state.gameplay.telegraphs.active.length});
+  state.time+=2000;setup=reset('necromancer','counter-necro');setup.z.curseLast=-999999;necromancerCurse(setup.z,ZOMBIE_TYPES.necromancer);warning=state.gameplay.telegraphs.active[0];setup.z.hp=0;state.time=warning.executeAt;processEnemyTelegraphs();countered.push({kind:warning.kind,unchanged:setup.p.hp===setup.before,remaining:state.gameplay.telegraphs.active.length});
+
+  currentSeason=2;currentFaction='plants';selectedLevel=1;start('plants');clearInterval(timer);state.paused=false;state.time=60000;
+  const resetS2=(type,id,plantType='s2Shield')=>{const p={id:`${id}-target`,type:plantType,r:2,c:4,hp:800,maxHp:800,shieldHp:300,last:0,bornAt:0};const z={id,type,r:2,c:4.7,hp:800,maxHp:800,last:-999999,bornAt:0};state.plants=[p];state.zombies=[z];state.gameplay.telegraphs.active=[];return {p,z,before:{hp:p.hp,shield:p.shieldHp,c:p.c}}};
+  const originalRandom=Math.random;Math.random=()=>0;setup=resetS2('s2Cleaver','counter-cleaver');season2CleaverHit(setup.z,setup.p,ZOMBIE_TYPES.s2Cleaver);Math.random=originalRandom;warning=state.gameplay.telegraphs.active[0];setup.z.hp=0;state.time=warning.executeAt;processEnemyTelegraphs();countered.push({kind:warning.kind,unchanged:setup.p.hp===setup.before.hp&&setup.p.shieldHp===setup.before.shield,remaining:state.gameplay.telegraphs.active.length});
+  state.time+=2000;setup=resetS2('s2Hook','counter-hook','s2Tuntian');setup.z.lastHook=-999999;setup.z.last=state.time;actSeason2Zombies();warning=state.gameplay.telegraphs.active[0];setup.z.hp=0;state.time=warning.executeAt;processEnemyTelegraphs();countered.push({kind:warning.kind,unchanged:setup.p.c===setup.before.c,remaining:state.gameplay.telegraphs.active.length});
+  state.time+=2000;setup=resetS2('s2Ram','counter-ram','s2Tuntian');setup.z.charge=60;actSeason2Zombies();warning=state.gameplay.telegraphs.active[0];setup.z.hp=0;state.time=warning.executeAt;processEnemyTelegraphs();countered.push({kind:warning.kind,unchanged:setup.p.hp===setup.before.hp,remaining:state.gameplay.telegraphs.active.length});
+  return countered;
+ });
+ expect(result).toEqual([
+  {kind:'titan-smash',unchanged:true,remaining:0},
+  {kind:'jester-laugh',unchanged:true,remaining:0},
+  {kind:'necromancer-curse',unchanged:true,remaining:0},
+  {kind:'s2-shield-break',unchanged:true,remaining:0},
+  {kind:'s2-hook-drag',unchanged:true,remaining:0},
+  {kind:'s2-ram-charge',unchanged:true,remaining:0}
+ ]);
+});
+
+test('秦皇天下一統 can be dodged by changing lane and still cleans up',async({page})=>{
+ await openApp(page);
+ const result=await page.evaluate(()=>{
+  playerProfile=normalizeProfile({});for(let level=1;level<=10;level++)completeCampaignLevel('plants',level);
+  currentSeason=1;currentFaction='plants';selectedLevel=11;start('plants');clearInterval(timer);state.paused=false;state.time=50000;
+  const boss=qinBossEntity(),plant={id:'qin-dodge',type:'wallnut',r:3,c:3,hp:500,maxHp:500,last:0,bornAt:0};state.plants=[plant];executeQinCommand(boss,3);
+  const warning=state.gameplay.telegraphs.active.find(item=>item.kind==='qin-unification'),before=plant.hp;plant.r=0;state.time=warning.executeAt;processEnemyTelegraphs();
+  return {kind:warning.kind,unchanged:plant.hp===before,remaining:state.gameplay.telegraphs.active.length};
+ });
+ expect(result).toEqual({kind:'qin-unification',unchanged:true,remaining:0});
+});
+
+test('warning visuals expose non-color icon, text countdown, pointer-safe targets, and responsive geometry',async({page},testInfo)=>{
+ await openApp(page);await startDefense(page);
+ await page.evaluate(()=>{
+  state.time=25000;
+  createEnemyTelegraph('fire-catapult',{sourceId:'visual-fire',targets:[{r:4,c:4}],cancelOnSourceDeath:false});
+  createEnemyTelegraph('qin-unification',{sourceId:'visual-qin',targets:[{r:1}],cancelOnSourceDeath:false});
+  render();
+ });
+ const fire=page.locator('.enemy-telegraph.fire-catapult');
+ const lane=page.locator('.enemy-telegraph.qin-unification');
+ await expect(fire.locator('.telegraph-icon')).toHaveText('☄');
+ await expect(lane.locator('.telegraph-icon')).toHaveText('令');
+ await expect(fire.locator('time.telegraph-countdown')).toHaveAttribute('datetime','PT1.2S');
+ await expect(fire.locator('time.telegraph-countdown')).toContainText('1.2 秒');
+ await expect(page.locator('#battleTelegraphBanner')).toHaveAttribute('aria-live','assertive');
+ await expect(page.locator('#battleTelegraphBanner')).toHaveAttribute('aria-label',/烈焰落石即將發動。反制：/);
+ await expect(fire).toHaveAttribute('role','note');
+ expect(await fire.evaluate(el=>getComputedStyle(el).pointerEvents)).toBe('none');
+
+ for(const [name,viewport] of [['desktop',{width:1440,height:900}],['portrait',{width:390,height:844}],['landscape',{width:844,height:390}]]){
+  await page.setViewportSize(viewport);await page.evaluate(()=>render());
+  const geometry=await page.evaluate(()=>{
+   const board=document.getElementById('board').getBoundingClientRect(),cards=document.querySelector('.cards-panel').getBoundingClientRect(),banner=document.getElementById('battleTelegraphBanner').getBoundingClientRect();
+   const warnings=[...document.querySelectorAll('.enemy-telegraph')].map(el=>{const r=el.getBoundingClientRect();return{left:r.left,right:r.right,top:r.top,bottom:r.bottom}});
+   return {viewport:{width:innerWidth,height:innerHeight},board:{left:board.left,right:board.right,top:board.top,bottom:board.bottom},cards:{top:cards.top,position:getComputedStyle(document.querySelector('.cards-panel')).position},banner:{left:banner.left,right:banner.right,top:banner.top,bottom:banner.bottom},warnings,overflow:document.documentElement.scrollWidth-document.documentElement.clientWidth};
+  });
+  expect(geometry.overflow,name).toBeLessThanOrEqual(1);
+  expect(geometry.banner.left,name).toBeGreaterThanOrEqual(0);
+  expect(geometry.banner.right,name).toBeLessThanOrEqual(geometry.viewport.width+1);
+  expect(geometry.banner.bottom,name).toBeLessThanOrEqual(geometry.board.top+1);
+  for(const warning of geometry.warnings){expect(warning.left,name).toBeGreaterThanOrEqual(geometry.board.left-1);expect(warning.right,name).toBeLessThanOrEqual(geometry.board.right+1);expect(warning.top,name).toBeGreaterThanOrEqual(geometry.board.top-1);expect(warning.bottom,name).toBeLessThanOrEqual(geometry.board.bottom+1)}
+  if(geometry.cards.position==='fixed')expect(geometry.board.bottom,name).toBeLessThanOrEqual(geometry.cards.top+1);
+  const target=page.locator('.cell[data-r="4"][data-c="4"]');
+  await expect.poll(()=>target.evaluate(el=>{const r=el.getBoundingClientRect(),top=document.elementFromPoint(r.x+r.width/2,r.y+r.height/2);return !top?.closest('.enemy-telegraph')}),`${name} warning must not intercept grid`).toBe(true);
+  await page.screenshot({path:testInfo.outputPath(`telegraph-accessible-${name}.png`),fullPage:true});
+ }
+ await page.setViewportSize({width:390,height:844});await page.locator('#fullscreenBtn').click();
+ await expect.poll(()=>page.evaluate(()=>!!document.fullscreenElement||document.getElementById('game').classList.contains('fullscreen-mode'))).toBe(true);
+ await page.evaluate(()=>render());
+ const fullscreenGeometry=await page.evaluate(()=>{const board=document.getElementById('board').getBoundingClientRect(),cards=document.querySelector('.cards-panel').getBoundingClientRect();return{boardBottom:board.bottom,cardsTop:cards.top,warnings:[...document.querySelectorAll('.enemy-telegraph')].map(el=>{const r=el.getBoundingClientRect();return{left:r.left,right:r.right,top:r.top,bottom:r.bottom}}),width:innerWidth}});
+ expect(fullscreenGeometry.boardBottom).toBeLessThanOrEqual(fullscreenGeometry.cardsTop+1);
+ for(const warning of fullscreenGeometry.warnings){expect(warning.left).toBeGreaterThanOrEqual(0);expect(warning.right).toBeLessThanOrEqual(fullscreenGeometry.width+1);expect(warning.bottom).toBeLessThanOrEqual(fullscreenGeometry.boardBottom+1)}
+ await expect(page.locator('#battleTelegraphBanner')).toBeVisible();
+ await page.screenshot({path:testInfo.outputPath('telegraph-accessible-portrait-fullscreen.png')});
+});
+
 test('warning DOM and remaining battle time survive background pause plus reload',async({page},testInfo)=>{
  await openApp(page);await startDefense(page);
  const before=await page.evaluate(()=>{
