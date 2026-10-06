@@ -1,0 +1,74 @@
+const {test,expect}=require('@playwright/test');
+
+async function openApp(page){
+ await page.goto('/?tactical-orders-test=1');
+ await page.waitForFunction(()=>typeof createGameplayState==='function'&&typeof start==='function');
+}
+
+test('nine tactical orders declare a clear benefit and cost without mutating unit data',async({page})=>{
+ await openApp(page);
+ const result=await page.evaluate(()=>{
+  const before={plants:JSON.stringify(PLANT_TYPES),zombies:JSON.stringify(ZOMBIE_TYPES)};
+  const orders=Array.isArray(window.TACTICAL_ORDERS)?window.TACTICAL_ORDERS.map(order=>structuredClone(order)):[];
+  const modifierTypes=[...new Set(orders.flatMap(order=>Object.keys(order.modifiers||{})))];
+  return {
+   api:[typeof window.TACTICAL_ORDERS,typeof window.tacticalOrderById,typeof window.effectiveBattleModifier],
+   names:orders.map(order=>order.name),
+   ids:orders.map(order=>order.id),
+   contracts:orders.map(order=>({
+    duration:order.duration,
+    benefit:order.benefit,
+    cost:order.cost,
+    modifierCount:Object.keys(order.modifiers||{}).length,
+    benefitKeys:order.tradeoffs?.benefit||[],
+    costKeys:order.tradeoffs?.cost||[]
+   })),
+   modifierTypes,
+   unchanged:{plants:before.plants===JSON.stringify(PLANT_TYPES),zombies:before.zombies===JSON.stringify(ZOMBIE_TYPES)}
+  };
+ });
+ expect(result.api).toEqual(['object','function','function']);
+ expect(result.names).toEqual(['屯田急令','火箭齊射','固守中軍','背水一戰','援軍令','空城計','急行換防','醫護營','斷糧奇襲']);
+ expect(new Set(result.ids).size).toBe(9);
+ expect(result.contracts).toHaveLength(9);
+ for(const contract of result.contracts){
+  expect(contract.duration).toBe('battle');
+  expect(contract.benefit.length).toBeGreaterThan(0);
+  expect(contract.cost.length).toBeGreaterThan(0);
+  expect(contract.modifierCount).toBeGreaterThanOrEqual(2);
+  expect(contract.benefitKeys.length).toBeGreaterThan(0);
+  expect(contract.costKeys.length).toBeGreaterThan(0);
+ }
+ expect(result.modifierTypes).toEqual(expect.arrayContaining(['resourceIncome','attackSpeed','shield','enemySpawnInterval','deploymentCost','healing','relocationCost','enemyResourceIncome']));
+ expect(result.unchanged).toEqual({plants:true,zombies:true});
+});
+
+test('battle-local order state normalizes safely and modifiers combine additively with a clamp',async({page})=>{
+ await openApp(page);
+ const result=await page.evaluate(()=>{
+  playerProfile=normalizeProfile({});currentSeason=1;currentFaction='plants';selectedLevel=1;
+  start('plants');clearInterval(timer);
+  const fresh=structuredClone(state.gameplay.orders||null);
+  if(state.gameplay.orders)state.gameplay.orders.selected=['tuntian','last-stand','medical-camp'];
+  const combined=typeof window.effectiveBattleModifier==='function'?{
+   resourceIncome:effectiveBattleModifier('resourceIncome'),
+   damage:effectiveBattleModifier('damage'),
+   attackSpeed:effectiveBattleModifier('attackSpeed'),
+   healing:effectiveBattleModifier('healing'),
+   unknown:effectiveBattleModifier('not-a-modifier')
+  }:null;
+  const source={version:GAMEPLAY_STATE_VERSION,telemetry:state.gameplay.telemetry,report:state.gameplay.report,telegraphs:state.gameplay.telegraphs,orders:{selected:['tuntian','tuntian','unknown','medical-camp'],offer:['tuntian',null,'unknown'],history:['last-stand',3],nextOfferId:-5}};
+  const normalized=normalizeGameplayState(source).orders||null;
+  const json=state.gameplay.orders?JSON.parse(JSON.stringify(state.gameplay.orders)):null;
+  const before=typeof window.effectiveBattleModifier==='function'?effectiveBattleModifier('attackSpeed'):null;
+  if(state.gameplay.orders)state.gameplay.orders.selected=Array(10).fill('last-stand');
+  const clamped=typeof window.effectiveBattleModifier==='function'?effectiveBattleModifier('attackSpeed'):null;
+  return {fresh,combined,normalized,json,before,clamped};
+ });
+ expect(result.fresh).toEqual({selected:[],offer:null,history:[],nextOfferId:1});
+ expect(result.combined).toEqual({resourceIncome:1.25,damage:.9,attackSpeed:1.12,healing:1.3,unknown:1});
+ expect(result.normalized).toEqual({selected:['tuntian','medical-camp'],offer:null,history:['last-stand'],nextOfferId:1});
+ expect(result.json).toEqual({selected:['tuntian','last-stand','medical-camp'],offer:null,history:[],nextOfferId:1});
+ expect(result.before).toBe(1.12);
+ expect(result.clamped).toBe(1.5);
+});

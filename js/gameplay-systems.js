@@ -28,7 +28,8 @@ function createBattleReportState(initialized=true){
  return {initialized,baseline:{totals:telemetry.totals,bySource:telemetry.bySource,byTarget:telemetry.byTarget,eventCount:0},current:null,attackMilestones:[]};
 }
 function createBattleTelegraphState(){return {nextId:1,active:[]}}
-function createGameplayState(){return {version:GAMEPLAY_STATE_VERSION,telemetry:createBattleTelemetry(),report:createBattleReportState(),telegraphs:createBattleTelegraphState()}}
+function createTacticalOrderState(){return {selected:[],offer:null,history:[],nextOfferId:1}}
+function createGameplayState(){return {version:GAMEPLAY_STATE_VERSION,telemetry:createBattleTelemetry(),report:createBattleReportState(),telegraphs:createBattleTelegraphState(),orders:createTacticalOrderState()}}
 function finiteNonnegative(value){value=Number(value);return Number.isFinite(value)&&value>=0?value:0}
 function normalizeSource(raw){
  if(!raw||typeof raw!=='object'||Array.isArray(raw))return null;
@@ -91,11 +92,30 @@ function normalizeBattleTelegraphs(raw){
  for(const item of result.active)result.nextId=Math.max(result.nextId,item.id+1);
  return result;
 }
+function normalizeTacticalOrders(raw){
+ const result=createTacticalOrderState();
+ if(!raw||typeof raw!=='object'||Array.isArray(raw))return result;
+ const known=id=>typeof id==='string'&&!!tacticalOrderById(id),uniqueKnown=value=>Array.isArray(value)?[...new Set(value.filter(known))]:[];
+ result.selected=uniqueKnown(raw.selected);
+ result.history=uniqueKnown(raw.history);
+ const offer=uniqueKnown(raw.offer);
+ if(offer.length===3)result.offer=offer;
+ result.nextOfferId=Math.max(1,Math.floor(finiteNonnegative(raw.nextOfferId)||1));
+ return result;
+}
 function normalizeGameplayState(raw){
  if(!raw||typeof raw!=='object'||Array.isArray(raw)||raw.version!==GAMEPLAY_STATE_VERSION)return createGameplayState();
- const gameplay={version:GAMEPLAY_STATE_VERSION,telemetry:normalizeBattleTelemetry(raw.telemetry),report:normalizeBattleReport(raw.report),telegraphs:normalizeBattleTelegraphs(raw.telegraphs)};
+ const gameplay={version:GAMEPLAY_STATE_VERSION,telemetry:normalizeBattleTelemetry(raw.telemetry),report:normalizeBattleReport(raw.report),telegraphs:normalizeBattleTelegraphs(raw.telegraphs),orders:normalizeTacticalOrders(raw.orders)};
  if(!Object.prototype.hasOwnProperty.call(raw,'report'))gameplay.report.initialized=false;
  return gameplay;
+}
+function effectiveBattleModifier(key){
+ if(typeof key!=='string'||!key)return 1;
+ const selected=state?.gameplay?.orders?.selected;
+ if(!Array.isArray(selected))return 1;
+ let value=1;
+ for(const id of selected){const modifier=Number(tacticalOrderById(id)?.modifiers?.[key]);if(Number.isFinite(modifier))value+=modifier-1}
+ return Math.round(Math.max(.5,Math.min(1.5,value))*10000)/10000;
 }
 function jsonSafeEvent(raw){
  const event={};
