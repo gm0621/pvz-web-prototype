@@ -13,9 +13,9 @@ function createBattleTelemetry(){
   byTarget:{}
  };
 }
-function createBattleReportState(){
+function createBattleReportState(initialized=true){
  const telemetry=createBattleTelemetry();
- return {baseline:{totals:telemetry.totals,bySource:telemetry.bySource,byTarget:telemetry.byTarget,eventCount:0},current:null,attackMilestones:[]};
+ return {initialized,baseline:{totals:telemetry.totals,bySource:telemetry.bySource,byTarget:telemetry.byTarget,eventCount:0},current:null,attackMilestones:[]};
 }
 function createGameplayState(){return {version:GAMEPLAY_STATE_VERSION,telemetry:createBattleTelemetry(),report:createBattleReportState()}}
 function finiteNonnegative(value){value=Number(value);return Number.isFinite(value)&&value>=0?value:0}
@@ -53,12 +53,14 @@ function normalizeBattleTelemetry(raw){
   telemetry.byTarget[id]={side:BATTLE_SIDES.includes(value.side)?value.side:null,type:typeof value.type==='string'?value.type:null,damageTaken:finiteNonnegative(value.damageTaken)};
  }
  if(Array.isArray(raw.events))telemetry.events=raw.events.filter(event=>event&&typeof event==='object'&&!Array.isArray(event)).map(event=>jsonSafeEvent(event));
- telemetry.nextEventId=Math.max(finiteNonnegative(raw.nextEventId)||1,...telemetry.events.map(event=>finiteNonnegative(event.id)+1));
+ telemetry.nextEventId=finiteNonnegative(raw.nextEventId)||1;
+ for(const event of telemetry.events)telemetry.nextEventId=Math.max(telemetry.nextEventId,finiteNonnegative(event.id)+1);
  return telemetry;
 }
 function normalizeBattleReport(raw){
  const report=createBattleReportState();
  if(!raw||typeof raw!=='object'||Array.isArray(raw))return report;
+ report.initialized=raw.initialized!==false;
  if(raw.baseline&&typeof raw.baseline==='object'&&!Array.isArray(raw.baseline))report.baseline=JSON.parse(JSON.stringify(raw.baseline));
  if(raw.current&&typeof raw.current==='object'&&!Array.isArray(raw.current))report.current=JSON.parse(JSON.stringify(raw.current));
  if(Array.isArray(raw.attackMilestones))report.attackMilestones=raw.attackMilestones.map(Number).filter(value=>[30,60,90].includes(value));
@@ -66,7 +68,9 @@ function normalizeBattleReport(raw){
 }
 function normalizeGameplayState(raw){
  if(!raw||typeof raw!=='object'||Array.isArray(raw)||raw.version!==GAMEPLAY_STATE_VERSION)return createGameplayState();
- return {version:GAMEPLAY_STATE_VERSION,telemetry:normalizeBattleTelemetry(raw.telemetry),report:normalizeBattleReport(raw.report)};
+ const gameplay={version:GAMEPLAY_STATE_VERSION,telemetry:normalizeBattleTelemetry(raw.telemetry),report:normalizeBattleReport(raw.report)};
+ if(!Object.prototype.hasOwnProperty.call(raw,'report'))gameplay.report.initialized=false;
+ return gameplay;
 }
 function jsonSafeEvent(raw){
  const event={};
@@ -154,8 +158,17 @@ function changeBattleResource(side,amount,reason='unknown'){
 }
 function initializeBattleReports(){
  if(!state)return false;
- state.gameplay=normalizeGameplayState(state.gameplay);
- if(!state.gameplay.report.baseline)state.gameplay.report.baseline=battleStatsSnapshot();
+ if(!state.gameplay||state.gameplay.version!==GAMEPLAY_STATE_VERSION||!state.gameplay.telemetry||!state.gameplay.report)state.gameplay=normalizeGameplayState(state.gameplay);
+ const report=state.gameplay.report;
+ if(!report.initialized){
+  report.baseline=battleStatsSnapshot();
+  if(state.faction==='zombies'){
+   const limit=Number(state.levelConfig?.attackTimeLimit)||0;
+   if(limit>0)report.attackMilestones=[30,60,90].filter(milestone=>finiteNonnegative(state.time)>=limit*milestone/100);
+  }
+  report.initialized=true;
+ }
+ if(!report.baseline)report.baseline=battleStatsSnapshot();
  return true;
 }
 function beginBattleReportSegment(kind,segmentId,label){
@@ -221,21 +234,25 @@ function dismissBattleReport(){
  current.dismissed=true;renderBattleReport();persistBattleState();return true;
 }
 function reportNumber(value){return Math.round(finiteNonnegative(value))}
+function reportStatRow(label,value){const row=document.createElement('span'),heading=document.createElement('b');heading.textContent=label;row.append(heading,document.createTextNode(String(value)));return row}
 function renderBattleReport(){
  const el=document.getElementById('waveReport');if(!el)return;
  const current=state?.gameplay?.report?.current;
  const visible=!!current&&!current.dismissed&&finiteNonnegative(state.time)<finiteNonnegative(current.expiresAt);
- el.hidden=!visible;if(!visible)return;
+ if(!visible){if(!el.hidden)el.hidden=true;delete el.dataset.reportSignature;return}
  const title=current.kind==='attack-milestone'?`${current.label} 戰報`:`${current.label}戰報`;
- const rows=[];
  const outputName=current.outputLeader?unitReportName(state.faction,current.outputLeader.type):null;
  const takenName=current.takenLeader?unitReportName(state.faction,current.takenLeader.type):null;
  const controlName=current.controlLeader?unitReportName(state.faction,current.controlLeader.type):null;
- if(outputName)rows.push(`<span><b>最高輸出</b>${outputName} ${reportNumber(current.outputLeader.amount)}</span>`);
- if(takenName)rows.push(`<span><b>最高承傷</b>${takenName} ${reportNumber(current.takenLeader.amount)}</span>`);
- if(controlName)rows.push(`<span><b>控制貢獻</b>${controlName} ${(finiteNonnegative(current.controlLeader.amount)/1000).toFixed(1)} 秒</span>`);
- rows.push(`<span><b>擊殺</b>${reportNumber(current.kills)}</span>`);
- const net=Number(current.resourceNet)||0;rows.push(`<span><b>資源淨變化</b>${net>=0?'+':''}${Math.round(net)}</span>`);
- el.querySelector('.wave-report-title').textContent=title;
- el.querySelector('.wave-report-stats').innerHTML=rows.join('');
+ const net=Number(current.resourceNet)||0;
+ const rows=[];
+ if(outputName)rows.push(['最高輸出',`${outputName} ${reportNumber(current.outputLeader.amount)}`]);
+ if(takenName)rows.push(['最高承傷',`${takenName} ${reportNumber(current.takenLeader.amount)}`]);
+ if(controlName)rows.push(['控制貢獻',`${controlName} ${(finiteNonnegative(current.controlLeader.amount)/1000).toFixed(1)} 秒`]);
+ rows.push(['擊殺',reportNumber(current.kills)],['資源淨變化',`${net>=0?'+':''}${Math.round(net)}`]);
+ const signature=JSON.stringify([title,rows]);
+ if(!el.hidden&&el.dataset.reportSignature===signature)return;
+ const titleEl=el.querySelector('.wave-report-title'),statsEl=el.querySelector('.wave-report-stats');
+ titleEl.textContent=title;statsEl.replaceChildren(...rows.map(([label,value])=>reportStatRow(label,value)));
+ el.dataset.reportSignature=signature;if(el.hidden)el.hidden=false;
 }

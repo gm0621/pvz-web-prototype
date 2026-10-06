@@ -62,22 +62,76 @@ test('attack milestones report at 30 60 90 percent once and persist through relo
  await open(page);await unlockAttack(page,1);
  const before=await page.evaluate(()=>{
   currentSeason=1;selectedLevel=1;start('zombies');clearInterval(timer);
-  const limit=state.levelConfig.attackTimeLimit;
-  recordBattleEvent('damage',{sourceSide:'zombies',sourceId:'attacker',sourceType:'normal',targetSide:'plants',targetId:'guard',targetType:'wallnut',amount:12});
-  state.time=Math.ceil(limit*.3);updateAttackMilestoneReports();updateHUD();
-  updateAttackMilestoneReports();
-  pauseAndSaveBattle('test');
-  return {current:state.gameplay.report.current,milestones:state.gameplay.report.attackMilestones,html:document.getElementById('waveReport').innerText};
+  const limit=state.levelConfig.attackTimeLimit,reports=[];
+  const damage=amount=>recordBattleEvent('damage',{sourceSide:'zombies',sourceId:'attacker',sourceType:'normal',targetSide:'plants',targetId:'guard',targetType:'wallnut',amount});
+  damage(12);state.time=Math.ceil(limit*.3);updateAttackMilestoneReports();reports.push(JSON.parse(JSON.stringify(state.gameplay.report.current)));
+  damage(7);state.time=Math.ceil(limit*.6);updateAttackMilestoneReports();reports.push(JSON.parse(JSON.stringify(state.gameplay.report.current)));
+  damage(3);state.time=Math.ceil(limit*.9);updateAttackMilestoneReports();reports.push(JSON.parse(JSON.stringify(state.gameplay.report.current)));
+  updateAttackMilestoneReports();updateHUD();pauseAndSaveBattle('test');
+  return {reports,current:state.gameplay.report.current,milestones:state.gameplay.report.attackMilestones,html:document.getElementById('waveReport').innerText};
  });
- expect(before.current).toEqual(expect.objectContaining({kind:'attack-milestone',segmentId:30,damageDealt:12}));
- expect(before.milestones).toEqual([30]);
- expect(before.html).toContain('攻城 30% 戰報');
+ expect(before.reports.map(report=>[report.segmentId,report.damageDealt])).toEqual([[30,12],[60,7],[90,3]]);
+ expect(before.milestones).toEqual([30,60,90]);
+ expect(before.html).toContain('攻城 90% 戰報');
  await page.reload();
  const after=await page.evaluate(()=>({paused:state.paused,current:state.gameplay.report.current,milestones:state.gameplay.report.attackMilestones,text:document.getElementById('waveReport').innerText}));
  expect(after.paused).toBe(true);
  expect(after.current).toEqual(before.current);
- expect(after.milestones).toEqual([30]);
- expect(after.text).toContain('攻城 30% 戰報');
+ expect(after.milestones).toEqual([30,60,90]);
+ expect(after.text).toContain('攻城 90% 戰報');
+});
+
+test('attack report initialization is stable and migrated elapsed milestones do not emit fake reports',async({page})=>{
+ await open(page);await unlockAttack(page,1);
+ const result=await page.evaluate(()=>{
+  currentSeason=1;selectedLevel=1;start('zombies');clearInterval(timer);
+  const originalGameplay=state.gameplay,originalTelemetry=state.gameplay.telemetry,originalReport=state.gameplay.report;
+  for(let i=0;i<20;i++)updateAttackMilestoneReports();
+  const stable=state.gameplay===originalGameplay&&state.gameplay.telemetry===originalTelemetry&&state.gameplay.report===originalReport;
+  const limit=state.levelConfig.attackTimeLimit;
+  state.time=Math.ceil(limit*.7);state.gameplay={version:GAMEPLAY_STATE_VERSION,telemetry:state.gameplay.telemetry};
+  state.gameplay=normalizeGameplayState(state.gameplay);updateAttackMilestoneReports();
+  return {stable,milestones:state.gameplay.report.attackMilestones,current:state.gameplay.report.current,baselineEvents:state.gameplay.report.baseline.eventCount};
+ });
+ expect(result.stable).toBe(true);
+ expect(result.milestones).toEqual([30,60]);
+ expect(result.current).toBeNull();
+ expect(result.baselineEvents).toBeGreaterThanOrEqual(0);
+});
+
+test('report live region renders once with text nodes and ignores serialized markup',async({page})=>{
+ await open(page);
+ const result=await page.evaluate(async()=>{
+  selectedLevel=1;start('plants');clearInterval(timer);state.time=1000;
+  beginBattleReportSegment('defense-wave',1,'<img src=x onerror=alert(1)>');
+  state.gameplay.report.current={kind:'defense-wave',segmentId:1,label:'<img src=x onerror=alert(1)>',kills:2,resourceNet:5,outputLeader:{type:'<img src=x>',amount:9},takenLeader:null,controlLeader:null,shownAt:1000,expiresAt:7000,dismissed:false};
+  renderBattleReport();
+  const el=document.getElementById('waveReport'),observer=new MutationObserver(list=>window.__reportMutations=(window.__reportMutations||0)+list.length);
+  observer.observe(el,{subtree:true,childList:true,characterData:true,attributes:true});
+  for(let i=0;i<10;i++)updateHUD();
+  await Promise.resolve();observer.disconnect();
+  return {mutations:window.__reportMutations||0,imgCount:el.querySelectorAll('img').length,text:el.innerText};
+ });
+ expect(result.mutations).toBe(0);
+ expect(result.imgCount).toBe(0);
+ expect(result.text).toContain('<img src=x onerror=alert(1)>戰報');
+});
+
+test('season two defense and attack both produce battle reports',async({page})=>{
+ await open(page);await unlockAttack(page,2);
+ const result=await page.evaluate(()=>{
+  currentSeason=2;selectedLevel=1;start('plants');clearInterval(timer);state.openingQueue=[];state.time=1000;
+  beginBattleReportSegment('defense-wave',1,'第 1 波');
+  recordBattleEvent('damage',{sourceSide:'plants',sourceId:'wei-unit',sourceType:'s2Crossbow',targetSide:'zombies',targetId:'s2-enemy',targetType:'s2Rat',amount:14});
+  const defense=completeBattleReportSegment('defense-wave',1,'第 1 波');
+  start('zombies');clearInterval(timer);
+  recordBattleEvent('damage',{sourceSide:'zombies',sourceId:'s2-attacker',sourceType:'s2Rat',targetSide:'plants',targetId:'wei-guard',targetType:'s2Shield',amount:11});
+  state.time=Math.ceil(state.levelConfig.attackTimeLimit*.3);updateAttackMilestoneReports();
+  return {season:state.season,defense,attack:state.gameplay.report.current};
+ });
+ expect(result.season).toBe(2);
+ expect(result.defense).toEqual(expect.objectContaining({kind:'defense-wave',damageDealt:14}));
+ expect(result.attack).toEqual(expect.objectContaining({kind:'attack-milestone',segmentId:30,damageDealt:11}));
 });
 
 test('report close and six-second expiry use battle time so pause freezes the countdown',async({page})=>{
