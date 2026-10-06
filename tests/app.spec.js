@@ -581,7 +581,7 @@ test('netherfire necromancer is a final all-clear reward and level-ten boss', as
   expect(fs.existsSync(asset)).toBe(true);
 });
 
-test('netherfire necromancer fixed talent damages and confuses a distant defender', async ({ page }) => {
+test('netherfire necromancer boss curses three lanes while the catapult stays a slower siege unit', async ({ page }) => {
   await openApp(page);
   const result=await page.evaluate(() => {
     playerProfile=normalizeProfile({});
@@ -592,25 +592,34 @@ test('netherfire necromancer fixed talent damages and confuses a distant defende
     state.time=6000;
     state.plants=[];
     state.zombies=[];
+    addPlant('wallnut',3,1);
     addPlant('wallnut',3,2);
-    const caster=addZombie('necromancer',8,2),target=state.plants[0];
+    addPlant('wallnut',3,3);
+    const caster=addZombie('necromancer',8,2);
     actZombies();
     buildCharacterGrid('zombies');
     const summary=document.querySelector('.char-profile.type-necromancer .ability-summary')?.textContent||'';
+    showGuideV2('zombies','necromancer','base','talent');
     return {
-      hp:target.hp,
-      stunUntil:target.stunUntil,
+      hp:state.plants.map(p=>p.hp),
+      stunUntil:state.plants.map(p=>p.stunUntil||0),
       curseLast:caster.curseLast,
-      fx:!!document.querySelector('.necromancer-curse-fx'),
-      summary
+      fx:document.querySelectorAll('.necromancer-curse-fx').length,
+      guideTargets:[...document.querySelectorAll('#charModalRange text')].filter(node=>node.textContent==='範圍內目標').length,
+      summary,
+      necromancer:{hp:ZOMBIE_TYPES.necromancer.hp,rate:ZOMBIE_TYPES.necromancer.curseRate,damage:ZOMBIE_TYPES.necromancer.curseDamage,adjacentDamage:ZOMBIE_TYPES.necromancer.curseAdjacentDamage,stun:ZOMBIE_TYPES.necromancer.curseStun},
+      catapult:{hp:ZOMBIE_TYPES.fireCatapult.hp,rate:ZOMBIE_TYPES.fireCatapult.catapultRate,damage:ZOMBIE_TYPES.fireCatapult.catapultDamage,splash:ZOMBIE_TYPES.fireCatapult.catapultSplash}
     };
   });
-  expect(result.hp).toBe(420-72);
-  expect(result.stunUntil).toBe(8200);
+  expect(result.hp).toEqual([420-56,420-96,420-56]);
+  expect(result.stunUntil).toEqual([9000,9000,9000]);
   expect(result.curseLast).toBe(6000);
-  expect(result.fx).toBe(true);
+  expect(result.fx).toBe(3);
+  expect(result.guideTargets).toBe(2);
+  expect(result.necromancer).toEqual({hp:780,rate:3600,damage:96,adjacentDamage:56,stun:3000});
+  expect(result.catapult).toEqual({hp:480,rate:5200,damage:68,splash:.38});
   expect(result.summary).toContain('天賦：幽冥禁咒');
-  expect(result.summary).toContain('固定生效');
+  expect(result.summary).toContain('上、中、下三路');
 });
 
 test('Qin emperor attacks by summoning one terracotta soldier or three black-armour guards', async ({ page }) => {
