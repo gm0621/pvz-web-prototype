@@ -29,7 +29,7 @@
   - [x] Task 2.2：預警視覺與無障礙語意
   - [x] Gate：預警→反制／命中→cleanup 全鏈測試
 - [ ] Phase 3：大波次後三選一軍令
-  - [ ] Task 3.1：9 張軍令與 modifier API
+  - [x] Task 3.1：9 張軍令與 modifier API
   - [ ] Task 3.2：守城軍令三選一 UI
   - [ ] Task 3.3：攻城里程碑軍令
   - [ ] Gate：兩季攻守、save/reload、mobile/fullscreen/cloud suites
@@ -64,6 +64,7 @@
 - Task 2.1 browser evidence：desktop 1440×900、portrait 390×844、landscape 844×390 實際 DOM／截圖均顯示預警 banner 與九宮格、無水平溢位、警示不攔截 pointer。390×844 的下方警示區仍會被既有卡片抽屜遮住，列入下一個 Task 2.2 的可讀性修正，不提前勾選。
 - Task 2.2 與 Phase 2 Gate 已完成：危險技加入各自圖示、斜紋、文字／語意化 `<time>` 倒數與固定反制提示；預警層保持 `pointer-events:none`，手機有預警時依卡片抽屜位置縮放棋盤，390×844 與 fullscreen 的最下方九宮格完整可見。RED 先確認缺少 `.telegraph-icon`／`time.telegraph-countdown`；focused `tests/enemy-telegraphs.spec.js` 18/18、related（共用系統、第二季、秦皇、操作提示、tablet fullscreen）93 passed／1 skipped，新增全技能反制／未反制命中／cleanup gate；canonical 為 437 passed／5 skipped／0 failed／0 flaky，`git diff --check` 與相關 JS `node --check` 全數通過。
 - Task 2.2 browser evidence：desktop 1440×900、portrait 390×844、landscape 844×390、portrait fullscreen 實際 DOM／截圖均無水平溢位、卡片遮擋或 pointer 攔截；圖示、文字倒數、lane／九宮格圖樣與反制 banner 清楚可辨。
+- Task 3.1 已完成：新增 9 張全局內軍令資料，每張均有明確收益與代價；`state.gameplay.orders` 可序列化並會清理未知／重複 id，`effectiveBattleModifier()` 以加法疊加並限制在 0.5–1.5，不修改角色基礎資料。RED 先確認 API 與 battle-local order state 缺失；focused 4/4、related（gameplay systems、敵技預警、第二季存檔）36/36，`git diff --check` 與相關 JS `node --check` 通過。Task 3.1 非 Phase Gate，未執行 canonical 或 UI screenshot；下一項為 Task 3.2。
 
 ## 已完成提交
 
@@ -73,3 +74,4 @@
 - `6c5fd29` — feat: add battle telemetry foundation
 - `5fb36c8` — feat: telegraph dangerous enemy attacks
 - `a7ecee1` — feat: improve enemy telegraph readability
+- `ed9218b` — feat: add tactical order modifier foundation
