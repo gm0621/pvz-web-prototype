@@ -25,7 +25,7 @@
   - [x] Task 1.2：命中回饋與精簡特效設定
   - [x] Gate：desktop／mobile／短橫向 browser screenshots + full suite
 - [ ] Phase 2：敵人預警與反制
-  - [ ] Task 2.1：資料驅動、可序列化預警模型
+  - [x] Task 2.1：資料驅動、可序列化預警模型
   - [ ] Task 2.2：預警視覺與無障礙語意
   - [ ] Gate：預警→反制／命中→cleanup 全鏈測試
 - [ ] Phase 3：大波次後三選一軍令
@@ -60,6 +60,8 @@
 - 秦皇終章 hotfix 已完成：通關會寫入並在主選單／終章卡永久顯示；秦皇依階段與軍令循環跨列，未破陣時減傷 45%，三枚虎符開啟 8 秒全傷害窗口；舊 snapshot 自動補齊護體與 lane cycle。focused 15 passed／1 skipped，canonical 411 passed／5 skipped，三尺寸實畫無水平裁切。
 - Phase 1 已完成：暴擊命中與護盾破裂加入不改變傷害時序的視覺／震動回饋；三路箭只做視覺微錯峰，實際釋放與命中時序一致；「精簡特效」會持久化，且與 `prefers-reduced-motion` 一同停用停格、震動與錯峰。
 - Task 1.2 focused／related tests 與 tablet fullscreen 回歸均通過；canonical suite 為 419 passed／5 skipped，desktop 1440×900、portrait 390×844、landscape 844×390 實畫與 DOM 驗收無水平溢位或重要遮擋。
+- Task 2.1 已完成：第一、二季危險敵技改採 `state.time` 兩階段預警／結算，支援換列與擊殺施術者反制、exactly-once 清除及暫停／背景／讀檔一致性；並保留第二季拖行既有落點、控制時長與攻擊節奏。RED 先確認危險技仍立即命中／缺少預警；focused `tests/enemy-telegraphs.spec.js` 12/12、第二季與共用系統 related 40/40，canonical 為 431 passed／5 skipped／0 failed／0 flaky，`git diff --check` 與相關 JS `node --check` 全數通過。
+- Task 2.1 browser evidence：desktop 1440×900、portrait 390×844、landscape 844×390 實際 DOM／截圖均顯示預警 banner 與九宮格、無水平溢位、警示不攔截 pointer。390×844 的下方警示區仍會被既有卡片抽屜遮住，列入下一個 Task 2.2 的可讀性修正，不提前勾選。
 
 ## 已完成提交
 
@@ -67,3 +69,4 @@
 - `4656a9e` — docs: clarify fair challenge and medal authority
 - `7c73fa3` — feat: add gameplay systems state foundation
 - `6c5fd29` — feat: add battle telemetry foundation
+- `5fb36c8` — feat: telegraph dangerous enemy attacks
