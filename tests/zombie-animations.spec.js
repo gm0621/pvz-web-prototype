@@ -101,8 +101,10 @@ test('banner titan exposes four transparent attack frames',async({page})=>{
  }
  const result=await page.evaluate(()=>{
   playerProfile.campaignProgress.plants={completedLevels:{1:1},highestLevel:1};markStoryRead('plants',2,'opening',1);currentSeason=1;selectedLevel=2;start('plants');clearInterval(timer);state.paused=false;state.countdownActive=false;state.plants=[];state.zombies=[];state.projectiles=[];state.pendingZombieStrikes=[];state.time=10000;
-  addPlant('wallnut',3,2);const defender=state.plants.at(-1);addZombie('corpseTitan',3.25,2);const titan=state.zombies.at(-1);titan.last=0;titan.smashLast=0;titan.bornAt=0;const before=defender.hp;render();const idle=document.querySelector('#board .type-corpseTitan .char-img')?.getAttribute('src');actZombies();render();const windup=document.querySelector('#board .type-corpseTitan .char-img')?.getAttribute('src');const after=defender.hp;state.time+=240;render();const hit=document.querySelector('#board .type-corpseTitan .char-img')?.getAttribute('src');state.time+=270;render();const recovered=document.querySelector('#board .type-corpseTitan .char-img')?.getAttribute('src');return{before,after,idle,windup,hit,recovered};
+  addPlant('wallnut',3,2);const defender=state.plants.at(-1);addZombie('corpseTitan',3.25,2);const titan=state.zombies.at(-1);titan.last=0;titan.smashLast=0;titan.bornAt=0;const before=defender.hp;render();const idle=document.querySelector('#board .type-corpseTitan .char-img')?.getAttribute('src');actZombies();render();const windup=document.querySelector('#board .type-corpseTitan .char-img')?.getAttribute('src');const warned=defender.hp;const warning=state.gameplay.telegraphs.active[0];state.time+=240;render();const hit=document.querySelector('#board .type-corpseTitan .char-img')?.getAttribute('src');state.time+=270;render();const recovered=document.querySelector('#board .type-corpseTitan .char-img')?.getAttribute('src');state.time=warning.executeAt;processEnemyTelegraphs();return{before,warned,after: defender.hp,duration:warning.duration,idle,windup,hit,recovered};
  });
+ expect(result.warned).toBe(result.before);
+ expect(result.duration).toBe(800);
  expect(result.after).toBeLessThan(result.before);
  expect(result.idle).toMatch(/zombie-animations\/corpseTitan\/idle-battle\.webp$/);
  expect(result.windup).toMatch(/zombie-animations\/corpseTitan\/attack-00\.webp$/);

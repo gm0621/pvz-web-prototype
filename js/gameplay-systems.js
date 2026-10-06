@@ -1,4 +1,14 @@
 const GAMEPLAY_STATE_VERSION=1;
+const ENEMY_TELEGRAPH_RULES=Object.freeze({
+ 'fire-catapult':{duration:1200,label:'烈焰落石',counter:'換列離開九宮格，或在落石前擊倒烈焰屍車'},
+ 'necromancer-curse':{duration:1000,label:'幽冥禁咒',counter:'換列離開標記路線，或優先擊倒冥火屍巫'},
+ 'jester-laugh':{duration:800,label:'狂笑混亂',counter:'換列離開該路，或在狂笑前擊倒鈴鐺丑屍'},
+ 'titan-smash':{duration:800,label:'破城重槌',counter:'換列離開九宮格，或在落槌前擊倒屍旗大胖'},
+ 'qin-unification':{duration:1400,label:'天下一統',counter:'換列離開被標記路線'},
+ 's2-shield-break':{duration:700,label:'斷盾重劈',counter:'換列，或在重劈前擊倒劈盾屍'},
+ 's2-hook-drag':{duration:800,label:'纏鏈拖行',counter:'換列、卡住前方位置、派許褚免疫，或擊倒纏鏈屍'},
+ 's2-ram-charge':{duration:900,label:'蓄勢衝撞',counter:'換列，或在衝撞前擊倒衝車屍'}
+});
 const BATTLE_SIDES=['plants','zombies'];
 
 function emptySideNumber(){return {plants:0,zombies:0}}
@@ -17,7 +27,8 @@ function createBattleReportState(initialized=true){
  const telemetry=createBattleTelemetry();
  return {initialized,baseline:{totals:telemetry.totals,bySource:telemetry.bySource,byTarget:telemetry.byTarget,eventCount:0},current:null,attackMilestones:[]};
 }
-function createGameplayState(){return {version:GAMEPLAY_STATE_VERSION,telemetry:createBattleTelemetry(),report:createBattleReportState()}}
+function createBattleTelegraphState(){return {nextId:1,active:[]}}
+function createGameplayState(){return {version:GAMEPLAY_STATE_VERSION,telemetry:createBattleTelemetry(),report:createBattleReportState(),telegraphs:createBattleTelegraphState()}}
 function finiteNonnegative(value){value=Number(value);return Number.isFinite(value)&&value>=0?value:0}
 function normalizeSource(raw){
  if(!raw||typeof raw!=='object'||Array.isArray(raw))return null;
@@ -66,9 +77,23 @@ function normalizeBattleReport(raw){
  if(Array.isArray(raw.attackMilestones))report.attackMilestones=raw.attackMilestones.map(Number).filter(value=>[30,60,90].includes(value));
  return report;
 }
+function normalizeBattleTelegraphs(raw){
+ const result=createBattleTelegraphState();
+ if(!raw||typeof raw!=='object'||Array.isArray(raw))return result;
+ if(Array.isArray(raw.active))result.active=raw.active.filter(item=>item&&typeof item==='object'&&!Array.isArray(item)).map(item=>{
+  const clean=JSON.parse(JSON.stringify(item));
+  clean.id=Math.max(1,Math.floor(finiteNonnegative(clean.id)||1));
+  clean.createdAt=finiteNonnegative(clean.createdAt);clean.executeAt=Math.max(clean.createdAt,finiteNonnegative(clean.executeAt));clean.duration=Math.max(0,clean.executeAt-clean.createdAt);
+  clean.targets=Array.isArray(clean.targets)?clean.targets.filter(target=>target&&typeof target==='object'&&!Array.isArray(target)).map(target=>jsonSafeEvent(target)):[];
+  clean.data=jsonSafeEvent(clean.data);return clean;
+ });
+ result.nextId=Math.max(1,Math.floor(finiteNonnegative(raw.nextId)||1));
+ for(const item of result.active)result.nextId=Math.max(result.nextId,item.id+1);
+ return result;
+}
 function normalizeGameplayState(raw){
  if(!raw||typeof raw!=='object'||Array.isArray(raw)||raw.version!==GAMEPLAY_STATE_VERSION)return createGameplayState();
- const gameplay={version:GAMEPLAY_STATE_VERSION,telemetry:normalizeBattleTelemetry(raw.telemetry),report:normalizeBattleReport(raw.report)};
+ const gameplay={version:GAMEPLAY_STATE_VERSION,telemetry:normalizeBattleTelemetry(raw.telemetry),report:normalizeBattleReport(raw.report),telegraphs:normalizeBattleTelegraphs(raw.telegraphs)};
  if(!Object.prototype.hasOwnProperty.call(raw,'report'))gameplay.report.initialized=false;
  return gameplay;
 }
@@ -83,6 +108,34 @@ function gameplayTelemetry(){
  if(!state)return null;
  if(!state.gameplay||state.gameplay.version!==GAMEPLAY_STATE_VERSION)state.gameplay=normalizeGameplayState(state.gameplay);
  return state.gameplay.telemetry;
+}
+function gameplayTelegraphs(){
+ if(!state)return null;
+ if(!state.gameplay||state.gameplay.version!==GAMEPLAY_STATE_VERSION)state.gameplay=normalizeGameplayState(state.gameplay);
+ if(!state.gameplay.telegraphs)state.gameplay.telegraphs=createBattleTelegraphState();
+ return state.gameplay.telegraphs;
+}
+function createEnemyTelegraph(kind,{source=null,sourceId=null,sourceType=null,duration=null,targets=[],cancelOnSourceDeath=true,data={}}={}){
+ const telegraphs=gameplayTelegraphs();if(!telegraphs||typeof kind!=='string'||!kind)return null;
+ const rule=ENEMY_TELEGRAPH_RULES[kind]||{},createdAt=finiteNonnegative(state.time),delay=finiteNonnegative(duration??rule.duration),safeData={...jsonSafeEvent(data),label:rule.label||data.label||kind,counter:rule.counter||data.counter||''},item={id:telegraphs.nextId++,kind,sourceId:sourceId||source?.id||null,sourceType:sourceType||source?.type||null,createdAt,executeAt:createdAt+delay,duration:delay,cancelOnSourceDeath:cancelOnSourceDeath!==false,targets:Array.isArray(targets)?targets.map(target=>jsonSafeEvent(target)):[],data:safeData};
+ telegraphs.active.push(item);return item;
+}
+function cancelEnemyTelegraphsForSource(sourceId){
+ const telegraphs=gameplayTelegraphs();if(!telegraphs||!sourceId)return 0;
+ const before=telegraphs.active.length;telegraphs.active=telegraphs.active.filter(item=>item.sourceId!==sourceId);return before-telegraphs.active.length;
+}
+function hasEnemyTelegraph(sourceId,kind){return !!gameplayTelegraphs()?.active.some(item=>item.sourceId===sourceId&&(!kind||item.kind===kind))}
+function processEnemyTelegraphs(){
+ const telegraphs=gameplayTelegraphs();if(!telegraphs||!telegraphs.active.length)return 0;
+ const waiting=[],due=[];
+ for(const item of telegraphs.active){
+  const source=[...(state.zombies||[]),...(state.plants||[])].find(unit=>unit.id===item.sourceId);
+  if(item.cancelOnSourceDeath&&(!source||source.hp<=0))continue;
+  if(item.executeAt>finiteNonnegative(state.time))waiting.push(item);else due.push(item);
+ }
+ telegraphs.active=waiting;
+ for(const item of due)if(typeof resolveEnemyTelegraph==='function')resolveEnemyTelegraph(item);
+ return due.length;
 }
 function sourceStats(telemetry,payload){
  const id=typeof payload.sourceId==='string'&&payload.sourceId?payload.sourceId:(typeof payload.sourceType==='string'&&payload.sourceType?`type:${payload.sourceType}`:null);

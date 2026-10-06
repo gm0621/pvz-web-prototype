@@ -63,9 +63,7 @@ function damageSeason2Plant(p,amount,melee=false,context={}){
  p.lastDamagedAt=state.time;applyBattleDamage(p,damage,{sourceSide:'zombies',targetSide:'plants',...context});if(p.type==='s2Xiahou')p.rage=Math.min(100,(p.rage||0)+damage*.8);attackFx(p,'slash');
  if(p.hp<=0)changeBattleResource('zombies',50,'eat')
 }
-function season2CleaverHit(z,p,d){
- const protectedTarget=(p.shieldHp||0)>0||p.type==='s2Shield';
- const heavy=protectedTarget&&Math.random()<.2;
+function applySeason2CleaverHit(z,p,d,heavy=false){
  if(p.type==='s2Shield'){
   z.armorHits=z.armorTarget===p.id&&state.time-(z.armorHitAt||0)<=4000?(z.armorHits||0)+1:1;
   z.armorTarget=p.id;z.armorHitAt=state.time;
@@ -76,19 +74,36 @@ function season2CleaverHit(z,p,d){
  else if(heavy)damage+=d.damage;
  if(heavy)flash(z,'斷盾重劈');damageSeason2Plant(p,damage,true,{source:z,kind:'cleaver'});
 }
+function season2CleaverHit(z,p,d){
+ const protectedTarget=(p.shieldHp||0)>0||p.type==='s2Shield',heavy=protectedTarget&&Math.random()<.2;
+ if(!heavy){applySeason2CleaverHit(z,p,d,false);return true}
+ if(hasEnemyTelegraph(z.id,'s2-shield-break'))return true;
+ createEnemyTelegraph('s2-shield-break',{source:z,targets:[{id:p.id,r:p.r,c:p.c}],cancelOnSourceDeath:true,data:{damage:d.damage}});flash(z,'重劈蓄力');log('⚠️ 斷盾重劈蓄力 0.7 秒；換列或擊倒劈盾屍可避開。');return true;
+}
+function resolveSeason2EnemyTelegraph(item,z,target){
+ if(!z||!target)return false;const p=state.plants.find(unit=>unit.id===target.id&&unit.hp>0&&unit.r===target.r&&Math.round(unit.c)===Math.round(target.c));
+ if(!p)return true;
+ if(item.kind==='s2-shield-break'){applySeason2CleaverHit(z,p,activeUnit('zombies',z.type),true);return true}
+ if(item.kind==='s2-hook-drag'){
+  const occupied=state.plants.some(unit=>unit!==p&&unit.hp>0&&unit.r===p.r&&Math.round(unit.c)===Math.round(p.c+1));
+  if(!occupied&&p.type!=='s2XuChu'){p.c=Math.min(z.c-.8,p.c+1);p.slowUntil=state.time+2200;recordBattleControl(p,{source:z,sourceSide:'zombies',kind:'hook',duration:2200});flash(p,'纏鏈拖行')}return true;
+ }
+ if(item.kind==='s2-ram-charge'){damageSeason2Plant(p,item.data?.damage||activeUnit('zombies',z.type).damage,true,{source:z,kind:'ram-charge'});attackFx(p,'slash');sfx('hit');return true}
+ return false;
+}
 function actSeason2Zombies(){
  for(const z of state.zombies){
   if(z.hp<=0)continue;const d=activeUnit('zombies',z.type);if(!d)continue;z.previousC=z.c;
   if(z.type==='s2Medic'&&state.time-(z.lastHeal||0)>=5000){const ally=state.zombies.filter(a=>a!==z&&a.type!=='s2Medic'&&a.hp>0&&a.r===z.r&&a.hp<a.maxHp&&Math.abs(a.c-z.c)<2.2).sort((a,b)=>a.hp/a.maxHp-b.hp/b.maxHp)[0];if(ally){z.lastHeal=state.time;ally.hp=Math.min(ally.maxHp,ally.hp+55);flash(ally,'補肉 +55')}}
   const target=zombieEnteredBattlefield(z)?state.plants.filter(p=>p.hp>0&&p.r===z.r&&p.c<z.c&&z.c-p.c<=(d.range||.8)).sort((a,b)=>b.c-a.c)[0]:null;
   if(!target){if(z.type==='s2Ram')z.charge=Math.min(90,(z.charge||0)+.06);z.c-=(z.slowUntil&&state.time<z.slowUntil?d.speed*.5:d.speed);if(z.c<=.25){triggerMower(z.r);if(z.hp<=0)continue}if(z.c<0)return end(state.faction==='zombies',state.faction==='zombies'?'突破成功！':'防線被突破！',`${state.levelConfig.shortName}${state.faction==='zombies'?'攻破！':'失守，可調整陣形再試。'}`);continue}
-  if(z.type==='s2Hook'&&state.time-(z.lastHook||0)>=8000){const occupied=state.plants.some(p=>p.hp>0&&p.r===target.r&&Math.round(p.c)===Math.round(target.c+1));if(!occupied&&target.type!=='s2XuChu'){z.lastHook=state.time;target.c=Math.min(z.c-.8,target.c+1);target.slowUntil=state.time+2200;recordBattleControl(target,{source:z,sourceSide:'zombies',kind:'hook',duration:2200});flash(target,'纏鏈拖行')}}
+  if(z.type==='s2Hook'&&state.time-(z.lastHook||0)>=8000&&!hasEnemyTelegraph(z.id,'s2-hook-drag')){const occupied=state.plants.some(p=>p.hp>0&&p.r===target.r&&Math.round(p.c)===Math.round(target.c+1));if(!occupied&&target.type!=='s2XuChu'){z.lastHook=state.time;createEnemyTelegraph('s2-hook-drag',{source:z,targets:[{id:target.id,r:target.r,c:target.c}],cancelOnSourceDeath:true});flash(z,'纏鏈瞄準');log('⚠️ 纏鏈屍 0.8 秒後拖行目標；換列、卡位、派許褚或擊倒施術者可反制。');continue}}
   if(state.time-z.last<d.rate)continue;z.last=state.time;markAttack(z);let damage=d.damage;
   if(z.type==='s2Rat'&&state.zombies.some(a=>a.hp>0&&a!==z&&a.r===z.r&&Math.abs(a.c-z.c)<1.5))damage=Math.round(damage*1.25);
   if(z.type==='s2Cleaver'){season2CleaverHit(z,target,d);continue}
   if(z.type==='s2Nail'){state.projectiles.push({x:z.c-.1,y:z.r+.5,r:z.r,dir:-1,damage,from:'zombie',speed:.085,targetId:target.id,nail:true,marks:1,sourceId:z.id,sourceType:z.type});sfx('shoot');continue}
   if(z.type==='s2Venom'){for(const p of state.plants.filter(p=>p.hp>0&&p.r===target.r&&Math.abs(p.c-target.c)<=1))damageSeason2Plant(p,damage,p===target,{source:z,kind:'venom'});flash(target,'腐液殘留');continue}
-  if(z.type==='s2Ram'&&(z.charge||0)>0){damage+=Math.round(z.charge);z.charge=0;flash(z,'蓄勢破門')}
+  if(z.type==='s2Ram'&&(z.charge||0)>0){damage+=Math.round(z.charge);z.charge=0;createEnemyTelegraph('s2-ram-charge',{source:z,targets:[{id:target.id,r:target.r,c:target.c}],cancelOnSourceDeath:true,data:{damage}});flash(z,'蓄勢破門');log('⚠️ 衝車屍 0.9 秒後破門衝撞；換列或擊倒衝車可避開。');continue}
   if(z.type==='s2Hexer'){target.buffBlockedUntil=state.time+4000;flash(target,'孤軍咒')}
   if(z.type==='s2Overseer'){for(const ally of state.zombies.filter(a=>a.hp>0&&a.r===z.r&&Math.abs(a.c-z.c)<2.5))ally.hasteUntil=state.time+3000;flash(z,'破陣號令')}
   damageSeason2Plant(target,damage,true,{source:z,kind:'melee'});attackFx(target,'slash');sfx('hit');

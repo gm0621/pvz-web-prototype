@@ -597,11 +597,14 @@ test('netherfire necromancer boss curses three lanes while the catapult stays a 
     addPlant('wallnut',3,3);
     const caster=addZombie('necromancer',8,2);
     actZombies();
+    const warned={hp:state.plants.map(p=>p.hp),duration:state.gameplay.telegraphs.active[0]?.duration};
+    state.time+=1000;processEnemyTelegraphs();
     buildCharacterGrid('zombies');
     const summary=document.querySelector('.char-profile.type-necromancer .ability-summary')?.textContent||'';
     showGuideV2('zombies','necromancer','base','talent');
     return {
       hp:state.plants.map(p=>p.hp),
+      warned,
       stunUntil:state.plants.map(p=>p.stunUntil||0),
       curseLast:caster.curseLast,
       fx:document.querySelectorAll('.necromancer-curse-fx').length,
@@ -612,7 +615,8 @@ test('netherfire necromancer boss curses three lanes while the catapult stays a 
     };
   });
   expect(result.hp).toEqual([420-56,420-96,420-56]);
-  expect(result.stunUntil).toEqual([9000,9000,9000]);
+  expect(result.warned).toEqual({hp:[420,420,420],duration:1000});
+  expect(result.stunUntil).toEqual([10000,10000,10000]);
   expect(result.curseLast).toBe(6000);
   expect(result.fx).toBe(3);
   expect(result.guideTargets).toBe(2);
@@ -629,13 +633,13 @@ test('all ranged zombies wait until entering the rightmost visible cell before a
     for(let level=1;level<10;level++)completeCampaignLevel('plants',level);
     currentSeason=1;selectedLevel=10;start('plants');clearInterval(timer);
     const attempt=(type,season=1)=>{
-      state.season=season;state.time=10000;state.plants=[];state.zombies=[];state.projectiles=[];
+      state.season=season;state.time=10000;state.plants=[];state.zombies=[];state.projectiles=[];state.gameplay.telegraphs=createBattleTelegraphState();
       addPlant('wallnut',4,2);
       const target=state.plants[0],zombie=addZombie(type,8.8,2),before=target.hp;
       actZombies();
       const offscreen={hp:target.hp,stunUntil:target.stunUntil||0,projectiles:state.projectiles.length,c:zombie.c};
       zombie.c=8;state.time=10100;actZombies();
-      return {before,offscreen,entered:{hp:target.hp,stunUntil:target.stunUntil||0,projectiles:state.projectiles.length,c:zombie.c}};
+      return {before,offscreen,entered:{hp:target.hp,stunUntil:target.stunUntil||0,projectiles:state.projectiles.length,c:zombie.c,warnings:state.gameplay.telegraphs.active.length}};
     };
     return {
       fireCatapult:attempt('fireCatapult'),
@@ -649,7 +653,7 @@ test('all ranged zombies wait until entering the rightmost visible cell before a
     expect(unit.offscreen.stunUntil).toBe(0);
     expect(unit.offscreen.projectiles).toBe(0);
     expect(unit.offscreen.c).toBeGreaterThan(8);
-    expect(unit.entered.hp<unit.before||unit.entered.stunUntil>0||unit.entered.projectiles>0).toBeTruthy();
+    expect(unit.entered.hp<unit.before||unit.entered.stunUntil>0||unit.entered.projectiles>0||unit.entered.warnings>0).toBeTruthy();
   }
 });
 

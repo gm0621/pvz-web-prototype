@@ -120,15 +120,16 @@ test('season two hook records real control while lethal control hits record none
   const hook={id:'hook',type:'s2Hook',r:2,c:4,hp:100,maxHp:100,last:state.time,lastHook:0};
   const hooked={id:'hooked',type:'s2Spear',r:2,c:3.4,hp:100,maxHp:100};
   state.plants=[hooked];state.zombies=[hook];actSeason2Zombies();
+  const warning=state.gameplay.telegraphs.active[0];state.time=warning.executeAt;processEnemyTelegraphs();
   const afterHook=battleStatsSnapshot();
   currentSeason=1;state.season=1;state.plants=[{id:'zhaoyun',type:'zhaoyun',r:2,c:2,hp:100,maxHp:100}];
   state.zombies=[{id:'victim',type:'normal',r:2,c:3,hp:1,maxHp:100}];state.pendingPlantShots=[{kind:'melee',at:state.time,sourceId:'zhaoyun',targetId:'victim',damage:20,slowDuration:3200}];
   processPendingPlantShots();
   return {hookedC:hooked.c,hookedSlowUntil:hooked.slowUntil,afterHook,final:battleStatsSnapshot(),deadSlowUntil:state.zombies[0].slowUntil};
  });
- expect(result.hookedC).toBe(3.2);expect(result.hookedSlowUntil).toBe(11200);
+ expect(result.hookedC).toBe(3.2);expect(result.hookedSlowUntil).toBe(12000);
  expect(result.afterHook.totals.control.zombies).toEqual({count:1,duration:2200});
- expect(result.final.totals.control.plants).toEqual({count:0,duration:0});expect(result.deadSlowUntil).toBe(12200);
+ expect(result.final.totals.control.plants).toEqual({count:0,duration:0});expect(result.deadSlowUntil).toBe(13000);
 });
 
 test('delayed summoned strike keeps summoner attribution after the summon dies',async({page})=>{
