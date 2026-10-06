@@ -158,3 +158,95 @@ test('report close and six-second expiry use battle time so pause freezes the co
  await expect(page.locator('#waveReport')).toBeHidden();
  expect(await page.evaluate(()=>state.gameplay.report.current.dismissed)).toBe(true);
 });
+
+test('impact feedback keeps critical damage timing and reduced effects disables the visual pause',async({page})=>{
+ await open(page);
+ const result=await page.evaluate(()=>{
+  selectedLevel=1;start('plants');clearInterval(timer);state.openingQueue=[];state.time=5000;
+  if(typeof triggerBattleFeedback!=='function'||typeof toggleReducedEffects!=='function')return {helper:typeof triggerBattleFeedback};
+  const target={id:'critical-target',type:'normal',r:2,c:4,hp:300,maxHp:300};
+  state.plants=[];state.zombies=[target];state.projectiles=[{x:4.42,y:2.5,r:2,dir:1,damage:90,critical:true,from:'plant',sourceId:'hero',sourceType:'firepea'}];
+  const beforeTime=state.time;moveProjectiles();
+  const strong={hp:target.hp,time:state.time,paused:document.getElementById('board').classList.contains('critical-hit-stop')};
+  const helper=typeof triggerBattleFeedback;
+  toggleReducedEffects();
+  const second={id:'reduced-target',type:'normal',r:1,c:4,hp:300,maxHp:300};
+  state.zombies=[second];state.projectiles=[{x:4.42,y:1.5,r:1,dir:1,damage:90,critical:true,from:'plant',sourceId:'hero',sourceType:'firepea'}];
+  moveProjectiles();
+  return {helper,strong,reduced:{hp:second.hp,paused:document.getElementById('board').classList.contains('critical-hit-stop')},setting:playerProfile.settings?.reducedEffects,stored:JSON.parse(localStorage.getItem(PROFILE_KEY)).settings?.reducedEffects,button:document.getElementById('reducedEffectsBtn')?.textContent};
+ });
+ expect(result.helper).toBe('function');
+ expect(result.strong).toEqual({hp:210,time:5000,paused:true});
+ expect(result.reduced).toEqual({hp:210,paused:false});
+ expect(result.setting).toBe(true);
+ expect(result.stored).toBe(true);
+ expect(result.button).toContain('精簡特效');
+});
+
+test('shield break shakes and vibrates only when strong effects are allowed',async({page})=>{
+ await open(page);
+ const result=await page.evaluate(()=>{
+  selectedLevel=1;currentSeason=2;start('plants');clearInterval(timer);state.time=5000;
+  playerProfile.settings=playerProfile.settings||{};
+  const vibrations=[];navigator.vibrate=value=>{vibrations.push(value);return true};
+  const breakShield=reduced=>{
+   playerProfile.settings.reducedEffects=reduced;if(typeof updateReducedEffectsButton==='function')updateReducedEffectsButton();document.getElementById('board').classList.remove('shield-break-feedback');
+   const defender={id:`shield-${reduced}`,type:'s2Tuntian',r:2,c:2,hp:300,maxHp:300,shieldHp:10};
+   const cleaver={id:`cleaver-${reduced}`,type:'s2Cleaver',r:2,c:3,hp:300,maxHp:300};
+   state.plants=[defender];state.zombies=[cleaver];
+   const original=Math.random;Math.random=()=>.99;try{season2CleaverHit(cleaver,defender,ZOMBIE_TYPES.s2Cleaver)}finally{Math.random=original}
+   return {shield:defender.shieldHp,hp:defender.hp,shake:document.getElementById('board').classList.contains('shield-break-feedback')};
+  };
+  const strong=breakShield(false),reduced=breakShield(true);
+  return {strong,reduced,vibrations};
+ });
+ expect(result.strong.shield).toBe(0);
+ expect(result.strong.shake).toBe(true);
+ expect(result.reduced.shield).toBe(0);
+ expect(result.reduced.shake).toBe(false);
+ expect(result.vibrations).toEqual([45]);
+});
+
+test('three-lane arrows stagger visually but retain identical gameplay release and hit timing',async({page})=>{
+ await open(page);
+ const result=await page.evaluate(()=>{
+  selectedLevel=1;start('plants');clearInterval(timer);state.openingQueue=[];state.time=8000;
+  const source={id:'huang',type:'huangzhong',r:2,c:2,hp:100,maxHp:100};
+  state.plants=[source];state.zombies=[1,2,3].map((r,index)=>({id:`target-${index}`,type:'normal',r,c:4,hp:200,maxHp:200}));state.projectiles=[];
+  state.pendingPlantShots=[{kind:'tripleShot',sourceId:source.id,targetId:'target-1',rows:[1,2,3],damage:60,critical:false,at:state.time}];
+  processPendingPlantShots();render();
+  const release=state.projectiles.map(projectile=>({x:projectile.x,delay:projectile.visualDelay,createdAt:projectile.visualCreatedAt}));
+  const dom=[...document.querySelectorAll('#board .projectile')].map(node=>({delay:node.style.getPropertyValue('--volley-delay'),index:node.dataset.volleyIndex}));
+  const hitAt={};
+  for(let step=1;step<40&&Object.keys(hitAt).length<3;step++){
+   state.time+=50;moveProjectiles();state.zombies.forEach(target=>{if(target.hp<200&&!hitAt[target.id])hitAt[target.id]=state.time});
+  }
+  return {release,dom,hitTimes:Object.values(hitAt),hp:state.zombies.map(target=>target.hp)};
+ });
+ expect(result.release.map(shot=>Number(shot.x.toFixed(2)))).toEqual([2.72,2.72,2.72]);
+ expect(result.release.map(shot=>shot.delay)).toEqual([0,70,140]);
+ expect(new Set(result.release.map(shot=>shot.createdAt)).size).toBe(1);
+ expect(result.dom).toEqual([{delay:'0ms',index:'0'},{delay:'70ms',index:'1'},{delay:'140ms',index:'2'}]);
+ expect(new Set(result.hitTimes).size).toBe(1);
+ expect(result.hp).toEqual([140,140,140]);
+});
+
+test('reduced-motion disables impact feedback and mobile battle stays within viewport',async({page})=>{
+ await page.emulateMedia({reducedMotion:'reduce'});await page.setViewportSize({width:390,height:844});await open(page);
+ const result=await page.evaluate(()=>{
+  selectedLevel=1;start('plants');clearInterval(timer);state.time=1000;
+  const vibrations=[];navigator.vibrate=value=>{vibrations.push(value);return true};
+  const critical=typeof triggerBattleFeedback==='function'?triggerBattleFeedback('critical'):null,shield=typeof triggerBattleFeedback==='function'?triggerBattleFeedback('shield-break'):null;
+  const back=document.getElementById('gameFloatBackBtn').getBoundingClientRect(),audio=document.getElementById('audioBtn').getBoundingClientRect();
+  const toolbarOverlap=back.left<audio.right&&back.right>audio.left&&back.top<audio.bottom&&back.bottom>audio.top;
+  return {critical,shield,vibrations,classes:document.getElementById('board').className,scrollWidth:document.documentElement.scrollWidth,innerWidth:innerWidth,buttonRect:document.getElementById('reducedEffectsBtn')?.getBoundingClientRect().toJSON()||null,toolbarOverlap};
+ });
+ expect(result.critical).toBe(false);
+ expect(result.shield).toBe(false);
+ expect(result.vibrations).toEqual([]);
+ expect(result.classes).not.toContain('critical-hit-stop');
+ expect(result.classes).not.toContain('shield-break-feedback');
+ expect(result.scrollWidth).toBeLessThanOrEqual(result.innerWidth);
+ expect(result.buttonRect.width).toBeGreaterThanOrEqual(44);
+ expect(result.toolbarOverlap).toBe(false);
+});

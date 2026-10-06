@@ -72,7 +72,7 @@ function season2CleaverHit(z,p,d){
   if(z.armorHits>=2||heavy){p.armorWeakenedUntil=state.time+8000;flash(p,'列盾削弱')}
  }
  let damage=d.damage;
- if((p.shieldHp||0)>0){const shieldDamage=damage*(heavy?3:2),absorbed=Math.min(p.shieldHp,shieldDamage);p.shieldHp-=absorbed;damage*=1-absorbed/shieldDamage}
+ if((p.shieldHp||0)>0){const shieldBefore=p.shieldHp,shieldDamage=damage*(heavy?3:2),absorbed=Math.min(p.shieldHp,shieldDamage);p.shieldHp-=absorbed;damage*=1-absorbed/shieldDamage;if(shieldBefore>0&&p.shieldHp<=0)triggerBattleFeedback('shield-break')}
  else if(heavy)damage+=d.damage;
  if(heavy)flash(z,'斷盾重劈');damageSeason2Plant(p,damage,true,{source:z,kind:'cleaver'});
 }
@@ -102,7 +102,7 @@ function moveSeason2Projectiles(){
   if(!target)continue;pr.hit=true;
   if(pr.from==='plant'){
    const shield=state.zombies.filter(z=>z.hp>0&&z.type==='s2Coffin'&&(z.shieldHp??ZOMBIE_TYPES.s2Coffin.shieldHp)>0&&z.r===target.r&&z.c<=target.c&&target.c-z.c<=.9).sort((a,b)=>a.c-b.c)[0];
-   let damage=pr.damage;if(shield){shield.shieldHp??=ZOMBIE_TYPES.s2Coffin.shieldHp;const absorbed=Math.min(shield.shieldHp,damage*.6);shield.shieldHp-=absorbed;damage-=absorbed;flash(shield,shield.shieldHp>0?'棺板掩護':'棺盾破裂')}
+   let damage=pr.damage;if(shield){shield.shieldHp??=ZOMBIE_TYPES.s2Coffin.shieldHp;const shieldBefore=shield.shieldHp,absorbed=Math.min(shield.shieldHp,damage*.6);shield.shieldHp-=absorbed;damage-=absorbed;if(shieldBefore>0&&shield.shieldHp<=0)triggerBattleFeedback('shield-break');flash(shield,shield.shieldHp>0?'棺板掩護':'棺盾破裂')}
    damageZombie(target,damage,{sourceId:pr.sourceId,sourceType:pr.sourceType,kind:'projectile'});attackFx(target,'slash');
   }else{
    damageSeason2Plant(target,pr.damage,false,{sourceSide:'zombies',sourceId:pr.sourceId,sourceType:pr.sourceType,kind:'projectile'});if(pr.nail&&target.hp>0){target.boneMarks=Math.min(2,(state.time<(target.boneExpires||0)?target.boneMarks||0:0)+(pr.marks||1));target.boneExpires=state.time+5000;flash(target,`骨釘 ${target.boneMarks}`)}

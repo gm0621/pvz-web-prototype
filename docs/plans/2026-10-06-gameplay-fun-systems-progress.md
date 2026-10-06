@@ -20,10 +20,10 @@
   - [x] Gate：focused、canonical suite、commit、push
 - [x] 秦皇終章 hotfix：通關紀錄、跨列軍令、軍陣減傷、三虎符／8 秒破陣、舊戰局恢復與 responsive UI
   - [x] Gate：desktop／mobile focused、1440×900／390×844／844×390 DOM＋screenshots、canonical suite
-- [ ] Phase 1：戰鬥爽感與波次戰報
+- [x] Phase 1：戰鬥爽感與波次戰報
   - [x] Task 1.1：波次／里程碑戰報
-  - [ ] Task 1.2：命中回饋與精簡特效設定
-  - [ ] Gate：desktop／mobile／短橫向 browser screenshots + full suite
+  - [x] Task 1.2：命中回饋與精簡特效設定
+  - [x] Gate：desktop／mobile／短橫向 browser screenshots + full suite
 - [ ] Phase 2：敵人預警與反制
   - [ ] Task 2.1：資料驅動、可序列化預警模型
   - [ ] Task 2.2：預警視覺與無障礙語意
@@ -58,7 +58,8 @@
 ## 當前狀態
 
 - 秦皇終章 hotfix 已完成：通關會寫入並在主選單／終章卡永久顯示；秦皇依階段與軍令循環跨列，未破陣時減傷 45%，三枚虎符開啟 8 秒全傷害窗口；舊 snapshot 自動補齊護體與 lane cycle。focused 15 passed／1 skipped，canonical 411 passed／5 skipped，三尺寸實畫無水平裁切。
-- Phase 1 仍在進行中；Task 1.1 已完成，秦皇封版後續接 Task 1.2 命中回饋與精簡特效設定。
+- Phase 1 已完成：暴擊命中與護盾破裂加入不改變傷害時序的視覺／震動回饋；三路箭只做視覺微錯峰，實際釋放與命中時序一致；「精簡特效」會持久化，且與 `prefers-reduced-motion` 一同停用停格、震動與錯峰。
+- Task 1.2 focused／related tests 與 tablet fullscreen 回歸均通過；canonical suite 為 419 passed／5 skipped，desktop 1440×900、portrait 390×844、landscape 844×390 實畫與 DOM 驗收無水平溢位或重要遮擋。
 
 ## 已完成提交
 
