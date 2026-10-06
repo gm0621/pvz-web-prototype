@@ -18,6 +18,8 @@
 - 暫停、切背景、返回選關、重新整理後不得偷推進倒數或重新抽牌。
 - 不改動雲端通關權威：登入玩家仍須 `claimCloudMatchReward()` 成功後才能獲得永久勳章／外觀。
 - 軍令與組合加成只在單局有效；不新增永久攻擊力農等級。
+- 挑戰勳章使用「公平戰術規則」：停用角色等級、裝備與永久技能的戰力加成，保留已解鎖角色與純外觀，避免勳章只反映帳號農度。
+- 登入玩家的勳章必須先有伺服器確認的合法勝場，再由 client event ledger 提交條件；目前不宣稱伺服器能重播驗證每個走位／推車事件。獎勵仍須透過 atomic、idempotent RPC 寫入，不能由一般 profile save 偽造。
 - 桌機、390×844 手機、844×390 橫向及原生／fallback fullscreen 都需可操作。
 
 ## 階段總覽
@@ -304,8 +306,11 @@
 **Challenge templates:** no-hero、gate-health、resource-cap、no-relocation、melee-only、time-limit、protect-unit、no-enemy-leak。
 
 **Acceptance:**
+- challenge battle 明確啟用公平戰術規則：角色等級、裝備與永久技能數值不進入 `effectiveUnit()`，外觀仍可用；普通主線重玩不受影響。
 - evaluator 使用 telemetry/event data，不從 DOM 猜結果。
-- 勝利且（訪客或雲端已確認）才記錄；失敗、同步失敗、replay result 不發永久獎勵。
+- 訪客在勝利後可本機記錄；登入玩家必須先取得 cloud verified win，再以 match id + event-ledger digest 呼叫新的 atomic/idempotent reward RPC。條件屬 client-attested，不宣稱伺服器可驗證每一幀遊戲事件。
+- 同一 match／同一 medal 重送不重複發獎；一般 `sgz_save_profile()` 不得直接增加勳章或獎勵外觀。
+- 失敗、同步失敗、replay result 不發永久獎勵。
 - 舊 profile normalize 後有空 challenge 結構，不遺失 inventory/progress。
 
 ### Task 6.2：選關與結算顯示勳章
@@ -348,6 +353,7 @@
 - 兩季 × 兩陣營 × 10 關都有：1 主規則、3 挑戰、軍令 pool、危險預告需求。
 - 秦皇 level 11 獨立規則，不被十關矩陣誤算。
 - 所有玩家可見名稱、條件、結果皆為繁中且無 `undefined/NaN`。
+- 校正 `README.md` 與主選單消息中的季度開放文案，必須與實際已可玩的兩季十關一致。
 
 ### Task 7.2：平衡測試
 
