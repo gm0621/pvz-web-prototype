@@ -35,9 +35,9 @@ function updateDefenseWaves(){
  // Each finite wave has a bounded, one-time reinforcement budget, exposed in
  // the existing AI brain HUD. Unit costs, cooldowns and unlock delays still apply.
  if(!wave.rallied){
-  const supply=wave.count*(lv.enemyCount<25?25:40);
-  changeBattleResource('zombies',supply,'wave-rally');wave.rallied=true;
-  log(`第 ${wave.id} 波集結完成，敵方增援補給 +${supply} 腦。`);
+  const supply=wave.count*(lv.enemyCount<25?25:40),gain=grantBattleIncome('zombies',supply,'wave-rally');
+  wave.rallied=true;
+  log(`第 ${wave.id} 波集結完成，敵方增援補給 +${gain} 腦。`);
  }
  let opts=affordableAI(ZOMBIE_TYPES,state.aiResource).filter(([k])=>lv.zombieWeights.includes(k)&&!(state.season===2&&state.level===2&&k==='s2Coffin'&&state.lastSpawnedZombie==='s2Coffin'));
  // Same finite-quota cheap-unit fallback as ordinary AI; never manufacture an

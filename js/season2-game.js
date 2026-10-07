@@ -39,7 +39,7 @@ function actSeason2Plants(){
   if(p.hp<=0)continue;const d=activeUnit('plants',p.type);if(!d)continue;
   if(p.type==='s2Shield'){advanceSeason2Shield(p,d);continue}
   const target=state.zombies.filter(z=>z.hp>0&&z.r===p.r&&z.c>p.c&&z.c-p.c<=(d.range||1)).sort((a,b)=>a.c-b.c)[0];
-  if(p.type==='s2Tuntian'&&state.time-p.last>=d.rate){const safe=state.time-(p.lastDamagedAt??p.bornAt)>=8000,gain=d.produce+(safe?15:0);p.last=state.time;changeBattleResource('plants',gain,'produce');flash(p,`🌾 +${gain}`);continue}
+  if(p.type==='s2Tuntian'&&state.time-p.last>=d.rate){const safe=state.time-(p.lastDamagedAt??p.bornAt)>=8000,raw=d.produce+(safe?15:0),gain=grantBattleIncome('plants',raw,'produce');p.last=state.time;flash(p,`🌾 +${gain}`);continue}
   if(p.type==='s2Halberd'){const incoming=state.zombies.find(z=>z.hp>0&&!z.boss&&z.r===p.r&&z.c>=p.c&&z.c-p.c<=d.range&&['dash','jump'].includes(z.movementKind)&&state.time-z.movementAt<=100&&z.previousC-z.c>=.4);if(incoming&&state.time-(p.lastIntercept??-6000)>=6000){p.lastIntercept=state.time;damageZombie(incoming,55,{source:p,kind:'intercept'});incoming.movementKind=null;incoming.c=Math.max(incoming.c,p.c+.8);if(incoming.hp>0)recordBattleControl(incoming,{source:p,sourceSide:'plants',kind:'intercept',duration:0});flash(p,'拒馬列戟')}}
   if(!target||state.time-p.last<d.rate)continue;
   p.last=state.time;markAttack(p);let damage=d.damage;
@@ -62,7 +62,7 @@ function damageSeason2Plant(p,amount,melee=false,context={}){
  const guard=p.type!=='s2DianWei'&&state.plants.find(g=>g.hp>0&&g.type==='s2DianWei'&&g.r===p.r&&g.c<p.c&&p.c-g.c<=1.2);
  if(guard){const shared=Math.min(damage*.35,guard.hp-1);applyBattleDamage(guard,shared,{sourceSide:'zombies',targetSide:'plants',kind:'guard-share',...context});damage-=shared;flash(guard,'帳前死衛')}
  p.lastDamagedAt=state.time;applyBattleDamage(p,damage,{sourceSide:'zombies',targetSide:'plants',...context});if(p.type==='s2Xiahou')p.rage=Math.min(100,(p.rage||0)+damage*.8);attackFx(p,'slash');
- if(p.hp<=0)changeBattleResource('zombies',50,'eat')
+ if(p.hp<=0)grantBattleIncome('zombies',50,'eat')
 }
 function applySeason2CleaverHit(z,p,d,heavy=false){
  if(p.type==='s2Shield'){
@@ -97,7 +97,7 @@ function actSeason2Zombies(){
   if(z.hp<=0)continue;const d=activeUnit('zombies',z.type);if(!d)continue;z.previousC=z.c;
   if(z.type==='s2Medic'&&state.time-(z.lastHeal||0)>=5000){const ally=state.zombies.filter(a=>a!==z&&a.type!=='s2Medic'&&a.hp>0&&a.r===z.r&&a.hp<a.maxHp&&Math.abs(a.c-z.c)<2.2).sort((a,b)=>a.hp/a.maxHp-b.hp/b.maxHp)[0];if(ally){const healed=battleHealingAmount(55,'zombies');z.lastHeal=state.time;ally.hp=Math.min(ally.maxHp,ally.hp+healed);flash(ally,`補肉 +${healed}`)}}
   const target=zombieEnteredBattlefield(z)?state.plants.filter(p=>p.hp>0&&p.r===z.r&&p.c<z.c&&z.c-p.c<=(d.range||.8)).sort((a,b)=>b.c-a.c)[0]:null;
-  if(!target){if(z.type==='s2Ram')z.charge=Math.min(90,(z.charge||0)+.06);const ruleSpeed=stageRuleMovementMultiplier('zombies',z.r,state.gameplay?.stageRule?.data);z.c-=(z.slowUntil&&state.time<z.slowUntil?d.speed*.5:d.speed)*ruleSpeed;if(z.c<=.25){triggerMower(z.r);if(z.hp<=0||state.over)continue}if(z.c<0)return finishStageBreach(z,state.faction==='zombies',state.faction==='zombies'?'突破成功！':'防線被突破！',`${state.levelConfig.shortName}${state.faction==='zombies'?'攻破！':'失守，可調整陣形再試。'}`);continue}
+  if(!target){if(z.type==='s2Ram')z.charge=Math.min(90,(z.charge||0)+.06);const movementMultiplier=z.slowUntil&&state.time<z.slowUntil ? .5 : 1;z.c-=battleMovementSpeed('zombies',z.type,z.r,state,{movementMultiplier});if(z.c<=.25){triggerMower(z.r);if(z.hp<=0||state.over)continue}if(z.c<0)return finishStageBreach(z,state.faction==='zombies',state.faction==='zombies'?'突破成功！':'防線被突破！',`${state.levelConfig.shortName}${state.faction==='zombies'?'攻破！':'失守，可調整陣形再試。'}`);continue}
   if(z.type==='s2Hook'&&state.time-(z.lastHook||0)>=8000&&!hasEnemyTelegraph(z.id,'s2-hook-drag')){const occupied=state.plants.some(p=>p.hp>0&&p.r===target.r&&Math.round(p.c)===Math.round(target.c+1));if(!occupied&&target.type!=='s2XuChu'){z.lastHook=state.time;createEnemyTelegraph('s2-hook-drag',{source:z,targets:[{id:target.id,r:target.r,c:target.c}],cancelOnSourceDeath:true});flash(z,'纏鏈瞄準');log('⚠️ 纏鏈屍 0.8 秒後拖行目標；換列、卡位、派許褚或擊倒施術者可反制。');continue}}
   if(state.time-z.last<d.rate)continue;z.last=state.time;markAttack(z);let damage=d.damage;
   if(z.type==='s2Rat'&&state.zombies.some(a=>a.hp>0&&a!==z&&a.r===z.r&&Math.abs(a.c-z.c)<1.5))damage=Math.round(damage*1.25);
