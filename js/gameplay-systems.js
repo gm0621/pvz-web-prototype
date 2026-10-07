@@ -78,7 +78,7 @@ function gameplayStageRuleContext(context){
  let levelConfig=null;try{levelConfig=typeof campaignLevels==='function'?campaignLevels(season)?.[level]:null}catch(error){}
  return {season,faction,level,levelConfig,time:0,zombies:[],bossSpawned:false,qinBossAlive:false};
 }
-function createGameplayState(context){const ruleContext=gameplayStageRuleContext(context);return {version:GAMEPLAY_STATE_VERSION,telemetry:createBattleTelemetry(),report:createBattleReportState(),telegraphs:createBattleTelegraphState(),orders:createTacticalOrderState(),stageRule:createStageRuleRuntime(ruleContext)}}
+function createGameplayState(context){const ruleContext=gameplayStageRuleContext(context);return {version:GAMEPLAY_STATE_VERSION,telemetry:createBattleTelemetry(),report:createBattleReportState(),telegraphs:createBattleTelegraphState(),orders:createTacticalOrderState(),challenge:createChallengeBattleState(context?.challengeIds),stageRule:createStageRuleRuntime(ruleContext)}}
 function finiteNonnegative(value){value=Number(value);return Number.isFinite(value)&&value>=0?value:0}
 function normalizeSource(raw){
  if(!raw||typeof raw!=='object'||Array.isArray(raw))return null;
@@ -156,7 +156,7 @@ function normalizeTacticalOrders(raw){
 function normalizeGameplayState(raw,context){
  const ruleContext=gameplayStageRuleContext(context);
  if(!raw||typeof raw!=='object'||Array.isArray(raw)||raw.version!==GAMEPLAY_STATE_VERSION)return createGameplayState(ruleContext);
- const gameplay={version:GAMEPLAY_STATE_VERSION,telemetry:normalizeBattleTelemetry(raw.telemetry),report:normalizeBattleReport(raw.report),telegraphs:normalizeBattleTelegraphs(raw.telegraphs),orders:normalizeTacticalOrders(raw.orders),stageRule:normalizeStageRuleRuntime(raw.stageRule,ruleContext)};
+ const gameplay={version:GAMEPLAY_STATE_VERSION,telemetry:normalizeBattleTelemetry(raw.telemetry),report:normalizeBattleReport(raw.report),telegraphs:normalizeBattleTelegraphs(raw.telegraphs),orders:normalizeTacticalOrders(raw.orders),stageRule:normalizeStageRuleRuntime(raw.stageRule,ruleContext),challenge:normalizeChallengeBattleState(raw.challenge)};
  if(!Object.prototype.hasOwnProperty.call(raw,'report'))gameplay.report.initialized=false;
  return gameplay;
 }
@@ -193,7 +193,7 @@ function clampBattleUnit(unit,baseline){
 }
 function resolveBattleUnit(side,key,battle=state,context={}){
  const playerControlled=!!battle&&battle.faction===side,base=baseUnit(side,key);if(!base)return {unit:base,layers:[],sources:[]};
- const permanentLayers=playerControlled&&typeof permanentUnitLayers==='function'?permanentUnitLayers(side,key):null,permanent=permanentLayers?.fixedTalent||base;
+ const fairMode=playerControlled&&battle?.gameplay?.challenge?.fairMode===true,permanentLayers=playerControlled&&!fairMode&&typeof permanentUnitLayers==='function'?permanentUnitLayers(side,key):null,permanent=permanentLayers?.fixedTalent||base;
  const layers=[
   {id:'base-equipment',unit:{...(permanentLayers?.equipment||base)}},
   {id:'character-level',unit:{...(permanentLayers?.characterLevel||base)}},
@@ -352,7 +352,7 @@ function targetStats(telemetry,payload){
 }
 function recordBattleEvent(type,payload={}){
  const telemetry=gameplayTelemetry();
- if(!telemetry||!['damage','kill','control','resource','wave'].includes(type))return false;
+ if(!telemetry||!['damage','kill','control','resource','wave','deploy','relocation','leak','outcome'].includes(type))return false;
  const clean=jsonSafeEvent(payload),event={id:telemetry.nextEventId++,type,time:finiteNonnegative(state.time),...clean};
  if(type==='damage'){
   const amount=finiteNonnegative(clean.amount);if(!amount||!BATTLE_SIDES.includes(clean.sourceSide)||!BATTLE_SIDES.includes(clean.targetSide))return false;
@@ -369,7 +369,7 @@ function recordBattleEvent(type,payload={}){
  }else if(type==='resource'){
   if(!BATTLE_SIDES.includes(clean.side)||!Number.isFinite(Number(clean.amount))||Number(clean.amount)===0)return false;
   const amount=Number(clean.amount),bucket=telemetry.totals.resources[clean.side];if(amount>0)bucket.gained+=amount;else bucket.spent+=-amount;bucket.net+=amount;
- }else{
+ }else if(type==='wave'){
   const wave=Math.max(0,Math.floor(finiteNonnegative(clean.wave)));telemetry.totals.waves.current=wave;
   if(clean.phase==='start')telemetry.totals.waves.started++;else if(clean.phase==='complete')telemetry.totals.waves.completed++;
  }

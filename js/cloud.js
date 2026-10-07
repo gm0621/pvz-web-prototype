@@ -35,8 +35,8 @@ async function claimCloudMatchReward(win,usedKeys=[]){
   if(!currentUser)return false;
   if(!win){cloudMatchId=null;accountStatus('本場未過關，不發放雲端戰利品。');return true}
   if(!cloudMatchId){accountStatus('本場沒有有效的雲端對戰紀錄，正在還原雲端進度。',true);await pullCloudProfile(false,'force');return false}
-  const matchId=cloudMatchId,characterKey=usedKeys.find(key=>/^[a-zA-Z0-9_]+$/.test(key))||null;
-  const claim=()=>initSupabaseClient().rpc('sgz_claim_level_reward',{p_device_id:getDeviceId(),p_match_id:matchId,p_character_key:characterKey});
+  const matchId=cloudMatchId,characterKey=usedKeys.find(key=>/^[a-zA-Z0-9_]+$/.test(key))||null,activeDefinitions=activeChallengeDefinitions(state),challengeBattle=(state?.gameplay?.challenge?.activeIds||[]).length>0,challengeIds=activeDefinitions.filter(definition=>evaluateChallengeVerdict(definition,state.gameplay.telemetry).passed).map(definition=>definition.id),telemetry=challengeBattle?challengeTelemetryPayload(state,challengeIds):null,telemetryCanonical=challengeBattle?challengeTelemetryCanonical(state,challengeIds):null,telemetryDigest=challengeBattle?await challengeTelemetryDigest(state,challengeIds):null;
+  const claim=()=>challengeBattle?initSupabaseClient().rpc('sgz_claim_match_rewards',{p_device_id:getDeviceId(),p_match_id:matchId,p_character_key:characterKey,p_challenge_ids:challengeIds,p_telemetry_digest:telemetryDigest,p_telemetry_canonical:telemetryCanonical,p_telemetry:telemetry}):initSupabaseClient().rpc('sgz_claim_level_reward',{p_device_id:getDeviceId(),p_match_id:matchId,p_character_key:characterKey});
   let {data,error}=await claim();
   if(error&&/MATCH_TOO_SHORT/i.test(error?.message||'')){
     const minimumMs=cloudMatchMinimumMs(state?.faction,state?.level),elapsed=Date.now()-(state?.cloudMatchStartedAt||Date.now()),waitMs=Math.max(250,minimumMs-elapsed+1200);

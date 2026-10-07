@@ -43,7 +43,7 @@
   - [x] Task 5.2：組合、軍令與關卡規則堆疊順序
   - [x] Gate：全角色回歸與 desktop/mobile smoke
 - [ ] Phase 6：關卡挑戰、勳章與純外觀獎勵
-  - [ ] Task 6.1：profile migration、fair challenge evaluator、atomic/idempotent reward
+  - [x] Task 6.1：profile migration、fair challenge evaluator、atomic/idempotent reward
   - [ ] Task 6.2：選關與結算勳章 UI
   - [ ] Task 6.3：勳章里程碑純外觀獎勵
   - [ ] Gate：guest/cloud/conflict/profile migration suites
@@ -80,6 +80,8 @@
 - Task 5.2 與 Phase 5 Gate 已完成：`resolveBattleUnit()` 固定以 base/equipment → character level → fixed talent → synergy → tactical order → temporary stage status → centralized clamp 計算並保留逐層 snapshot/source；`permanentUnitLayers()` 將裝備、角色等級與固定技能分層，但以原始 base 的 cumulative bonus 計算，維持舊 profile 最終數值相容。軍令的 damage/ranged/melee、HP、attack speed、move speed、shield、healing、damage taken、deployment/relocation cost、player/enemy income 與 enemy spawn interval 均接入真實 combat/resource/deploy/wave paths；玩家效果不套到敵方 AI，`PLANT_TYPES`／`ZOMBIE_TYPES` 保持 immutable。卡牌價格、實扣與 eligibility 同源，波次延遲與戰報秒數同源。
 - Task 5.2 reviewer follow-up：production RED 重現 stage movement 在 clamp 後才乘倍率、`supply-raid` 將 AI affordability top-up 錯當收入而出現 `aiResource=-2`、default melee／peaZombie cadence 與 poleVault `spentSpeed` 繞過中央 resolver。修正後 `changeBattleResource()` 僅作純 ledger，真正收入 producer 才使用 `grantBattleIncome()`；兩季移動、召喚 HP、death blast、攻擊 cadence 均由 resolved runtime stats 驅動。選取 HP／shield 軍令會依新舊 resolved 值的相對倍率遷移既有己方 entity，保留受傷比例與 `escort-ram` 620 HP 等關卡自訂上限；無關軍令不再覆寫特殊 entity 狀態。
 - Task 5.2 驗證：原中央 pipeline 先以缺少 layer/consumer API 取得 RED，再以真實關羽 Lv.3＋青龍戰袍＋青龍火斬、桃園同心＋屯田／背水一戰、實際投射物、部署、週期補給／向日葵、承傷與 stage movement 覆蓋單層值、組合值、敵我隔離與資料 immutability；deterministic desktop＋mobile repeat 無 retry 30/30、targeted reviewer fixes 44/44、原 Phase 5 related 216 passed／4 skipped、原 canonical 503 passed／5 skipped。follow-up 新增 production movement、affordability、melee/ranged cadence、spent movement、entity transition、summon/death blast regression；獨立 review 再以真瀏覽器重現特殊衝車被 620/310 重設為 480/240，新增 RED 後修正，focused desktop＋mobile 2/2、完整 modifier 18/18、related 40/40。實際 Chromium 1280×633 驗收軍令 dialog 的三張卡、ARIA、焦點、文字與 viewport，console 0 error；`git diff --check`、相關 JS `node --check` 與 added-lines security scan 均通過。下一項為 Phase 6.1。
+- Task 6.1 已完成：40 條主線 route 各有三個 deterministic challenge；正式 `start(...,{challengeIds})` seam 啟用 fair mode，永久裝備／等級／固定技能／部署冷卻與英雄機率技能不會進入公平戰局。`protect-unit` 綁定首次指定實體 ID，不能死亡後以同型替補規避；攻城 route 不配置不適用的 gate-health。guest 只在真實勝場 exactly-once 保存勳章；cloud 將 canonical telemetry、SHA-256、角色 key 與 route challenge IDs 送入單一 atomic RPC，由 PostgreSQL 重算摘要及 objective，與 level reward 同 transaction 發放，並拒絕敗場、route 外 ID、摘要／內容突變、跨角色 replay、anon 及 profile entitlement 注入。首次 migration 清除既有未受信任 challenge 欄位，後續 profile INSERT／save 仍維持 server authority；舊 battle snapshot deterministic 補入 inactive challenge state。
+- Task 6.1 驗證：RED 覆蓋 production start seam、fair cooldown／proc、指定實體 replacement、40-route JS／SQL contract、canonical digest mismatch、ledger mutation、atomic rollback、idempotent replay、initial/save profile anti-forgery 與真實 legacy normalization。focused desktop＋mobile 19 passed／1 skipped，related 146 passed／4 skipped，fresh canonical 534 passed／6 skipped／0 failed；三路原始 review 與修正後窄 review 均已完成，最終 verdict PASS。`git diff --check`、相關 JS `node --check` 與新增行 credential scan 全數通過；下一項為 Task 6.2 選關與結算勳章 UI。
 
 ## 已完成提交
 
