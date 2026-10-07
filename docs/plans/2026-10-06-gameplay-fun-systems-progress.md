@@ -70,7 +70,7 @@
 - Task 4.1 已完成：新增 `STAGE_RULES` registry 與完整 `id/title/brief/objective/start/tick/onEvent/isComplete/isFailed` contract；第一、二季攻守及秦皇終章由同一來源建立關卡卡片、戰鬥 HUD 與勝敗判定。`state.gameplay.stageRule` 僅保存 JSON-safe `{id,data}`，新局、舊 snapshot、reload 與未知 rule id 都會 deterministic normalize；未知 id 不會沿用不相容 runtime data。RED 先確認 registry／runtime／共用目標缺失（3 failed），再確認未知 rule data 未清理（1 failed）；focused desktop＋mobile 10/10、related desktop 74 passed／1 skipped、mobile 19/19，fresh canonical 461 passed／5 skipped／0 failed／0 flaky，`git diff --check`、相關 JS `node --check` 與新增行 credential scan 均通過。
 - Task 4.1 browser evidence：desktop 1280×720、portrait 390×844、landscape 844×390 的實際 DOM／全頁截圖均顯示關卡目標清楚可讀，無水平裁切或重疊；下一項為 Task 4.2。
 - Task 4.2 已完成：六個優先 pilot 關卡已有真正可玩的 stage-rule tracer bullets。第一季守方 L1 保住五路推車、L2 護送具生命與進度的運糧兵、L3 每 12 秒輪轉封路；第一季攻方 L1 限時摧毀標記箭塔後突破；第二季守方 L1 每 10 秒輪轉霜徑並實際降低該路敵軍移速；第二季攻方 L1 護送專屬衝車存活破門。規則均由 battle time 驅動、JSON-safe 保存，沿用既有 `checkEnd` 與雲端勝場提交流程；暫停與 reload 不會偷跑時間或重抽狀態。
-- Task 4.2 驗證：Playwright RED 先因六關仍解析為 standard rule 而失敗；focused desktop＋mobile 20/20；related gameplay/waves/season2/save 38/38。獨立回歸發現箭塔 45 秒期限與攻城軍令 60% 節點衝突，改為該關總時限 70% 後 tactical orders＋stage rules 17/17；fresh canonical 471 passed／5 skipped／0 failed／0 flaky；`git diff --check` 與相關 JS `node --check` 通過。實際 Chromium 戰鬥畫面已於 1280×720、390×844、844×390 驗收，任務 cue、HP／進度與操作區均可見且無關鍵遮擋。production commit `2469b29`；下一項為 Task 4.3。
+- Task 4.2 驗證：Playwright RED 先因六關仍解析為 standard rule 而失敗；focused desktop＋mobile 20/20；related gameplay/waves/season2/save 38/38。獨立回歸發現箭塔 45 秒期限與攻城軍令 60% 節點衝突，改為該關總時限 70% 後 tactical orders＋stage rules 17/17；fresh canonical 471 passed／5 skipped／0 failed／0 flaky；`git diff --check` 與相關 JS `node --check` 通過。實際 Chromium 戰鬥畫面已於 1280×720、390×844、844×390 驗收，任務 cue、HP／進度與操作區均可見且無關鍵遮擋。另以 RED 補上箭塔剩餘秒數與運糧兵 HP／行程即時 cue，focused desktop＋mobile 20/20，follow-up `ebe9f86`。production commit `2469b29`；下一項為 Task 4.3。
 
 ## 已完成提交
 
@@ -85,3 +85,4 @@
 - `f8a0a65` — feat: add attack tactical order milestones
 - `8ef4a32` — feat: add stage rule registry
 - `2469b29` — feat: add six pilot stage objectives
+- `ebe9f86` — fix: expose live stage objective status
