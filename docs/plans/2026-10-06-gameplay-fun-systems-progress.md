@@ -42,11 +42,11 @@
   - [x] Task 5.1：資料驅動組合偵測與 UI
   - [x] Task 5.2：組合、軍令與關卡規則堆疊順序
   - [x] Gate：全角色回歸與 desktop/mobile smoke
-- [ ] Phase 6：關卡挑戰、勳章與純外觀獎勵
+- [x] Phase 6：關卡挑戰、勳章與純外觀獎勵
   - [x] Task 6.1：profile migration、fair challenge evaluator、atomic/idempotent reward
   - [x] Task 6.2：選關與結算勳章 UI
-  - [ ] Task 6.3：勳章里程碑純外觀獎勵
-  - [ ] Gate：guest/cloud/conflict/profile migration suites
+  - [x] Task 6.3：勳章里程碑純外觀獎勵
+  - [x] Gate：guest/cloud/conflict/profile migration suites
 - [ ] Phase 7：全關卡擴充、平衡與正式發布
   - [ ] Task 7.1：完整資料矩陣與靜態檢查
   - [ ] Task 7.2：deterministic balance tests
