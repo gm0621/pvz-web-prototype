@@ -1,4 +1,36 @@
 const GAMEPLAY_STATE_VERSION=1;
+const COMBINATION_DEFINITIONS=Object.freeze([
+ Object.freeze({id:'peach-oath',name:'桃園結義',side:'plants',members:Object.freeze(['firepea','zhangfei','liubei']),effect:Object.freeze({damagePct:.15}),bonusLabel:'攻擊 +15%'}),
+ Object.freeze({id:'tiger-guard-line',name:'虎衛合陣',side:'plants',members:Object.freeze(['s2Xiahou','s2DianWei','s2XuChu']),effect:Object.freeze({ratePct:-.12}),bonusLabel:'攻擊間隔 -12%'}),
+ Object.freeze({id:'corpse-sustain-line',name:'屍煙續戰',side:'zombies',members:Object.freeze(['s2Coffin','s2Smoke','s2Medic']),effect:Object.freeze({ratePct:-.10}),bonusLabel:'攻擊間隔 -10%'})
+]);
+function combinationUnits(side,battle=state){return side==='plants'?battle?.plants||[]:battle?.zombies||[]}
+function combinationIsActive(definition,battle=state){
+ if(!definition||!battle)return false;
+ const livingTypes=new Set(combinationUnits(definition.side,battle).filter(unit=>unit&&unit.hp>0).map(unit=>unit.type));
+ return definition.members.every(type=>livingTypes.has(type));
+}
+function activeCombinationDefinitions(side,battle=state){return COMBINATION_DEFINITIONS.filter(definition=>definition.side===side&&combinationIsActive(definition,battle))}
+function applyCombinationUnitModifier(side,key,unit,battle=state){
+ if(!unit||!battle)return unit;
+ const effects=activeCombinationDefinitions(side,battle).filter(definition=>definition.members.includes(key)).map(definition=>definition.effect);
+ if(!effects.length)return unit;
+ const modified={...unit},damagePct=effects.reduce((sum,effect)=>sum+(effect.damagePct||0),0),ratePct=effects.reduce((sum,effect)=>sum+(effect.ratePct||0),0);
+ if(damagePct)['damage','meleeDamage','catapultDamage','smashDamage','bombDamage','laughDamage','curseDamage','curseAdjacentDamage'].forEach(stat=>{if(modified[stat]!=null)modified[stat]=Math.max(1,Math.round(modified[stat]*(1+damagePct)))});
+ if(ratePct)['rate','catapultRate','smashRate','laughRate','curseRate'].forEach(stat=>{if(modified[stat]!=null)modified[stat]=Math.max(1,Math.round(modified[stat]*(1+ratePct)))});
+ return modified;
+}
+function renderCombinationStatus(){
+ if(!state)return false;
+ const host=document.querySelector('.battle-resource-strip');if(!host)return false;
+ let panel=document.getElementById('combinationStatus');
+ if(!panel){panel=document.createElement('section');panel.id='combinationStatus';panel.className='combination-status';panel.setAttribute('role','status');panel.setAttribute('aria-live','polite');panel.setAttribute('aria-label','已啟動組合');host.prepend(panel)}
+ const active=activeCombinationDefinitions(state.faction);panel.replaceChildren();panel.hidden=!active.length;
+ if(!active.length)return false;
+ const title=document.createElement('strong');title.className='combination-status-title';title.textContent='⚔ 組合啟動';panel.appendChild(title);
+ for(const definition of active){const badge=document.createElement('span');badge.className='combination-badge';badge.dataset.combinationId=definition.id;badge.textContent=`${definition.name}｜${definition.bonusLabel}`;panel.appendChild(badge)}
+ return true;
+}
 const ENEMY_TELEGRAPH_RULES=Object.freeze({
  'fire-catapult':{duration:1200,label:'烈焰落石',icon:'☄',counter:'換列離開九宮格，或在落石前擊倒烈焰屍車'},
  'necromancer-curse':{duration:1000,label:'幽冥禁咒',icon:'咒',counter:'換列離開標記路線，或優先擊倒冥火屍巫'},
