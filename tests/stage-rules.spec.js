@@ -20,7 +20,7 @@ test('stage-rule registry exposes the complete contract and resolves both routes
   ]
  }));
  expect(result.api).toEqual(['object','function','function']);
- expect(result.contracts.map(rule=>rule.id)).toEqual(['standard-defense','standard-attack','qin-finale','keep-mowers','escort-grain','lane-lock','destroy-arrow-tower','rotating-frost','escort-ram']);
+ expect(result.contracts.map(rule=>rule.id)).toEqual(['standard-defense','standard-attack','qin-finale','keep-mowers','escort-grain','lane-lock','destroy-arrow-tower','rotating-frost','escort-ram','hold-reserve','capture-seals','fog-vision','formation-shift']);
  for(const rule of result.contracts){
   expect(rule.title.length).toBeGreaterThan(0);
   expect(rule.brief.length).toBeGreaterThan(0);
@@ -82,7 +82,7 @@ test('wired completion, timeout and breach verdicts are decided by active rules'
   end=(win,title,text)=>{outcomes.push({win,title,text});state.over=true;return {win,title,text}};
   begin('plants');state.bossSpawned=true;state.zombies=[];checkEnd();
   begin('zombies');state.time=state.levelConfig.attackTimeLimit;checkEnd();
-  begin('zombies');finishStageBreach({r:2},true,'legacy','legacy');
+  begin('zombies');state.gameplay.stageRule.data.targetDestroyed=true;finishStageBreach({r:2},true,'legacy','legacy');
   begin('plants');finishStageBreach({r:4},false,'legacy','legacy');
   end=originalEnd;
   return {outcomes,breached:state.gameplay.stageRule.data.breached};
@@ -215,4 +215,70 @@ test('pilot rule state restores without advancing and renders board cues',async(
   expect(cueBox.x+cueBox.width).toBeLessThanOrEqual(boardBox.x+boardBox.width+1);
   await page.screenshot({path:`/tmp/pvz-stage-rule-battle-${viewport.width}x${viewport.height}.png`,fullPage:true});
  }
+});
+
+test('all forty campaign routes resolve exactly one main rule across eight archetypes',async({page})=>{
+ await openApp(page);
+ const rows=await page.evaluate(()=>{
+  const result=[];
+  for(const season of [1,2])for(const faction of ['plants','zombies'])for(let level=1;level<=10;level++){
+   const context={season,faction,level,levelConfig:campaignLevels(season)[level]},config=stageRuleConfigFor(context),rule=stageRuleFor(context);
+   result.push({route:`${season}:${faction}:${level}`,id:rule.id,config:JSON.parse(JSON.stringify(config)),archetype:rule.archetype,objective:rule.objective(context)});
+  }
+  return result;
+ });
+ expect(rows).toHaveLength(40);
+ expect(new Set(rows.map(row=>row.route)).size).toBe(40);
+ expect(rows.filter(row=>/^standard-/.test(row.id))).toEqual([]);
+ expect([...new Set(rows.map(row=>row.archetype))].sort()).toEqual(['capture-seals','destroy-target','escort','fog-vision','formation-shift','hazard-lane','protect','survive-resource']);
+ for(const row of rows){
+  expect(row.archetype,row.route).toBeTruthy();
+  expect(row.config.ruleId,row.route).toBe(row.id);
+  expect(row.config.params,row.route).toEqual(expect.any(Object));
+  expect(Object.keys(row.config.params).length,row.route).toBeGreaterThan(0);
+  expect(row.objective,row.route).toHaveLength(3);
+  expect(row.objective.join(' '),row.route).not.toMatch(/undefined|NaN/);
+ }
+});
+
+test('new stage-rule archetypes have deterministic battle-time state transitions',async({page})=>{
+ await openApp(page);
+ const result=await page.evaluate(()=>{
+  const context={season:1,faction:'plants',level:4,levelConfig:LEVELS[4],time:0,resource:120,plants:[],zombies:[],bossSpawned:false};
+  const survive=stageRuleById('hold-reserve'),surviveRuntime=survive.start(context);
+  context.resource=70;context.bossSpawned=true;
+  const surviveLow=survive.isComplete(survive.tick(surviveRuntime,context),context);
+  context.resource=90;
+  const surviveHigh=survive.isComplete(survive.tick(surviveRuntime,context),context);
+
+  const sealsContext={...context,faction:'zombies',level:2,levelConfig:LEVELS[2]};
+  const seals=stageRuleById('capture-seals');let sealsRuntime=seals.start(sealsContext);
+  sealsRuntime=seals.onEvent(sealsRuntime,{type:'breach',lane:0},sealsContext);
+  sealsRuntime=seals.onEvent(sealsRuntime,{type:'breach',lane:0},sealsContext);
+  const oneSeal=seals.isComplete(sealsRuntime,sealsContext);
+  sealsRuntime=seals.onEvent(sealsRuntime,{type:'breach',lane:3},sealsContext);
+
+  const fogContext={...context,level:5,levelConfig:LEVELS[5],time:0};
+  const fog=stageRuleById('fog-vision');let fogRuntime=fog.start(fogContext);
+  fogContext.time=9000;fogRuntime=fog.tick(fogRuntime,fogContext);
+
+  const formationContext={...context,faction:'zombies',level:3,levelConfig:LEVELS[3]};
+  const formation=stageRuleById('formation-shift');let formationRuntime=formation.start(formationContext);
+  formationRuntime=formation.onEvent(formationRuntime,{type:'breach',lane:(formationRuntime.requiredLane+1)%5},formationContext);
+  const wrongLane=structuredClone(formationRuntime);
+  formationRuntime=formation.onEvent(formationRuntime,{type:'breach',lane:formationRuntime.requiredLane},formationContext);
+  formationRuntime=formation.onEvent(formationRuntime,{type:'breach',lane:formationRuntime.requiredLane},formationContext);
+  return {
+   survive:{low:surviveLow,high:surviveHigh,min:surviveRuntime.minimum},
+   seals:{one:oneSeal,lanes:sealsRuntime.capturedLanes,complete:seals.isComplete(sealsRuntime,context)},
+   fog:{cycle:fogRuntime.cycle,visibleLane:fogRuntime.visibleLane,visibleSpeed:stageRuleMovementMultiplier('zombies',fogRuntime.visibleLane,fogRuntime),hiddenSpeed:stageRuleMovementMultiplier('zombies',(fogRuntime.visibleLane+1)%5,fogRuntime)},
+   formation:{wrongLane,after:formationRuntime,complete:formation.isComplete(formationRuntime,context)}
+  };
+ });
+ expect(result.survive).toEqual({low:false,high:true,min:80});
+ expect(result.seals).toEqual({one:false,lanes:[0,3],complete:true});
+ expect(result.fog).toEqual({cycle:1,visibleLane:1,visibleSpeed:1,hiddenSpeed:1.12});
+ expect(result.formation.wrongLane.completedShifts).toBe(0);
+ expect(result.formation.after.completedShifts).toBe(2);
+ expect(result.formation.complete).toBe(true);
 });

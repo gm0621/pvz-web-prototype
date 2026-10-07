@@ -33,11 +33,11 @@
   - [x] Task 3.2：守城軍令三選一 UI
   - [x] Task 3.3：攻城里程碑軍令
   - [x] Gate：兩季攻守、save/reload、mobile/fullscreen/cloud suites
-- [ ] Phase 4：關卡專屬規則
+- [x] Phase 4：關卡專屬規則
   - [x] Task 4.1：stage-rule registry 與目標文字單一來源
   - [x] Task 4.2：六關 tracer-bullet 試點
-  - [ ] Task 4.3：擴至兩季×兩陣營×10 關
-  - [ ] Gate：資料完整性、archetype journeys、full suite
+  - [x] Task 4.3：擴至兩季×兩陣營×10 關
+  - [x] Gate：資料完整性、archetype journeys、full suite
 - [ ] Phase 5：角色組合技
   - [ ] Task 5.1：資料驅動組合偵測與 UI
   - [ ] Task 5.2：組合、軍令與關卡規則堆疊順序
@@ -71,6 +71,9 @@
 - Task 4.1 browser evidence：desktop 1280×720、portrait 390×844、landscape 844×390 的實際 DOM／全頁截圖均顯示關卡目標清楚可讀，無水平裁切或重疊；下一項為 Task 4.2。
 - Task 4.2 已完成：六個優先 pilot 關卡已有真正可玩的 stage-rule tracer bullets。第一季守方 L1 保住五路推車、L2 護送具生命與進度的運糧兵、L3 每 12 秒輪轉封路；第一季攻方 L1 限時摧毀標記箭塔後突破；第二季守方 L1 每 10 秒輪轉霜徑並實際降低該路敵軍移速；第二季攻方 L1 護送專屬衝車存活破門。規則均由 battle time 驅動、JSON-safe 保存，沿用既有 `checkEnd` 與雲端勝場提交流程；暫停與 reload 不會偷跑時間或重抽狀態。
 - Task 4.2 驗證：Playwright RED 先因六關仍解析為 standard rule 而失敗；focused desktop＋mobile 20/20；related gameplay/waves/season2/save 38/38。獨立回歸發現箭塔 45 秒期限與攻城軍令 60% 節點衝突，改為該關總時限 70% 後 tactical orders＋stage rules 17/17；fresh canonical 471 passed／5 skipped／0 failed／0 flaky；`git diff --check` 與相關 JS `node --check` 通過。實際 Chromium 戰鬥畫面已於 1280×720、390×844、844×390 驗收，任務 cue、HP／進度與操作區均可見且無關鍵遮擋。另以 RED 補上箭塔剩餘秒數與運糧兵 HP／行程即時 cue，focused desktop＋mobile 20/20，follow-up `ebe9f86`。production commit `2469b29`；下一項為 Task 4.3。
+- Task 4.3 與 Phase 4 Gate 已完成：兩季 × 兩陣營 × 10 關共 40 條 route 均有 JSON-safe `ruleId + params`，且每關只解析一個主規則；完整矩陣覆蓋 protect、escort、hazard-lane、destroy-target、survive-resource、capture-seals、fog-vision、formation-shift 八種 archetype。新增留糧守城、分路奪印、烽煙視界、輪轉破陣的 battle-time runtime、勝敗判定與即時 cue；第一季霧中加速亦接入既有移動流程，暫停／reload 不使用 wall clock。
+- Task 4.3 驗證：Playwright RED 先確認 40 關矩陣與四個新 archetype 尚不存在，再確認每關 `ruleId + params` config API 缺失；focused `tests/stage-rules.spec.js` desktop＋mobile 24/24，related（操作提示、兩季完整戰役、主線、第二季存檔）37 passed／1 skipped。首輪 canonical 找出舊倒數測試與 L1 箭塔 70% 期限競態，改由無提前期限的 L2 驗證通用倒數，連跑 desktop／mobile 各三次 6/6；fresh canonical 475 passed／5 skipped／0 failed／0 flaky。`git diff --check`、`node --check js/stage-rules-data.js`、`node --check js/app.js` 均通過。
+- Task 4.3 browser evidence：實際 Chromium 在 desktop 1280×720、portrait 390×844、landscape 844×390 的關卡卡片與戰鬥畫面均顯示同源規則目標／cue，無文字裁切、重疊或水平溢位，首關操作與後續鎖定狀態可達；下一項為 Task 5.1。
 
 ## 已完成提交
 

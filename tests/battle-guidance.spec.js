@@ -6,12 +6,12 @@ async function battle(page,{faction='zombies',season=1,level=1}={}){
  await page.evaluate(({faction,season,level})=>{currentUser=null;playerProfile=defaultProfile();for(let n=1;n<=10;n++)completeCampaignLevel('plants',n,1);for(let n=1;n<level;n++)completeCampaignLevel(faction,n,season);saveProfile();markStoryRead(faction,level,'opening',season);chooseFaction(faction,season);startLevel(faction,level);clearInterval(timer)}, {faction,season,level});
 }
 test('attack countdown, warning, pause and reload preserve simulation time; deadline loses',async({page})=>{
- await battle(page);await expect(page.locator('#attackTimer')).toHaveText('02:00');
+ await battle(page,{level:2});await expect(page.locator('#attackTimer')).toHaveText('02:10');
  const pause=page.locator('#pauseBtn');
  await expect(pause).toHaveText('⏸ 暫停遊戲');await expect(pause).toHaveClass(/pause-action/);await expect(pause).toHaveAttribute('aria-pressed','false');
  const pauseStyle=await pause.evaluate(el=>{const s=getComputedStyle(el);return {height:el.getBoundingClientRect().height,border:parseFloat(s.borderTopWidth),weight:Number(s.fontWeight)}});
  expect(pauseStyle.height).toBeGreaterThanOrEqual(48);expect(pauseStyle.border).toBeGreaterThanOrEqual(2);expect(pauseStyle.weight).toBeGreaterThanOrEqual(800);
- await page.evaluate(()=>{state.time=90000;updateHUD()});await expect(page.locator('#attackStatus')).toHaveClass(/warning/);
+ await page.evaluate(()=>{state.time=state.levelConfig.attackTimeLimit-30000;updateHUD()});await expect(page.locator('#attackStatus')).toHaveClass(/warning/);
  await expect(page.locator('#attackStatus')).toContainText('未突破就失敗');
  await page.locator('#pauseBtn').click();expect(await page.evaluate(()=>{const t=state.time;tick();return state.time===t})).toBe(true);
  await expect(pause).toHaveText('▶ 繼續遊戲');await expect(pause).toHaveClass(/resume/);await expect(pause).toHaveAttribute('aria-pressed','true');
@@ -21,7 +21,7 @@ test('attack countdown, warning, pause and reload preserve simulation time; dead
  await expect(page.locator('#attackStatus')).toContainText('已暫停');
  await page.evaluate(()=>persistBattleState());await page.reload();
  await expect(page.locator('#attackTimer')).toHaveText('00:30');expect(await page.evaluate(()=>state.paused)).toBe(true);
- await page.locator('#pauseBtn').click();await page.evaluate(()=>{clearInterval(timer);state.time=110000;updateHUD()});
+ await page.locator('#pauseBtn').click();await page.evaluate(()=>{clearInterval(timer);state.time=state.levelConfig.attackTimeLimit-10000;updateHUD()});
  await expect(page.locator('#attackStatus')).toHaveClass(/critical/);
  await page.evaluate(()=>{state.time=state.levelConfig.attackTimeLimit-50;tick()});
  await expect(page.locator('#modalTitle')).toHaveText('進攻失敗');await expect(page.locator('#attackTimer')).toHaveText('00:00');
