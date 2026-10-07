@@ -89,3 +89,4 @@
 - `8ef4a32` — feat: add stage rule registry
 - `2469b29` — feat: add six pilot stage objectives
 - `ebe9f86` — fix: expose live stage objective status
+- `c908ba7` — feat: expand stage rules across campaigns
