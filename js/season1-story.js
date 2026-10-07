@@ -42,11 +42,11 @@ function openCampaignStory(faction,level,scene,{replay=false,onComplete=null,sea
  storyElement('storySkip').textContent=replay?'關閉回看':scene==='opening'?'跳過，開始戰鬥':'跳過，查看戰果';
  renderCampaignStory();storyElement('storyDialog').showModal();storyElement('storyNext').focus();return true;
 }
-function requestCampaignBattle(faction,level=selectedLevel){
- const season=currentSeason;
+function requestCampaignBattle(faction,level=selectedLevel,options={}){
+ const season=currentSeason,battleOptions={challengeIds:[...new Set(Array.isArray(options?.challengeIds)?options.challengeIds:[])]};
  if(!isCampaignLevelUnlocked(faction,level,season))return false;
  if(activeCampaignStory)return false;
- const begin=()=>{if(currentSeason!==season||!isCampaignLevelUnlocked(faction,level,season))return false;selectedLevel=level;currentFaction=faction;start(faction);return true};
+ const begin=()=>{if(currentSeason!==season||!isCampaignLevelUnlocked(faction,level,season))return false;selectedLevel=level;currentFaction=faction;start(faction,battleOptions);return true};
  if(campaignStoryData(season)[faction]?.[level]&&!hasReadStory(faction,level,'opening',season)){
   if(storyElement('game').classList.contains('active')){currentFaction=faction;backToLevelSelect()}
   pauseAndSaveBattle('story');clearInterval(timer);

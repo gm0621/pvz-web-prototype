@@ -5,7 +5,7 @@ function buildSeason2LevelCards(){
   const done=isCampaignLevelCompleted(currentFaction,stage.number,2),open=isCampaignLevelUnlocked(currentFaction,stage.number,2);
   const card=document.createElement('article');card.className=`level-card campaign-card season2-level ${done?'completed':open?'current':'locked'}`;
   card.innerHTML=`<div class="level-ribbon"><span>第 ${stage.number} 關</span><strong>${stage.name}</strong></div><div class="level-art" style="background-image:url('${stage.cardArt}')"></div><p>${stage[currentFaction==='plants'?'defense':'attack'].story}</p>${stageRuleCardHtml(SEASON2_LEVELS[stage.number],currentFaction,2,stage.number)}<div class="level-meta">難度：${SEASON2_LEVELS[stage.number].difficulty}｜${done?'✅ 已通關，可用新角色重玩':open?'已開放':`先完成第 ${stage.number-1} 關`}</div><button class="level-start" data-jump-level="${stage.number}" ${open?'':'disabled'}>${open?(done?`重玩第${levelLabel(stage.number)}關`:`開始第${levelLabel(stage.number)}關`):'🔒 尚未解鎖'}</button>`;
-  card.querySelector('button').onclick=()=>startLevel(currentFaction,stage.number);appendStoryReplayButton(card,currentFaction,stage.number);wrap.append(card);
+  appendChallengeSelector(card,2,currentFaction,stage.number,open);card.querySelector('.level-start').onclick=()=>startLevel(currentFaction,stage.number,selectedChallengeIds(card));appendStoryReplayButton(card,currentFaction,stage.number);wrap.append(card);
  });
 }
 function applySeasonBattleTheme(){

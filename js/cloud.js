@@ -30,19 +30,23 @@ async function startCloudMatch(level,faction){
  }catch(error){accountStatus('雲端對戰紀錄建立失敗：'+cloudErrorMessage(error),true)}
 }
 function cloudMatchMinimumMs(faction,level){return (faction==='zombies'?8:30+Math.max(1,Number(level)||1)*6)*1000}
-async function waitForCloudMatchVerification(waitMs){const deadline=Date.now()+waitMs,update=()=>{const seconds=Math.max(1,Math.ceil((deadline-Date.now())/1000));if(!$('modal')?.classList.contains('show')||!state?.over)return;$('modalTitle').textContent='⏳ 戰果確認中';$('modalText').textContent=`快速破關成功，安全檢查倒數 ${seconds} 秒；完成後會自動顯示戰果。`;if($('modalNext'))$('modalNext').textContent=`確認中（${seconds} 秒）…`};update();const countdown=setInterval(update,250);try{await new Promise(resolve=>setTimeout(resolve,waitMs))}finally{clearInterval(countdown)}}
-async function claimCloudMatchReward(win,usedKeys=[]){
+async function waitForCloudMatchVerification(waitMs,ownsResult=()=>($('modal')?.classList.contains('show')&&state?.over)){const deadline=Date.now()+waitMs,update=()=>{const seconds=Math.max(1,Math.ceil((deadline-Date.now())/1000));if(!ownsResult())return;$('modalTitle').textContent='⏳ 戰果確認中';$('modalText').textContent=`快速破關成功，安全檢查倒數 ${seconds} 秒；完成後會自動顯示戰果。`;if($('modalNext'))$('modalNext').textContent=`確認中（${seconds} 秒）…`};update();const countdown=setInterval(update,250);try{await new Promise(resolve=>setTimeout(resolve,waitMs))}finally{clearInterval(countdown)}}
+async function claimCloudMatchReward(win,usedKeys=[],battle=state){
   if(!currentUser)return false;
-  if(!win){cloudMatchId=null;accountStatus('本場未過關，不發放雲端戰利品。');return true}
+  if(!win){if(state===battle)cloudMatchId=null;accountStatus('本場未過關，不發放雲端戰利品。');return true}
   if(!cloudMatchId){accountStatus('本場沒有有效的雲端對戰紀錄，正在還原雲端進度。',true);await pullCloudProfile(false,'force');return false}
-  const matchId=cloudMatchId,characterKey=usedKeys.find(key=>/^[a-zA-Z0-9_]+$/.test(key))||null,activeDefinitions=activeChallengeDefinitions(state),challengeBattle=(state?.gameplay?.challenge?.activeIds||[]).length>0,challengeIds=activeDefinitions.filter(definition=>evaluateChallengeVerdict(definition,state.gameplay.telemetry).passed).map(definition=>definition.id),telemetry=challengeBattle?challengeTelemetryPayload(state,challengeIds):null,telemetryCanonical=challengeBattle?challengeTelemetryCanonical(state,challengeIds):null,telemetryDigest=challengeBattle?await challengeTelemetryDigest(state,challengeIds):null;
+  const matchId=cloudMatchId,ownsClaim=()=>state===battle&&cloudMatchId===matchId,ownsResult=()=>ownsClaim()&&$('modal')?.classList.contains('show')&&battle?.over,characterKey=usedKeys.find(key=>/^[a-zA-Z0-9_]+$/.test(key))||null,activeDefinitions=activeChallengeDefinitions(battle),challengeBattle=(battle?.gameplay?.challenge?.activeIds||[]).length>0,challengeIds=activeDefinitions.filter(definition=>evaluateChallengeVerdict(definition,battle.gameplay.telemetry).passed).map(definition=>definition.id),telemetry=challengeBattle?challengeTelemetryPayload(battle,challengeIds):null,telemetryCanonical=challengeBattle?challengeTelemetryCanonical(battle,challengeIds):null,telemetryDigest=challengeBattle?await challengeTelemetryDigest(battle,challengeIds):null;
+  if(!ownsClaim())return false;
   const claim=()=>challengeBattle?initSupabaseClient().rpc('sgz_claim_match_rewards',{p_device_id:getDeviceId(),p_match_id:matchId,p_character_key:characterKey,p_challenge_ids:challengeIds,p_telemetry_digest:telemetryDigest,p_telemetry_canonical:telemetryCanonical,p_telemetry:telemetry}):initSupabaseClient().rpc('sgz_claim_level_reward',{p_device_id:getDeviceId(),p_match_id:matchId,p_character_key:characterKey});
   let {data,error}=await claim();
+  if(!ownsClaim())return false;
   if(error&&/MATCH_TOO_SHORT/i.test(error?.message||'')){
-    const minimumMs=cloudMatchMinimumMs(state?.faction,state?.level),elapsed=Date.now()-(state?.cloudMatchStartedAt||Date.now()),waitMs=Math.max(250,minimumMs-elapsed+1200);
+    const minimumMs=cloudMatchMinimumMs(battle?.faction,battle?.level),elapsed=Date.now()-(battle?.cloudMatchStartedAt||Date.now()),waitMs=Math.max(250,minimumMs-elapsed+1200);
     accountStatus(`戰果驗證中，約 ${Math.ceil(waitMs/1000)} 秒後自動完成；請留在結算畫面。`);
-    await waitForCloudMatchVerification(waitMs);
+    await waitForCloudMatchVerification(waitMs,ownsResult);
+    if(!ownsClaim())return false;
     ({data,error}=await claim());
+    if(!ownsClaim())return false;
   }
   if(error){cloudMatchId=null;accountStatus('戰利品同步失敗：'+cloudErrorMessage(error),true);await pullCloudProfile(false,'force');return false}
   cloudMatchId=null;applyCloudResult(data);updateProgressUI();return true
