@@ -35,7 +35,7 @@
   - [x] Gate：兩季攻守、save/reload、mobile/fullscreen/cloud suites
 - [ ] Phase 4：關卡專屬規則
   - [x] Task 4.1：stage-rule registry 與目標文字單一來源
-  - [ ] Task 4.2：六關 tracer-bullet 試點
+  - [x] Task 4.2：六關 tracer-bullet 試點
   - [ ] Task 4.3：擴至兩季×兩陣營×10 關
   - [ ] Gate：資料完整性、archetype journeys、full suite
 - [ ] Phase 5：角色組合技
@@ -69,6 +69,8 @@
 - Task 3.3 與 Phase 3 Gate 已完成：第一、二季攻城在首次擊破守軍與剩餘 40% 時間壓力各觸發一次三選一軍令，每局最多兩次；已觸發 milestone 與 pending offer 都隨 battle-local snapshot 保存，reload 不重抽，拖時間不會重複觸發，攻城失敗後重開會建立全新軍令狀態。deadline 會先結算失敗，不會在 00:00 彈出無效軍令。RED 為 desktop／mobile 4 failed；focused 14/14，Phase Gate 34/34，canonical 451 passed／5 skipped／0 failed／0 flaky，`git diff --check` 與相關 JS `node --check` 全數通過。desktop 1440×900、portrait 390×844、landscape 844×390 的實際 DOM／截圖均顯示三張軍令完整可讀、無裁切／重疊／水平溢位；下一項為 Task 4.1。
 - Task 4.1 已完成：新增 `STAGE_RULES` registry 與完整 `id/title/brief/objective/start/tick/onEvent/isComplete/isFailed` contract；第一、二季攻守及秦皇終章由同一來源建立關卡卡片、戰鬥 HUD 與勝敗判定。`state.gameplay.stageRule` 僅保存 JSON-safe `{id,data}`，新局、舊 snapshot、reload 與未知 rule id 都會 deterministic normalize；未知 id 不會沿用不相容 runtime data。RED 先確認 registry／runtime／共用目標缺失（3 failed），再確認未知 rule data 未清理（1 failed）；focused desktop＋mobile 10/10、related desktop 74 passed／1 skipped、mobile 19/19，fresh canonical 461 passed／5 skipped／0 failed／0 flaky，`git diff --check`、相關 JS `node --check` 與新增行 credential scan 均通過。
 - Task 4.1 browser evidence：desktop 1280×720、portrait 390×844、landscape 844×390 的實際 DOM／全頁截圖均顯示關卡目標清楚可讀，無水平裁切或重疊；下一項為 Task 4.2。
+- Task 4.2 已完成：六個優先 pilot 關卡已有真正可玩的 stage-rule tracer bullets。第一季守方 L1 保住五路推車、L2 護送具生命與進度的運糧兵、L3 每 12 秒輪轉封路；第一季攻方 L1 限時摧毀標記箭塔後突破；第二季守方 L1 每 10 秒輪轉霜徑並實際降低該路敵軍移速；第二季攻方 L1 護送專屬衝車存活破門。規則均由 battle time 驅動、JSON-safe 保存，沿用既有 `checkEnd` 與雲端勝場提交流程；暫停與 reload 不會偷跑時間或重抽狀態。
+- Task 4.2 驗證：Playwright RED 先因六關仍解析為 standard rule 而失敗；focused desktop＋mobile 20/20；related gameplay/waves/season2/save 38/38。獨立回歸發現箭塔 45 秒期限與攻城軍令 60% 節點衝突，改為該關總時限 70% 後 tactical orders＋stage rules 17/17；fresh canonical 471 passed／5 skipped／0 failed／0 flaky；`git diff --check` 與相關 JS `node --check` 通過。實際 Chromium 戰鬥畫面已於 1280×720、390×844、844×390 驗收，任務 cue、HP／進度與操作區均可見且無關鍵遮擋。production commit `2469b29`；下一項為 Task 4.3。
 
 ## 已完成提交
 
@@ -82,3 +84,4 @@
 - `49974a0` — feat: add defense tactical order selection
 - `f8a0a65` — feat: add attack tactical order milestones
 - `8ef4a32` — feat: add stage rule registry
+- `2469b29` — feat: add six pilot stage objectives
