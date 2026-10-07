@@ -282,3 +282,70 @@ test('new stage-rule archetypes have deterministic battle-time state transitions
  expect(result.formation.after.completedShifts).toBe(2);
  expect(result.formation.complete).toBe(true);
 });
+
+test('new archetypes decide live wins and losses through the canonical battle verdict path',async({page})=>{
+ await openApp(page);
+ const result=await page.evaluate(()=>{
+  for(let level=1;level<=10;level++)completeCampaignLevel('plants',level,1);
+  for(let level=1;level<=10;level++)completeCampaignLevel('zombies',level,1);
+  const outcomes=[],originalEnd=end;
+  end=(win,title)=>{outcomes.push({win,title,rule:state.gameplay.stageRule.id});state.over=true;return {win,title}};
+  const begin=(faction,level)=>{currentSeason=1;currentFaction=faction;selectedLevel=level;start(faction);clearInterval(timer);state.over=false;return state.gameplay.stageRule.data};
+
+  begin('plants',4);state.resource=70;state.bossSpawned=true;state.zombies=[];tickStageRule();const reserveBlocked=checkEnd();state.resource=90;tickStageRule();checkEnd();
+  begin('plants',4);finishStageBreach({r:1,id:'reserve-breach'},false,'legacy','legacy');
+
+  begin('zombies',2);const firstSeal=finishStageBreach({r:0,id:'seal-a'},true,'legacy','legacy');finishStageBreach({r:3,id:'seal-b'},true,'legacy','legacy');
+  begin('zombies',2);state.time=state.levelConfig.attackTimeLimit;checkEnd();
+
+  let formation=begin('zombies',3);const wrongLane=(formation.requiredLane+1)%5;finishStageBreach({r:wrongLane,id:'formation-wrong'},true,'legacy','legacy');formation=state.gameplay.stageRule.data;finishStageBreach({r:formation.requiredLane,id:'formation-a'},true,'legacy','legacy');formation=state.gameplay.stageRule.data;finishStageBreach({r:formation.requiredLane,id:'formation-b'},true,'legacy','legacy');
+  begin('zombies',3);state.time=state.levelConfig.attackTimeLimit;checkEnd();
+
+  begin('plants',5);state.time=9000;tickStageRule();state.bossSpawned=true;state.zombies=[];checkEnd();
+  begin('plants',5);finishStageBreach({r:4,id:'fog-breach'},false,'legacy','legacy');
+  end=originalEnd;
+  return {reserveBlocked,firstSeal,outcomes};
+ });
+ expect(result.reserveBlocked).toBe(false);
+ expect(result.firstSeal).toBe(false);
+ expect(result.outcomes.map(item=>[item.rule,item.win])).toEqual([
+  ['hold-reserve',true],['hold-reserve',false],
+  ['capture-seals',true],['capture-seals',false],
+  ['formation-shift',true],['formation-shift',false],
+  ['fog-vision',true],['fog-vision',false]
+ ]);
+ expect(result.outcomes.filter(item=>item.win).map(item=>item.title)).toEqual(['防守成功！','突破成功！','突破成功！','防守成功！']);
+});
+
+test('all new archetype runtimes survive browser reload without advancing and remain paused',async({page})=>{
+ await openApp(page);
+ await page.evaluate(()=>{
+  for(let level=1;level<=10;level++)completeCampaignLevel('plants',level,1);
+  for(let level=1;level<=10;level++)completeCampaignLevel('zombies',level,1);
+  saveProfile();
+ });
+ const routes=[
+  {faction:'plants',level:4,id:'hold-reserve'},
+  {faction:'zombies',level:2,id:'capture-seals'},
+  {faction:'plants',level:5,id:'fog-vision'},
+  {faction:'zombies',level:3,id:'formation-shift'}
+ ];
+ for(const route of routes){
+  const expected=await page.evaluate(({faction,level,id})=>{
+   currentSeason=1;currentFaction=faction;selectedLevel=level;start(faction);clearInterval(timer);
+   if(id==='hold-reserve'){state.resource=91;tickStageRule()}
+   if(id==='capture-seals')recordStageRuleEvent({type:'breach',lane:2});
+   if(id==='fog-vision'){state.time=9000;tickStageRule()}
+   if(id==='formation-shift')recordStageRuleEvent({type:'breach',lane:state.gameplay.stageRule.data.requiredLane});
+   pauseAndSaveBattle('test');
+   return JSON.parse(JSON.stringify(state.gameplay.stageRule));
+  },route);
+  await page.reload();
+  await page.waitForFunction(()=>typeof restoreBattleIfAvailable==='function');
+  const restored=await page.evaluate(()=>{const available=restoreBattleIfAvailable();clearInterval(timer);return {available,paused:state?.paused,time:state?.time,rule:state?.gameplay?.stageRule?JSON.parse(JSON.stringify(state.gameplay.stageRule)):null}});
+  expect(restored.available,route.id).toBe(true);
+  expect(restored.paused,route.id).toBe(true);
+  expect(restored.rule,route.id).toEqual(expected);
+  if(route.id==='fog-vision')expect(restored.time).toBe(9000);
+ }
+});
