@@ -1,18 +1,13 @@
 const GAMEPLAY_STATE_VERSION=1;
-const COMBINATION_DEFINITIONS=Object.freeze([
- Object.freeze({id:'peach-oath',name:'桃園結義',side:'plants',members:Object.freeze(['firepea','zhangfei','liubei']),effect:Object.freeze({damagePct:.15}),bonusLabel:'攻擊 +15%'}),
- Object.freeze({id:'tiger-guard-line',name:'虎衛合陣',side:'plants',members:Object.freeze(['s2Xiahou','s2DianWei','s2XuChu']),effect:Object.freeze({ratePct:-.12}),bonusLabel:'攻擊間隔 -12%'}),
- Object.freeze({id:'corpse-sustain-line',name:'屍煙續戰',side:'zombies',members:Object.freeze(['s2Coffin','s2Smoke','s2Medic']),effect:Object.freeze({ratePct:-.10}),bonusLabel:'攻擊間隔 -10%'})
-]);
 function combinationUnits(side,battle=state){return side==='plants'?battle?.plants||[]:battle?.zombies||[]}
 function combinationIsActive(definition,battle=state){
- if(!definition||!battle)return false;
+ if(!definition||!battle||definition.season!==(battle.season||1))return false;
  const livingTypes=new Set(combinationUnits(definition.side,battle).filter(unit=>unit&&unit.hp>0).map(unit=>unit.type));
  return definition.members.every(type=>livingTypes.has(type));
 }
 function activeCombinationDefinitions(side,battle=state){return COMBINATION_DEFINITIONS.filter(definition=>definition.side===side&&combinationIsActive(definition,battle))}
 function applyCombinationUnitModifier(side,key,unit,battle=state){
- if(!unit||!battle)return unit;
+ if(!unit||!battle||side!==battle.faction)return unit;
  const effects=activeCombinationDefinitions(side,battle).filter(definition=>definition.members.includes(key)).map(definition=>definition.effect);
  if(!effects.length)return unit;
  const modified={...unit},damagePct=effects.reduce((sum,effect)=>sum+(effect.damagePct||0),0),ratePct=effects.reduce((sum,effect)=>sum+(effect.ratePct||0),0);
@@ -24,11 +19,13 @@ function renderCombinationStatus(){
  if(!state)return false;
  const host=document.querySelector('.battle-resource-strip');if(!host)return false;
  let panel=document.getElementById('combinationStatus');
- if(!panel){panel=document.createElement('section');panel.id='combinationStatus';panel.className='combination-status';panel.setAttribute('role','status');panel.setAttribute('aria-live','polite');panel.setAttribute('aria-label','已啟動組合');host.prepend(panel)}
- const active=activeCombinationDefinitions(state.faction);panel.replaceChildren();panel.hidden=!active.length;
+ if(!panel){panel=document.createElement('section');panel.id='combinationStatus';panel.className='combination-status';panel.setAttribute('role','status');panel.setAttribute('aria-live','polite');panel.setAttribute('aria-atomic','true');panel.setAttribute('aria-label','我方已啟動組合');host.prepend(panel)}
+ const active=activeCombinationDefinitions(state.faction),signature=active.map(definition=>definition.id).join('|');
+ if(panel.dataset.signature===signature)return active.length>0;
+ panel.dataset.signature=signature;panel.replaceChildren();panel.hidden=!active.length;
  if(!active.length)return false;
- const title=document.createElement('strong');title.className='combination-status-title';title.textContent='⚔ 組合啟動';panel.appendChild(title);
- for(const definition of active){const badge=document.createElement('span');badge.className='combination-badge';badge.dataset.combinationId=definition.id;badge.textContent=`${definition.name}｜${definition.bonusLabel}`;panel.appendChild(badge)}
+ const title=document.createElement('strong');title.className='combination-status-title';title.textContent='⚔ 我方組合';panel.appendChild(title);
+ for(const definition of active){const badge=document.createElement('span');badge.className='combination-badge';badge.dataset.combinationId=definition.id;badge.textContent=`${definition.name}｜${definition.memberNames.join('＋')}｜${definition.bonusLabel}`;panel.appendChild(badge)}
  return true;
 }
 const ENEMY_TELEGRAPH_RULES=Object.freeze({
