@@ -150,11 +150,12 @@ test('pilot attack objectives require their designated target and escort',async(
  await openApp(page);
  const result=await page.evaluate(()=>{
   const setup=(season)=>{currentUser=null;playerProfile=defaultProfile();currentSeason=1;for(let level=1;level<=10;level++)completeCampaignLevel('plants',level,1);currentSeason=season;currentFaction='zombies';selectedLevel=1;start('zombies');clearInterval(timer);return state};
-  setup(1);const towerRule=activeStageRule(),tower=state.plants.find(p=>p.stageTarget==='arrow-tower'),towerBefore=tower?{hp:tower.hp,maxHp:tower.maxHp}:null;state.time=state.gameplay.stageRule.data.deadline;tickStageRule();const towerTimedOut=towerRule.isFailed(state.gameplay.stageRule.data,stageRuleContextFor(state.levelConfig,state.faction,state.season,state.level,state));
+  setup(1);render();const towerRule=activeStageRule(),tower=state.plants.find(p=>p.stageTarget==='arrow-tower'),towerBefore=tower?{hp:tower.hp,maxHp:tower.maxHp}:null,towerCue=document.querySelector('.stage-rule-cue')?.textContent||'';state.time=state.gameplay.stageRule.data.deadline;tickStageRule();const towerTimedOut=towerRule.isFailed(state.gameplay.stageRule.data,stageRuleContextFor(state.levelConfig,state.faction,state.season,state.level,state));
   setup(2);const ramRule=activeStageRule(),ram=state.zombies.find(z=>z.stageEscort==='gate-ram'),ordinary={id:'ordinary',r:0,c:-.1,hp:10};state.zombies.push(ordinary);recordStageRuleEvent({type:'breach',lane:0,unitId:ordinary.id,stageEscort:null});const ordinaryComplete=ramRule.isComplete(state.gameplay.stageRule.data,stageRuleContextFor(state.levelConfig,state.faction,state.season,state.level,state));recordStageRuleEvent({type:'breach',lane:ram.r,unitId:ram.id,stageEscort:ram.stageEscort});const escortComplete=ramRule.isComplete(state.gameplay.stageRule.data,stageRuleContextFor(state.levelConfig,state.faction,state.season,state.level,state));
-  return {towerBefore,towerTimedOut,ram:ram?{type:ram.type,escort:ram.stageEscort,hp:ram.hp}:null,ordinaryComplete,escortComplete};
+  return {towerBefore,towerCue,towerTimedOut,ram:ram?{type:ram.type,escort:ram.stageEscort,hp:ram.hp}:null,ordinaryComplete,escortComplete};
  });
  expect(result.towerBefore).toEqual({hp:360,maxHp:360});
+ expect(result.towerCue).toMatch(/箭塔期限.*秒/);
  expect(result.towerTimedOut).toBe(true);
  expect(result.ram).toEqual(expect.objectContaining({type:'s2Ram',escort:'gate-ram'}));
  expect(result.ram.hp).toBeGreaterThan(0);

@@ -39,7 +39,8 @@
 
 /* Task 10 tracer-bullet objectives: board cues are derived from saved rule state. */
 .stage-rule-cue{position:absolute;z-index:6;box-sizing:border-box;pointer-events:none;font-weight:900;text-shadow:0 2px 3px #000;color:#fff}
-.stage-rule-escort{transform:translate(-50%,-50%);padding:4px 7px;border:2px solid #fde68a;border-radius:999px;background:#713f12e8;white-space:nowrap;font-size:clamp(9px,1.2vw,13px);box-shadow:0 0 12px #fbbf24aa}
+.stage-rule-escort{transform:translate(-50%,-50%);width:max-content;max-width:156px;padding:4px 7px;border:2px solid #fde68a;border-radius:12px;background:#713f12e8;white-space:pre-line;text-align:center;font-size:clamp(9px,1.2vw,13px);line-height:1.15;box-shadow:0 0 12px #fbbf24aa}
+.stage-rule-timer{left:50%;top:5px;transform:translateX(-50%);padding:4px 9px;border:2px solid #fde68a;border-radius:8px;background:#451a03e8;color:#fef3c7;white-space:nowrap;font-size:clamp(10px,1.4vw,14px);box-shadow:0 0 10px #f59e0baa}
 .stage-rule-lane{left:0;width:100%;display:flex;align-items:center;justify-content:center;border:2px dashed #fbbf24;background:repeating-linear-gradient(135deg,#7f1d1d33 0 12px,#f59e0b26 12px 24px);font-size:clamp(10px,1.5vw,15px)}
 .stage-rule-lane.frost{border-color:#7dd3fc;background:linear-gradient(90deg,#bae6fd2e,#38bdf855,#bae6fd2e);color:#e0f2fe;box-shadow:inset 0 0 18px #7dd3fc77}
 .entity.stage-target,.entity.stage-escort{filter:drop-shadow(0 0 8px #fde047) drop-shadow(0 0 3px #fff)}

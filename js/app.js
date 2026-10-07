@@ -407,7 +407,10 @@ function renderStageRuleBoard(board){
  const runtime=state?.gameplay?.stageRule?.data;if(!runtime)return;
  const cue=document.createElement('div');cue.className='stage-rule-cue';cue.dataset.stageRuleCue=runtime.kind||state.gameplay.stageRule.id;
  if(runtime.kind==='escort-grain'){
-  const escort=runtime.escort;cue.classList.add('stage-rule-escort');cue.style.left=`${(escort.c+.5)*CELL_W}%`;cue.style.top=`${(escort.r+.5)*CELL_H}%`;cue.textContent=`🚚 運糧兵 ${Math.ceil(escort.hp)}/${escort.maxHp}`;board.appendChild(cue);return;
+  const escort=runtime.escort;cue.classList.add('stage-rule-escort');cue.style.left=`clamp(78px, ${(escort.c+.5)*CELL_W}%, calc(100% - 78px))`;cue.style.top=`${(escort.r+.5)*CELL_H}%`;cue.textContent=`🚚 運糧兵\nHP ${Math.ceil(escort.hp)}/${escort.maxHp}｜進度 ${Math.floor(escort.progress)}%`;board.appendChild(cue);return;
+ }
+ if(runtime.kind==='destroy-arrow-tower'){
+  cue.classList.add('stage-rule-timer');cue.textContent=runtime.targetDestroyed?'🏹 箭塔已摧毀｜突破城門':`⏱ 箭塔期限 ${Math.max(0,Math.ceil((runtime.deadline-state.time)/1000))} 秒`;board.appendChild(cue);return;
  }
  const lane=runtime.kind==='lane-lock'?runtime.blockedLane:runtime.kind==='rotating-frost'?runtime.frozenLane:null;
  if(lane!==null){cue.classList.add('stage-rule-lane',runtime.kind==='rotating-frost'?'frost':'locked');cue.style.top=`${lane*CELL_H}%`;cue.style.height=`${CELL_H}%`;cue.textContent=runtime.kind==='rotating-frost'?`❄ 第 ${lane+1} 路霜徑・敵軍減速`:`🔥 第 ${lane+1} 路封鎖・不可部署`;board.appendChild(cue)}
