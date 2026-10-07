@@ -6,13 +6,21 @@ function combinationIsActive(definition,battle=state){
  return definition.members.every(type=>livingTypes.has(type));
 }
 function activeCombinationDefinitions(side,battle=state){return COMBINATION_DEFINITIONS.filter(definition=>definition.side===side&&combinationIsActive(definition,battle))}
+const MAX_COMBINATION_THROUGHPUT=1.15;
+function cappedCombinationEffects(effects){
+ const damagePct=effects.reduce((sum,effect)=>sum+(effect.damagePct||0),0),ratePct=effects.reduce((sum,effect)=>sum+(effect.ratePct||0),0);
+ const throughput=scale=>(1+damagePct*scale)/Math.max(.05,1+ratePct*scale);
+ if(throughput(1)<=MAX_COMBINATION_THROUGHPUT)return {damagePct,ratePct};
+ let low=0,high=1;for(let i=0;i<24;i++){const middle=(low+high)/2;if(throughput(middle)>MAX_COMBINATION_THROUGHPUT)high=middle;else low=middle}
+ return {damagePct:damagePct*low,ratePct:ratePct*low};
+}
 function applyCombinationUnitModifier(side,key,unit,battle=state){
  if(!unit||!battle||side!==battle.faction)return unit;
  const effects=activeCombinationDefinitions(side,battle).filter(definition=>definition.members.includes(key)).map(definition=>definition.effect);
  if(!effects.length)return unit;
- const modified={...unit},damagePct=effects.reduce((sum,effect)=>sum+(effect.damagePct||0),0),ratePct=effects.reduce((sum,effect)=>sum+(effect.ratePct||0),0);
+ const modified={...unit},{damagePct,ratePct}=cappedCombinationEffects(effects);
  if(damagePct)['damage','meleeDamage','catapultDamage','smashDamage','bombDamage','laughDamage','curseDamage','curseAdjacentDamage'].forEach(stat=>{if(modified[stat]!=null)modified[stat]=Math.max(1,Math.round(modified[stat]*(1+damagePct)))});
- if(ratePct)['rate','catapultRate','smashRate','laughRate','curseRate'].forEach(stat=>{if(modified[stat]!=null)modified[stat]=Math.max(1,Math.round(modified[stat]*(1+ratePct)))});
+ if(ratePct)['rate','supportRate','catapultRate','smashRate','laughRate','curseRate'].forEach(stat=>{if(modified[stat]!=null)modified[stat]=Math.max(1,Math.round(modified[stat]*(1+ratePct)))});
  return modified;
 }
 function renderCombinationStatus(){
@@ -24,7 +32,8 @@ function renderCombinationStatus(){
  if(panel.dataset.signature===signature)return active.length>0;
  panel.dataset.signature=signature;panel.replaceChildren();panel.hidden=!active.length;
  if(!active.length)return false;
- const title=document.createElement('strong');title.className='combination-status-title';title.textContent='⚔ 我方組合';panel.appendChild(title);
+ const memberCounts=new Map();for(const definition of active)for(const member of definition.members)memberCounts.set(member,(memberCounts.get(member)||0)+1);
+ const hasOverlap=[...memberCounts.values()].some(count=>count>1),title=document.createElement('strong');title.className='combination-status-title';title.textContent=hasOverlap?'⚔ 我方組合｜重疊成員總效益上限 +15%':'⚔ 我方組合';panel.appendChild(title);
  for(const definition of active){const badge=document.createElement('span');badge.className='combination-badge';badge.dataset.combinationId=definition.id;badge.textContent=`${definition.name}｜${definition.memberNames.join('＋')}｜${definition.bonusLabel}`;panel.appendChild(badge)}
  return true;
 }

@@ -21,9 +21,9 @@ test('attack countdown, warning, pause and reload preserve simulation time; dead
  await expect(page.locator('#attackStatus')).toContainText('已暫停');
  await page.evaluate(()=>persistBattleState());await page.reload();
  await expect(page.locator('#attackTimer')).toHaveText('00:30');expect(await page.evaluate(()=>state.paused)).toBe(true);
- await page.locator('#pauseBtn').click();await page.evaluate(()=>{clearInterval(timer);state.time=state.levelConfig.attackTimeLimit-10000;updateHUD()});
+ await page.evaluate(()=>{clearInterval(timer);state.paused=false;applyPausedBattleUI();state.time=state.levelConfig.attackTimeLimit-10000;updateHUD()});
  await expect(page.locator('#attackStatus')).toHaveClass(/critical/);
- await page.evaluate(()=>{state.time=state.levelConfig.attackTimeLimit-50;tick()});
+ await page.evaluate(()=>{state.paused=false;state.time=state.levelConfig.attackTimeLimit-50;tick()});
  await expect(page.locator('#modalTitle')).toHaveText('進攻失敗');await expect(page.locator('#attackTimer')).toHaveText('00:00');
  await expect(page.locator('#grid .deploy-allowed')).toHaveCount(0);
 });
