@@ -1,4 +1,8 @@
 const GAMEPLAY_STATE_VERSION=1;
+var BATTLE_MODIFIER_LAYER_ORDER=Object.freeze(['base-equipment','character-level','fixed-talent','synergy','tactical-order','temporary-stage-status','clamp']);
+var BATTLE_MODIFIER_CONSUMERS=Object.freeze({
+ resourceIncome:'battleIncomeAmount',damage:'resolveBattleUnit',rangedDamage:'resolveBattleUnit',meleeDamage:'resolveBattleUnit',shield:'resolveBattleUnit',movementSpeed:'battleMovementSpeed',attackSpeed:'resolveBattleUnit',damageTaken:'battleDamageTaken',deploymentCost:'battleDeploymentCost',unitHealth:'resolveBattleUnit',enemySpawnInterval:'battleEnemySpawnInterval',healing:'battleHealingAmount',relocationCost:'battleRelocationCost',enemyResourceIncome:'battleIncomeAmount'
+});
 function combinationUnits(side,battle=state){return side==='plants'?battle?.plants||[]:battle?.zombies||[]}
 function combinationIsActive(definition,battle=state){
  if(!definition||!battle||definition.season!==(battle.season||1))return false;
@@ -156,14 +160,57 @@ function normalizeGameplayState(raw,context){
  if(!Object.prototype.hasOwnProperty.call(raw,'report'))gameplay.report.initialized=false;
  return gameplay;
 }
-function effectiveBattleModifier(key){
+function effectiveBattleModifier(key,battle=state){
  if(typeof key!=='string'||!key)return 1;
- const selected=state?.gameplay?.orders?.selected;
+ const selected=battle?.gameplay?.orders?.selected;
  if(!Array.isArray(selected))return 1;
  let value=1;
  for(const id of selected){const modifier=Number(tacticalOrderById(id)?.modifiers?.[key]);if(Number.isFinite(modifier))value+=modifier-1}
  return Math.round(Math.max(.5,Math.min(1.5,value))*10000)/10000;
 }
+function roundBattleValue(value){return Math.max(1,Math.round(value))}
+function applyTacticalOrderUnitModifier(side,key,unit,battle=state){
+ if(!unit||!battle||side!==battle.faction)return unit;
+ const out={...unit},generic=effectiveBattleModifier('damage',battle),ranged=effectiveBattleModifier('rangedDamage',battle),melee=effectiveBattleModifier('meleeDamage',battle),health=effectiveBattleModifier('unitHealth',battle),speed=effectiveBattleModifier('movementSpeed',battle),attackSpeed=effectiveBattleModifier('attackSpeed',battle),shield=effectiveBattleModifier('shield',battle),healing=effectiveBattleModifier('healing',battle);
+ const isRanged=(out.range||0)>1.2||out.shoot||out.catapult||out.curse||out.laugh||out.tripleShot;
+ const rangedStats=new Set(['catapultDamage','laughDamage','curseDamage','curseAdjacentDamage']);
+ const meleeStats=new Set(['meleeDamage','smashDamage','bombDamage']);
+ for(const stat of ['damage','meleeDamage','catapultDamage','smashDamage','bombDamage','laughDamage','curseDamage','curseAdjacentDamage'])if(out[stat]!=null){const role=rangedStats.has(stat)||stat==='damage'&&isRanged?ranged:meleeStats.has(stat)||stat==='damage'&&!isRanged?melee:1;out[stat]=roundBattleValue(out[stat]*generic*role)}
+ if(out.hp!=null)out.hp=roundBattleValue(out.hp*health);
+ for(const stat of ['rate','supportRate','catapultRate','smashRate','laughRate','curseRate','shootRate','summonRate'])if(out[stat]!=null)out[stat]=roundBattleValue(out[stat]/attackSpeed);
+ if(out.speed!=null)out.speed=Math.max(.001,out.speed*speed);
+ for(const stat of ['shieldHp','shield','block'])if(out[stat]!=null)out[stat]=roundBattleValue(out[stat]*shield);
+ for(const stat of ['heal','healing','healAmount'])if(out[stat]!=null)out[stat]=roundBattleValue(out[stat]*healing);
+ return out;
+}
+function clampBattleUnit(unit,baseline){
+ const out={...unit};
+ for(const stat of ['hp','damage','meleeDamage','catapultDamage','smashDamage','bombDamage','laughDamage','curseDamage','curseAdjacentDamage','shieldHp','shield','block','heal','healing','healAmount'])if(out[stat]!=null&&baseline?.[stat]!=null)out[stat]=Math.max(1,Math.min(roundBattleValue(baseline[stat]*1.5),roundBattleValue(out[stat])));
+ const minimums={rate:350,supportRate:350,catapultRate:1200,smashRate:900,laughRate:1600,curseRate:1400,shootRate:350,summonRate:350};
+ for(const [stat,minimum] of Object.entries(minimums))if(out[stat]!=null){const floor=baseline?.[stat]!=null?Math.max(minimum,Math.round(baseline[stat]/1.5)):minimum,ceiling=baseline?.[stat]!=null?Math.round(baseline[stat]/.5):Infinity;out[stat]=Math.max(floor,Math.min(ceiling,Math.round(out[stat])))}
+ if(out.speed!=null&&baseline?.speed!=null)out.speed=Math.max(baseline.speed*.5,Math.min(baseline.speed*1.5,out.speed));
+ return out;
+}
+function resolveBattleUnit(side,key,battle=state){
+ const playerControlled=!!battle&&battle.faction===side,base=baseUnit(side,key);if(!base)return {unit:base,layers:[],sources:[]};
+ const permanentLayers=playerControlled&&typeof permanentUnitLayers==='function'?permanentUnitLayers(side,key):null,permanent=permanentLayers?.fixedTalent||base;
+ const layers=[
+  {id:'base-equipment',unit:{...(permanentLayers?.equipment||base)}},
+  {id:'character-level',unit:{...(permanentLayers?.characterLevel||base)}},
+  {id:'fixed-talent',unit:{...permanent}},
+ ],sources=permanentLayers?[{layer:'base-equipment',effects:permanentLayers.sources.equipmentEffects},{layer:'character-level',...permanentLayers.sources.level},{layer:'fixed-talent',effects:permanentLayers.sources.talentEffects}]:[];
+ let unit=applyCombinationUnitModifier(side,key,permanent,battle);const synergies=activeCombinationDefinitions(side,battle).filter(definition=>definition.members.includes(key));if(synergies.length)sources.push({layer:'synergy',ids:synergies.map(definition=>definition.id)});layers.push({id:'synergy',unit:{...unit}});
+ const tacticalBefore=unit;unit=applyTacticalOrderUnitModifier(side,key,unit,battle);if(JSON.stringify(unit)!==JSON.stringify(tacticalBefore))sources.push({layer:'tactical-order',ids:[...(battle?.gameplay?.orders?.selected||[])]});layers.push({id:'tactical-order',unit:{...unit}});
+ layers.push({id:'temporary-stage-status',unit:{...unit}});if(battle?.gameplay?.stageRule?.id)sources.push({layer:'temporary-stage-status',ids:[battle.gameplay.stageRule.id]});
+ unit=clampBattleUnit(unit,permanent);sources.push({layer:'clamp',min:.5,max:1.5});layers.push({id:'clamp',unit:{...unit}});return {unit,layers,sources};
+}
+function battleDeploymentCost(amount,battle=state){return Math.max(0,Math.round(Number(amount||0)*effectiveBattleModifier('deploymentCost',battle)))}
+function battleRelocationCost(amount,battle=state){return Math.max(0,Math.round(Number(amount||0)*effectiveBattleModifier('relocationCost',battle)))}
+function battleIncomeAmount(amount,recipient='player',battle=state){const key=recipient==='enemy'?'enemyResourceIncome':'resourceIncome';return Math.max(0,Math.round(Number(amount||0)*effectiveBattleModifier(key,battle)))}
+function battleEnemySpawnInterval(amount,battle=state){return Math.max(1,Math.round(Number(amount||0)*effectiveBattleModifier('enemySpawnInterval',battle)))}
+function battleHealingAmount(amount,healerSide=state?.faction,battle=state){const modifier=battle&&healerSide===battle.faction?effectiveBattleModifier('healing',battle):1;return Math.max(0,Math.round(Number(amount||0)*modifier))}
+function battleDamageTaken(amount,side,battle=state){return side===battle?.faction?Number(amount||0)*effectiveBattleModifier('damageTaken',battle):Number(amount||0)}
+function battleMovementSpeed(side,key,row,battle=state){const speed=resolveBattleUnit(side,key,battle).unit?.speed||0,stage=typeof stageRuleMovementMultiplier==='function'?stageRuleMovementMultiplier(side,row,battle?.gameplay?.stageRule?.data):1;return speed*stage}
 function tacticalOrderState(){
  if(!state)return null;
  if(!state.gameplay||state.gameplay.version!==GAMEPLAY_STATE_VERSION)state.gameplay=normalizeGameplayState(state.gameplay);
@@ -203,7 +250,7 @@ function chooseTacticalOrder(id){
  const resume=orders.resumeAfterSelection===true;
  orders.offer=null;delete orders.resumeAfterSelection;
  state.paused=!resume;
- renderTacticalOrderOffer();applyPausedBattleUI();updateBattleActionUI();updateHUD();persistBattleState();
+ renderTacticalOrderOffer();applyPausedBattleUI();if(typeof updateDeploymentCardCosts==='function')updateDeploymentCardCosts();updateBattleActionUI();updateHUD();persistBattleState();
  const focusTarget=document.getElementById(state.paused?'pauseResumeBtn':'pauseBtn');focusTarget?.focus({preventScroll:true});
  log(`軍令生效：${tacticalOrderById(id)?.name||id}。`);sfx('click');
  return true;
@@ -336,7 +383,9 @@ function recordBattleControl(target,context={}){
 }
 function changeBattleResource(side,amount,reason='unknown'){
  if(!state||!BATTLE_SIDES.includes(side)||!Number.isFinite(Number(amount)))return false;
- const playerSide=state.faction,field=side===playerSide?'resource':'aiResource';state[field]+=Number(amount);recordBattleEvent('resource',{side,amount:Number(amount),reason});return true;
+ const playerSide=state.faction,field=side===playerSide?'resource':'aiResource';let applied=Number(amount);
+ if(applied>0&&reason!=='income')applied=battleIncomeAmount(applied,side===playerSide?'player':'enemy');
+ state[field]+=applied;recordBattleEvent('resource',{side,amount:applied,reason});return true;
 }
 function initializeBattleReports(){
  if(!state)return false;

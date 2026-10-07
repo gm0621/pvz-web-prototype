@@ -4,7 +4,8 @@ function deploymentReadyReason(key){
  if(state.paused)return '已暫停，繼續後才能出兵';
  const d=(state.faction==='plants'?PLANT_TYPES:ZOMBIE_TYPES)[key];
  if(!d||!canUseUnit(state.faction,key,state.level))return '角色尚未開放';
- if(state.resource<d.cost)return `${d.name} 資源不足`;
+ const cost=typeof battleDeploymentCost==='function'?battleDeploymentCost(d.cost):d.cost;
+ if(state.resource<cost)return `${d.name} 資源不足`;
  if(isCooling(key))return `${d.name} 還在冷卻`;
  return '';
 }

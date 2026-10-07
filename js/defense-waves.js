@@ -22,10 +22,11 @@ function updateDefenseWaves(){
  if(state.time<director.restUntil)return true;
  const next=director.plan[director.index];
  if(!director.active&&next&&state.enemiesSpawned>=next.after){
-  director.active={id:director.index+1,count:Math.min(next.count,lv.enemyCount-state.enemiesSpawned),sent:0,warnedAt:state.time,nextAt:state.time+5000,rallied:false,rows:[]};
+  const warning=battleEnemySpawnInterval(5000);
+  director.active={id:director.index+1,count:Math.min(next.count,lv.enemyCount-state.enemiesSpawned),sent:0,warnedAt:state.time,nextAt:state.time+warning,rallied:false,rows:[]};
   beginBattleReportSegment('defense-wave',director.active.id,`第 ${director.active.id} 波`);
   recordBattleEvent('wave',{wave:director.active.id,phase:'start'});
-  log(`⚠ 一大波屍潮即將來襲！第 ${director.index+1}/${director.plan.length} 波，5 秒後進攻。`);
+  log(`⚠ 一大波屍潮即將來襲！第 ${director.index+1}/${director.plan.length} 波，${Math.ceil(warning/1000)} 秒後進攻。`);
   persistBattleState();return true;
  }
  const wave=director.active;
@@ -58,7 +59,7 @@ function updateDefenseWaves(){
  state.enemiesSpawned++;wave.sent++;
  if(wave.sent===1)emitDefenseWaveStory('charge',director.index);
  log(`第 ${wave.id} 波 ${wave.sent}/${wave.count}：${d.name} 進攻第 ${row+1} 路（總數 ${state.enemiesSpawned}/${lv.enemyCount}）。`);
- wave.nextAt=state.time+(lv.enemyCount<25?1700:1100);
+ wave.nextAt=state.time+battleEnemySpawnInterval(lv.enemyCount<25?1700:1100);
  if(wave.sent>=wave.count){
   recordBattleEvent('wave',{wave:wave.id,phase:'complete'});
   completeBattleReportSegment('defense-wave',wave.id,`第 ${wave.id} 波`);

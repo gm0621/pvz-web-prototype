@@ -38,10 +38,10 @@
   - [x] Task 4.2：六關 tracer-bullet 試點
   - [x] Task 4.3：擴至兩季×兩陣營×10 關
   - [x] Gate：資料完整性、archetype journeys、full suite
-- [ ] Phase 5：角色組合技
+- [x] Phase 5：角色組合技
   - [x] Task 5.1：資料驅動組合偵測與 UI
-  - [ ] Task 5.2：組合、軍令與關卡規則堆疊順序
-  - [ ] Gate：全角色回歸與 desktop/mobile smoke
+  - [x] Task 5.2：組合、軍令與關卡規則堆疊順序
+  - [x] Gate：全角色回歸與 desktop/mobile smoke
 - [ ] Phase 6：關卡挑戰、勳章與純外觀獎勵
   - [ ] Task 6.1：profile migration、fair challenge evaluator、atomic/idempotent reward
   - [ ] Task 6.2：選關與結算勳章 UI
@@ -77,6 +77,8 @@
 - Task 5.1 已完成：新增獨立 immutable `SYNERGIES` registry，精確提供規格要求的八組「桃園同心、臥龍鳳雛、虎衛並肩、破陣強弩、屍巫烈焰、巨屍攻城、棺盾鼠群、煙醫掩護」；依 season／玩家當前陣營與場上存活且不重複的 `type` 集合即時計算，不另存可漂移狀態。效果只套用組合成員並透過 `activeUnit` 接入真實 projectile／支援節奏／攻速流程；敵方 AI 不會取得未提示加成，任一成員退場或 HP 歸零後立即解除，原始單位資料不會被修改。同一成員同時取得傷害與速度組合時按相同比例縮放，總 throughput 上限 +15%，HUD 會明示此限制。戰鬥 HUD 顯示成員原因與精確加成，以 activation signature 避免每 tick 重建 `aria-live`。
 - Task 5.1 驗證：follow-up gate 先攔截原版本僅 3 組、孔明／龐統 `supportRate` 無實效、烈焰屍車雙組乘法達約 +24.2% 及 mobile portrait／landscape 遮擋；focused `tests/synergies.spec.js` desktop＋mobile 18/18，涵蓋逐組精確 schema、全組生命週期、支援節奏、重疊 cap 與 HUD 說明、投射物實際命中 HP、敵方 AI 隔離、撤下即時取消、pause/save/reload、三尺寸幾何／toolbar overlap，以及 landscape native／fallback fullscreen 真實選卡部署；related（synergies、gameplay systems、tactical orders、stage rules、移除換列、第二季、存檔、操作提示）111 passed／1 skipped／0 failed／0 flaky，mobile deadline 無 retry 另連跑 10/10。fresh canonical 497 passed／5 skipped／0 failed。`git diff --check` 與相關 JS `node --check` 均通過。
 - Task 5.1 browser evidence：實際 Chromium 在 desktop 1440×900 以安全 normal-flow 列顯示；portrait 390×844 使用工具列左側窄版多行卡；landscape 844×390 使用工具列第二行橫幅並保留全螢幕按鈕。三尺寸均完整顯示組合名稱、成員與精確效果，DOM overlap assertion 與實圖驗收皆確認未遮擋操作、資源、關卡目標、棋盤或卡牌；844×390 在 native 與 fallback fullscreen 均完成最後一列 hit-test、選卡及實際部署。下一項為 Task 5.2。
+- Task 5.2 與 Phase 5 Gate 已完成：`resolveBattleUnit()` 固定以 base/equipment → character level → fixed talent → synergy → tactical order → temporary stage status → centralized clamp 計算並保留逐層 snapshot/source；`permanentUnitLayers()` 將裝備、角色等級與固定技能分層，但以原始 base 的 cumulative bonus 計算，維持舊 profile 最終數值相容。軍令的 damage/ranged/melee、HP、attack speed、move speed、shield、healing、damage taken、deployment/relocation cost、player/enemy income 與 enemy spawn interval 均接入真實 combat/resource/deploy/wave paths；玩家效果不套到敵方 AI，`PLANT_TYPES`／`ZOMBIE_TYPES` 保持 immutable。卡牌價格、實扣與 eligibility 同源，波次延遲與戰報秒數同源。
+- Task 5.2 驗證：先以缺少中央 layer/consumer API 取得 RED，再以真實關羽 Lv.3＋青龍戰袍＋青龍火斬、桃園同心＋屯田／背水一戰、實際投射物、部署、週期補給／向日葵、承傷與 stage movement 覆蓋單層值、組合值、敵我隔離與資料 immutability；deterministic desktop＋mobile repeat 無 retry 為 30/30，targeted reviewer fixes 44/44，Phase 5 related gate 216 passed／4 skipped／0 failed／0 flaky，fresh canonical 503 passed／5 skipped／0 failed／0 flaky（508 tests）。`git diff --check` 與相關 JS／spec `node --check` 通過。下一項為 Phase 6.1。
 
 ## 已完成提交
 
