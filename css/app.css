@@ -65,6 +65,18 @@ body[class*="battlefield-"] #board::after{position:absolute;z-index:20;inset:0;d
 @keyframes battlefieldDrift{0%{transform:translateY(-12%) translateX(-3%)}50%{transform:translateY(42%) translateX(3%)}100%{transform:translateY(92%) translateX(-3%)}}
 @media(prefers-reduced-motion:reduce){body[class*="ornament-"] :is(.card,.char-profile,.entity)::after,body[class*="battlefield-"] #board::after{animation:none}}
 
+/* Challenge medal milestone cosmetics are account-wide presentation only. */
+.challenge-cosmetic-frame-bronze :is(#accountCornerBtn,.profile-card){border-color:#d49a62!important;box-shadow:0 0 0 2px #6f3f22,0 0 18px #d49a6255!important}
+#challengeMilestoneBanner{position:absolute;z-index:3;left:50%;top:clamp(118px,18vh,180px);transform:translateX(-50%);padding:7px 18px;border:1px solid #e5b866;border-radius:999px;background:linear-gradient(90deg,#35170ee8,#8c3d19e8,#35170ee8);color:#ffe8aa;font-weight:900;letter-spacing:.16em;pointer-events:none;box-shadow:0 5px 18px #0008}
+.challenge-cosmetic-fx-gold :is(.menu-title-block .title,.game-logo,#accountCornerBtn){filter:drop-shadow(0 0 8px #f8c65a88)}
+#accountCornerBtn:has(#challengeMilestoneTitle){display:flex!important;flex-wrap:wrap;align-items:center;justify-content:center;height:auto;min-height:48px;row-gap:1px}#challengeMilestoneTitle{display:block;flex:0 0 100%;margin-top:2px;color:#ffe08a;font-size:10px;line-height:1.1;text-align:center;white-space:nowrap;pointer-events:none}
+.challenge-milestone-panel{margin:12px 0 18px;padding:14px;border:1px solid #d49a6266;border-radius:16px;background:linear-gradient(145deg,#24150ee8,#120e0be8);box-shadow:inset 0 1px #fff1}
+.challenge-milestone-head{display:flex;align-items:center;justify-content:space-between;gap:14px}.challenge-milestone-head h3,.challenge-milestone-head p{margin:0}.challenge-milestone-head p{margin-top:4px;color:#d7c7b7;font-size:13px}.challenge-milestone-head button{min-height:44px}
+.challenge-milestone-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:12px}.challenge-milestone-grid article{display:grid;gap:3px;padding:10px;border:1px solid #ffffff18;border-radius:12px;background:#07050488}.challenge-milestone-grid article.unlocked{border-color:#e5b86699;background:#5e341f55}.challenge-milestone-grid article.locked{opacity:.62}.challenge-milestone-grid span,.challenge-milestone-grid small{font-size:11px}.challenge-milestone-grid b{color:#ffe3a3}
+@media(max-width:720px){#challengeMilestoneBanner{top:108px;font-size:12px;padding:5px 12px}}
+@media(max-width:720px){.challenge-milestone-head{align-items:stretch;flex-direction:column}.challenge-milestone-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(prefers-reduced-motion:reduce){#challengeMilestoneBanner,.challenge-cosmetic-fx-gold :is(.menu-title-block .title,.game-logo,#accountCornerBtn){animation:none;transition:none}}
+
 /* Mobile board fit fix: keep 9x5 grid inside board, no dropped empty rows */
 @media(max-width:720px){
   .game{padding:6px 6px 166px!important;overflow-x:hidden!important}

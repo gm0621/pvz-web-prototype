@@ -47,6 +47,93 @@ test('legacy profiles and battles migrate challenge state without losing progres
  expect(result.battleChallenge).toEqual(result.json);
 });
 
+test('challenge cosmetic milestones derive only from valid unique medals at 15 30 60 and 90',async({page})=>{
+ await open(page);
+ const result=await page.evaluate(()=>{
+  const validIds=Object.values(CHALLENGE_ROUTE_DEFINITIONS).flat().map(item=>item.medalId),profileFor=count=>normalizeProfile({challenges:{medals:Object.fromEntries(validIds.slice(0,count).map(id=>[id,{earnedAt:'2026-10-07T00:00:00.000Z'}]))}}),snapshots={};
+  for(const count of [14,15,29,30,59,60,89,90]){const profile=profileFor(count);snapshots[count]={count:challengeMedalCount(profile),slots:challengeMilestoneRewards(profile).map(reward=>reward.slot)}}
+  const forged=profileFor(14);forged.challenges.medals['forged:medal']=1;forged.challenges.medals['1:plants:1:not-real']=1;forged.challenges.medals[validIds[14]]=0;forged.challenges.medals[validIds[15]]=null;forged.challenges.medals[validIds[16]]=false;
+  const before=JSON.stringify(forged),forgedCount=challengeMedalCount(forged),after=JSON.stringify(forged),legacy=normalizeProfile({settings:{}}),disabled=normalizeProfile({settings:{challengeCosmeticsEnabled:false}});
+  return {thresholds:CHALLENGE_MILESTONE_REWARDS.map(reward=>reward.threshold),slots:CHALLENGE_MILESTONE_REWARDS.map(reward=>reward.slot),frozen:Object.isFrozen(CHALLENGE_MILESTONE_REWARDS)&&CHALLENGE_MILESTONE_REWARDS.every(Object.isFrozen),hasBattleEffects:CHALLENGE_MILESTONE_REWARDS.some(reward=>Object.keys(reward).some(key=>/effect|damage|hp|cooldown|rate|cost/i.test(key))),snapshots,forgedCount,unchanged:before===after,legacyEnabled:legacy.settings.challengeCosmeticsEnabled,disabledEnabled:disabled.settings.challengeCosmeticsEnabled};
+ });
+ expect(result.thresholds).toEqual([15,30,60,90]);
+ expect(result.slots).toEqual(['frame','banner','fxColor','title']);
+ expect(result.frozen).toBe(true);expect(result.hasBattleEffects).toBe(false);
+ expect(result.snapshots).toEqual({14:{count:14,slots:[]},15:{count:15,slots:['frame']},29:{count:29,slots:['frame']},30:{count:30,slots:['frame','banner']},59:{count:59,slots:['frame','banner']},60:{count:60,slots:['frame','banner','fxColor']},89:{count:89,slots:['frame','banner','fxColor']},90:{count:90,slots:['frame','banner','fxColor','title']}});
+ expect(result.forgedCount).toBe(14);expect(result.unchanged).toBe(true);expect(result.legacyEnabled).toBe(true);expect(result.disabledEnabled).toBe(false);
+});
+
+test('milestone cosmetics apply progressively and disabling removes every cosmetic class and node',async({page})=>{
+ await open(page);
+ const result=await page.evaluate(()=>{
+  const ids=Object.values(CHALLENGE_ROUTE_DEFINITIONS).flat().map(item=>item.medalId),snapshots={};
+  for(const count of [15,30,60,90]){
+   playerProfile=normalizeProfile({name:'里程碑玩家',challenges:{medals:Object.fromEntries(ids.slice(0,count).map(id=>[id,1]))}});applyChallengeMilestoneCosmetics();applyChallengeMilestoneCosmetics();
+   snapshots[count]={classes:[...document.body.classList].filter(name=>name.startsWith('challenge-cosmetic-')).sort(),banners:document.querySelectorAll('#challengeMilestoneBanner').length,titles:document.querySelectorAll('#challengeMilestoneTitle').length,titleText:$('challengeMilestoneTitle')?.textContent||''};
+  }
+  playerProfile.settings.challengeCosmeticsEnabled=false;applyChallengeMilestoneCosmetics();
+  const disabled={classes:[...document.body.classList].filter(name=>name.startsWith('challenge-cosmetic-')),banners:document.querySelectorAll('#challengeMilestoneBanner').length,titles:document.querySelectorAll('#challengeMilestoneTitle').length,battleNodes:$('game').querySelectorAll('[data-challenge-cosmetic]').length,resultNodes:$('modal').querySelectorAll('[data-challenge-cosmetic]').length};
+  return {snapshots,disabled};
+ });
+ expect(result.snapshots[15]).toEqual({classes:['challenge-cosmetic-frame-bronze'],banners:0,titles:0,titleText:''});
+ expect(result.snapshots[30]).toEqual({classes:['challenge-cosmetic-banner-vanguard','challenge-cosmetic-frame-bronze'],banners:1,titles:0,titleText:''});
+ expect(result.snapshots[60]).toEqual({classes:['challenge-cosmetic-banner-vanguard','challenge-cosmetic-frame-bronze','challenge-cosmetic-fx-gold'],banners:1,titles:0,titleText:''});
+ expect(result.snapshots[90].classes).toEqual(['challenge-cosmetic-banner-vanguard','challenge-cosmetic-frame-bronze','challenge-cosmetic-fx-gold','challenge-cosmetic-title-peerless']);expect(result.snapshots[90].banners).toBe(1);expect(result.snapshots[90].titles).toBe(1);expect(result.snapshots[90].titleText).toContain('百戰無雙');
+ expect(result.disabled).toEqual({classes:[],banners:0,titles:0,battleNodes:0,resultNodes:0});
+});
+
+test('milestone cosmetics never alter battle unit resolution',async({page})=>{
+ await open(page);
+ const result=await page.evaluate(()=>{
+  const ids=Object.values(CHALLENGE_ROUTE_DEFINITIONS).flat().map(item=>item.medalId);playerProfile=normalizeProfile({characterLevels:{plants:{firepea:{level:5,xp:0}}},inventory:{equipment:{greenDragonArmor:1},equipped:{plants:{firepea:'greenDragonArmor'}}},challenges:{medals:Object.fromEntries(ids.slice(0,90).map(id=>[id,1]))}});
+  applyChallengeMilestoneCosmetics();const enabled=JSON.parse(JSON.stringify(permanentUnitLayers('plants','firepea')));playerProfile.settings.challengeCosmeticsEnabled=false;applyChallengeMilestoneCosmetics();const disabled=JSON.parse(JSON.stringify(permanentUnitLayers('plants','firepea')));selectedLevel=1;start('plants');clearInterval(timer);const before={plants:state.plants.length,zombies:state.zombies.length,cards:$('cards').children.length,entities:$('board').querySelectorAll('.entity').length};applyChallengeMilestoneCosmetics();const after={plants:state.plants.length,zombies:state.zombies.length,cards:$('cards').children.length,entities:$('board').querySelectorAll('.entity').length,cosmeticNodes:$('board').querySelectorAll('[data-challenge-cosmetic]').length};return {enabled,disabled,before,after};
+ });
+ expect(result.enabled).toEqual(result.disabled);expect(result.after).toEqual({...result.before,cosmeticNodes:0});
+});
+
+test('milestone panel shows four tiers and its toggle persists without changing entitlements',async({page})=>{
+ await open(page);
+ const result=await page.evaluate(()=>{
+  const ids=Object.values(CHALLENGE_ROUTE_DEFINITIONS).flat().map(item=>item.medalId);playerProfile=normalizeProfile({challenges:{medals:Object.fromEntries(ids.slice(0,30).map(id=>[id,1]))}});showShop('skin');renderShop();renderShop();
+  const before={panels:document.querySelectorAll('#challengeMilestonePanel').length,tiers:document.querySelectorAll('#challengeMilestonePanel [data-milestone-threshold]').length,count:$('challengeMilestonePanel')?.dataset.medalCount,text:$('challengeMilestonePanel')?.textContent||'',pressed:$('challengeCosmeticsToggle')?.getAttribute('aria-pressed')};
+  toggleChallengeMilestoneCosmetics();const stored=JSON.parse(localStorage.getItem(PROFILE_KEY));const after={enabled:playerProfile.settings.challengeCosmeticsEnabled,stored:stored.settings.challengeCosmeticsEnabled,classes:[...document.body.classList].filter(name=>name.startsWith('challenge-cosmetic-')),pressed:$('challengeCosmeticsToggle')?.getAttribute('aria-pressed'),count:challengeMedalCount()};
+  toggleChallengeMilestoneCosmetics();return {before,after,reenabled:playerProfile.settings.challengeCosmeticsEnabled};
+ });
+ expect(result.before.panels).toBe(1);expect(result.before.tiers).toBe(4);expect(result.before.count).toBe('30');expect(result.before.text).toContain('30 / 120');expect(result.before.text).toContain('百戰銅框');expect(result.before.text).toContain('破陣戰旗');expect(result.before.pressed).toBe('true');
+ expect(result.after).toEqual({enabled:false,stored:false,classes:[],pressed:'false',count:30});expect(result.reenabled).toBe(true);
+});
+
+test('milestone panel is visible and operable on desktop portrait and short landscape',async({page})=>{
+ await open(page);
+ for(const viewport of [{width:1440,height:900},{width:390,height:844},{width:844,height:390}]){
+  await page.setViewportSize(viewport);await page.evaluate(()=>{const ids=Object.values(CHALLENGE_ROUTE_DEFINITIONS).flat().map(item=>item.medalId);playerProfile=normalizeProfile({challenges:{medals:Object.fromEntries(ids.slice(0,90).map(id=>[id,1]))}});applyChallengeMilestoneCosmetics();showShop('skin')});
+  const metrics=await page.locator('#challengeMilestonePanel').evaluate(panel=>{const rect=panel.getBoundingClientRect(),button=panel.querySelector('#challengeCosmeticsToggle').getBoundingClientRect(),account=document.querySelector('#accountCornerBtn'),accountRect=account.getBoundingClientRect(),title=document.querySelector('#challengeMilestoneTitle').getBoundingClientRect();return {left:rect.left,right:rect.right,overflow:panel.scrollWidth-panel.clientWidth,buttonHeight:button.height,visible:getComputedStyle(panel).display!=='none',accountVisible:accountRect.width>0&&accountRect.height>0,accountOverflow:account.scrollWidth-account.clientWidth,titleOffset:title.top-accountRect.top,titleInside:title.bottom<=accountRect.bottom+1}});
+  expect(metrics.visible).toBe(true);expect(metrics.left).toBeGreaterThanOrEqual(0);expect(metrics.right).toBeLessThanOrEqual(viewport.width);expect(metrics.overflow).toBeLessThanOrEqual(1);expect(metrics.buttonHeight).toBeGreaterThanOrEqual(44);expect(metrics.accountOverflow).toBeLessThanOrEqual(1);if(metrics.accountVisible){expect(metrics.titleOffset).toBeGreaterThanOrEqual(20);expect(metrics.titleInside).toBe(true)}
+  await page.locator('#challengeCosmeticsToggle').click();await expect(page.locator('#challengeCosmeticsToggle')).toHaveAttribute('aria-pressed','false');expect(await page.locator('body').evaluate(body=>[...body.classList].some(name=>name.startsWith('challenge-cosmetic-')))).toBe(false);
+ }
+});
+
+test('milestone entitlement and disabled state survive guest export and import',async({page})=>{
+ await open(page);
+ const result=await page.evaluate(()=>{
+  const ids=Object.values(CHALLENGE_ROUTE_DEFINITIONS).flat().map(item=>item.medalId);currentUser=null;playerProfile=normalizeProfile({name:'搬家玩家',settings:{challengeCosmeticsEnabled:false},challenges:{medals:Object.fromEntries(ids.slice(0,60).map(id=>[id,1]))}});const exported=savePayloadText();playerProfile=normalizeProfile({});applyImportedProfile(JSON.parse(exported));return {name:playerProfile.name,count:challengeMedalCount(),slots:challengeMilestoneRewards().map(reward=>reward.slot),enabled:playerProfile.settings.challengeCosmeticsEnabled,classes:[...document.body.classList].filter(name=>name.startsWith('challenge-cosmetic-'))};
+ });
+ expect(result).toEqual({name:'搬家玩家',count:60,slots:['frame','banner','fxColor'],enabled:false,classes:[]});
+});
+
+test('cloud profile is authoritative for milestone cosmetics and signed-in import cannot forge medals',async({page})=>{
+ await open(page);
+ const result=await page.evaluate(()=>{
+  const ids=Object.values(CHALLENGE_ROUTE_DEFINITIONS).flat().map(item=>item.medalId),medals=count=>Object.fromEntries(ids.slice(0,count).map(id=>[id,1]));currentUser={id:'cloud-user',email:'cloud@example.com'};cloudSaveVersion=3;playerProfile=normalizeProfile({name:'本機',challenges:{medals:medals(90)}});applyChallengeMilestoneCosmetics();
+  applyCloudResult({save_version:4,profile:{name:'雲端15',challenges:{medals:medals(15)}},updated_at:'2026-10-07T00:00:00.000Z'});const lower={name:playerProfile.name,count:challengeMedalCount(),classes:[...document.body.classList].filter(name=>name.startsWith('challenge-cosmetic-')).sort(),titles:document.querySelectorAll('#challengeMilestoneTitle').length};
+  applyCloudResult({save_version:3,profile:{name:'過期90',challenges:{medals:medals(90)}},updated_at:'2026-10-06T00:00:00.000Z'});const stale={name:playerProfile.name,count:challengeMedalCount()};
+  applyImportedProfile({profile:{name:'匯入名稱',challenges:{medals:medals(90)}}});const imported={name:playerProfile.name,count:challengeMedalCount(),classes:[...document.body.classList].filter(name=>name.startsWith('challenge-cosmetic-')).sort()};
+  applyCloudResult({save_version:5,profile:{name:'雲端30',challenges:{medals:medals(30)}},updated_at:'2026-10-08T00:00:00.000Z'});const upgraded={name:playerProfile.name,count:challengeMedalCount(),classes:[...document.body.classList].filter(name=>name.startsWith('challenge-cosmetic-')).sort(),banners:document.querySelectorAll('#challengeMilestoneBanner').length};return {lower,stale,imported,upgraded};
+ });
+ expect(result.lower).toEqual({name:'雲端15',count:15,classes:['challenge-cosmetic-frame-bronze'],titles:0});expect(result.stale).toEqual({name:'雲端15',count:15});
+ expect(result.imported).toEqual({name:'匯入名稱',count:15,classes:['challenge-cosmetic-frame-bronze']});expect(result.upgraded).toEqual({name:'雲端30',count:30,classes:['challenge-cosmetic-banner-vanguard','challenge-cosmetic-frame-bronze'],banners:1});
+});
+
 test('fair challenge mode removes permanent power only from challenge battles',async({page})=>{
  await open(page);
  const result=await page.evaluate(()=>{
