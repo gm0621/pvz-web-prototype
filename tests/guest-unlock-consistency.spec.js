@@ -35,6 +35,9 @@ test('sparse guest final victory CTA starts the Qin finale and keeps unearned zo
  await expect(page.locator('#modalNext')).toBeEnabled();
  await expect(page.locator('#modalNext')).toContainText('挑戰秦皇');
  await page.locator('#modalNext').click();
+ await expect(page.locator('#storyDialog')).toBeVisible();
+ await expect(page.locator('#storyTitle')).toHaveText('終章：始皇陵決戰');
+ await page.locator('#storySkip').click();
  await expect(page.locator('#game')).toHaveClass(/active/);
  expect(await page.evaluate(()=>({faction:state.faction,level:state.level,final:isCampaignLevelCompleted('plants',10,1),missing:isCampaignLevelCompleted('plants',5,1)}))).toEqual({faction:'plants',level:11,final:true,missing:false});
  await page.evaluate(()=>backToHome());await page.locator('#charactersBtn').click();await page.locator('[data-roster="zombies"]').click();

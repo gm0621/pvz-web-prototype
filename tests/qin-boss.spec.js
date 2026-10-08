@@ -31,6 +31,69 @@ test('Qin emperor becomes a separate finale after defense level ten',async({page
  expect(result.next).toEqual({faction:'plants',level:11,label:'終章：挑戰秦皇 ▶'});
 });
 
+test('Qin finale offers the Wei sequel as the main route and zombie season one as an alternate chronicle',async({page})=>{
+ await openApp(page);
+ await page.evaluate(async()=>{
+  playerProfile=normalizeProfile({});for(let level=1;level<=10;level++)completeCampaignLevel('plants',level);
+  currentSeason=1;selectedLevel=11;markStoryRead('plants',11,'opening');markStoryRead('plants',11,'victory');start('plants');clearInterval(timer);
+  await end(true,'終章完成','秦皇已敗');
+ });
+ await expect(page.locator('#finaleRouteChoice')).toBeVisible();
+ await expect(page.locator('#finaleWeiRoute')).toContainText('第二季');
+ await expect(page.locator('#finaleWeiRoute')).toContainText('魏軍');
+ await expect(page.locator('#finaleZombieRoute')).toContainText('平行戰記');
+ await page.locator('#finaleZombieRoute').click();
+ await expect(page.locator('#levelScreen')).toHaveClass(/active/);
+ expect(await page.evaluate(()=>({season:currentSeason,faction:currentFaction}))).toEqual({season:1,faction:'zombies'});
+ await page.evaluate(async()=>{
+  currentSeason=1;selectedLevel=11;start('plants');clearInterval(timer);
+  await end(true,'終章完成','秦皇已敗');
+ });
+ await expect(page.locator('#finaleRouteChoice')).toBeVisible();
+ await page.locator('#finaleWeiRoute').click();
+ expect(await page.evaluate(()=>({season:currentSeason,faction:currentFaction}))).toEqual({season:2,faction:'plants'});
+ await expect(page.locator('#chosenFactionText')).toContainText('第二季・北境鐵壁');
+});
+
+test('unread Qin victory story finishes before the route choice and both choices fit mobile',async({page})=>{
+ await page.setViewportSize({width:390,height:844});
+ await openApp(page);
+ await page.evaluate(async()=>{
+  playerProfile=normalizeProfile({});for(let level=1;level<=10;level++)completeCampaignLevel('plants',level);
+  currentSeason=1;selectedLevel=11;markStoryRead('plants',11,'opening');start('plants');clearInterval(timer);
+  await end(true,'終章完成','秦皇已敗');
+ });
+ await expect(page.locator('#finaleRouteChoice')).toBeHidden();
+ await expect(page.locator('#modalStory')).toBeVisible();
+ await page.locator('#modalStory').click();
+ await expect(page.locator('#storyDialog')).toBeVisible();
+ await expect(page.locator('#finaleRouteChoice')).toBeHidden();
+ await page.locator('#storySkip').click();
+ await expect(page.locator('#finaleRouteChoice')).toBeVisible();
+ const fit=await page.locator('#finaleRouteChoice').evaluate(element=>{
+  const panel=element.getBoundingClientRect(),buttons=[...element.querySelectorAll('button')].map(button=>button.getBoundingClientRect());
+  return {panel:{left:panel.left,right:panel.right,top:panel.top,bottom:panel.bottom},buttons:buttons.map(box=>({left:box.left,right:box.right,top:box.top,bottom:box.bottom})),width:innerWidth,height:innerHeight};
+ });
+ expect(fit.panel.left).toBeGreaterThanOrEqual(0);expect(fit.panel.right).toBeLessThanOrEqual(fit.width);
+ fit.buttons.forEach(button=>{expect(button.left).toBeGreaterThanOrEqual(fit.panel.left);expect(button.right).toBeLessThanOrEqual(fit.panel.right);expect(button.bottom).toBeLessThanOrEqual(fit.height)});
+});
+
+test('Qin defeat story never reveals the post-finale route choice',async({page})=>{
+ await openApp(page);
+ await page.evaluate(async()=>{
+  playerProfile=normalizeProfile({});for(let level=1;level<=10;level++)completeCampaignLevel('plants',level);
+  currentSeason=1;selectedLevel=11;markStoryRead('plants',11,'opening');start('plants');clearInterval(timer);
+  await end(false,'終章失利','秦皇軍陣仍在');
+ });
+ await expect(page.locator('#finaleRouteChoice')).toBeHidden();
+ await expect(page.locator('#modalStory')).toBeVisible();
+ await page.locator('#modalStory').click();
+ await expect(page.locator('#storyDialog')).toBeVisible();
+ await page.locator('#storySkip').click();
+ await expect(page.locator('#finaleRouteChoice')).toBeHidden();
+ await expect(page.locator('#modal')).toBeVisible();
+});
+
 test('all first-season stages and Qin finale use their accepted card art',async({page})=>{
  await openApp(page);
  const result=await page.evaluate(async()=>{

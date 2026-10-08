@@ -13,20 +13,20 @@ test('cloud pending waits before its ending; an older saved battle also gets its
  await expect(page.locator('#modalStory')).not.toBeVisible();
  await page.evaluate(async()=>{window.__resolveStoryClaim(true);await window.__ending});await expect(page.locator('#storyDialog')).not.toBeVisible();await page.locator('#modalStory').click();await expect(page.locator('#storyDialog')).toBeVisible();
 });
-test('all ten stages have both routes and every scene renders with real portraits',async({page})=>{
+test('all ordinary stages plus the defense finale render every scene with real portraits',async({page})=>{
  await openGame(page);
- expect(await page.evaluate(()=>Object.keys(SEASON1_STORY.plants).length)).toBe(10);
+ expect(await page.evaluate(()=>Object.keys(SEASON1_STORY.plants).length)).toBe(11);
  expect(await page.evaluate(()=>Object.keys(SEASON1_STORY.zombies).length)).toBe(10);
  const report=await page.evaluate(async()=>{
   const portraits=new Set(),issues=[];let scenes=0;
-  for(const faction of ['plants','zombies'])for(let level=1;level<=10;level++)for(const scene of ['opening','victory','defeat']){
+  for(const faction of ['plants','zombies'])for(let level=1;level<=(faction==='plants'?11:10);level++)for(const scene of ['opening','victory','defeat']){
    const data=SEASON1_STORY[faction][level];if(!data[scene]?.length){issues.push(`${faction}/${level}/${scene}`);continue}
    openCampaignStory(faction,level,scene,{replay:true});scenes++;
    for(let i=0;i<activeCampaignStory.lines.length;i++){activeCampaignStory.index=i;renderCampaignStory();const speaker=activeCampaignStory.lines[i].speaker;if(speaker!=='旁白'){const img=document.getElementById('storyPortrait');if(img.hidden)issues.push('missing portrait '+speaker);else portraits.add(img.src)}}
    closeCampaignStory(false);
   }
   await Promise.all([...portraits].map(async src=>{const img=new Image();img.src=src;await img.decode()}));return {scenes,issues};
- });expect(report).toEqual({scenes:60,issues:[]});
+ });expect(report).toEqual({scenes:63,issues:[]});
 });
 test('next stage opens its own story and closing it never starts or completes that stage',async({page})=>{
  await openGame(page);await chooseFirst(page);await page.locator('#storySkip').click();await page.evaluate(async()=>{clearInterval(timer);await end(true,'防守成功','結算')});await page.locator('#modalStory').click();await page.locator('#storySkip').click();
@@ -85,7 +85,7 @@ test('closing a result story can reopen it and reading it does not duplicate rew
 });
 test('first-season opening blocks simulation and cloud match creation until skipped',async({page})=>{
  await openGame(page);await page.evaluate(()=>{window.__storyStarts=0;startCloudMatch=()=>{window.__storyStarts++}});await chooseFirst(page);
- await expect(page.getByRole('dialog',{name:'第一關：草坪試煉'})).toBeVisible();await expect(page.locator('#storyText')).toContainText('古戰場');
+ await expect(page.getByRole('dialog',{name:'第一關：草坪軍營初戰'})).toBeVisible();await expect(page.locator('#storyText')).toContainText('古戰場');
  expect(await page.evaluate(()=>({starts:window.__storyStarts,playing:!!state&&!state.over&&!state.paused}))).toEqual({starts:0,playing:false});
  const firstSoldier=await page.evaluate(()=>activeCampaignStory.lines.findIndex(x=>x.speaker==='蜀軍弓兵'));expect(firstSoldier).toBeGreaterThan(0);
  for(let i=0;i<firstSoldier;i++)await page.locator('#storyNext').click();await expect(page.locator('#storySpeaker')).toHaveText('蜀軍弓兵');await expect(page.locator('#storyPortrait')).toBeVisible();

@@ -63,6 +63,7 @@ function replayCampaignStory(faction,level,scene='opening'){
  return openCampaignStory(faction,level,scene,{replay:true});
 }
 function resetBattleStoryResult(){const button=storyElement('modalStory');button.classList.add('hidden');button.onclick=null}
+function finishBattleStoryResult(battle,win,verified){resetBattleStoryResult();if(typeof revealFinaleRouteChoice==='function')revealFinaleRouteChoice(battle,win,verified)}
 function presentBattleStoryResult(battle,win,verified){
  if(battle!==state)return false;
  resetBattleStoryResult();
@@ -71,7 +72,7 @@ function presentBattleStoryResult(battle,win,verified){
  const button=storyElement('modalStory');button.textContent=win?'繼續劇情 ▶':'查看戰後劇情 ▶';button.classList.remove('hidden');
  button.onclick=()=>{
   if(battle!==state||!battle.over||!storyElement('game').classList.contains('active')||!storyElement('modal').classList.contains('show')||activeCampaignStory)return false;
-  return openCampaignStory(battle.faction,battle.level,scene,{onComplete:resetBattleStoryResult,season:battle.season});
+  return openCampaignStory(battle.faction,battle.level,scene,{onComplete:()=>finishBattleStoryResult(battle,win,verified),season:battle.season});
  };
  return true;
 }
