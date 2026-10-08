@@ -220,11 +220,17 @@ function tacticalOrderState(){
  if(!state.gameplay.orders)state.gameplay.orders=createTacticalOrderState();
  return state.gameplay.orders;
 }
+function tacticalOrderPoolForBattle(battle=state){
+ const route=typeof campaignRouteMatrixFor==='function'?campaignRouteMatrixFor(battle?.season,battle?.faction,battle?.level):null;
+ return route?.orderPool?[...route.orderPool]:TACTICAL_ORDERS.map(order=>order.id);
+}
+window.tacticalOrderPoolForBattle=tacticalOrderPoolForBattle;
 function createTacticalOrderOffer(triggerId){
  const orders=tacticalOrderState();
  if(!orders||orders.offer||!BATTLE_SIDES.includes(state.faction)||state.over||typeof activeCampaignStory!=='undefined'&&activeCampaignStory)return false;
- let pool=TACTICAL_ORDERS.map(order=>order.id).filter(id=>!orders.selected.includes(id));
- if(pool.length<3)pool=TACTICAL_ORDERS.map(order=>order.id);
+ const routePool=tacticalOrderPoolForBattle(state);
+ let pool=routePool.filter(id=>!orders.selected.includes(id));
+ if(pool.length<3)pool=[...routePool];
  const seed=(Number(state.season)||1)*17+(Number(state.level)||1)*7+orders.nextOfferId*3+(Number(triggerId)||0);
  const offset=((seed%pool.length)+pool.length)%pool.length;
  orders.offer=Array.from({length:3},(_,index)=>pool[(offset+index)%pool.length]);

@@ -48,7 +48,7 @@
   - [x] Task 6.3：勳章里程碑純外觀獎勵
   - [x] Gate：guest/cloud/conflict/profile migration suites
 - [ ] Phase 7：全關卡擴充、平衡與正式發布
-  - [ ] Task 7.1：完整資料矩陣與靜態檢查
+  - [x] Task 7.1：完整資料矩陣與靜態檢查
   - [ ] Task 7.2：deterministic balance tests
   - [ ] Task 7.3：完整 UI／無障礙驗收
   - [ ] Task 7.4：發布、Pages marker、production journeys、mobile screenshot
@@ -82,6 +82,7 @@
 - Task 5.2 驗證：原中央 pipeline 先以缺少 layer/consumer API 取得 RED，再以真實關羽 Lv.3＋青龍戰袍＋青龍火斬、桃園同心＋屯田／背水一戰、實際投射物、部署、週期補給／向日葵、承傷與 stage movement 覆蓋單層值、組合值、敵我隔離與資料 immutability；deterministic desktop＋mobile repeat 無 retry 30/30、targeted reviewer fixes 44/44、原 Phase 5 related 216 passed／4 skipped、原 canonical 503 passed／5 skipped。follow-up 新增 production movement、affordability、melee/ranged cadence、spent movement、entity transition、summon/death blast regression；獨立 review 再以真瀏覽器重現特殊衝車被 620/310 重設為 480/240，新增 RED 後修正，focused desktop＋mobile 2/2、完整 modifier 18/18、related 40/40。實際 Chromium 1280×633 驗收軍令 dialog 的三張卡、ARIA、焦點、文字與 viewport，console 0 error；`git diff --check`、相關 JS `node --check` 與 added-lines security scan 均通過。下一項為 Phase 6.1。
 - Task 6.1 已完成：40 條主線 route 各有三個 deterministic challenge；正式 `start(...,{challengeIds})` seam 啟用 fair mode，永久裝備／等級／固定技能／部署冷卻與英雄機率技能不會進入公平戰局。`protect-unit` 綁定首次指定實體 ID，不能死亡後以同型替補規避；攻城 route 不配置不適用的 gate-health。guest 只在真實勝場 exactly-once 保存勳章；cloud 將 canonical telemetry、SHA-256、角色 key 與 route challenge IDs 送入單一 atomic RPC，由 PostgreSQL 重算摘要及 objective，與 level reward 同 transaction 發放，並拒絕敗場、route 外 ID、摘要／內容突變、跨角色 replay、anon 及 profile entitlement 注入。首次 migration 清除既有未受信任 challenge 欄位，後續 profile INSERT／save 仍維持 server authority；舊 battle snapshot deterministic 補入 inactive challenge state。
 - Task 6.1 驗證：RED 覆蓋 production start seam、fair cooldown／proc、指定實體 replacement、40-route JS／SQL contract、canonical digest mismatch、ledger mutation、atomic rollback、idempotent replay、initial/save profile anti-forgery 與真實 legacy normalization。focused desktop＋mobile 19 passed／1 skipped，related 146 passed／4 skipped，fresh canonical 534 passed／6 skipped／0 failed；三路原始 review 與修正後窄 review 均已完成，最終 verdict PASS。`git diff --check`、相關 JS `node --check` 與新增行 credential scan 全數通過；下一項為 Task 6.2 選關與結算勳章 UI。
+- Task 7.1 已完成：新增 immutable 40-route gameplay matrix，將兩季 × 守城／攻城 × 10 關的主規則、三項挑戰、軍令池與敵軍危險預告需求整合成單一 production resolver；軍令三選一實際從 route pool 取樣，正式勝敗結算共用可測的繁中結果文案。秦皇第 11 關維持獨立 `qin-finale` 並明確排除於矩陣。靜態契約逐 route 檢查玩家可見名稱、條件、軍令、預告與勝敗結果皆含繁中文字且不出現 `undefined`／`NaN`；README、首頁消息及角色頁 fallback 已同步兩季守城／攻城各十關皆可玩。RED 分別確認 matrix API、對外文案、runtime 軍令接線與結果 copy 缺失；focused matrix＋軍令 22/22、stage rules 28/28、challenges 54/54、第二季入口／圖鑑 10/10，fresh canonical 578 passed／6 skipped／0 failed。獨立 reviewer verdict PASS，`git diff --check`、相關 JS `node --check` 與新增行 credential scan 均通過；下一項為 Task 7.2 deterministic balance tests。
 
 ## 已完成提交
 
