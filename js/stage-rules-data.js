@@ -3,6 +3,7 @@ function stageRouteKey(context){return `${context.season||1}:${context.faction}:
 function defenseCleared(context){return !!context.bossSpawned&&!(context.zombies||[]).some(unit=>unit.hp>0)}
 function attackExpired(context){return context.time>=(context.levelConfig?.attackTimeLimit||90000)}
 function immutableRule(spec){
+ const requirements=spec.requirements||{};
  const contract={
   id:spec.id,title:spec.title,brief:spec.brief||spec.title,archetype:spec.archetype||null,
   objective:spec.objective,
@@ -10,7 +11,8 @@ function immutableRule(spec){
   tick:spec.tick||((runtime)=>runtime),
   onEvent:spec.onEvent||((runtime,event)=>event.type==='breach'?{...runtime,breached:true}:runtime),
   isComplete:spec.isComplete,
-  isFailed:spec.isFailed
+  isFailed:spec.isFailed,
+  requirements:Object.freeze({playerUnits:Object.freeze([...(requirements.playerUnits||[])]),encounterProvidedUnits:Object.freeze([...(requirements.encounterProvidedUnits||[])])})
  };
  return Object.freeze(contract)
 }
@@ -92,6 +94,7 @@ const ROTATING_FROST_RULE=immutableRule({
 });
 const ESCORT_RAM_RULE=immutableRule({
  id:'escort-ram',title:'護送破門衝車',archetype:'escort',
+ requirements:{encounterProvidedUnits:['s2Ram']},
  objective:()=>['保護任務衝車沿中央路推進','其他僵屍突破不能取代衝車任務','任務衝車存活並抵達左側城門才算勝利'],
  start:()=>({kind:'escort-ram',escortId:null,escortAlive:true,escortBreached:false}),
  tick:(runtime,context)=>runtime.escortId&&!runtime.escortBreached&&!(context.zombies||[]).some(z=>z.id===runtime.escortId&&z.hp>0)?{...runtime,escortAlive:false}:runtime,

@@ -66,10 +66,10 @@ test('battle-local order state normalizes safely and modifiers combine additivel
   return {fresh,combined,normalized,json,before,clamped};
  });
  expect(result.fresh).toEqual({selected:[],offer:null,history:[],nextOfferId:1,attackMilestones:[]});
- expect(result.combined).toEqual({resourceIncome:1.25,damage:.9,attackSpeed:1.12,healing:1.3,unknown:1});
+ expect(result.combined).toEqual({resourceIncome:1.25,damage:.9,attackSpeed:1.09,healing:1.14,unknown:1});
  expect(result.normalized).toEqual({selected:['tuntian','medical-camp'],offer:null,history:['last-stand'],nextOfferId:1,attackMilestones:[]});
  expect(result.json).toEqual({selected:['tuntian','last-stand','medical-camp'],offer:null,history:[],nextOfferId:1,attackMilestones:[]});
- expect(result.before).toBe(1.12);
+ expect(result.before).toBe(1.09);
  expect(result.clamped).toBe(1.5);
 });
 

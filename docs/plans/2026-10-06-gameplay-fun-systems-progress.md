@@ -49,7 +49,7 @@
   - [x] Gate：guest/cloud/conflict/profile migration suites
 - [ ] Phase 7：全關卡擴充、平衡與正式發布
   - [x] Task 7.1：完整資料矩陣與靜態檢查
-  - [ ] Task 7.2：deterministic balance tests
+  - [x] Task 7.2：deterministic balance tests
   - [ ] Task 7.3：完整 UI／無障礙驗收
   - [ ] Task 7.4：發布、Pages marker、production journeys、mobile screenshot
   - [ ] Gate：canonical 0 failed / 0 flaky + production smoke
@@ -83,6 +83,7 @@
 - Task 6.1 已完成：40 條主線 route 各有三個 deterministic challenge；正式 `start(...,{challengeIds})` seam 啟用 fair mode，永久裝備／等級／固定技能／部署冷卻與英雄機率技能不會進入公平戰局。`protect-unit` 綁定首次指定實體 ID，不能死亡後以同型替補規避；攻城 route 不配置不適用的 gate-health。guest 只在真實勝場 exactly-once 保存勳章；cloud 將 canonical telemetry、SHA-256、角色 key 與 route challenge IDs 送入單一 atomic RPC，由 PostgreSQL 重算摘要及 objective，與 level reward 同 transaction 發放，並拒絕敗場、route 外 ID、摘要／內容突變、跨角色 replay、anon 及 profile entitlement 注入。首次 migration 清除既有未受信任 challenge 欄位，後續 profile INSERT／save 仍維持 server authority；舊 battle snapshot deterministic 補入 inactive challenge state。
 - Task 6.1 驗證：RED 覆蓋 production start seam、fair cooldown／proc、指定實體 replacement、40-route JS／SQL contract、canonical digest mismatch、ledger mutation、atomic rollback、idempotent replay、initial/save profile anti-forgery 與真實 legacy normalization。focused desktop＋mobile 19 passed／1 skipped，related 146 passed／4 skipped，fresh canonical 534 passed／6 skipped／0 failed；三路原始 review 與修正後窄 review 均已完成，最終 verdict PASS。`git diff --check`、相關 JS `node --check` 與新增行 credential scan 全數通過；下一項為 Task 6.2 選關與結算勳章 UI。
 - Task 7.1 已完成：新增 immutable 40-route gameplay matrix，將兩季 × 守城／攻城 × 10 關的主規則、三項挑戰、軍令池與敵軍危險預告需求整合成單一 production resolver；軍令三選一實際從 route pool 取樣，正式勝敗結算共用可測的繁中結果文案。秦皇第 11 關維持獨立 `qin-finale` 並明確排除於矩陣。靜態契約逐 route 檢查玩家可見名稱、條件、軍令、預告與勝敗結果皆含繁中文字且不出現 `undefined`／`NaN`；README、首頁消息及角色頁 fallback 已同步兩季守城／攻城各十關皆可玩。RED 分別確認 matrix API、對外文案、runtime 軍令接線與結果 copy 缺失；focused matrix＋軍令 22/22、stage rules 28/28、challenges 54/54、第二季入口／圖鑑 10/10，fresh canonical 578 passed／6 skipped／0 failed。獨立 reviewer verdict PASS，`git diff --check`、相關 JS `node --check` 與新增行 credential scan 均通過；下一項為 Task 7.2 deterministic balance tests。
+- Task 7.2 已完成：以 production `createTacticalOrderOffer()`、角色 resolver、modifier consumers 與 route schema 建立兩季 × 雙陣營 × 十關、每 route 128 fixed seeds 的 5,120-sample deterministic simulation，比較無軍令、普通選擇與依當局策略優先目標挑選的最佳選擇。九張軍令皆至少成為最佳一次，overall pick rate <25%、conditional pick rate ≤65%、平均 utility spread <0.12；route pool 依正式 roster capability 排除 dead cards，關卡需求由 immutable stage-rule metadata 區分玩家解鎖與 encounter-provided 單位。八組組合均透過真實 battle entities、`combinationIsActive()` 與 `applyCombinationUnitModifier()` 驗證 10–15% throughput 及 15% overlap cap。reviewer follow-up 以 production action 重現醫官 55→63 後又被重複放大至 72，RED 後改為直接消費 resolved `d.heal`，實際治療與 resolver 均為 63。最新 related desktop／mobile 176/176，fresh canonical 590 passed／6 skipped／0 failed，兩輪最終獨立 reviewer verdict PASS；`git diff --check`、相關 JS `node --check` 與 added-lines credential scan 均通過。下一項為 Task 7.3 完整 UI／無障礙驗收。
 
 ## 已完成提交
 

@@ -11,7 +11,7 @@ const CHALLENGE_TEMPLATES=Object.freeze({
  'no-enemy-leak':Object.freeze({id:'no-enemy-leak',name:'滴水不漏',description:'不可讓任何敵軍突破防線。'})
 });
 const CHALLENGE_ROUTE_POOLS=Object.freeze({
- '1:plants':Object.freeze(['no-hero','gate-health','resource-cap','no-relocation','protect-unit','no-enemy-leak','melee-only','time-limit']),
+ '1:plants':Object.freeze(['no-hero','gate-health','resource-cap','no-relocation','protect-unit','no-enemy-leak','time-limit','melee-only']),
  '1:zombies':Object.freeze(['no-hero','time-limit','melee-only','resource-cap','no-relocation','protect-unit','no-enemy-leak']),
  '2:plants':Object.freeze(['no-enemy-leak','protect-unit','resource-cap','no-hero','gate-health','no-relocation','time-limit','melee-only']),
  '2:zombies':Object.freeze(['time-limit','melee-only','no-hero','resource-cap','protect-unit','no-relocation','no-enemy-leak'])

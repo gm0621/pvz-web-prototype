@@ -83,7 +83,7 @@ test('movement stage status is last, while costs and income use production modif
   const base=effectiveUnit('zombies','normal').speed;
   return {selected,rawResourceModifiers,resourceModifier,deployment,relocation,resourceIncome,enemyIncome,spawn,plantCost:PLANT_TYPES.peashooter.cost,deployedCost,deploymentSpent,cardCost,periodicIncome,expectedPeriodic,produced,expectedProduce,healerFaction,healModifier,healOrder,ownHealing,enemyHealing,damageTaken,movement,base};
  });
- expect(result).toEqual({selected:['tuntian','reinforcements','rapid-redeploy','empty-city','supply-raid'],rawResourceModifiers:[1.25,null,null,.85,.9],resourceModifier:1,deployment:85,relocation:10,resourceIncome:100,enemyIncome:80,spawn:12000,plantCost:result.plantCost,deployedCost:Math.round(result.plantCost*.85),deploymentSpent:Math.round(result.plantCost*.85),cardCost:`${Math.round(result.plantCost*.85)} 軍糧`,periodicIncome:result.expectedPeriodic,expectedPeriodic:result.expectedPeriodic,produced:result.expectedProduce,expectedProduce:result.expectedProduce,healerFaction:'plants',healModifier:1.3,healOrder:1.3,ownHealing:130,enemyHealing:100,damageTaken:115,movement:result.base*.85*1.12,base:result.base});
+ expect(result).toEqual({selected:['tuntian','reinforcements','rapid-redeploy','empty-city','supply-raid'],rawResourceModifiers:[1.25,null,null,.85,.9],resourceModifier:1,deployment:90,relocation:18,resourceIncome:100,enemyIncome:90,spawn:11500,plantCost:result.plantCost,deployedCost:Math.round(result.plantCost*.9),deploymentSpent:Math.round(result.plantCost*.9),cardCost:`${Math.round(result.plantCost*.9)} 軍糧`,periodicIncome:result.expectedPeriodic,expectedPeriodic:result.expectedPeriodic,produced:result.expectedProduce,expectedProduce:result.expectedProduce,healerFaction:'plants',healModifier:1.14,healOrder:1.14,ownHealing:114,enemyHealing:100,damageTaken:115,movement:result.base*.85*1.12,base:result.base});
 });
 
 test('production movement applies stage status before the final clamp',async({page})=>{
@@ -169,4 +169,17 @@ test('summons and death blasts consume resolved health and damage',async({page})
  });
  expect(result.summonHp).toBe(result.summonResolved);
  expect(result.blast).toBe(result.blastResolved);
+});
+
+test('season two medic applies the medical-camp healing modifier exactly once',async({page})=>{
+ await open(page);
+ const result=await page.evaluate(()=>{
+  playerProfile=normalizeProfile({});currentSeason=2;selectedLevel=1;start('zombies');clearInterval(timer);
+  state.time=6000;state.plants=[];state.gameplay.orders.selected=['medical-camp'];
+  const medic={id:'medic',type:'s2Medic',r:2,c:4,hp:230,maxHp:230,lastHeal:0,last:state.time};
+  const ally={id:'ally',type:'s2Rat',r:2,c:3.5,hp:100,maxHp:200,last:state.time};
+  state.zombies=[medic,ally];const resolvedHeal=activeUnit('zombies','s2Medic').heal;actSeason2Zombies();
+  return {resolvedHeal,healed:ally.hp-100,lastHeal:medic.lastHeal};
+ });
+ expect(result).toEqual({resolvedHeal:63,healed:63,lastHeal:6000});
 });

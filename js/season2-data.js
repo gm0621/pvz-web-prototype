@@ -30,7 +30,7 @@ const SEASON2_UNITS={
   s2Cleaver:{name:'裂盾斧屍',cost:135,emoji:'🪓',hp:290,damage:30,rate:1800,speed:.009,range:.8,cooldown:7500,clearRequired:2,desc:'啃盾裂甲：對護盾造成雙倍盾耗，連續斧擊削弱列盾減傷。'},
   s2Smoke:{name:'煙罐小屍',cost:115,emoji:'🌫️',hp:230,damage:16,rate:1400,speed:.011,range:.8,cooldown:7200,clearRequired:3,desc:'屍煙掩行：同路附近友軍受到的普通遠程傷害降低 25%。'},
   s2Hook:{name:'鉤鎖屍卒',cost:145,emoji:'⛓️',hp:320,damage:28,rate:1650,speed:.009,range:2.2,cooldown:8200,clearRequired:4,desc:'勾陣：週期性把同路最前方守軍向前拉一格，拆開前後排支援。'},
-  s2Medic:{name:'縫屍醫官',cost:155,emoji:'🩹',hp:230,damage:13,rate:1700,speed:.009,range:1.1,cooldown:9000,clearRequired:5,desc:'補肉縫骨：每 5 秒修補同路受傷最重的一名非醫官僵屍。'},
+  s2Medic:{name:'縫屍醫官',cost:155,emoji:'🩹',hp:230,damage:13,rate:1700,speed:.009,range:1.1,heal:55,cooldown:9000,clearRequired:5,desc:'補肉縫骨：每 5 秒修補同路受傷最重的一名非醫官僵屍。'},
   s2Venom:{name:'毒囊噴屍',cost:165,emoji:'☠️',hp:270,damage:24,rate:2200,speed:.009,range:2.6,cooldown:9000,clearRequired:6,desc:'腐液殘留：短距離噴吐，命中點附近守軍會受到範圍腐液傷害。'},
   s2Decoy:{name:'替身偶屍',cost:150,emoji:'🎭',hp:390,damage:20,rate:1250,speed:.010,range:.8,cooldown:8500,clearRequired:7,desc:'草偶替身：高耐久誘餌會優先承受普通直射火力。'},
   s2Hexer:{name:'斷旗咒屍',cost:190,emoji:'🏴',hp:250,damage:26,rate:2350,speed:.008,range:4.5,cooldown:10000,clearRequired:8,desc:'孤軍咒：遠程咒符使目標短時間無法獲得友軍增益。'},
