@@ -70,7 +70,7 @@
 - 角色介紹頁文案改成較像角色設定的介紹詞；軍糧官名稱已移除「小軍師」避免過長。劉備圖鑑圖使用圖2；關羽所有顯示位置統一使用最新指定的 Q 版青龍偃月刀／綠焰龍魂圖，攻擊時維持同圖並以 CSS 短暫向前揮刀。
 - 主選單改成精簡三國大廳：使用 `assets/backgrounds/main-menu-battle-bg.webp` 戰場背景，只保留三個目前可用入口（守城戰、進攻戰、能力圖鑑）；多餘功能圖示已移除，右上角保留音樂/音效獨立開關。
 - 最外層主選單已移除綠底 `PLAYABLE WEB GAME` 標籤，遊戲名稱改為「三國萌將守城」，標題改成較集中的金色三國風 logo 樣式。
-- 關卡選擇頁改成三國戰場卡片風格，第一階段顯示十張關卡卡片；最新指定圖已套用：第二關 `level-02-custom-card.webp`、第三關 `level-03-custom-card.webp`、第四關 `level-04-custom-card.webp`、第五關 `level-05-custom-card.webp`、第六關 `level-06-custom-card.webp`、第七關 `level-07-custom-card.webp`、第九關 `level-09-custom-card.webp`、第十關 `level-10-custom-card.webp`。第一、八關維持原關卡圖。進入遊戲後棋盤背景維持原本草地/夜晚格線，不使用關卡選擇圖。
+- 關卡選擇頁改成三國戰場卡片風格，第一階段顯示十張關卡卡片；最新指定圖已套用：第二關 `level-02-custom-card.webp`、第三關 `level-03-custom-card.webp`、第四關 `level-04-custom-card.webp`、第五關 `level-05-custom-card.webp`、第六關 `level-06-custom-card.webp`、第七關 `level-07-custom-card.webp`、第九關 `level-09-custom-card.webp`、第十關 `level-10-custom-card.webp`，另為通關第十關後解鎖的秦皇終章使用 `qin-finale-custom-card.webp`。第一、八關維持原關卡圖。這些圖片只用於選關卡片與劇情背景；進入遊戲後棋盤背景維持原本草地/夜晚格線。
 - 角色解鎖節奏已改成依十關慢慢開放：第一關基礎防線；第二關關羽/獸巨/擲石；第三關趙雲/跳躍；第四關龐統/馬超/僵屍王；第五關黃忠/小丑；第六關張飛/爆爆桶屍；第七關孔明/屍旗大胖；第八關投石車；第九關劉備並全角色解鎖；第十關是第一階段最終壓力關。
 - 第一階段十關難度以起始資源、電腦能量、補給、AI 行動窗口與波次規模逐步上升；各兵種冷卻、移動速度不變，大波集中的是入場時機。
 - 修正飛石阿投的投石顯示：投射物改成可見的旋轉石頭，避免投一次後看起來球不見。

@@ -3,6 +3,8 @@
 - `main-menu-battle-bg.webp`：Gimmy 提供的三國守方對僵屍戰場背景，已壓縮成 WebP，作為主選單大廳背景。
 - `level-1-day-camp.webp`：Gimmy 提供的第一關日間三國軍營背景，只作為第一關關卡選擇卡片背景。
 - `level-2-night-siege.webp`：Gimmy 提供的第二關夜間僵屍攻城背景，只作為第二關關卡選擇卡片背景。
+- `level-10-custom-card.webp`：Gimmy 於 2026-10-08 提供的第一季第十關決戰圖，作為第十關選關卡片與劇情背景；原始檔保存於 `source-originals/level-10-accepted-20261008.png`。
+- `qin-finale-custom-card.webp`：Gimmy 於 2026-10-08 提供的第一季秦皇終章圖，作為終章選關卡片與劇情背景；原始檔保存於 `source-originals/qin-finale-accepted-20261008.png`。
 
 主選單使用深色漸層遮罩保留背景氣氛，同時讓按鈕與文字可讀。主選單目前精簡為三個入口：守城戰、進攻戰、能力圖鑑；右上角提供音樂/音效開關。
 

@@ -31,6 +31,31 @@ test('Qin emperor becomes a separate finale after defense level ten',async({page
  expect(result.next).toEqual({faction:'plants',level:11,label:'終章：挑戰秦皇 ▶'});
 });
 
+test('first-season level ten and Qin finale use their accepted card art',async({page})=>{
+ await openApp(page);
+ const result=await page.evaluate(async()=>{
+  playerProfile=normalizeProfile({});currentSeason=1;currentFaction='plants';
+  for(let level=1;level<=10;level++)completeCampaignLevel('plants',level);
+  buildLevelCards();
+  const inspect=async level=>{
+   const card=document.querySelector(`[data-jump-level="${level}"]`).closest('.level-card');
+   const art=card.querySelector('.level-art');
+   const src=LEVELS[level].cardArt;
+   const image=new Image();image.src=src;await image.decode();
+   return {src,background:getComputedStyle(art).backgroundImage,width:image.naturalWidth,height:image.naturalHeight};
+  };
+  return {level10:await inspect(10),finale:await inspect(11)};
+ });
+ expect(result.level10.src).toBe('assets/backgrounds/level-10-custom-card.webp');
+ expect(result.level10.background).toContain('level-10-custom-card.webp');
+ expect(result.level10.width).toBeGreaterThan(1000);
+ expect(result.level10.height).toBeGreaterThan(500);
+ expect(result.finale.src).toBe('assets/backgrounds/qin-finale-custom-card.webp');
+ expect(result.finale.background).toContain('qin-finale-custom-card.webp');
+ expect(result.finale.width).toBeGreaterThan(1000);
+ expect(result.finale.height).toBeGreaterThan(500);
+});
+
 test('finale starts the three-phase boss and three tiger seals break formation',async({page})=>{
  await openApp(page);
  const initial=await page.evaluate(()=>{
