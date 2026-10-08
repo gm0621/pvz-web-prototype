@@ -47,13 +47,13 @@
   - [x] Task 6.2：選關與結算勳章 UI
   - [x] Task 6.3：勳章里程碑純外觀獎勵
   - [x] Gate：guest/cloud/conflict/profile migration suites
-- [ ] Phase 7：全關卡擴充、平衡與正式發布
+- [x] Phase 7：全關卡擴充、平衡與正式發布
   - [x] Task 7.1：完整資料矩陣與靜態檢查
   - [x] Task 7.2：deterministic balance tests
   - [x] Task 7.3：完整 UI／無障礙驗收
-  - [ ] Task 7.4：發布、Pages marker、production journeys、mobile screenshot
-  - [ ] Gate：canonical 0 failed / 0 flaky + production smoke
-- [ ] PROJECT COMPLETE
+  - [x] Task 7.4：發布、Pages marker、production journeys、mobile screenshot
+  - [x] Gate：canonical 0 failed / 0 flaky + production smoke
+- [x] PROJECT COMPLETE
 
 ## 當前狀態
 
@@ -85,6 +85,7 @@
 - Task 7.1 已完成：新增 immutable 40-route gameplay matrix，將兩季 × 守城／攻城 × 10 關的主規則、三項挑戰、軍令池與敵軍危險預告需求整合成單一 production resolver；軍令三選一實際從 route pool 取樣，正式勝敗結算共用可測的繁中結果文案。秦皇第 11 關維持獨立 `qin-finale` 並明確排除於矩陣。靜態契約逐 route 檢查玩家可見名稱、條件、軍令、預告與勝敗結果皆含繁中文字且不出現 `undefined`／`NaN`；README、首頁消息及角色頁 fallback 已同步兩季守城／攻城各十關皆可玩。RED 分別確認 matrix API、對外文案、runtime 軍令接線與結果 copy 缺失；focused matrix＋軍令 22/22、stage rules 28/28、challenges 54/54、第二季入口／圖鑑 10/10，fresh canonical 578 passed／6 skipped／0 failed。獨立 reviewer verdict PASS，`git diff --check`、相關 JS `node --check` 與新增行 credential scan 均通過；下一項為 Task 7.2 deterministic balance tests。
 - Task 7.2 已完成：以 production `createTacticalOrderOffer()`、角色 resolver、modifier consumers 與 route schema 建立兩季 × 雙陣營 × 十關、每 route 128 fixed seeds 的 5,120-sample deterministic simulation，比較無軍令、普通選擇與依當局策略優先目標挑選的最佳選擇。九張軍令皆至少成為最佳一次，overall pick rate <25%、conditional pick rate ≤65%、平均 utility spread <0.12；route pool 依正式 roster capability 排除 dead cards，關卡需求由 immutable stage-rule metadata 區分玩家解鎖與 encounter-provided 單位。八組組合均透過真實 battle entities、`combinationIsActive()` 與 `applyCombinationUnitModifier()` 驗證 10–15% throughput 及 15% overlap cap。reviewer follow-up 以 production action 重現醫官 55→63 後又被重複放大至 72，RED 後改為直接消費 resolved `d.heal`，實際治療與 resolver 均為 63。最新 related desktop／mobile 176/176，fresh canonical 590 passed／6 skipped／0 failed，兩輪最終獨立 reviewer verdict PASS；`git diff --check`、相關 JS `node --check` 與 added-lines credential scan 均通過。下一項為 Task 7.3 完整 UI／無障礙驗收。
 - Task 7.3 已完成：集中 battle overlay lifecycle cleanup，replay、切回選關與回主選單會同步清除 feedback timers/classes、enemy telegraph DOM／banner／layout、軍令 dialog／background `inert`、transient FX，並取消尚未執行且會重新建立 DOM 的 battle FX timers；暫停 snapshot 的 gameplay telegraph state 保留，resume 時仍由正式 render path 重建。新增 regression 同時驗證三條 navigation path 的 immediate snapshot 與 250ms delayed snapshot，修正前曾重現 4 個 delayed transient nodes 復活，修正後 desktop／mobile 2/2、完整 related matrix 182/182。desktop 1280×900、portrait 390×844、landscape 844×390 最新 workspace 實畫均無水平溢位、runtime error 或 blocking clipping；5 組 tablet viewport、兩陣營及 native／fallback fullscreen 均通過。fresh canonical 592 passed／6 skipped／0 failed，最終獨立 reviewer verdict PASS；`git diff --check`、相關 JS syntax 與 added-lines credential scan 均通過。下一項為 Task 7.4 發布與 production smoke。
+- Task 7.4、Phase 7 Gate 與專案發布已完成：`ae4279277006dcef82d5e27e807c7c76dab22587` 已由 GitHub Pages 正式服務，cache-busted `js/app.js` SHA-256 為 `6afa08d83d43117ad1b4a460ac8fdac7ba8ad0efcc8439c25e29fb384f467335`，與該 commit 完全一致。正式站 `https://gm0621.github.io/pvz-web-prototype/` 已完成第一季守城、第一季攻城、第二季守城、第二季攻城四條 browser journey；每條均由 production `start()` 啟動，實際驗證 route rule HUD、非顏色預警 DOM／反制 banner、三張含收益與代價的軍令、該季陣營組合 HUD、戰報、challenge 結算，四條皆 0 console/page error、無水平溢位。390×844 第二季攻城結算 modal 可由 826px viewport 捲動完整 1,586px 內容，底部「繼續劇情、下一關、再玩一次、換陣營同關、回主選單」皆實際位於 viewport，點擊「回主選單」成功離開結算；正式站 mobile screenshot 無裁切、不可讀文字或 overlay blocker。發布前 committed canonical 為 592 passed／6 skipped／0 failed／0 flaky。
 
 ## 已完成提交
 
