@@ -28,7 +28,7 @@ test('browsing another season preserves and resumes the paused battle',async({pa
  await page.locator('#storySkip').click();await page.locator('#cards .card').first().click();await page.locator('.cell[data-r="2"][data-c="8"]').click();await page.locator('#backBtn').click();
  const saved=await page.evaluate(()=>localStorage.getItem(BATTLE_SAVE_KEY));
  await page.locator('#plantStartBtn').click();await page.locator('[data-season-choice="1"]').click();expect(await page.evaluate(()=>localStorage.getItem(BATTLE_SAVE_KEY))).toBe(saved);
- await page.locator('#resumeBattleLevelBtn').click();await expect(page.locator('#game')).toHaveClass(/active/);
+ await page.locator('#continueCampaignBtn').click();await expect(page.locator('#game')).toHaveClass(/active/);
  expect(await page.evaluate(()=>({season:state.season,faction:state.faction,paused:state.paused}))).toEqual({season:2,faction:'zombies',paused:true});
  await page.locator('#gameFloatBackBtn').click();await expect(page.locator('#levelGrid')).toBeVisible();await expect(page.locator('#seasonPicker')).toBeHidden();
 });

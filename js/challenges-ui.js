@@ -1,3 +1,22 @@
+const BATTLE_DIFFICULTIES=Object.freeze({
+ easy:Object.freeze({id:'easy',label:'簡單',description:'可正常部署，起始資源增加 25%。',resourceMultiplier:1.25,blocksHeroes:false}),
+ medium:Object.freeze({id:'medium',label:'中等',description:'可正常部署，沿用原本關卡平衡。',resourceMultiplier:1,blocksHeroes:false}),
+ hard:Object.freeze({id:'hard',label:'困難',description:'普通小兵可部署，但不得部署武將。',resourceMultiplier:1,blocksHeroes:true})
+});
+function normalizeBattleDifficulty(value,fallback='medium'){return Object.prototype.hasOwnProperty.call(BATTLE_DIFFICULTIES,value)?value:fallback}
+function battleDifficultyConfig(value){return BATTLE_DIFFICULTIES[normalizeBattleDifficulty(value)]}
+function syncDifficultyChallengeState(card){
+ const difficulty=selectedBattleDifficulty(card),noHero=card?.querySelector('.challenge-option input[value="no-hero"]');if(!noHero)return;
+ noHero.checked=difficulty==='hard';noHero.disabled=true;const option=noHero.closest('.challenge-option'),description=option?.querySelector('.challenge-option-description'),status=option?.classList.contains('earned')?'已取得':'尚未取得',condition=difficulty==='hard'?'困難難度固定規則：本關不得部署武將。':'此限制只在困難難度啟用。';option?.classList.toggle('difficulty-required',difficulty==='hard');if(description)description.textContent=condition;noHero.setAttribute('aria-label',`不用武將：${condition}${status}`);
+}
+function appendDifficultySelector(card,season,faction,level,unlocked){
+ const selector=document.createElement('fieldset'),legendId=`difficulty-${season}-${faction}-${level}`;selector.className='difficulty-selector';selector.setAttribute('aria-labelledby',legendId);
+ selector.innerHTML=`<legend id="${legendId}" class="difficulty-selector-head">選擇難度</legend><div class="difficulty-option-list"></div>`;
+ const list=selector.querySelector('.difficulty-option-list'),group=`difficulty-${season}-${faction}-${level}`;
+ for(const difficulty of Object.values(BATTLE_DIFFICULTIES)){const label=document.createElement('label');label.className=`difficulty-option difficulty-${difficulty.id}`;label.innerHTML=`<input type="radio" name="${group}" value="${difficulty.id}" ${difficulty.id==='easy'?'checked':''} ${unlocked?'':'disabled'}><span><strong>${difficulty.label}</strong><small>${difficulty.description}</small></span>`;label.querySelector('input').addEventListener('change',()=>syncDifficultyChallengeState(card));list.append(label)}
+ const challenge=card.querySelector('.challenge-selector'),startButton=card.querySelector('.level-start');if(challenge)challenge.before(selector);else startButton?.before(selector);return selector;
+}
+function selectedBattleDifficulty(card){return normalizeBattleDifficulty(card?.querySelector('.difficulty-option input:checked')?.value,'easy')}
 function challengeMedalEarned(definition){return !!playerProfile?.challenges?.medals?.[definition?.medalId]}
 function challengeConditionText(definition){
  if(definition.id==='gate-health')return `關卡目標生命保持至少 ${Math.round((definition.minHealthPct??.5)*100)}%。`;
@@ -10,10 +29,10 @@ function appendChallengeSelector(card,season,faction,level,unlocked){
  const definitions=challengesForRoute(season,faction,level);if(definitions.length!==3)return null;
  const selector=document.createElement('fieldset'),legendId=`challenge-${season}-${faction}-${level}`;selector.className='challenge-selector';selector.setAttribute('aria-labelledby',legendId);
  const earned=definitions.filter(challengeMedalEarned).length;
- selector.innerHTML=`<legend id="${legendId}" class="challenge-selector-head"><span>🏅 挑戰勳章</span><span class="challenge-medal-count">${earned}/3 已取得</span></legend><div class="challenge-option-list"></div>`;
+ selector.innerHTML=`<legend id="${legendId}" class="challenge-selector-head"><span>🏅 額外挑戰（選填）</span><span class="challenge-medal-count">${earned}/3 已取得</span></legend><div class="challenge-option-list"></div>`;
  const list=selector.querySelector('.challenge-option-list');
  for(const definition of definitions){const owned=challengeMedalEarned(definition),label=document.createElement('label');label.className=`challenge-option${owned?' earned':''}`;const condition=challengeConditionText(definition),status=owned?'已取得':'尚未取得';label.innerHTML=`<input type="checkbox" value="${definition.id}" ${unlocked?'':'disabled'} aria-label="${definition.name}：${condition}${status}"><span class="challenge-option-copy"><span class="challenge-option-name">🏅 ${definition.name}</span><span class="challenge-option-description">${condition}</span><span class="challenge-medal-state">${status}</span></span>`;list.append(label)}
- const startButton=card.querySelector('.level-start');startButton?.before(selector);return selector;
+ const startButton=card.querySelector('.level-start');startButton?.before(selector);syncDifficultyChallengeState(card);return selector;
 }
 function selectedChallengeIds(card){return [...(card?.querySelectorAll('.challenge-option input:checked')||[])].map(input=>input.value)}
 function challengeFailureReason(definition,telemetry){

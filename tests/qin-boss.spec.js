@@ -52,7 +52,7 @@ test('Qin finale offers the Wei sequel as the main route and zombie season one a
  await expect(page.locator('#finaleRouteChoice')).toBeVisible();
  await page.locator('#finaleWeiRoute').click();
  expect(await page.evaluate(()=>({season:currentSeason,faction:currentFaction}))).toEqual({season:2,faction:'plants'});
- await expect(page.locator('#chosenFactionText')).toContainText('第二季・北境鐵壁');
+ await expect(page.locator('#chosenFactionText')).toContainText('第二季・魏國守城');
 });
 
 test('unread Qin victory story finishes before the route choice and both choices fit mobile',async({page})=>{

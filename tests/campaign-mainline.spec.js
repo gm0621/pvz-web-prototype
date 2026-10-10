@@ -62,6 +62,7 @@ test('new prologue is readable, prev/close/replay are safe, and reading to the e
  await page.goto('/');await expect(page.locator('#start')).toHaveClass(/active/);
  await page.locator('#plantStartBtn').click();await page.locator('[data-season-choice="1"]').click();
  const profile=await page.evaluate(()=>JSON.stringify(playerProfile));
+ await page.locator('#levelGrid .level-card').first().locator('.level-detail-toggle').click();
  await page.locator('[data-story-level="1"]').click();await expect(page.locator('#storyText')).toContainText('古戰場');
  await page.locator('#storyNext').click();await page.locator('#storyPrev').click();await expect(page.locator('#storyText')).toContainText('古戰場');
  await page.locator('#storyClose').click();expect(await page.evaluate(()=>JSON.stringify(playerProfile))).toBe(profile);

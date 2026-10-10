@@ -70,7 +70,7 @@ function createBattleReportState(initialized=true){
  return {initialized,baseline:{totals:telemetry.totals,bySource:telemetry.bySource,byTarget:telemetry.byTarget,eventCount:0},current:null,attackMilestones:[]};
 }
 function createBattleTelegraphState(){return {nextId:1,active:[]}}
-function createTacticalOrderState(){return {selected:[],offer:null,history:[],nextOfferId:1,attackMilestones:[]}}
+function createTacticalOrderState(){return {selected:[],offer:null,history:[],nextOfferId:1,attackMilestones:[],points:0,dialogOpen:false}}
 function gameplayStageRuleContext(context){
  if(context)return context;
  if(typeof state!=='undefined'&&state?.levelConfig)return {season:state.season??1,faction:state.faction,level:state.level,levelConfig:state.levelConfig,time:state.time||0,zombies:state.zombies||[],bossSpawned:!!state.bossSpawned,qinBossAlive:!!state.zombies?.some(unit=>unit.boss&&unit.type==='qinEmperor'&&unit.hp>0)};
@@ -148,9 +148,14 @@ function normalizeTacticalOrders(raw){
  result.selected=uniqueKnown(raw.selected);
  result.history=uniqueKnown(raw.history);
  const offer=uniqueKnown(raw.offer);
- if(offer.length===3){result.offer=offer;result.resumeAfterSelection=raw.resumeAfterSelection===true}
+ if(offer.length===3)result.offer=offer;
  result.nextOfferId=Math.max(1,Math.floor(finiteNonnegative(raw.nextOfferId)||1));
  result.attackMilestones=Array.isArray(raw.attackMilestones)?[...new Set(raw.attackMilestones.filter(id=>['defender-break','time-pressure'].includes(id)))]:[];
+ result.points=Math.floor(finiteNonnegative(raw.points));
+ if(result.offer&&result.points<1)result.points=1;
+ // Restored battles never reopen a strategy dialog automatically. Keep the
+ // pending offer so the player can explicitly return to the same choices.
+ result.dialogOpen=false;
  return result;
 }
 function normalizeGameplayState(raw,context){
@@ -231,26 +236,59 @@ function createTacticalOrderOffer(triggerId){
  const routePool=tacticalOrderPoolForBattle(state);
  let pool=routePool.filter(id=>!orders.selected.includes(id));
  if(pool.length<3)pool=[...routePool];
- const seed=(Number(state.season)||1)*17+(Number(state.level)||1)*7+orders.nextOfferId*3+(Number(triggerId)||0);
+ const seed=(Number(state.season)||1)*17+(Number(state.level)||1)*7+orders.nextOfferId*3+String(triggerId||'').split('').reduce((sum,char)=>sum+char.charCodeAt(0),0);
  const offset=((seed%pool.length)+pool.length)%pool.length;
  orders.offer=Array.from({length:3},(_,index)=>pool[(offset+index)%pool.length]);
- orders.resumeAfterSelection=!state.paused;
  orders.nextOfferId++;
+ return orders.offer;
+}
+function updateStrategyButton(){
+ const button=document.getElementById('strategyBtn'),orders=state?.gameplay?.orders;
+ if(!button)return;
+ const points=Math.max(0,Math.floor(Number(orders?.points)||0));
+ button.textContent=`🧭 策略點 ${points}`;
+ button.disabled=!state||state.over||points<1;
+ button.classList.toggle('ready',points>0&&!state?.over);
+ button.setAttribute('aria-label',points>0?`使用策略，剩餘 ${points} 點`:'尚無策略點');
+}
+function grantStrategyPoint(source='milestone'){
+ const orders=tacticalOrderState();
+ if(!orders||state.over)return false;
+ orders.points=Math.max(0,Math.floor(Number(orders.points)||0))+1;
+ updateStrategyButton();persistBattleState();
+ log(`獲得 1 策略點（目前 ${orders.points} 點）；可自行決定是否使用軍令。`);
+ return true;
+}
+function openTacticalOrderMenu(){
+ const orders=tacticalOrderState();
+ if(!orders||state.over||orders.points<1||typeof activeCampaignStory!=='undefined'&&activeCampaignStory)return false;
+ if(!orders.offer&&!createTacticalOrderOffer(`manual-${orders.nextOfferId}`))return false;
+ orders.dialogOpen=true;orders.resumeAfterSelection=!state.paused;
  state.paused=true;state.actionMode=null;state.movingPlantId=null;
  applyPausedBattleUI();updateBattleActionUI();renderTacticalOrderOffer();persistBattleState();
- return orders.offer;
+ return true;
+}
+function closeTacticalOrderMenu(){
+ const orders=tacticalOrderState();
+ if(!orders?.dialogOpen)return false;
+ const resume=orders.resumeAfterSelection===true;
+ orders.dialogOpen=false;delete orders.resumeAfterSelection;state.paused=!resume;
+ renderTacticalOrderOffer();applyPausedBattleUI();updateBattleActionUI();updateStrategyButton();persistBattleState();
+ document.getElementById(state.paused?'pauseResumeBtn':'strategyBtn')?.focus({preventScroll:true});
+ return true;
 }
 function updateAttackTacticalOrders(){
  if(!state||state.faction!=='zombies'||state.over)return false;
  const orders=tacticalOrderState();
- if(!orders||orders.offer||orders.attackMilestones.length>=2)return false;
+ if(!orders||orders.attackMilestones.length>=2)return false;
  const limit=Number(state.levelConfig?.attackTimeLimit)||0;
  let milestone=null,triggerId=0;
  if(!orders.attackMilestones.includes('defender-break')&&finiteNonnegative(state.gameplay?.telemetry?.totals?.kills?.zombies)>0){milestone='defender-break';triggerId=101}
  else if(!orders.attackMilestones.includes('time-pressure')&&limit>0&&finiteNonnegative(state.time)>=limit*.6){milestone='time-pressure';triggerId=102}
- if(!milestone||!createTacticalOrderOffer(triggerId))return false;
+ if(!milestone||!grantStrategyPoint(triggerId))return false;
  orders.attackMilestones.push(milestone);persistBattleState();return true;
 }
+
 function tacticalOrderEntitySnapshot(){
  if(!state||!BATTLE_SIDES.includes(state.faction))return [];
  const entities=state.faction==='plants'?state.plants:state.zombies;
@@ -267,22 +305,23 @@ function applyTacticalOrderEntityTransition(before){
 }
 function chooseTacticalOrder(id){
  const orders=tacticalOrderState();
- if(!orders?.offer?.includes(id))return false;
+ if(!orders?.dialogOpen||orders.points<1||orders.selected.includes(id)||!orders.offer?.includes(id))return false;
  const entitySnapshot=tacticalOrderEntitySnapshot();
  if(!orders.selected.includes(id))orders.selected.push(id);
  if(!orders.history.includes(id))orders.history.push(id);
  applyTacticalOrderEntityTransition(entitySnapshot);
  const resume=orders.resumeAfterSelection===true;
- orders.offer=null;delete orders.resumeAfterSelection;
+ orders.points--;orders.offer=null;orders.dialogOpen=false;delete orders.resumeAfterSelection;
  state.paused=!resume;
  renderTacticalOrderOffer();applyPausedBattleUI();if(typeof updateDeploymentCardCosts==='function')updateDeploymentCardCosts();updateBattleActionUI();updateHUD();persistBattleState();
- const focusTarget=document.getElementById(state.paused?'pauseResumeBtn':'pauseBtn');focusTarget?.focus({preventScroll:true});
- log(`軍令生效：${tacticalOrderById(id)?.name||id}。`);sfx('click');
+ const focusTarget=document.getElementById(state.paused?'pauseResumeBtn':'strategyBtn');focusTarget?.focus({preventScroll:true});
+ log(`軍令生效：${tacticalOrderById(id)?.name||id}（消耗 1 策略點，剩餘 ${orders.points} 點）。`);sfx('click');
  return true;
 }
 function renderTacticalOrderOffer(){
  const dialog=document.getElementById('tacticalOrderDialog');if(!dialog)return;
- const game=document.getElementById('game'),offer=state?.gameplay?.orders?.offer,visible=Array.isArray(offer)&&offer.length===3&&!state.over&&game?.classList.contains('active');
+ updateStrategyButton();
+ const game=document.getElementById('game'),offer=state?.gameplay?.orders?.offer,requested=state?.gameplay?.orders?.dialogOpen===true,visible=Array.isArray(offer)&&offer.length===3&&requested&&!state.over&&game?.classList.contains('active');
  if(game)game.inert=visible;
  dialog.hidden=!visible;dialog.classList.toggle('show',visible);
  const options=dialog.querySelector('.tactical-order-options');

@@ -111,3 +111,32 @@ test('banner titan exposes four transparent attack frames',async({page})=>{
  expect(result.hit).toMatch(/zombie-animations\/corpseTitan\/attack-02\.webp$/);
  expect(result.recovered).toMatch(/zombie-animations\/corpseTitan\/idle-battle\.webp$/);
 });
+
+test('affected zombies keep battle-idle scale and one foot baseline through every attack frame',async({page})=>{
+ await open(page);
+ const normalized=await page.evaluate(async()=>{
+  const keys=['normal','cone','bucket','football','jester','bombJester'];
+  const bounds=async src=>{
+   const img=new Image();img.src=src;await img.decode();
+   const canvas=document.createElement('canvas');canvas.width=img.naturalWidth;canvas.height=img.naturalHeight;
+   const ctx=canvas.getContext('2d');ctx.drawImage(img,0,0);
+   const data=ctx.getImageData(0,0,canvas.width,canvas.height).data;
+   let left=canvas.width,top=canvas.height,right=-1,bottom=-1;
+   for(let y=0;y<canvas.height;y++)for(let x=0;x<canvas.width;x++)if(data[(y*canvas.width+x)*4+3]>8){left=Math.min(left,x);top=Math.min(top,y);right=Math.max(right,x);bottom=Math.max(bottom,y)}
+   return{height:bottom-top+1,foot:canvas.height-1-bottom};
+  };
+  const out={};
+  for(const key of keys){
+   const def=ZOMBIE_TYPES[key];
+   out[key]={presentation:def.asset,battle:def.battleAsset,images:await Promise.all([def.battleAsset,...def.attackFrames].map(bounds))};
+  }
+  return out;
+ });
+ for(const [key,entry] of Object.entries(normalized)){
+  expect(entry.battle,`${key} battle asset`).toMatch(new RegExp(`zombie-animations/${key}/idle-battle\\.webp$`));
+  expect(entry.battle,`${key} keeps presentation art separate`).not.toBe(entry.presentation);
+  const [idle,...frames]=entry.images;
+  expect(Math.abs(idle.height/frames[3].height-1),`${key} idle/recovery visible scale`).toBeLessThanOrEqual(.08);
+  for(const [index,frame] of frames.entries())expect(Math.abs(frame.foot-idle.foot),`${key} frame ${index} foot baseline`).toBeLessThanOrEqual(4);
+ }
+});
