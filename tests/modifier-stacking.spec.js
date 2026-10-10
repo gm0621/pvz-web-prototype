@@ -132,8 +132,8 @@ test('choosing health and shield orders immediately migrates existing player ent
  const result=await page.evaluate(()=>{
   playerProfile=normalizeProfile({});currentSeason=2;for(let level=1;level<=10;level++)completeCampaignLevel('plants',level,2);selectedLevel=1;start('zombies');clearInterval(timer);
   state.zombies=[];addZombie('s2Coffin',5,1);const unit=state.zombies[0],before={hp:unit.hp,maxHp:unit.maxHp,shieldHp:unit.shieldHp,maxShieldHp:unit.maxShieldHp};
-  state.gameplay.orders.offer=['reinforcements','hold-center','tuntian'];state.gameplay.orders.resumeAfterSelection=false;chooseTacticalOrder('reinforcements');
-  state.gameplay.orders.offer=['hold-center','tuntian','fire-volley'];state.gameplay.orders.resumeAfterSelection=false;chooseTacticalOrder('hold-center');
+  Object.assign(state.gameplay.orders,{points:1,dialogOpen:true,offer:['reinforcements','hold-center','tuntian'],resumeAfterSelection:false});chooseTacticalOrder('reinforcements');
+  Object.assign(state.gameplay.orders,{points:1,dialogOpen:true,offer:['hold-center','tuntian','fire-volley'],resumeAfterSelection:false});chooseTacticalOrder('hold-center');
   return {before,after:{hp:unit.hp,maxHp:unit.maxHp,shieldHp:unit.shieldHp,maxShieldHp:unit.maxShieldHp},resolved:activeUnit('zombies','s2Coffin')};
  });
  expect(result.after.maxHp).toBe(result.resolved.hp);
@@ -150,9 +150,9 @@ test('tactical orders preserve stage health overrides and scale damaged entities
   playerProfile=normalizeProfile({});currentSeason=2;selectedLevel=1;start('zombies');clearInterval(timer);
   const ram=state.zombies.find(unit=>unit.stageEscort==='gate-ram');ram.hp=310;
   const before={hp:ram.hp,maxHp:ram.maxHp};
-  state.gameplay.orders.offer=['fire-volley','tuntian','hold-center'];state.gameplay.orders.resumeAfterSelection=false;chooseTacticalOrder('fire-volley');
+  Object.assign(state.gameplay.orders,{points:1,dialogOpen:true,offer:['fire-volley','tuntian','hold-center'],resumeAfterSelection:false});chooseTacticalOrder('fire-volley');
   const unrelated={hp:ram.hp,maxHp:ram.maxHp};
-  state.gameplay.orders.offer=['reinforcements','tuntian','hold-center'];state.gameplay.orders.resumeAfterSelection=false;chooseTacticalOrder('reinforcements');
+  Object.assign(state.gameplay.orders,{points:1,dialogOpen:true,offer:['reinforcements','tuntian','hold-center'],resumeAfterSelection:false});chooseTacticalOrder('reinforcements');
   return {before,unrelated,healthOrder:{hp:ram.hp,maxHp:ram.maxHp}};
  });
  expect(result.before).toEqual({hp:310,maxHp:620});

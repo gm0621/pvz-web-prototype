@@ -308,15 +308,79 @@ test('level cards show route-scoped medal counts and accessible challenge select
  expect(result.lockedState).toEqual([true,true,true]);expect(result.second).toEqual({count:expect.stringContaining('1/3'),options:3});
 });
 
+test('every unlocked stage offers easy medium and hard with easy selected by default',async({page})=>{
+ await open(page);
+ const result=await page.evaluate(()=>{
+  playerProfile=normalizeProfile({});
+  const inspect=()=>[...document.querySelectorAll('#levelGrid .level-card')].slice(0,2).map(card=>({
+   labels:[...card.querySelectorAll('.difficulty-option')].map(option=>option.textContent.trim()),
+   values:[...card.querySelectorAll('.difficulty-option input')].map(input=>input.value),
+   checked:card.querySelector('.difficulty-option input:checked')?.value||null,
+   disabled:[...card.querySelectorAll('.difficulty-option input')].map(input=>input.disabled),
+   noHero:{checked:card.querySelector('.challenge-option input[value="no-hero"]')?.checked??null,disabled:card.querySelector('.challenge-option input[value="no-hero"]')?.disabled??null}
+  }));
+  currentSeason=1;currentFaction='plants';buildLevelCards();const season1=inspect();
+  currentSeason=2;currentFaction='zombies';buildSeason2LevelCards();const season2=inspect();
+  return {season1,season2};
+ });
+ for(const route of [result.season1,result.season2]){
+  expect(route[0].values).toEqual(['easy','medium','hard']);
+  expect(route[0].labels.join(' ')).toContain('簡單');expect(route[0].labels.join(' ')).toContain('中等');expect(route[0].labels.join(' ')).toContain('困難');
+  expect(route[0].checked).toBe('easy');expect(route[0].disabled).toEqual([false,false,false]);
+  if(route[0].noHero.checked!==null)expect(route[0].noHero).toEqual({checked:false,disabled:true});
+  expect(route[1].disabled).toEqual([true,true,true]);
+ }
+});
+
+test('easy and medium allow heroes while hard blocks heroes but still allows ordinary troops',async({page})=>{
+ await open(page);
+ const result=await page.evaluate(()=>{
+  playerProfile=normalizeProfile({campaignProgress:{plants:{highestLevel:10,completedLevels:Object.fromEntries(Array.from({length:10},(_,index)=>[index+1,1]))},zombies:{highestLevel:10,completedLevels:Object.fromEntries(Array.from({length:10},(_,index)=>[index+1,1]))}}});
+  currentSeason=1;selectedLevel=10;
+  const inspect=(faction,difficulty,hero,troop)=>{start(faction,{difficulty});clearInterval(timer);const initialResource=state.resource;state.resource=9999;return {difficulty:state.difficulty,initialResource,hero:deploymentReadyReason(hero),troop:deploymentReadyReason(troop)}};
+  const easy=inspect('plants','easy','firepea','peashooter');
+  const medium=inspect('plants','medium','firepea','peashooter');
+  const hardPlants=inspect('plants','hard','firepea','peashooter');
+  const hardZombies=inspect('zombies','hard','football','normal');
+  return {easy,medium,hardPlants,hardZombies};
+ });
+ expect(result.easy).toMatchObject({difficulty:'easy',initialResource:488,hero:'',troop:''});
+ expect(result.medium).toMatchObject({difficulty:'medium',initialResource:390,hero:'',troop:''});
+ expect(result.hardPlants.difficulty).toBe('hard');expect(result.hardPlants.hero).toContain('困難');expect(result.hardPlants.troop).toBe('');
+ expect(result.hardZombies.difficulty).toBe('hard');expect(result.hardZombies.hero).toContain('困難');expect(result.hardZombies.troop).toBe('');
+});
+
+test('second-season hard mode follows the same hero-only deployment restriction',async({page})=>{
+ await open(page);
+ const result=await page.evaluate(()=>{
+  const completed=Object.fromEntries(Array.from({length:10},(_,index)=>[index+1,1]));playerProfile=normalizeProfile({season2Progress:{plants:{highestLevel:10,completedLevels:completed},zombies:{highestLevel:10,completedLevels:completed}}});
+  currentSeason=2;selectedLevel=10;start('plants',{difficulty:'hard'});clearInterval(timer);state.resource=9999;
+  return {difficulty:state.difficulty,hero:deploymentReadyReason('s2Xiahou'),troop:deploymentReadyReason('s2Crossbow'),title:$('modeTitle').textContent};
+ });
+ expect(result.difficulty).toBe('hard');expect(result.hero).toContain('困難');expect(result.troop).toBe('');expect(result.title).toContain('困難');
+});
+
+test('legacy battle saves without difficulty resume as medium while new hard saves stay hard',async({page})=>{
+ await open(page);
+ const result=await page.evaluate(()=>{
+  playerProfile=normalizeProfile({});currentSeason=1;selectedLevel=1;start('plants',{difficulty:'medium'});clearInterval(timer);state.time=4321;persistBattleState();
+  const legacy=JSON.parse(localStorage.getItem(BATTLE_SAVE_KEY));delete legacy.state.difficulty;localStorage.setItem(BATTLE_SAVE_KEY,JSON.stringify(legacy));restoreBattleIfAvailable();clearInterval(timer);const legacyResult={difficulty:state.difficulty,time:state.time};
+  start('plants',{difficulty:'hard'});clearInterval(timer);state.time=7654;persistBattleState();restoreBattleIfAvailable();clearInterval(timer);const hardResult={difficulty:state.difficulty,time:state.time,blocksHeroes:battleDifficultyConfig(state.difficulty).blocksHeroes};
+  return {legacyResult,hardResult};
+ });
+ expect(result.legacyResult).toEqual({difficulty:'medium',time:4321});
+ expect(result.hardResult).toEqual({difficulty:'hard',time:7654,blocksHeroes:true});
+});
+
 test('selected challenges cross the opening story into the production battle seam',async({page})=>{
  await open(page);
  const result=await page.evaluate(()=>{
   playerProfile=normalizeProfile({});currentSeason=1;currentFaction='plants';buildLevelCards();
-  const card=document.querySelector('#levelGrid .level-card'),inputs=[...card.querySelectorAll('.challenge-option input')];inputs[0].click();inputs[2].click();
+  const card=document.querySelector('#levelGrid .level-card'),inputs=[...card.querySelectorAll('.challenge-option input')];card.querySelector('.difficulty-option input[value="hard"]').click();inputs[2].click();
   const chosen=inputs.filter(input=>input.checked).map(input=>input.value);card.querySelector('.level-start').click();const storyOpen=$('storyDialog').open;storyElement('storySkip').click();clearInterval(timer);
-  return {chosen,storyOpen,activeIds:state?.gameplay?.challenge?.activeIds,fairMode:state?.gameplay?.challenge?.fairMode};
+  return {chosen,storyOpen,difficulty:state?.difficulty,activeIds:state?.gameplay?.challenge?.activeIds,fairMode:state?.gameplay?.challenge?.fairMode};
  });
- expect(result.storyOpen).toBe(true);expect(result.activeIds).toEqual(result.chosen);expect(result.activeIds).toHaveLength(2);expect(result.fairMode).toBe(true);
+ expect(result.storyOpen).toBe(true);expect(result.difficulty).toBe('hard');expect(result.activeIds).toEqual(result.chosen);expect(result.activeIds).toHaveLength(2);expect(result.fairMode).toBe(true);
 });
 
 test('challenge results explain each verdict without blocking story or campaign advance',async({page})=>{
@@ -333,14 +397,14 @@ test('challenge results explain each verdict without blocking story or campaign 
  expect(result.next).toEqual({hidden:false,disabled:false});expect(result.storyHidden).toBe(false);expect(result.dialog).toEqual(['dialog','true','modalTitle']);expect(result.storyOverlay).toEqual({open:true,inert:false,focused:true});
 });
 
-test('retry keeps active challenges while the next route starts in ordinary mode',async({page})=>{
+test('retry keeps challenges and difficulty while the next route keeps difficulty without extra challenges',async({page})=>{
  await open(page);
  const result=await page.evaluate(async()=>{
-  currentUser=null;playerProfile=normalizeProfile({});selectedLevel=1;currentSeason=1;start('plants',{challengeIds:['no-hero','resource-cap']});clearInterval(timer);await end(true,'勝利','測試');
-  $('modalRestart').click();if($('storyDialog').open)storyElement('storySkip').click();clearInterval(timer);const retry=[...state.gameplay.challenge.activeIds];await end(true,'勝利','測試');$('modalNext').click();
-  if($('storyDialog').open)storyElement('storySkip').click();clearInterval(timer);return {retry,nextLevel:state.level,nextIds:state.gameplay.challenge.activeIds,nextFair:state.gameplay.challenge.fairMode};
+  currentUser=null;playerProfile=normalizeProfile({});selectedLevel=1;currentSeason=1;start('plants',{difficulty:'hard',challengeIds:['no-hero','resource-cap']});clearInterval(timer);await end(true,'勝利','測試');
+  $('modalRestart').click();if($('storyDialog').open)storyElement('storySkip').click();clearInterval(timer);const retry={ids:[...state.gameplay.challenge.activeIds],difficulty:state.difficulty};await end(true,'勝利','測試');$('modalNext').click();
+  if($('storyDialog').open)storyElement('storySkip').click();clearInterval(timer);return {retry,nextLevel:state.level,nextDifficulty:state.difficulty,nextIds:state.gameplay.challenge.activeIds,nextFair:state.gameplay.challenge.fairMode};
  });
- expect(result.retry).toEqual(['no-hero','resource-cap']);expect(result.nextLevel).toBe(2);expect(result.nextIds).toEqual([]);expect(result.nextFair).toBe(false);
+ expect(result.retry).toEqual({ids:['no-hero','resource-cap'],difficulty:'hard'});expect(result.nextLevel).toBe(2);expect(result.nextDifficulty).toBe('hard');expect(result.nextIds).toEqual([]);expect(result.nextFair).toBe(false);
 });
 
 test('defeat explains failure, ordinary battles hide results, and cloud pending never grants optimistically',async({page})=>{
@@ -398,7 +462,7 @@ test('challenge selectors and result actions fit desktop portrait and short land
  for(const viewport of [{width:1440,height:900},{width:390,height:844},{width:844,height:390}]){
   await page.setViewportSize(viewport);
   const metrics=await page.evaluate(async()=>{
-   currentUser=null;playerProfile=normalizeProfile({});currentSeason=1;currentFaction='plants';buildLevelCards();$('levelScreen').classList.add('active');
+   currentUser=null;playerProfile=normalizeProfile({});currentSeason=1;currentFaction='plants';buildLevelCards();setCampaignDetailsExpanded(true);$('levelScreen').classList.add('active');
    const card=document.querySelector('#levelGrid .level-card'),selector=card.querySelector('.challenge-selector'),option=selector.querySelector('.challenge-option'),startButton=card.querySelector('.level-start'),selectorBox=selector.getBoundingClientRect(),optionBox=option.getBoundingClientRect(),buttonBox=startButton.getBoundingClientRect();
    selectedLevel=1;start('plants',{challengeIds:['no-hero','resource-cap']});clearInterval(timer);await end(true,'勝利','測試');const modalCard=$('modal').querySelector('.modal-card');
    const actions=[];for(const id of ['modalStory','modalNext','modalRestart','modalMainMenu']){const element=$(id);if(!element||element.classList.contains('hidden'))continue;element.scrollIntoView({block:'nearest'});const rect=element.getBoundingClientRect(),modalBox=modalCard.getBoundingClientRect(),x=Math.max(0,Math.min(innerWidth-1,rect.left+rect.width/2)),y=Math.max(0,Math.min(innerHeight-1,rect.top+rect.height/2)),hit=document.elementFromPoint(x,y);actions.push({id,within:rect.top>=Math.max(0,modalBox.top)-1&&rect.bottom<=Math.min(innerHeight,modalBox.bottom)+1&&rect.left>=Math.max(0,modalBox.left)-1&&rect.right<=Math.min(innerWidth,modalBox.right)+1,hit:hit===element||element.contains(hit)})}

@@ -1036,9 +1036,10 @@ test('leaving a battle for level select keeps a paused cache that resumes at the
   await expect(page.locator('#profile')).not.toHaveClass(/active/);
   const cached=await page.evaluate(()=>JSON.parse(localStorage.getItem(BATTLE_SAVE_KEY)||'null'));
   expect(cached?.state).toMatchObject({time:23450,resource:287,paused:true,level:1,faction:'plants'});
-  await expect(page.locator('#resumeBattleLevelBtn')).toBeVisible();
+  await expect(page.locator('#continueCampaignBtn')).toBeVisible();
+  await expect(page.locator('#continueCampaignBtn')).toContainText('繼續未完成戰局');
 
-  await page.locator('#resumeBattleLevelBtn').click();
+  await page.locator('#continueCampaignBtn').click();
   await expect(page.locator('#game')).toHaveClass(/active/);
   await expect(page.locator('#pauseOverlay')).toHaveClass(/show/);
   const resumed=await page.evaluate(()=>({time:state.time,resource:state.resource,plants:state.plants.length,zombies:state.zombies.length,paused:state.paused}));

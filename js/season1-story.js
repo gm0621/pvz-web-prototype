@@ -43,7 +43,7 @@ function openCampaignStory(faction,level,scene,{replay=false,onComplete=null,sea
  renderCampaignStory();storyElement('storyDialog').showModal();storyElement('storyNext').focus();return true;
 }
 function requestCampaignBattle(faction,level=selectedLevel,options={}){
- const season=currentSeason,battleOptions={challengeIds:[...new Set(Array.isArray(options?.challengeIds)?options.challengeIds:[])]};
+ const season=currentSeason,battleOptions={challengeIds:[...new Set(Array.isArray(options?.challengeIds)?options.challengeIds:[])],difficulty:normalizeBattleDifficulty(options?.difficulty,'medium')};
  if(!isCampaignLevelUnlocked(faction,level,season))return false;
  if(activeCampaignStory)return false;
  const begin=()=>{if(currentSeason!==season||!isCampaignLevelUnlocked(faction,level,season))return false;selectedLevel=level;currentFaction=faction;start(faction,battleOptions);return true};

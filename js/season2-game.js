@@ -4,9 +4,10 @@ function buildSeason2LevelCards(){
  SEASON2_PLAN.stages.forEach(stage=>{
   const done=isCampaignLevelCompleted(currentFaction,stage.number,2),open=isCampaignLevelUnlocked(currentFaction,stage.number,2);
   const card=document.createElement('article');card.className=`level-card campaign-card season2-level ${done?'completed':open?'current':'locked'}`;
-  card.innerHTML=`<div class="level-ribbon"><span>第 ${stage.number} 關</span><strong>${stage.name}</strong></div><div class="level-art" style="background-image:url('${stage.cardArt}')"></div><p>${stage[currentFaction==='plants'?'defense':'attack'].story}</p>${stageRuleCardHtml(SEASON2_LEVELS[stage.number],currentFaction,2,stage.number)}<div class="level-meta">難度：${SEASON2_LEVELS[stage.number].difficulty}｜${done?'✅ 已通關，可用新角色重玩':open?'已開放':`先完成第 ${stage.number-1} 關`}</div><button class="level-start" data-jump-level="${stage.number}" ${open?'':'disabled'}>${open?(done?`重玩第${levelLabel(stage.number)}關`:`開始第${levelLabel(stage.number)}關`):'🔒 尚未解鎖'}</button>`;
-  appendChallengeSelector(card,2,currentFaction,stage.number,open);card.querySelector('.level-start').onclick=()=>startLevel(currentFaction,stage.number,selectedChallengeIds(card));appendStoryReplayButton(card,currentFaction,stage.number);wrap.append(card);
+  card.innerHTML=`<div class="level-ribbon"><span>第 ${stage.number} 關</span><strong>${stage.name}</strong></div><div class="level-quick-status">${done?'✅ 已通關':open?'目前進度':'尚未解鎖'}</div><button class="level-start" data-jump-level="${stage.number}" ${open?'':'disabled'}>${open?(done?`重玩第${levelLabel(stage.number)}關`:`開始第${levelLabel(stage.number)}關`):'🔒 尚未解鎖'}</button><button type="button" class="level-detail-toggle secondary" aria-expanded="false">查看詳情與設定</button><div class="level-card-details" hidden><div class="level-art" style="background-image:url('${stage.cardArt}')"></div><p>${stage[currentFaction==='plants'?'defense':'attack'].story}</p>${stageRuleCardHtml(SEASON2_LEVELS[stage.number],currentFaction,2,stage.number)}<div class="level-meta">關卡強度：${SEASON2_LEVELS[stage.number].difficulty}｜${done?'✅ 已通關，可用新角色重玩':open?'已開放':`先完成第 ${stage.number-1} 關`}</div></div>`;
+  const details=card.querySelector('.level-card-details'),difficultySelector=appendDifficultySelector(card,2,currentFaction,stage.number,open),challengeSelector=appendChallengeSelector(card,2,currentFaction,stage.number,open);details.append(difficultySelector);if(challengeSelector)details.append(challengeSelector);card.querySelector('.level-start').onclick=()=>startLevel(currentFaction,stage.number,selectedChallengeIds(card),selectedBattleDifficulty(card));appendStoryReplayButton(details,currentFaction,stage.number);bindLevelCardDisclosure(card);wrap.append(card);
  });
+ renderCampaignProgressOverview();
 }
 function applySeasonBattleTheme(){
  $('game').classList.toggle('season2-battle',state?.season===2);
@@ -151,7 +152,7 @@ function showSeasonPicker(faction,syncHistory=true){
   button.querySelector('.season-status').textContent=!open?'🔒 完成第一季守城十關後解鎖':season===2?'十關已開放・逐關解鎖角色':'十關戰役・依通關進度逐關解鎖';
   const art=campaignLevels(season)[1].cardArt||'assets/backgrounds/main-menu-battle-bg.webp';button.style.backgroundImage=`linear-gradient(0deg,rgba(6,15,25,.95),rgba(6,15,25,.18)),url("${art}")`;
  });
- refreshResumeBattleUI();playSceneMusic('stageSelect');if(syncHistory)syncAppHistory('season');
+ refreshResumeBattleUI();playSceneMusic('stageSelect');requestAnimationFrame(()=>document.querySelector(`[data-season-choice="${currentSeason}"]:not([disabled])`)?.focus());if(syncHistory)syncAppHistory('season');
 }
 function initSeason2Entry(){
  document.querySelectorAll('[data-season-choice]').forEach(button=>button.onclick=()=>chooseFaction(currentFaction,Number(button.dataset.seasonChoice)));

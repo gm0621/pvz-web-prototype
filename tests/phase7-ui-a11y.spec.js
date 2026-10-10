@@ -14,7 +14,8 @@ const dirtyBattle=()=>{
  triggerBattleFeedback('shield-break');
  attackFx({r:2,c:4},'boom');
  phoenixBurnFx(2);
- createTacticalOrderOffer(1);
+ grantStrategyPoint('overlay-test');
+ openTacticalOrderMenu();
  return {
   transients:board.querySelectorAll('.enemy-telegraph,[class*="-fx"],.fx,.row-fire,.global-strike,.sigil,.shockwave').length,
   banner:document.querySelectorAll('#battleTelegraphBanner').length,

@@ -94,7 +94,7 @@ test('wired completion, timeout and breach verdicts are decided by active rules'
 
 test('stage objectives stay visible at desktop, portrait and short-landscape viewports',async({page})=>{
  await openApp(page);
- await page.evaluate(()=>{currentSeason=2;currentFaction='plants';$('start').classList.remove('active');$('levelScreen').classList.add('active');buildLevelCards()});
+ await page.evaluate(()=>{currentSeason=2;currentFaction='plants';$('start').classList.remove('active');$('levelScreen').classList.add('active');buildLevelCards();setCampaignDetailsExpanded(true)});
  for(const viewport of [{width:1280,height:720},{width:390,height:844},{width:844,height:390}]){
   await page.setViewportSize(viewport);
   const objective=page.locator('#levelGrid [data-stage-objective]').first();

@@ -59,6 +59,7 @@ test('victory shows results first, waits for Continue Story, and replay never gr
  await expect(page.locator('#storyDialog')).toBeVisible();await expect(page.locator('#storyText')).toContainText('鐵盔頭目');
  await page.locator('#storySkip').click();await page.locator('#modalMainMenu').click();
  await page.locator('#plantStartBtn').click();await page.locator('[data-season-choice="1"]').click();
+ await page.locator('#levelGrid .level-card').first().locator('.level-detail-toggle').click();
  const before=await page.evaluate(()=>JSON.stringify(playerProfile));await page.locator('[data-story-level="1"]').click();await expect(page.locator('#storyReplayTabs')).toBeVisible();
  await page.locator('#storyReplayVictory').click();await expect(page.locator('#storyText')).toContainText('鐵盔頭目');await page.locator('#storySkip').click();
  expect(await page.evaluate(()=>JSON.stringify(playerProfile))).toBe(before);await expect(page.locator('#levelScreen')).toHaveClass(/active/);

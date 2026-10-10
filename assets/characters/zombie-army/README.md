@@ -19,4 +19,14 @@ Gimmy 於 2026-09-07 提供完整新版僵屍方角色素材，並於 2026-09-08
 
 原始上傳圖分別保存在 `assets/characters/source-originals/zombie-roster-20260907/` 與 `assets/characters/source-originals/zombie-roster-20260908/`，由專案根目錄的 `scripts/prepare_zombie_roster_assets.py` 可重製正式檔。圖3、4、6、9與冥火屍巫會移除烙入的黑底／棋盤格；始皇沿用原圖朝左方向，不再鏡像；烈焰屍車會水平鏡像，使攻擊朝左。
 
+## 戰場攻擊動畫
+
+赤巾小屍、鐵盔小兵、巨槌阿蠻、白髮屍王、鈴鐺丑屍與爆爆桶屍使用獨立 `battleAsset`，避免圖鑑立繪切換至攻擊動畫時人物縮小。每隻的四張原始攻擊影格保存在 `assets/characters/zombie-animations/<key>/source-frames/`；正式 `idle-battle.webp` 與 `attack-00.webp`～`attack-03.webp` 可用下列指令重製：
+
+```bash
+python3 scripts/normalize-zombie-attack-frames.py
+```
+
+重製時，同一角色的四張攻擊影格不各自縮放，只移除透明留白並置回 1024×1024 畫布；戰場待機圖以回復影格的人物高度為準，全部固定 48 px 腳底基準。武器與特效不參與人物縮放計算，因此可保留超出身體的動作範圍。`tests/zombie-animations.spec.js` 會檢查獨立待機圖、待機／回復比例與所有影格的腳底偏移。屍旗大胖原有比例已一致，不經此腳本處理。
+
 既有 `zombie-army.json` 與舊 PNG/WebP 留作歷史素材；遊戲執行期不再引用舊的 11 位角色圖。
