@@ -138,6 +138,7 @@ function processSeason2AttackEvents(){
  const leaderKey=SEASON2_UNIT_ORDER.plants[Math.min(11,state.level+1)];state.bossSpawned=true;addPlant(leaderKey,cell,row);const leader=state.plants[state.plants.length-1];leader.boss=true;leader.hp*=1.35;leader.maxHp=leader.hp;flash(leader,`${PLANT_TYPES[leaderKey].name}領軍`);log(`魏軍${PLANT_TYPES[leaderKey].name}進入戰線；觀察其技能，再調整攻城隊順序。`);
 }
 function setSeasonPickerVisible(visible){
+ if(visible)resetLevelDetailsState();
  $('seasonPicker').classList.toggle('hidden',!visible);$('levelGrid').classList.toggle('hidden',visible);
  $('campaignHeading').textContent=visible?'選擇季度':'選擇關卡';
  $('backFactionBtn').setAttribute('aria-label',visible?'回陣營選擇':'回季度選擇');

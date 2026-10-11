@@ -22,6 +22,19 @@ test('browser back follows levels to seasons to home',async({page})=>{
  await page.locator('#plantStartBtn').click();await page.locator('[data-season-choice="2"]').click();await page.goBack();
  await expect(page.locator('#seasonPicker')).toBeVisible();await page.goBack();await expect(page.locator('#start')).toHaveClass(/active/);
 });
+test('browser back clears an open level modal before rebuilding the season',async({page})=>{
+ await page.route('https://cdn.jsdelivr.net/**',r=>r.fulfill({contentType:'application/javascript',body:''}));await page.goto('/');
+ await page.locator('#plantStartBtn').click();await page.locator('[data-season-choice="1"]').click();
+ await page.locator('#levelGrid .level-card').first().locator('.level-start').click();
+ await expect(page.locator('body')).toHaveClass(/level-detail-open/);
+ await page.goBack();
+ await expect(page.locator('#seasonPicker')).toBeVisible();
+ await expect(page.locator('body')).not.toHaveClass(/level-detail-open/);
+ expect(await page.evaluate(()=>({active:activeLevelDetails,overflow:getComputedStyle(document.body).overflow,openDialogs:document.querySelectorAll('#levelGrid .level-card-details:not([hidden])').length}))).toEqual({active:null,overflow:'visible',openDialogs:0});
+ await page.locator('[data-season-choice="1"]').click();
+ await expect(page.locator('#levelGrid')).toBeVisible();
+ expect(await page.evaluate(()=>({active:activeLevelDetails,locked:document.body.classList.contains('level-detail-open'),connectedDialogs:document.querySelectorAll('#levelGrid .level-card-details:not([hidden])').length}))).toEqual({active:null,locked:false,connectedDialogs:0});
+});
 test('browsing another season preserves and resumes the paused battle',async({page})=>{
  await page.route('https://cdn.jsdelivr.net/**',r=>r.fulfill({contentType:'application/javascript',body:''}));await page.goto('/');
  await page.locator('#zombieStartBtn').click();await page.locator('[data-season-choice="2"]').click();await page.locator('#levelGrid button').first().click();await page.locator('.level-card-details:not([hidden]) .level-detail-start').click();
