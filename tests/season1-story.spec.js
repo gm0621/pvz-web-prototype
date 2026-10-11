@@ -1,10 +1,11 @@
 const {test,expect}=require('@playwright/test');
 async function openGame(page){await page.route('https://cdn.jsdelivr.net/**',r=>r.fulfill({contentType:'application/javascript',body:''}));await page.goto('/');await expect(page.locator('#start')).toHaveClass(/active/);}
-async function chooseFirst(page){await page.locator('#plantStartBtn').click();await page.locator('[data-season-choice="1"]').click();await page.locator('[data-jump-level="1"]').click();}
+async function startLevelCard(page,selector){await page.locator(selector).click();await page.locator('.level-card-details:not([hidden]) .level-detail-start').click()}
+async function chooseFirst(page){await page.locator('#plantStartBtn').click();await page.locator('[data-season-choice="1"]').click();await startLevelCard(page,'[data-jump-level="1"]')}
 test('attack story keeps the alternate timeline and normal unlock gate',async({page})=>{
  await openGame(page);expect(await page.evaluate(()=>requestCampaignBattle('zombies',1))).toBe(false);
  await page.evaluate(()=>{for(let level=1;level<=10;level++)completeCampaignLevel('plants',level);refreshCampaignUI()});
- await page.locator('#zombieStartBtn').click();await page.locator('[data-season-choice="1"]').click();await page.locator('[data-jump-level="1"]').click();await expect(page.locator('#storyRoute')).toContainText('另一種可能');await expect(page.locator('#storyText')).toContainText('你已看過蜀軍');
+ await page.locator('#zombieStartBtn').click();await page.locator('[data-season-choice="1"]').click();await startLevelCard(page,'[data-jump-level="1"]');await expect(page.locator('#storyRoute')).toContainText('另一種可能');await expect(page.locator('#storyText')).toContainText('你已看過蜀軍');
  await page.locator('#storySkip').click();expect(await page.evaluate(()=>state.faction)).toBe('zombies');expect(await page.evaluate(()=>isCampaignLevelCompleted('zombies',1))).toBe(false);
 });
 test('cloud pending waits before its ending; an older saved battle also gets its ending',async({page})=>{
@@ -32,7 +33,7 @@ test('next stage opens its own story and closing it never starts or completes th
  await openGame(page);await chooseFirst(page);await page.locator('#storySkip').click();await page.evaluate(async()=>{clearInterval(timer);await end(true,'防守成功','結算')});await page.locator('#modalStory').click();await page.locator('#storySkip').click();
  await page.locator('#modalNext').click();await expect(page.locator('#storyTitle')).toHaveText('第二關：軍糧小徑');await expect(page.locator('#storyDialog')).toBeVisible();
  await page.locator('#storyClose').click();expect(await page.evaluate(()=>({level:state.level,over:state.over,completed:isCampaignLevelCompleted('plants',2)}))).toEqual({level:1,over:true,completed:false});
- await expect(page.locator('#levelScreen')).toHaveClass(/active/);await page.locator('[data-jump-level="2"]').click();await page.locator('#storySkip').click();expect(await page.evaluate(()=>state.level)).toBe(2);
+ await expect(page.locator('#levelScreen')).toHaveClass(/active/);await startLevelCard(page,'[data-jump-level="2"]');await page.locator('#storySkip').click();expect(await page.evaluate(()=>state.level)).toBe(2);
 });
 test('cloud verification failure cannot play or mark a victory story',async({page})=>{
  await openGame(page);await chooseFirst(page);await page.locator('#storySkip').click();
@@ -63,7 +64,7 @@ test('victory shows results first, waits for Continue Story, and replay never gr
  const before=await page.evaluate(()=>JSON.stringify(playerProfile));await page.locator('[data-story-level="1"]').click();await expect(page.locator('#storyReplayTabs')).toBeVisible();
  await page.locator('#storyReplayVictory').click();await expect(page.locator('#storyText')).toContainText('鐵盔頭目');await page.locator('#storySkip').click();
  expect(await page.evaluate(()=>JSON.stringify(playerProfile))).toBe(before);await expect(page.locator('#levelScreen')).toHaveClass(/active/);
- await page.locator('[data-jump-level="1"]').click();await expect(page.locator('#storyDialog')).not.toBeVisible();await expect(page.locator('#game')).toHaveClass(/active/);
+ await page.locator('#levelGrid .level-card').first().locator('.level-detail-start').click();await expect(page.locator('#storyDialog')).not.toBeVisible();await expect(page.locator('#game')).toHaveClass(/active/);
 });
 test('leaving results cancels the old story action and a new season cannot inherit it',async({page})=>{
  await openGame(page);await chooseFirst(page);await page.locator('#storySkip').click();await page.evaluate(async()=>{clearInterval(timer);await end(true,'防守成功','結算');window.__oldStoryAction=document.getElementById('modalStory').onclick});

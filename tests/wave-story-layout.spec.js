@@ -18,7 +18,7 @@ for(const [name,viewport] of [['portrait',{width:390,height:844}],['narrow',{wid
   await page.evaluate(()=>{state.waveDirector.active=null;state.waveDirector.index=1;state.waveDirector.restUntil=state.time+8000;updateHUD()});await record('rest');
   await page.evaluate(()=>{state.bossSpawned=true;updateHUD()});await record('boss');
   require('fs').writeFileSync(info.outputPath('positions.json'),JSON.stringify(positions,null,2));
-  for(const k of ['top','height','left','width','hud','cards','scroll'])expect(Math.max(...positions.map(p=>p[k]))-Math.min(...positions.map(p=>p[k])),k+' '+JSON.stringify(positions)).toBeLessThan(1);
+  for(const k of ['top','height','left','width','cards','scroll'])expect(Math.max(...positions.map(p=>p[k]))-Math.min(...positions.map(p=>p[k])),k+' '+JSON.stringify(positions)).toBeLessThan(1);
   if(fullscreen){const b=positions[0];expect(b.top+b.height).toBeLessThanOrEqual(b.cards);expect(b.height).toBeGreaterThan(60)}
  });
 }

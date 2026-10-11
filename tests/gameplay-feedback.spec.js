@@ -13,6 +13,27 @@ async function unlockAttack(page,season=1){
  },season);
 }
 
+test('battle keeps optional intelligence collapsed and transient status out of board flow',async({page})=>{
+ await open(page);
+ await page.evaluate(()=>{selectedLevel=1;start('plants');clearInterval(timer)});
+ const toggle=page.locator('#battleIntelToggle'),drawer=page.locator('#battleIntelDrawer');
+ await expect(toggle).toBeVisible();
+ await expect(toggle).toHaveAttribute('aria-expanded','false');
+ await expect(drawer).toBeHidden();
+ const before=await page.locator('#board').evaluate(node=>({top:node.getBoundingClientRect().top,width:node.getBoundingClientRect().width}));
+ await page.evaluate(()=>{const status=document.getElementById('waveStatus');status.hidden=false;status.dataset.story='on';status.textContent='第二波即將來襲，準備補陣。'});
+ const after=await page.locator('#board').evaluate(node=>({top:node.getBoundingClientRect().top,width:node.getBoundingClientRect().width}));
+ expect(after.top).toBe(before.top);
+ expect(after.width).toBe(before.width);
+ await toggle.click();
+ await expect(drawer).toBeVisible();
+ await expect(toggle).toHaveAttribute('aria-expanded','true');
+ await expect(drawer.locator('.objective')).toBeVisible();
+ await expect(drawer.locator('.battle-log-panel')).not.toHaveAttribute('open','');
+ await page.locator('#battleIntelClose').click();
+ await expect(drawer).toBeHidden();
+});
+
 test('defense wave completion shows one nonblocking telemetry report with real leaders',async({page})=>{
  await open(page);
  const result=await page.evaluate(()=>{

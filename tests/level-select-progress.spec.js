@@ -20,6 +20,8 @@ test('level select leads with current progress and continues the next mainline s
  await expect(page.locator('#levelGrid .level-card').first().locator('.level-card-details')).toBeHidden();
  await expect(page.locator('#levelGrid .level-card').nth(2).locator('.level-start')).toBeVisible();
  await page.locator('#continueCampaignBtn').click();
+ await expect(page.locator('#levelGrid .level-card').nth(2).locator('.level-card-details')).toBeVisible();
+ await page.locator('#levelGrid .level-card').nth(2).locator('.level-detail-start').click();
  await expect(page.locator('#storyDialog')).toHaveAttribute('open','');
  await page.locator('#storySkip').click();
  expect(await page.evaluate(()=>state.level)).toBe(3);
@@ -43,6 +45,8 @@ test('level details are progressive disclosure and an unfinished battle remains 
  await expect(page.locator('#browseLevelsBtn')).toHaveAttribute('aria-expanded','true');
  await expect(page.locator('#levelGrid .level-card').first().locator('.level-card-details')).toBeVisible();
  await expect(page.locator('#levelGrid .level-card').first().locator('.difficulty-selector')).toBeVisible();
+ await page.locator('#levelGrid .level-card').first().locator('.level-detail-close').click();
+ await expect(page.locator('#browseLevelsBtn')).toHaveAttribute('aria-expanded','false');
  await page.locator('#continueCampaignBtn').click();
  expect(await page.evaluate(()=>({level:state.level,time:state.time,active:$('game').classList.contains('active')}))).toEqual({level:1,time:4321,active:true});
 });
@@ -74,28 +78,66 @@ test('progress track keeps three meaningful nodes at the start boundary',async({
  await expect(nodes.nth(2)).toContainText('第三關');
 });
 
-test('browse action preserves the single-open accordion contract',async({page})=>{
+test('browse action opens the recommended level in a modal',async({page})=>{
  await open(page);
  await page.evaluate(()=>chooseFaction('plants',1));
- await expect(page.locator('#browseLevelsBtn')).toHaveText('查看目前關卡與設定');
+ await expect(page.locator('#browseLevelsBtn')).toHaveText('查看推薦關卡詳情');
  await page.locator('#browseLevelsBtn').click();
- await expect(page.locator('#levelGrid .level-card-details:not([hidden])')).toHaveCount(1);
- await expect(page.locator('#levelGrid .level-card').first().locator('.level-card-details')).toBeVisible();
+ const dialog=page.locator('#levelGrid .level-card-details:not([hidden])');
+ await expect(dialog).toHaveCount(1);
+ await expect(dialog).toHaveAttribute('role','dialog');
+ await expect(dialog).toHaveAttribute('aria-modal','true');
+ await expect(dialog.locator('.difficulty-option input[value="easy"]')).toBeFocused();
+ await expect(page.locator('body')).toHaveClass(/level-detail-open/);
 });
 
-test('details behave as an accessible accordion and restore focus when returning from battle',async({page})=>{
+test('primary level action requires choosing difficulty in the modal before battle',async({page})=>{
  await open(page);
- await page.evaluate(()=>chooseFaction('plants',1));
+ await page.evaluate(()=>{markStoryRead('plants',1,'opening');chooseFaction('plants',1)});
+ const first=page.locator('#levelGrid .level-card').first();
+ await expect(first.locator('.level-start')).toHaveText('選擇難度並開始');
+ await first.locator('.level-start').click();
+ await expect(first.locator('.level-card-details')).toBeVisible();
+ await first.locator('.difficulty-option input[value="hard"]').check();
+ await first.locator('.level-detail-start').click();
+ await expect(page.locator('#game')).toHaveClass(/active/);
+ expect(await page.evaluate(()=>state.difficulty)).toBe('hard');
+ await expect(page.locator('#modeTitle')).toContainText('困難');
+});
+
+test('level detail modal traps keyboard focus, closes globally, and restores the actual opener',async({page})=>{
+ await open(page);
+ await page.evaluate(()=>{localStorage.setItem('sgZombieLevelSelectTipSeen','1');chooseFaction('plants',1)});
+ const first=page.locator('#levelGrid .level-card').first(),start=first.locator('.level-start'),dialog=first.locator('.level-card-details');
+ await start.click();
+ await expect(dialog).toBeVisible();
+ await dialog.evaluate(node=>{
+  const focusable=[...node.querySelectorAll('button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled]),a[href],[tabindex]:not([tabindex="-1"])')].filter(element=>element.getClientRects().length);
+  focusable.at(-1).focus();
+ });
+ await page.keyboard.press('Tab');
+ await expect(dialog.locator('.level-detail-close')).toBeFocused();
+ await page.locator('#backFactionBtn').focus();
+ await page.keyboard.press('Escape');
+ await expect(dialog).toBeHidden();
+ await expect(start).toBeFocused();
+});
+
+test('level detail modal closes with Escape and restores focus before returning from battle',async({page})=>{
+ await open(page);
+ await page.evaluate(()=>{localStorage.setItem('sgZombieLevelSelectTipSeen','1');chooseFaction('plants',1)});
  const first=page.locator('#levelGrid .level-card').first();
  const second=page.locator('#levelGrid .level-card').nth(1);
  await first.locator('.level-detail-toggle').click();
  await expect(first.locator('.level-card-details')).toBeVisible();
- await second.locator('.level-detail-toggle').click();
+ await page.keyboard.press('Escape');
  await expect(first.locator('.level-card-details')).toBeHidden();
- await expect(first.locator('.level-detail-toggle')).toHaveAttribute('aria-expanded','false');
+ await expect(first.locator('.level-detail-toggle')).toBeFocused();
+ await second.locator('.level-detail-toggle').click();
  const controls=await second.locator('.level-detail-toggle').getAttribute('aria-controls');
  expect(controls).toBeTruthy();
  await expect(second.locator('.level-card-details')).toHaveAttribute('id',controls);
+ await second.locator('.level-detail-close').click();
  await page.evaluate(()=>{selectedLevel=1;start('plants');clearInterval(timer);backToLevelSelect(false)});
  await expect(first.locator('.level-start')).toBeFocused();
 });

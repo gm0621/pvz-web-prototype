@@ -207,7 +207,7 @@ test('campaign UI disables locked faction and labels completed current and locke
   });
   expect(initial.attackDisabled).toBeFalsy();
   expect(initial.attackText).toContain('選擇進攻季度');
-  expect(initial.levels[0]).toMatchObject({disabled:false,text:'開始第一關'});
+  expect(initial.levels[0]).toMatchObject({disabled:false,text:'選擇難度並開始'});
   expect(initial.levels[1].disabled).toBeTruthy();
   expect(initial.levels[1].className).toContain('locked');
 
@@ -218,9 +218,9 @@ test('campaign UI disables locked faction and labels completed current and locke
     return [...document.querySelectorAll('#levelGrid .level-card')].slice(0,4).map(card => ({className:card.className,text:card.querySelector('button').textContent,disabled:card.querySelector('button').disabled}));
   });
   expect(advanced[0].className).toContain('completed');
-  expect(advanced[0].text).toBe('重玩第一關');
-  expect(advanced[1].text).toBe('重玩第二關');
-  expect(advanced[2]).toMatchObject({disabled:false,text:'開始第三關'});
+  expect(advanced[0].text).toBe('選擇難度並重玩');
+  expect(advanced[1].text).toBe('選擇難度並重玩');
+  expect(advanced[2]).toMatchObject({disabled:false,text:'選擇難度並開始'});
   expect(advanced[3].disabled).toBeTruthy();
 });
 

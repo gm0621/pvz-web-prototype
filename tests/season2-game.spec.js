@@ -1,4 +1,5 @@
 const {test,expect}=require('@playwright/test');
+async function startLevelCard(page,selector){await page.locator(selector).click();await page.locator('.level-card-details:not([hidden]) .level-detail-start').click()}
 async function open(page){await page.route('https://cdn.jsdelivr.net/**',r=>r.fulfill({contentType:'application/javascript',body:''}));await page.goto('/');await page.evaluate(()=>{for(const f of ['plants','zombies'])markStoryRead(f,1,'opening',2)})}
 test('second season first defense starts with its own two soldiers and no stage-two bypass',async({page})=>{
  await open(page);
@@ -7,7 +8,7 @@ test('second season first defense starts with its own two soldiers and no stage-
  await expect(page.locator('#chosenFactionText')).toContainText('第二季');
  await expect(page.locator('#levelGrid button[data-jump-level="1"]')).toBeEnabled();
  await expect(page.locator('#levelGrid button[data-jump-level="2"]')).toBeDisabled();
- await page.locator('#levelGrid button[data-jump-level="1"]').click();
+ await startLevelCard(page,'#levelGrid button[data-jump-level="1"]');
  await expect(page.locator('#game')).toHaveClass(/active/);
  await expect(page.locator('#modeTitle')).toContainText('霜土前哨');
  await expect(page.locator('#cards .name')).toHaveText(['屯田兵','強弩兵']);
@@ -61,7 +62,7 @@ test('Wei shield soldier never attacks, repeatedly hops forward, and keeps high 
 });
 
 test('second-season attack uses Wei enemies, bone marks, pack damage and a breakable coffin shield',async({page})=>{
- await open(page);await page.locator('#zombieStartBtn').click();await page.locator('[data-season-choice="2"]').click();await page.locator('[data-jump-level="1"]').click();
+ await open(page);await page.locator('#zombieStartBtn').click();await page.locator('[data-season-choice="2"]').click();await startLevelCard(page,'[data-jump-level="1"]');
  await expect(page.locator('#cards .name')).toHaveText(['鼠牙群屍','腐釘弩屍']);
  expect(await page.evaluate(()=>state.plants.every(p=>p.type.startsWith('s2')))).toBe(true);
  const result=await page.evaluate(()=>{

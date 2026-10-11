@@ -15,7 +15,7 @@ test('faction entry offers seasons before levels while first-season attack stays
   await page.locator('#backFactionBtn').click();await expect(page.locator('#seasonPicker')).toBeVisible();
   await page.locator('#backFactionBtn').click();await expect(page.locator('#start')).toHaveClass(/active/);
  }
- await page.locator('#plantStartBtn').click();await page.locator('[data-season-choice="1"]').click();await page.locator('#levelGrid button').first().click();await expect(page.locator('#storyDialog')).toBeVisible();await page.locator('#storySkip').click();await expect(page.locator('#game')).toHaveClass(/active/); expect(await page.evaluate(()=>state.season)).toBe(1);
+ await page.locator('#plantStartBtn').click();await page.locator('[data-season-choice="1"]').click();await page.locator('#levelGrid button').first().click();await page.locator('.level-card-details:not([hidden]) .level-detail-start').click();await expect(page.locator('#storyDialog')).toBeVisible();await page.locator('#storySkip').click();await expect(page.locator('#game')).toHaveClass(/active/); expect(await page.evaluate(()=>state.season)).toBe(1);
 });
 test('browser back follows levels to seasons to home',async({page})=>{
  await page.route('https://cdn.jsdelivr.net/**',r=>r.fulfill({contentType:'application/javascript',body:''}));await page.goto('/');
@@ -24,7 +24,7 @@ test('browser back follows levels to seasons to home',async({page})=>{
 });
 test('browsing another season preserves and resumes the paused battle',async({page})=>{
  await page.route('https://cdn.jsdelivr.net/**',r=>r.fulfill({contentType:'application/javascript',body:''}));await page.goto('/');
- await page.locator('#zombieStartBtn').click();await page.locator('[data-season-choice="2"]').click();await page.locator('#levelGrid button').first().click();
+ await page.locator('#zombieStartBtn').click();await page.locator('[data-season-choice="2"]').click();await page.locator('#levelGrid button').first().click();await page.locator('.level-card-details:not([hidden]) .level-detail-start').click();
  await page.locator('#storySkip').click();await page.locator('#cards .card').first().click();await page.locator('.cell[data-r="2"][data-c="8"]').click();await page.locator('#backBtn').click();
  const saved=await page.evaluate(()=>localStorage.getItem(BATTLE_SAVE_KEY));
  await page.locator('#plantStartBtn').click();await page.locator('[data-season-choice="1"]').click();expect(await page.evaluate(()=>localStorage.getItem(BATTLE_SAVE_KEY))).toBe(saved);

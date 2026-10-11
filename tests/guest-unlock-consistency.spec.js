@@ -1,4 +1,5 @@
 const {test,expect}=require('@playwright/test');
+async function startLevelCard(page,selector){await page.locator(selector).click();await page.locator('.level-card-details:not([hidden]) .level-detail-start').click()}
 
 async function openGuest(page,{gap=false,final=true}={}){
  await page.route('https://cdn.jsdelivr.net/**',r=>r.fulfill({contentType:'application/javascript',body:''}));
@@ -19,7 +20,7 @@ test('guest recorded final clear opens first-season attack without inventing mis
  await page.locator('#zombieStartBtn').click();
  await expect(page.locator('[data-season-choice="1"]')).toBeEnabled();
  await page.locator('[data-season-choice="1"]').click();
- await page.locator('[data-jump-level="1"]').click();await page.locator('#storySkip').click();
+ await startLevelCard(page,'[data-jump-level="1"]');await page.locator('#storySkip').click();
  await expect(page.locator('#game')).toHaveClass(/active/);
  expect(await page.evaluate(()=>({season:state.season,faction:state.faction,level:state.level}))).toEqual({season:1,faction:'zombies',level:1});
  await page.reload();
@@ -30,7 +31,7 @@ test('sparse guest final victory CTA starts the Qin finale and keeps unearned zo
  await openGuest(page,{gap:true,final:false});
  await page.evaluate(()=>{completeCampaignLevel('plants',9,1);saveProfile(false,false);markStoryRead('plants',10,'opening')});
  await page.locator('#plantStartBtn').click();await page.locator('[data-season-choice="1"]').click();
- await page.locator('[data-jump-level="10"]').click();
+ await startLevelCard(page,'[data-jump-level="10"]');
  await page.evaluate(()=>{clearInterval(timer);end(true,'防守成功！','隔離結算流程測試')});
  await expect(page.locator('#modalNext')).toBeEnabled();
  await expect(page.locator('#modalNext')).toContainText('挑戰秦皇');

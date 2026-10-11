@@ -12,6 +12,7 @@ async function openStageEight(page,{legacyGap=false}={}){
  await page.locator('#plantStartBtn').click();
  await page.getByRole('button',{name:/第一季 蜀國篇/}).click();
  await page.locator('#levelGrid .level-card').nth(7).locator('button').first().click();
+ await page.locator('#levelGrid .level-card').nth(7).locator('.level-detail-start').click();
  await page.evaluate(()=>clearInterval(timer));
 }
 

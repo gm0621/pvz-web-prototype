@@ -24,7 +24,7 @@ test('ten stage cards match battle rosters in both routes without clipped text',
   await card.screenshot({path:testInfo.outputPath(`${faction}-${n}.png`)});
   const castText=await cast.innerText();
   if(faction==='zombies'&&n===10){expect(castText).toContain('首次通關獎勵：冥火屍巫');expect(castText.split('本關可用僵屍：')[1].split('首次通關獎勵')[0]).not.toContain('冥火屍巫');}
-  await page.locator(`[data-jump-level="${n}"]`).click();await page.locator('#storySkip').click();await expect(page.locator('#game')).toHaveClass(/active/);
+  await page.locator(`[data-jump-level="${n}"]`).click();await page.locator('.level-card-details:not([hidden]) .level-detail-start').click();await page.locator('#storySkip').click();await expect(page.locator('#game')).toHaveClass(/active/);
   const names=await page.locator('#cards .card').allTextContents();for(const text of names){const name=await page.evaluate(text=>Object.values(state.faction==='plants'?PLANT_TYPES:ZOMBIE_TYPES).find(d=>text.includes(d.name))?.name,text);expect(name).toBeTruthy();expect(castText).toContain(name);}
   await page.evaluate(()=>{clearInterval(timer);backToHome()});
  }

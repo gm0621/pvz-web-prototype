@@ -68,7 +68,7 @@ test('new prologue is readable, prev/close/replay are safe, and reading to the e
  await page.locator('#storyClose').click();expect(await page.evaluate(()=>JSON.stringify(playerProfile))).toBe(profile);
  expect(await page.evaluate(()=>hasReadStory('plants',1,'opening'))).toBe(false);
  await page.evaluate(()=>{window.__mainlineStarts=0;startCloudMatch=()=>{window.__mainlineStarts++}});
- await page.locator('[data-jump-level="1"]').click();
+ await page.locator('#levelGrid .level-card').first().locator('.level-detail-start').click();
  const length=await page.evaluate(()=>activeCampaignStory.lines.length);
  for(let i=0;i<length;i++){
   expect(await page.evaluate(()=>window.__mainlineStarts)).toBe(0);
