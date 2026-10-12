@@ -234,6 +234,54 @@ test('home can enter level selection and shop', async ({ page }) => {
   await expect(page.locator('#shopGrid .shop-item')).toHaveCount(16);
 });
 
+test('shop filters a growing roster and previews the concrete stat change', async ({ page }) => {
+  await openApp(page);
+  await page.evaluate(()=>{playerProfile.gold=3000;saveProfile();showShop('equipment')});
+  await expect(page.locator('#shopFilters')).toBeVisible();
+  await page.locator('[data-shop-side="plants"]').click();
+  await expect(page.locator('[data-shop-side="plants"]')).toBeFocused();
+  await page.locator('#shopCharacterFilter').selectOption('firepea');
+  await expect(page.locator('#shopCharacterFilter')).toBeFocused();
+  await expect(page.locator('#shopGrid .shop-item')).toHaveCount(1);
+  await expect(page.locator('#shopGrid')).toContainText('關羽');
+  await expect(page.locator('#shopGrid .shop-effect-preview')).toContainText('生命');
+  await page.locator("button[onclick=\"buyShopItem('greenDragonArmor')\"]").click();
+  await expect(page.locator('#shopPurchaseFeedback')).toBeVisible();
+  await expect(page.locator('#shopPurchaseFeedback')).toContainText('已自動裝備給關羽');
+  await expect(page.locator('#shopPurchaseFeedback')).toContainText('生命 +10%');
+  expect(await page.evaluate(()=>playerProfile.inventory.equipped.plants.firepea)).toBe('greenDragonArmor');
+});
+
+test('battle cards expose active item bonuses but not during fair challenge mode', async ({ page }) => {
+  await openApp(page);
+  const result=await page.evaluate(()=>{
+    playerProfile=normalizeProfile({inventory:{equipment:{greenDragonArmor:1},skills:{guanyuSkill:1},equipped:{plants:{firepea:'greenDragonArmor'}}}});
+    completeCampaignLevel('plants',1,1);completeCampaignLevel('plants',2,1);completeCampaignLevel('plants',3,1);selectedLevel=4;start('plants');clearInterval(timer);
+    state.gameplay.challenge=createChallengeBattleState([]);buildCards();const normal=document.querySelector('.card[data-key="firepea"] .item-bonus-badge')?.textContent||'';
+    state.gameplay.challenge=createChallengeBattleState(['no-hero']);buildCards();const fair=document.querySelector('.card[data-key="firepea"] .item-bonus-badge')?.textContent||'';
+    playerProfile=normalizeProfile({inventory:{skins:{redFrame:1}}});state.gameplay.challenge=createChallengeBattleState([]);buildCards();const cosmeticOnly=document.querySelector('.card[data-key="firepea"] .item-bonus-badge')?.textContent||'';
+    return {normal,fair,cosmeticOnly};
+  });
+  expect(result.normal).toContain('2 項加成');
+  expect(result.fair).toBe('');
+  expect(result.cosmeticOnly).toBe('');
+});
+
+test('special damage and summoned soldiers have concrete shop previews and real effects', async ({ page }) => {
+  await openApp(page);
+  const result=await page.evaluate(()=>{
+    const preview=key=>{const host=document.createElement('div');host.innerHTML=shopPreviewStats(SHOP_ITEMS.find(item=>item.key===key));return host.textContent};
+    const previews={jester:preview('jesterChaos'),titan:preview('titanSmashSkill'),liubei:preview('liubeiVirtue')};
+    const base=baseUnit('plants','swordSoldier');playerProfile=normalizeProfile({inventory:{equipment:{virtueSeal:1},skills:{liubeiVirtue:1},equipped:{plants:{liubei:'virtueSeal'}}}});const summoned=effectiveUnit('plants','swordSoldier');
+    return {previews,base:{hp:base.hp,damage:base.damage},summoned:{hp:summoned.hp,damage:summoned.damage}};
+  });
+  expect(result.previews.jester).toContain('狂笑');
+  expect(result.previews.titan).toContain('重槌');
+  expect(result.previews.liubei).toContain('召喚兵生命');
+  expect(result.previews.liubei).toContain('召喚兵攻擊');
+  expect(result.summoned).toEqual({hp:Math.round(result.base.hp*1.18),damage:Math.round(result.base.damage*1.18)});
+});
+
 test('shop offers a larger cosmetic catalog with frame ornament and battlefield filters', async ({ page }) => {
   await openApp(page);
   await page.locator('#shopBtn').click();
@@ -356,6 +404,8 @@ test('authenticated purchase uses authoritative RPC', async ({ page }) => {
   await page.locator("button[onclick=\"buyShopItem('archerQuiver')\"]").click();
   await expect.poll(() => page.evaluate(() => window.__supabaseCalls.some(x => x[0] === 'sgz_buy_item'))).toBeTruthy();
   await expect(page.locator('#shopStatus')).toContainText('已購買');
+  await expect(page.locator('#shopPurchaseFeedback')).toContainText('已自動裝備給蜀軍弓兵');
+  expect(await page.evaluate(()=>playerProfile.inventory.equipped.plants.peashooter)).toBe('archerQuiver');
 });
 
 test('newer local profile survives device claim and is uploaded', async ({ page }) => {

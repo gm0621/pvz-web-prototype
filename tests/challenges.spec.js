@@ -119,6 +119,33 @@ test('milestone panel shows four tiers and its toggle persists without changing 
  expect(result.after).toEqual({enabled:false,stored:false,classes:[],pressed:'false',count:30});expect(result.reenabled).toBe(true);
 });
 
+test('profile medal collection summarizes all routes and filters earned or missing medals',async({page})=>{
+ await open(page);
+ const result=await page.evaluate(()=>{
+  const earned=challengesForRoute(1,'plants',1)[0];
+  playerProfile=normalizeProfile({challenges:{medals:{[earned.medalId]:{earnedAt:'now'}}}});showProfileCenter();
+  const snapshot=()=>({
+   panels:document.querySelectorAll('#challengeCollectionPanel').length,
+   total:$('challengeCollectionTotal')?.textContent,
+   routeTabs:document.querySelectorAll('[data-medal-route]').length,
+   stages:document.querySelectorAll('#challengeCollectionGrid .medal-stage-card').length,
+   medals:document.querySelectorAll('#challengeCollectionGrid .medal-entry').length,
+   earned:document.querySelectorAll('#challengeCollectionGrid .medal-entry.earned').length,
+   firstStageCount:document.querySelector('#challengeCollectionGrid .medal-stage-card header span')?.textContent,
+   milestones:document.querySelectorAll('#challengeCollectionPanel [data-collection-milestone]').length
+  });
+  const initial=snapshot();setChallengeCollectionFilter('earned');const filtered=snapshot();setChallengeCollectionRoute('2:zombies');setChallengeCollectionFilter('missing');const switched=snapshot();
+  return {initial,filtered,switched,text:$('challengeCollectionPanel')?.textContent||''};
+ });
+ expect(result.initial).toEqual({panels:1,total:'已收集 1 / 120',routeTabs:4,stages:10,medals:30,earned:1,firstStageCount:'1/3',milestones:4});
+ expect(result.filtered).toEqual(expect.objectContaining({stages:1,medals:1,earned:1,firstStageCount:'1/3'}));
+ expect(result.switched).toEqual(expect.objectContaining({stages:10,medals:30,earned:0,firstStageCount:'0/3'}));
+ expect(result.text).toContain('第二季攻城');expect(result.text).toContain('尚未取得');
+ await page.locator('[data-medal-route="1:plants"]').click();await expect(page.locator('[data-medal-route="1:plants"]')).toBeFocused();
+ await page.locator('[data-medal-filter="earned"]').click();await expect(page.locator('[data-medal-filter="earned"]')).toBeFocused();
+ await page.setViewportSize({width:390,height:844});const positions=await page.evaluate(()=>({collection:$('challengeCollectionPanel').getBoundingClientRect().top,characters:document.querySelector('.char-level-panel').getBoundingClientRect().top}));expect(positions.collection).toBeLessThan(positions.characters);
+});
+
 test('milestone panel is visible and operable on desktop portrait and short landscape',async({page})=>{
  await open(page);
  for(const viewport of [{width:1440,height:900},{width:390,height:844},{width:844,height:390}]){
