@@ -1,5 +1,5 @@
 const CHALLENGE_PROFILE_VERSION=1;
-const CHALLENGE_TEMPLATE_IDS=Object.freeze(['no-hero','gate-health','resource-cap','no-relocation','melee-only','time-limit','protect-unit','no-enemy-leak']);
+const CHALLENGE_TEMPLATE_IDS=Object.freeze(['no-hero','gate-health','resource-cap','no-relocation','melee-only','time-limit','protect-unit','no-enemy-leak','formation-width','unit-variety','multi-lane-assault']);
 const CHALLENGE_TEMPLATES=Object.freeze({
  'no-hero':Object.freeze({id:'no-hero',name:'不用武將',description:'本關不得部署武將。'}),
  'gate-health':Object.freeze({id:'gate-health',name:'城門無傷',description:'守住指定比例以上的關卡目標生命。',minHealthPct:.5}),
@@ -8,7 +8,10 @@ const CHALLENGE_TEMPLATES=Object.freeze({
  'melee-only':Object.freeze({id:'melee-only',name:'近戰破陣',description:'只以近戰單位完成本關。'}),
  'time-limit':Object.freeze({id:'time-limit',name:'兵貴神速',description:'在指定戰鬥時間內獲勝。',maxMs:180000}),
  'protect-unit':Object.freeze({id:'protect-unit',name:'全員護持',description:'指定任務單位必須存活。'}),
- 'no-enemy-leak':Object.freeze({id:'no-enemy-leak',name:'滴水不漏',description:'不可讓任何敵軍突破防線。'})
+ 'no-enemy-leak':Object.freeze({id:'no-enemy-leak',name:'滴水不漏',description:'不可讓任何敵軍突破防線。'}),
+ 'formation-width':Object.freeze({id:'formation-width',name:'四路用兵',description:'至少在四條不同路線部署單位並獲勝。',minLanes:4}),
+ 'unit-variety':Object.freeze({id:'unit-variety',name:'兵種協同',description:'至少部署四種不同兵種並獲勝。',minUnitTypes:4}),
+ 'multi-lane-assault':Object.freeze({id:'multi-lane-assault',name:'三路夾攻',description:'至少在三條不同路線部署攻城單位並獲勝。',minLanes:3})
 });
 const CHALLENGE_ROUTE_POOLS=Object.freeze({
  '1:plants':Object.freeze(['no-hero','gate-health','resource-cap','no-relocation','protect-unit','no-enemy-leak','time-limit','melee-only']),
@@ -17,18 +20,32 @@ const CHALLENGE_ROUTE_POOLS=Object.freeze({
  '2:zombies':Object.freeze(['time-limit','melee-only','no-hero','resource-cap','protect-unit','no-relocation','no-enemy-leak'])
 });
 function challengeProtectedUnitType(season,faction){return season===2?(faction==='plants'?'s2Tuntian':'s2Rat'):(faction==='plants'?'peashooter':'normal')}
+function routeChallengeId(id,faction,level){
+ if(id==='resource-cap'&&level===9)return 'formation-width';
+ if(id==='resource-cap'&&level===10)return 'unit-variety';
+ if(id==='no-relocation'&&faction==='zombies')return 'multi-lane-assault';
+ return id;
+}
 const CHALLENGE_ROUTE_DEFINITIONS=(()=>{
  const routes={};
  for(const season of [1,2])for(const faction of ['plants','zombies'])for(let level=1;level<=10;level++){
   const pool=CHALLENGE_ROUTE_POOLS[`${season}:${faction}`],offset=(level-1)%pool.length;
   routes[`${season}:${faction}:${level}`]=Object.freeze(Array.from({length:3},(_,index)=>{
-   const id=pool[(offset+index)%pool.length],template=CHALLENGE_TEMPLATES[id];
+   const id=routeChallengeId(pool[(offset+index)%pool.length],faction,level),template=CHALLENGE_TEMPLATES[id];
    return Object.freeze({...template,...(id==='protect-unit'?{protectedUnitType:challengeProtectedUnitType(season,faction)}:{}),medalId:`${season}:${faction}:${level}:${id}`,season,faction,level});
   }));
  }
  return Object.freeze(routes);
 })();
 function challengesForRoute(season,faction,level){return CHALLENGE_ROUTE_DEFINITIONS[`${Number(season)}:${faction}:${Number(level)}`]||Object.freeze([])}
+function challengeLegacyMedalIds(definition){
+ if(!definition?.medalId)return [];
+ if(definition.id==='formation-width'||definition.id==='unit-variety')return [definition.medalId.replace(/:[^:]+$/,':resource-cap')];
+ if(definition.id==='multi-lane-assault')return [definition.medalId.replace(/:[^:]+$/,':no-relocation')];
+ return [];
+}
+function challengeMedalIds(definition){return definition?.medalId?[definition.medalId,...challengeLegacyMedalIds(definition)]:[]}
+function challengeDefinitionEarned(definition,profile=playerProfile){const medals=profile?.challenges?.medals||{};return challengeMedalIds(definition).some(id=>!!medals[id])}
 function createChallengeBattleState(activeIds=[]){
  const ids=Array.isArray(activeIds)?[...new Set(activeIds.filter(id=>CHALLENGE_TEMPLATE_IDS.includes(id)))]:[];
  return {version:1,activeIds:ids,fairMode:ids.length>0,protectedEntityId:null};
@@ -46,6 +63,10 @@ const CHALLENGE_HERO_TYPES=new Set(['firepea','zhaoyun','pangtong','machao','hua
 function challengeUnitIsHero(type){return CHALLENGE_HERO_TYPES.has(type)}
 function challengeUnitIsRanged(side,type){const unit=typeof baseUnit==='function'?baseUnit(side,type):null;return !!(unit&&((unit.range||0)>1.2||unit.shoot||unit.catapult||unit.curse||unit.laugh||unit.tripleShot))}
 function challengeOutcomeEvent(telemetry){const events=Array.isArray(telemetry?.events)?telemetry.events:[];return [...events].reverse().find(event=>event?.type==='outcome')||null}
+function challengeDeploymentValues(telemetry,side,field){
+ const events=Array.isArray(telemetry?.events)?telemetry.events:[];
+ return new Set(events.filter(event=>event?.type==='deploy'&&event.side===side).map(event=>event[field]).filter(value=>field==='row'?Number.isInteger(value)&&value>=0:typeof value==='string'&&value));
+}
 function evaluateChallengeVerdict(definition,telemetry){
  const id=definition?.id,outcome=challengeOutcomeEvent(telemetry);if(!outcome)return {id,passed:false,reason:'missing-outcome'};
  if(outcome.win!==true)return {id,passed:false,reason:'battle-lost'};
@@ -59,6 +80,9 @@ function evaluateChallengeVerdict(definition,telemetry){
  else if(id==='time-limit')passed=Number(outcome.elapsedMs)<=Number(definition.maxMs??180000);
  else if(id==='protect-unit')passed=outcome.protectedUnitAlive===true;
  else if(id==='no-enemy-leak')passed=!events.some(event=>event.type==='leak'&&event.side!==side);
+ else if(id==='formation-width')passed=challengeDeploymentValues(telemetry,side,'row').size>=Number(definition.minLanes??4);
+ else if(id==='unit-variety')passed=challengeDeploymentValues(telemetry,side,'unitType').size>=Number(definition.minUnitTypes??4);
+ else if(id==='multi-lane-assault')passed=side==='zombies'&&challengeDeploymentValues(telemetry,side,'row').size>=Number(definition.minLanes??3);
  return {id,passed,reason:passed?'completed':'condition-failed'};
 }
 function challengeObjectiveSnapshot(battle=state){
@@ -74,7 +98,7 @@ function claimGuestChallengeResults(win,battle=state){
  if(win!==true)return {awarded:[],reason:'battle-lost'};
  const awarded=[];
  for(const definition of activeChallengeDefinitions(battle)){
-  const verdict=evaluateChallengeVerdict(definition,battle?.gameplay?.telemetry);if(!verdict.passed||playerProfile.challenges.medals[definition.medalId])continue;
+  const verdict=evaluateChallengeVerdict(definition,battle?.gameplay?.telemetry);if(!verdict.passed||challengeDefinitionEarned(definition))continue;
   playerProfile.challenges.medals[definition.medalId]={earnedAt:new Date().toISOString(),season:definition.season,faction:definition.faction,level:definition.level,challengeId:definition.id};awarded.push(definition.medalId);
  }
  if(awarded.length)saveProfile();

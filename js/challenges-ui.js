@@ -19,12 +19,15 @@ function appendDifficultySelector(card,season,faction,level,unlocked){
  const challenge=card.querySelector('.challenge-selector'),startButton=card.querySelector('.level-start');if(challenge)challenge.before(selector);else startButton?.before(selector);return selector;
 }
 function selectedBattleDifficulty(card){return normalizeBattleDifficulty(card?.querySelector('.difficulty-option input:checked')?.value,'easy')}
-function challengeMedalEarned(definition){return !!playerProfile?.challenges?.medals?.[definition?.medalId]}
+function challengeMedalEarned(definition){return challengeDefinitionEarned(definition)}
 function challengeConditionText(definition){
  if(definition.id==='gate-health')return `關卡目標生命保持至少 ${Math.round((definition.minHealthPct??.5)*100)}%。`;
  if(definition.id==='resource-cap')return `總支出不超過 ${definition.maxSpent??500}。`;
  if(definition.id==='time-limit'){const seconds=Math.floor((definition.maxMs??180000)/1000);return `在 ${String(Math.floor(seconds/60)).padStart(2,'0')}:${String(seconds%60).padStart(2,'0')} 內獲勝。`}
  if(definition.id==='protect-unit'){const name=baseUnit(definition.faction,definition.protectedUnitType)?.name||definition.protectedUnitType;return `${name}的首次部署單位必須存活。`}
+ if(definition.id==='formation-width')return `至少在 ${definition.minLanes??4} 條不同路線部署單位並獲勝。`;
+ if(definition.id==='unit-variety')return `至少部署 ${definition.minUnitTypes??4} 種不同兵種並獲勝。`;
+ if(definition.id==='multi-lane-assault')return `至少在 ${definition.minLanes??3} 條不同路線部署攻城單位並獲勝。`;
  return definition.description;
 }
 function appendChallengeSelector(card,season,faction,level,unlocked){
@@ -43,7 +46,11 @@ function challengeFailureReason(definition,telemetry){
  if(definition.id==='resource-cap')return `未達成：已支出 ${Number(telemetry?.totals?.resources?.[side]?.spent||0)}，限制為 ${definition.maxSpent??500}`;
  if(definition.id==='no-relocation')return '未達成：本場曾使用換列';if(definition.id==='melee-only')return '未達成：本場曾部署遠程單位';
  if(definition.id==='time-limit'){const elapsed=Math.max(0,Number(outcome.elapsedMs||0)),limit=Number(definition.maxMs??180000),clock=value=>`${String(Math.floor(value/60000)).padStart(2,'0')}:${String(Math.floor(value/1000)%60).padStart(2,'0')}`;return `未達成：用時 ${clock(elapsed)}，限制為 ${clock(limit)}`}
- if(definition.id==='protect-unit')return '未達成：指定任務單位未存活';if(definition.id==='no-enemy-leak'&&events.some(event=>event.type==='leak'&&event.side!==side))return '未達成：曾有敵軍突破防線';return '未達成：挑戰條件未完成';
+ if(definition.id==='protect-unit')return '未達成：指定任務單位未存活';if(definition.id==='no-enemy-leak'&&events.some(event=>event.type==='leak'&&event.side!==side))return '未達成：曾有敵軍突破防線';
+ if(definition.id==='formation-width')return `未達成：已部署 ${challengeDeploymentValues(telemetry,side,'row').size}/${definition.minLanes??4} 路`;
+ if(definition.id==='unit-variety')return `未達成：已使用 ${challengeDeploymentValues(telemetry,side,'unitType').size}/${definition.minUnitTypes??4} 種兵種`;
+ if(definition.id==='multi-lane-assault')return `未達成：已進攻 ${challengeDeploymentValues(telemetry,side,'row').size}/${definition.minLanes??3} 路`;
+ return '未達成：挑戰條件未完成';
 }
 function renderChallengeResults(battle=state,{pending=false,cloudVerified=true}={}){
  const panel=$('challengeResultPanel'),list=$('challengeResultList'),definitions=activeChallengeDefinitions(battle);if(!panel||!list)return false;

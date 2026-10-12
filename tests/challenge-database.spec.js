@@ -2,10 +2,14 @@ const {test,expect}=require('@playwright/test');
 const {PGlite}=require('@electric-sql/pglite');
 const fs=require('node:fs');const path=require('node:path');
 const migration=path.join(__dirname,'../supabase/migrations/202610070001_challenge_rewards.sql');
+const routeMigrations=[
+ path.join(__dirname,'../supabase/migrations/202610110002_fix_challenge_route_pool.sql'),
+ path.join(__dirname,'../supabase/migrations/202610120001_rebalance_challenge_medals.sql')
+];
 
 test('challenge reward RPC is atomic idempotent route-bound and profile-forgery resistant',async({},info)=>{
  test.skip(info.project.name!=='desktop','SQL runs once, independently of viewport');
- expect(fs.existsSync(migration)).toBe(true);
+ expect(fs.existsSync(migration)).toBe(true);for(const filename of routeMigrations)expect(fs.existsSync(filename)).toBe(true);
  const db=new PGlite();
  try{
   await db.exec(`create role anon;create role authenticated;create schema auth;create schema storage;
@@ -21,7 +25,25 @@ test('challenge reward RPC is atomic idempotent route-bound and profile-forgery 
   const uid='10000000-0000-4000-8000-000000000061',profile={gold:500,xp:0,level:1,highestLevel:0,completedLevels:{},campaignProgress:{plants:{highestLevel:0,completedLevels:{}},zombies:{highestLevel:0,completedLevels:{}}},characterLevels:{plants:{peashooter:{level:1,xp:0}},zombies:{}},challenges:{version:1,medals:{forged:true},claims:{forged:true}}};
   await db.query('insert into auth.users values ($1)',[uid]);await db.query('insert into sgz_profiles(user_id,profile) values ($1,$2)',[uid,profile]);
   const sql=fs.readFileSync(migration,'utf8');await db.exec(sql);await db.exec(sql);
-  expect((await db.query('select profile#>\'{challenges,medals}\' as medals from sgz_profiles where user_id=$1',[uid])).rows[0].medals).toEqual({});
+  const legacyMedalMappings=[
+   ['1:plants:9:resource-cap','1:plants:9:formation-width'],['1:plants:10:resource-cap','1:plants:10:unit-variety'],
+   ['1:zombies:9:resource-cap','1:zombies:9:formation-width'],['1:zombies:10:resource-cap','1:zombies:10:unit-variety'],
+   ['2:plants:9:resource-cap','2:plants:9:formation-width'],['2:plants:10:resource-cap','2:plants:10:unit-variety'],
+   ['2:zombies:9:resource-cap','2:zombies:9:formation-width'],['2:zombies:10:resource-cap','2:zombies:10:unit-variety'],
+   ['1:zombies:3:no-relocation','1:zombies:3:multi-lane-assault'],['1:zombies:4:no-relocation','1:zombies:4:multi-lane-assault'],
+   ['1:zombies:5:no-relocation','1:zombies:5:multi-lane-assault'],['1:zombies:10:no-relocation','1:zombies:10:multi-lane-assault'],
+   ['2:zombies:4:no-relocation','2:zombies:4:multi-lane-assault'],['2:zombies:5:no-relocation','2:zombies:5:multi-lane-assault'],
+   ['2:zombies:6:no-relocation','2:zombies:6:multi-lane-assault']
+  ];
+  const legacyMedals=Object.fromEntries(legacyMedalMappings.map(([oldId])=>[oldId,{earnedAt:`legacy:${oldId}`}]))
+   ,conflictingNewId='1:plants:9:formation-width',conflictingNewValue={earnedAt:'existing-new'};
+  legacyMedals[conflictingNewId]=conflictingNewValue;
+  await db.query("update sgz_profiles set profile=jsonb_set(profile,'{challenges,medals}',$2::jsonb,true) where user_id=$1",[uid,legacyMedals]);
+  for(const filename of routeMigrations){const routeSql=fs.readFileSync(filename,'utf8');await db.exec(routeSql);await db.exec(routeSql)}
+  const migratedMedals=(await db.query('select profile#>\'{challenges,medals}\' as medals from sgz_profiles where user_id=$1',[uid])).rows[0].medals,
+   expectedMigratedMedals=Object.fromEntries(legacyMedalMappings.map(([oldId,newId])=>[newId,{earnedAt:`legacy:${oldId}`} ]));
+  expectedMigratedMedals[conflictingNewId]=conflictingNewValue;
+  expect(migratedMedals).toEqual(expectedMigratedMedals);
   const injectedUid='10000000-0000-4000-8000-000000000062';await db.query('insert into auth.users values ($1)',[injectedUid]);await db.query('insert into sgz_profiles(user_id,profile) values ($1,$2)',[injectedUid,{challenges:{medals:{forged:true},claims:{forged:true}}}]);expect((await db.query('select profile#>\'{challenges}\' as challenges from sgz_profiles where user_id=$1',[injectedUid])).rows[0].challenges).toEqual({version:1,medals:{},claims:{}});
   await db.query("select set_config('request.jwt.claim.sub',$1,false)",[uid]);await db.query("select sgz_claim_device('test-device','SQL fixture',false,null)");
   const read=async()=> (await db.query('select profile,save_version from sgz_profiles where user_id=$1',[uid])).rows[0];
@@ -30,8 +52,19 @@ test('challenge reward RPC is atomic idempotent route-bound and profile-forgery 
   const canonical=value=>JSON.stringify(value),digestFor=async text=>(await db.query("select encode(digest(convert_to($1,'UTF8'),'sha256'),'hex') d",[text])).rows[0].d;
   const claim=(match,character,ids,digest,text,payload)=>db.query('select sgz_claim_match_rewards($1,$2,$3,$4,$5,$6,$7)',['test-device',match,character,ids,digest,text,payload]);
   const telemetryCanonical=canonical(telemetry),digest=await digestFor(telemetryCanonical);
-  const pools={'1:plants':['no-hero','gate-health','resource-cap','no-relocation','protect-unit','no-enemy-leak','melee-only','time-limit'],'1:zombies':['no-hero','time-limit','melee-only','resource-cap','no-relocation','protect-unit','no-enemy-leak'],'2:plants':['no-enemy-leak','protect-unit','resource-cap','no-hero','gate-health','no-relocation','time-limit','melee-only'],'2:zombies':['time-limit','melee-only','no-hero','resource-cap','protect-unit','no-relocation','no-enemy-leak']};
-  for(const [key,pool] of Object.entries(pools)){const [season,faction]=key.split(':');for(let level=1;level<=10;level++){const expected=[0,1,2].map(n=>pool[(level-1+n)%pool.length]).sort(),actual=(await db.query('select sgz_route_challenge_ids($1,$2,$3) ids',[season,faction,level])).rows[0].ids.sort();expect(actual).toEqual(expected)}}
+  const pools={'1:plants':['no-hero','gate-health','resource-cap','no-relocation','protect-unit','no-enemy-leak','time-limit','melee-only'],'1:zombies':['no-hero','time-limit','melee-only','resource-cap','no-relocation','protect-unit','no-enemy-leak'],'2:plants':['no-enemy-leak','protect-unit','resource-cap','no-hero','gate-health','no-relocation','time-limit','melee-only'],'2:zombies':['time-limit','melee-only','no-hero','resource-cap','protect-unit','no-relocation','no-enemy-leak']};
+  for(const [key,pool] of Object.entries(pools)){const [season,faction]=key.split(':');for(let level=1;level<=10;level++){const rebalance=id=>id==='resource-cap'&&level===9?'formation-width':id==='resource-cap'&&level===10?'unit-variety':id==='no-relocation'&&faction==='zombies'?'multi-lane-assault':id,expected=[0,1,2].map(n=>rebalance(pool[(level-1+n)%pool.length])).sort(),actual=(await db.query('select sgz_route_challenge_ids($1,$2,$3) ids',[season,faction,level])).rows[0].ids.sort();expect(actual).toEqual(expected)}}
+  const outcome={type:'outcome',win:true,elapsedMs:1000},passes=(challenge,faction,events)=>db.query('select sgz_challenge_telemetry_passes($1,$2,$3) ok',[challenge,faction,{events:[...events,outcome]}]);
+  const plant=(row,unitType)=>({type:'deploy',side:'plants',row,unitType}),zombie=(row,unitType)=>({type:'deploy',side:'zombies',row,unitType});
+  expect((await passes('formation-width','plants',[0,1,2,3].map(row=>plant(row,'peashooter')))).rows[0].ok).toBe(true);
+  expect((await passes('formation-width','plants',[0,1,2].map(row=>plant(row,'peashooter')))).rows[0].ok).toBe(false);
+  expect((await passes('unit-variety','plants',['peashooter','sunflower','wallnut','potato'].map(unitType=>plant(0,unitType)))).rows[0].ok).toBe(true);
+  expect((await passes('unit-variety','plants',[0,1,2,3].map(row=>plant(row,'peashooter')))).rows[0].ok).toBe(false);
+  expect((await passes('multi-lane-assault','zombies',[0,1,2].map(row=>zombie(row,'normal')))).rows[0].ok).toBe(true);
+  expect((await passes('multi-lane-assault','zombies',[0,1].map(row=>zombie(row,'normal')))).rows[0].ok).toBe(false);
+  expect((await db.query('select sgz_challenge_telemetry_passes($1,$2,$3) ok',['formation-width','plants',{events:[...[0,1,2,3].map(row=>plant(row,'peashooter')),{type:'outcome',win:'true'}]}])).rows[0].ok).toBe(false);
+  expect((await passes('formation-width','plants',['0','1','2','3'].map(row=>plant(row,'peashooter')))).rows[0].ok).toBe(false);
+  expect((await passes('unit-variety','plants',[1,2,3,4].map(unitType=>plant(0,unitType)))).rows[0].ok).toBe(false);
   let id=await start(),before=await read();
   await expect(claim(id,'peashooter',['no-hero'],'bad',telemetryCanonical,telemetry)).rejects.toThrow(/INVALID_TELEMETRY_DIGEST/);
   expect(await read()).toEqual(before);expect((await db.query('select finished_at from sgz_matches where id=$1',[id])).rows[0].finished_at).toBeNull();

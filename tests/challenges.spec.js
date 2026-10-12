@@ -18,14 +18,17 @@ test('challenge registry gives every mainline route three immutable definitions'
   return {api,templateIds:Object.keys(CHALLENGE_TEMPLATES),templatesFrozen:Object.isFrozen(CHALLENGE_TEMPLATES)&&Object.values(CHALLENGE_TEMPLATES).every(Object.isFrozen),routes};
  });
  expect(result.api).toEqual({templates:'object',routes:'function',create:'function'});
- expect(result.templateIds).toEqual(['no-hero','gate-health','resource-cap','no-relocation','melee-only','time-limit','protect-unit','no-enemy-leak']);
+ expect(result.templateIds).toEqual(['no-hero','gate-health','resource-cap','no-relocation','melee-only','time-limit','protect-unit','no-enemy-leak','formation-width','unit-variety','multi-lane-assault']);
  expect(result.templatesFrozen).toBe(true);
  expect(result.routes).toHaveLength(40);
  for(const route of result.routes){
   expect(route.ids).toHaveLength(3);
   expect(new Set(route.ids).size).toBe(3);
   expect(new Set(route.medalIds).size).toBe(3);
-  if(route.faction==='zombies')expect(route.ids).not.toContain('gate-health');
+  if(route.level===9){expect(route.ids).toContain('formation-width');expect(route.ids).not.toContain('resource-cap')}
+  if(route.level===10){expect(route.ids).toContain('unit-variety');expect(route.ids).not.toContain('resource-cap')}
+  if(route.faction==='zombies'){expect(route.ids).not.toContain('gate-health');expect(route.ids).not.toContain('no-relocation')}
+  if(route.faction==='plants')expect(route.ids).not.toContain('multi-lane-assault');
   expect(route.protectTypes.every(Boolean)).toBe(true);
   expect(route.frozen).toBe(true);
  }
@@ -61,6 +64,19 @@ test('challenge cosmetic milestones derive only from valid unique medals at 15 3
  expect(result.frozen).toBe(true);expect(result.hasBattleEffects).toBe(false);
  expect(result.snapshots).toEqual({14:{count:14,slots:[]},15:{count:15,slots:['frame']},29:{count:29,slots:['frame']},30:{count:30,slots:['frame','banner']},59:{count:59,slots:['frame','banner']},60:{count:60,slots:['frame','banner','fxColor']},89:{count:89,slots:['frame','banner','fxColor']},90:{count:90,slots:['frame','banner','fxColor','title']}});
  expect(result.forgedCount).toBe(14);expect(result.unchanged).toBe(true);expect(result.legacyEnabled).toBe(true);expect(result.disabledEnabled).toBe(false);
+});
+
+test('rebalanced routes continue to recognize previously earned resource and relocation medals',async({page})=>{
+ await open(page);
+ const result=await page.evaluate(()=>{
+  const legacyIds=['1:plants:9:resource-cap','1:plants:10:resource-cap','1:zombies:10:no-relocation'];
+  playerProfile=normalizeProfile({challenges:{medals:Object.fromEntries(legacyIds.map(id=>[id,{earnedAt:'legacy'}]))}});
+  const definitions=[challengesForRoute(1,'plants',9).find(item=>item.id==='formation-width'),challengesForRoute(1,'plants',10).find(item=>item.id==='unit-variety'),challengesForRoute(1,'zombies',10).find(item=>item.id==='multi-lane-assault')];
+  const telemetry=createBattleTelemetry();telemetry.events.push(...[0,1,2,3].map(row=>({type:'deploy',side:'plants',row,unitType:'peashooter'})),{type:'outcome',win:true,elapsedMs:90000});
+  const replayAward=claimGuestChallengeResults(true,{season:1,faction:'plants',level:9,gameplay:{challenge:{activeIds:['formation-width']},telemetry}});
+  return {earned:definitions.map(challengeMedalEarned),count:challengeMedalCount(),aliases:definitions.map(challengeLegacyMedalIds),replayAward,forgedCount:challengeMedalCount(normalizeProfile({challenges:{medals:{'1:plants:5:resource-cap':1,'1:plants:9:no-relocation':1}}}))};
+ });
+ expect(result).toEqual({earned:[true,true,true],count:3,aliases:[['1:plants:9:resource-cap'],['1:plants:10:resource-cap'],['1:zombies:10:no-relocation']],replayAward:{awarded:[],reason:'no-new-medals'},forgedCount:0});
 });
 
 test('milestone cosmetics apply progressively and disabling removes every cosmetic class and node',async({page})=>{
@@ -159,10 +175,20 @@ test('challenge evaluator derives all verdicts from telemetry and fails closed w
   const api=typeof evaluateChallengeVerdict;
   if(api!=='function')return {api};
   const base=createBattleTelemetry(),outcome={id:1,type:'outcome',time:90000,win:true,elapsedMs:90000,objectiveHealthPct:.75,protectedUnitAlive:true};
-  base.events.push(outcome);base.totals.resources.plants.spent=400;
-  const verdict=id=>evaluateChallengeVerdict({...CHALLENGE_TEMPLATES[id],season:1,faction:'plants',level:1},base);
+  base.events.push(
+   {id:10,type:'deploy',time:100,side:'plants',row:0,unitType:'peashooter'},
+   {id:11,type:'deploy',time:200,side:'plants',row:1,unitType:'sunflower'},
+   {id:12,type:'deploy',time:300,side:'plants',row:2,unitType:'wallnut'},
+   {id:13,type:'deploy',time:400,side:'plants',row:3,unitType:'potato'},
+   {id:14,type:'deploy',time:500,side:'zombies',row:0,unitType:'normal'},
+   {id:15,type:'deploy',time:600,side:'zombies',row:1,unitType:'cone'},
+   {id:16,type:'deploy',time:700,side:'zombies',row:2,unitType:'bucket'},
+   outcome
+  );base.totals.resources.plants.spent=400;
+  const verdict=id=>evaluateChallengeVerdict({...CHALLENGE_TEMPLATES[id],season:1,faction:id==='multi-lane-assault'?'zombies':'plants',level:1},base);
   const passing=Object.fromEntries(CHALLENGE_TEMPLATE_IDS.map(id=>[id,verdict(id)]));
   const violated=JSON.parse(JSON.stringify(base));
+  violated.events=violated.events.filter(event=>event.type!=='deploy');
   violated.events.unshift(
    {id:2,type:'deploy',time:100,side:'plants',unitType:'firepea',hero:true,ranged:true},
    {id:3,type:'relocation',time:200,side:'plants'},
@@ -170,7 +196,7 @@ test('challenge evaluator derives all verdicts from telemetry and fails closed w
   );
   violated.totals.resources.plants.spent=999;
   violated.events[violated.events.length-1]={...outcome,win:true,elapsedMs:999999,objectiveHealthPct:.1,protectedUnitAlive:false};
-  const failing=Object.fromEntries(CHALLENGE_TEMPLATE_IDS.map(id=>[id,evaluateChallengeVerdict({...CHALLENGE_TEMPLATES[id],season:1,faction:'plants',level:1},violated)]));
+  const failing=Object.fromEntries(CHALLENGE_TEMPLATE_IDS.map(id=>[id,evaluateChallengeVerdict({...CHALLENGE_TEMPLATES[id],season:1,faction:id==='multi-lane-assault'?'zombies':'plants',level:1},violated)]));
   const missingOutcome=evaluateChallengeVerdict({...CHALLENGE_TEMPLATES['no-hero'],season:1,faction:'plants',level:1},createBattleTelemetry());
   return {api,passing,failing,missingOutcome};
  });
@@ -178,6 +204,46 @@ test('challenge evaluator derives all verdicts from telemetry and fails closed w
  for(const verdict of Object.values(result.passing))expect(verdict).toEqual(expect.objectContaining({passed:true,reason:'completed'}));
  for(const verdict of Object.values(result.failing))expect(verdict.passed).toBe(false);
  expect(result.missingOutcome).toEqual(expect.objectContaining({passed:false,reason:'missing-outcome'}));
+});
+
+test('late formation variety and assault medals evaluate distinct deployment lanes and unit types',async({page})=>{
+ await open(page);
+ const result=await page.evaluate(()=>{
+  const telemetry=events=>{const value=createBattleTelemetry();value.events=[...events,{type:'outcome',win:true,elapsedMs:90000}];return value};
+  const definition=(id,faction='plants')=>({...CHALLENGE_TEMPLATES[id],season:1,faction,level:9});
+  const plant=(row,unitType)=>({type:'deploy',side:'plants',row,unitType});
+  const zombie=(row,unitType)=>({type:'deploy',side:'zombies',row,unitType});
+  const fourLanes=telemetry([plant(0,'peashooter'),plant(1,'peashooter'),plant(2,'peashooter'),plant(3,'peashooter')]);
+  const fourTypes=telemetry([plant(0,'peashooter'),plant(0,'sunflower'),plant(0,'wallnut'),plant(0,'potato')]);
+  const threeLaneAssault=telemetry([zombie(0,'normal'),zombie(1,'cone'),zombie(2,'bucket')]);
+  const oneDeployment=telemetry([plant(0,'peashooter'),zombie(0,'normal')]);
+  return {
+   formationPass:evaluateChallengeVerdict(definition('formation-width'),fourLanes).passed,
+   formationRejectsOneLane:evaluateChallengeVerdict(definition('formation-width'),fourTypes).passed,
+   varietyPass:evaluateChallengeVerdict(definition('unit-variety'),fourTypes).passed,
+   varietyRejectsOneType:evaluateChallengeVerdict(definition('unit-variety'),fourLanes).passed,
+   assaultPass:evaluateChallengeVerdict(definition('multi-lane-assault','zombies'),threeLaneAssault).passed,
+   assaultRejectsDefenders:evaluateChallengeVerdict(definition('multi-lane-assault','plants'),fourLanes).passed,
+   formationFail:evaluateChallengeVerdict(definition('formation-width'),oneDeployment).passed,
+   varietyFail:evaluateChallengeVerdict(definition('unit-variety'),oneDeployment).passed,
+   assaultFail:evaluateChallengeVerdict(definition('multi-lane-assault','zombies'),oneDeployment).passed
+  };
+ });
+ expect(result).toEqual({formationPass:true,formationRejectsOneLane:false,varietyPass:true,varietyRejectsOneType:false,assaultPass:true,assaultRejectsDefenders:false,formationFail:false,varietyFail:false,assaultFail:false});
+});
+
+test('tactical medal evaluator rejects malformed telemetry types',async({page})=>{
+ await open(page);
+ const result=await page.evaluate(()=>{
+  const definition=(id)=>({...CHALLENGE_TEMPLATES[id],season:1,faction:'plants',level:9});
+  const telemetry=(deployments,outcome={type:'outcome',win:true,elapsedMs:90000})=>{const value=createBattleTelemetry();value.events=[...deployments,outcome];return value};
+  return {
+   stringWin:evaluateChallengeVerdict(definition('formation-width'),telemetry([0,1,2,3].map(row=>({type:'deploy',side:'plants',row,unitType:'peashooter'})),{type:'outcome',win:'true',elapsedMs:90000})).passed,
+   stringRows:evaluateChallengeVerdict(definition('formation-width'),telemetry(['0','1','2','3'].map(row=>({type:'deploy',side:'plants',row,unitType:'peashooter'})))).passed,
+   numericTypes:evaluateChallengeVerdict(definition('unit-variety'),telemetry([1,2,3,4].map(unitType=>({type:'deploy',side:'plants',row:0,unitType})))).passed
+  };
+ });
+ expect(result).toEqual({stringWin:false,stringRows:false,numericTypes:false});
 });
 
 test('protect-unit binds the first designated entity and rejects a replacement',async({page})=>{
@@ -305,6 +371,33 @@ test('level cards show route-scoped medal counts and accessible challenge select
  });
  expect(result.first.count).toContain('1/3');expect(result.first.options).toHaveLength(3);expect(result.first.options[0].name).toBeTruthy();expect(result.first.options.some(option=>option.text.includes('已取得'))).toBe(true);
  expect(result.lockedState).toEqual([true,true,true]);expect(result.second).toEqual({count:expect.stringContaining('1/3'),options:3});
+});
+
+test('late level cards replace fixed resource caps and zombie-only relocation medals with tactical goals',async({page})=>{
+ await open(page);
+ const result=await page.evaluate(()=>{
+  const completed=Object.fromEntries(Array.from({length:10},(_,index)=>[index+1,1]));
+  playerProfile=normalizeProfile({campaignProgress:{plants:{highestLevel:10,completedLevels:completed},zombies:{highestLevel:10,completedLevels:completed}},season2Progress:{plants:{highestLevel:10,completedLevels:completed},zombies:{highestLevel:10,completedLevels:completed}}});
+  const inspect=(season,faction,level)=>{currentSeason=season;currentFaction=faction;season===2?buildSeason2LevelCards():buildLevelCards();const card=[...document.querySelectorAll('#levelGrid .level-card')][level-1];return [...card.querySelectorAll('.challenge-option')].map(option=>({id:option.dataset.challengeId,text:option.textContent}))};
+  return {plant9:inspect(1,'plants',9),plant10:inspect(1,'plants',10),zombie10:inspect(1,'zombies',10),season2Zombie4:inspect(2,'zombies',4)};
+ });
+ expect(result.plant9.map(item=>item.id)).toContain('formation-width');expect(result.plant9.map(item=>item.id)).not.toContain('resource-cap');expect(result.plant9.find(item=>item.id==='formation-width').text).toContain('4 條');
+ expect(result.plant10.map(item=>item.id)).toContain('unit-variety');expect(result.plant10.map(item=>item.id)).not.toContain('resource-cap');expect(result.plant10.find(item=>item.id==='unit-variety').text).toContain('4 種');
+ for(const route of [result.zombie10,result.season2Zombie4]){expect(route.map(item=>item.id)).toContain('multi-lane-assault');expect(route.map(item=>item.id)).not.toContain('no-relocation');expect(route.find(item=>item.id==='multi-lane-assault').text).toContain('3 條')}
+ expect(result.zombie10.map(item=>item.id)).toContain('unit-variety');expect(result.zombie10.map(item=>item.id)).not.toContain('resource-cap');
+});
+
+test('new tactical medal failures report current progress and required totals',async({page})=>{
+ await open(page);
+ const result=await page.evaluate(()=>{
+  const telemetry=createBattleTelemetry();telemetry.events.push({type:'deploy',side:'plants',row:2,unitType:'peashooter'},{type:'deploy',side:'zombies',row:1,unitType:'normal'},{type:'outcome',win:true,elapsedMs:90000});
+  return {
+   formation:challengeFailureReason({...CHALLENGE_TEMPLATES['formation-width'],faction:'plants'},telemetry),
+   variety:challengeFailureReason({...CHALLENGE_TEMPLATES['unit-variety'],faction:'plants'},telemetry),
+   assault:challengeFailureReason({...CHALLENGE_TEMPLATES['multi-lane-assault'],faction:'zombies'},telemetry)
+  };
+ });
+ expect(result).toEqual({formation:'未達成：已部署 1/4 路',variety:'未達成：已使用 1/4 種兵種',assault:'未達成：已進攻 1/3 路'});
 });
 
 test('all route challenges are tracked automatically without opt-in checkboxes',async({page})=>{

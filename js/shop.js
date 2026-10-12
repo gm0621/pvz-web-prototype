@@ -54,7 +54,7 @@ const CHALLENGE_MILESTONE_REWARDS=Object.freeze([
 ]);
 const CHALLENGE_VALID_MEDAL_IDS=new Set(Object.values(CHALLENGE_ROUTE_DEFINITIONS).flat().map(definition=>definition.medalId));
 const CHALLENGE_MILESTONE_CLASSES=Object.freeze(CHALLENGE_MILESTONE_REWARDS.map(reward=>reward.className));
-function challengeMedalCount(profile=playerProfile){return Object.entries(profile?.challenges?.medals||{}).filter(([id,earned])=>earned&&CHALLENGE_VALID_MEDAL_IDS.has(id)).length}
+function challengeMedalCount(profile=playerProfile){return Object.values(CHALLENGE_ROUTE_DEFINITIONS).flat().filter(definition=>challengeDefinitionEarned(definition,profile)).length}
 function challengeMilestoneRewards(profile=playerProfile){const count=challengeMedalCount(profile);return CHALLENGE_MILESTONE_REWARDS.filter(reward=>count>=reward.threshold)}
 function applyChallengeMilestoneCosmetics(){
  document.body.classList.remove(...CHALLENGE_MILESTONE_CLASSES);document.querySelectorAll('[data-challenge-cosmetic]').forEach(node=>node.remove());
