@@ -17,10 +17,11 @@ body.level-detail-open{overflow:hidden}
 .game:not(.fullscreen-mode) .board{width:100%;min-height:min(72vh,760px)}
 .game:not(.fullscreen-mode) .cards-panel{max-height:116px;overflow:hidden}
 .game:not(.fullscreen-mode) .battle-resource-strip{position:relative;z-index:20;margin-bottom:4px}
-.battle-status-stack{display:grid;min-width:0}
+.battle-status-stack{position:relative;display:grid;min-width:0}
 .battle-status-stack>.wave-report,.battle-status-stack>.wave-status,.battle-status-stack>.attack-status{grid-area:1/1;min-width:0}
+.battle-status-stack>.wave-report:not([hidden]){position:absolute;inset:0}
 .game:not(.fullscreen-mode) .wave-report,.game:not(.fullscreen-mode) .wave-status{position:relative;z-index:24;inset:auto;width:100%;max-width:none;margin:3px 0;box-shadow:0 5px 14px #0008;overflow-anchor:none}
-.game:not(.fullscreen-mode) .battle-status-stack>.wave-report{z-index:25}
+.game:not(.fullscreen-mode) .battle-status-stack>.wave-report:not([hidden]){position:absolute;inset:0;z-index:25}
 .game:not(.fullscreen-mode) .wave-report{padding-right:146px}
 .game:not(.fullscreen-mode) .wave-status{padding-right:112px}
 .game:not(.fullscreen-mode) #waveReportClose{right:108px}

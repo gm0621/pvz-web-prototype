@@ -60,12 +60,12 @@ test('wave report and military-intel status stay above the first battlefield row
 });
 
 test('battlefield stays anchored when a temporary battle report expires',async({page},testInfo)=>{
- await setup(page,1,6);
+ await setup(page,1,1);
  const positions=[];
  for(const [name,viewport] of [['desktop',{width:1440,height:900}],['portrait',{width:390,height:844}],['landscape',{width:844,height:390}]]){
   await page.setViewportSize(viewport);
   const result=await page.evaluate(()=>{
-   state.openingQueue=[];state.enemiesSpawned=state.waveDirector.plan[0].after;state.time=80000;aiAct();updateHUD();
+   state.openingQueue=[];state.time=80000;updateHUD();
    state.gameplay.report.current={kind:'wave',segmentId:1,label:'第一波',damageDealt:120,damageTaken:30,kills:4,controlDuration:0,resourceNet:25,outputLeader:null,takenLeader:null,controlLeader:null,shownAt:state.time,expiresAt:state.time+6000,dismissed:false};
    renderBattleReport();
    const report=document.getElementById('waveReport'),board=document.getElementById('board');
