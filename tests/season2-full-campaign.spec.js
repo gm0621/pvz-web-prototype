@@ -30,6 +30,27 @@ test('stages three to ten carry distinct story, difficulty and battle data',asyn
   expect(new Set(data.map(x=>x.difficulty)).size).toBeGreaterThanOrEqual(3);
 });
 
+test('all season-two stage cards visibly render their accepted art',async({page})=>{
+ await open(page);
+ const result=await page.evaluate(async()=>{
+  chooseFaction('plants',2);setCampaignDetailsExpanded(true);
+  const rows=[];
+  for(let level=1;level<=10;level++){
+   const card=document.querySelector(`[data-jump-level="${level}"]`).closest('.level-card'),art=card.querySelector('.level-art'),src=SEASON2_LEVELS[level].cardArt,image=new Image();
+   image.src=src;await image.decode();
+   rows.push({level,src,background:getComputedStyle(art).backgroundImage,visible:art.getBoundingClientRect().height>0,directChild:art.parentElement===card,width:image.naturalWidth,height:image.naturalHeight});
+  }
+  return rows;
+ });
+ expect(result).toHaveLength(10);
+ result.forEach((item,index)=>{
+  expect(item.src).toContain(`s2-${String(index+1).padStart(2,'0')}.webp`);
+  expect(item.background).toContain(`s2-${String(index+1).padStart(2,'0')}.webp`);
+  expect(item.visible).toBe(true);expect(item.directChild).toBe(true);
+  expect(item.width).toBeGreaterThan(1000);expect(item.height).toBeGreaterThan(500);
+ });
+});
+
 test('a first clear shows a celebratory character unlock reveal with skill, replay does not',async({page})=>{
   await open(page);await page.evaluate(()=>{chooseFaction('plants',2);completeCampaignLevel('plants',1,2);completeCampaignLevel('plants',2,2);markStoryRead('plants',3,'opening',2);selectedLevel=3;start('plants');clearInterval(timer)});
   await page.evaluate(async()=>{await end(true,'勝利','fixture')});

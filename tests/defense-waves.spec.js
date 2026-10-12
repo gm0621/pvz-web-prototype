@@ -58,3 +58,29 @@ test('wave report and military-intel status stay above the first battlefield row
  const boxes=await page.evaluate(()=>{const board=document.getElementById('board').getBoundingClientRect();return ['waveReport','waveStatus'].map(id=>{const rect=document.getElementById(id).getBoundingClientRect();return {id,bottom:rect.bottom,boardTop:board.top,visible:rect.width>0&&rect.height>0}})});
  for(const box of boxes.filter(item=>item.visible))expect(box.bottom,box.id).toBeLessThanOrEqual(box.boardTop+1);
 });
+
+test('battlefield stays anchored when a temporary battle report expires',async({page},testInfo)=>{
+ await setup(page,1,6);
+ const positions=[];
+ for(const [name,viewport] of [['desktop',{width:1440,height:900}],['portrait',{width:390,height:844}],['landscape',{width:844,height:390}]]){
+  await page.setViewportSize(viewport);
+  const result=await page.evaluate(()=>{
+   state.openingQueue=[];state.enemiesSpawned=state.waveDirector.plan[0].after;state.time=80000;aiAct();updateHUD();
+   state.gameplay.report.current={kind:'wave',segmentId:1,label:'第一波',damageDealt:120,damageTaken:30,kills:4,controlDuration:0,resourceNet:25,outputLeader:null,takenLeader:null,controlLeader:null,shownAt:state.time,expiresAt:state.time+6000,dismissed:false};
+   renderBattleReport();
+   const report=document.getElementById('waveReport'),board=document.getElementById('board');
+   const reportRect=report.getBoundingClientRect(),status=document.getElementById('waveStatus');
+   const visible={boardTop:board.getBoundingClientRect().top,reportHeight:reportRect.height,statusHeight:status.getBoundingClientRect().height,reportZ:Number(getComputedStyle(report).zIndex),statusZ:Number(getComputedStyle(status).zIndex),pageOverflow:document.documentElement.scrollWidth-document.documentElement.clientWidth};
+   state.time=state.gameplay.report.current.expiresAt;renderBattleReport();
+   const expired={boardTop:board.getBoundingClientRect().top,reportHidden:report.hidden};
+   return {visible,expired};
+  });
+  positions.push({name,...result});
+  await page.evaluate(()=>{state.time=80000;renderBattleReport()});
+  await page.screenshot({path:testInfo.outputPath(`stable-report-${name}.png`)});
+ }
+ for(const position of positions){
+  expect(position.visible.reportHeight,position.name).toBeGreaterThan(0);expect(position.visible.statusHeight,position.name).toBeGreaterThan(0);expect(position.visible.reportZ,position.name).toBeGreaterThan(position.visible.statusZ);expect(position.visible.pageOverflow,position.name).toBeLessThanOrEqual(1);expect(position.expired.reportHidden,position.name).toBe(true);
+  expect(Math.abs(position.visible.boardTop-position.expired.boardTop),position.name).toBeLessThanOrEqual(1);
+ }
+});

@@ -99,13 +99,13 @@ test('all first-season stages and Qin finale use their accepted card art',async(
  const result=await page.evaluate(async()=>{
   playerProfile=normalizeProfile({});currentSeason=1;currentFaction='plants';
   for(let level=1;level<=10;level++)completeCampaignLevel('plants',level);
-  buildLevelCards();
+  $('start').classList.remove('active');$('levelScreen').classList.add('active');buildLevelCards();setCampaignDetailsExpanded(true);
   const inspect=async level=>{
    const card=document.querySelector(`[data-jump-level="${level}"]`).closest('.level-card');
    const art=card.querySelector('.level-art');
    const src=LEVELS[level].cardArt;
    const image=new Image();image.src=src;await image.decode();
-   return {level,src,background:getComputedStyle(art).backgroundImage,width:image.naturalWidth,height:image.naturalHeight};
+   return {level,src,background:getComputedStyle(art).backgroundImage,width:image.naturalWidth,height:image.naturalHeight,visible:art.getBoundingClientRect().height>0,directChild:art.parentElement===card};
   };
   const levels=[];
   for(let level=1;level<=11;level++)levels.push(await inspect(level));
@@ -123,6 +123,8 @@ test('all first-season stages and Qin finale use their accepted card art',async(
   expect(item.background).toContain(expected[index]);
   expect(item.width).toBeGreaterThan(1000);
   expect(item.height).toBeGreaterThan(500);
+  expect(item.visible).toBe(true);
+  expect(item.directChild).toBe(true);
  });
 });
 
