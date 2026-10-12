@@ -231,7 +231,131 @@ test('home can enter level selection and shop', async ({ page }) => {
   await page.locator('#backFactionBtn').click();
   await page.locator('#shopBtn').click();
   await expect(page.locator('#shop')).toHaveClass(/active/);
-  await expect(page.locator('#shopGrid .shop-item')).toHaveCount(16);
+  await expect(page.locator('#shopGrid .shop-item')).toHaveCount(36);
+});
+
+test('shop expands both seasons with concrete equipment and skill choices', async ({ page }) => {
+  await openApp(page);
+  const catalog = await page.evaluate(() => ({
+    equipment: SHOP_ITEMS.filter(item => item.type === 'equipment').map(item => item.key),
+    skills: SHOP_ITEMS.filter(item => item.type === 'skill').map(item => item.key)
+  }));
+  expect(catalog.equipment).toHaveLength(36);
+  expect(catalog.skills).toHaveLength(17);
+  expect(catalog.equipment).toEqual(expect.arrayContaining([
+    'tuntianScale', 'crossbowMechanism', 'xiahouArmor', 'caoCaoBanner',
+    'redScarfBlade', 'coffinIronBands', 'medicNeedleKit', 'ramIronHead'
+  ]));
+  expect(catalog.skills).toEqual(expect.arrayContaining([
+    'machaoSkill', 'kongmingSkill', 'crossbowVolley', 'dianweiGuard',
+    'bombJesterSkill', 'necromancerSkill', 'medicStitching'
+  ]));
+
+  await page.evaluate(() => showShop('equipment'));
+  await page.locator('[data-shop-side="plants"]').click();
+  await page.locator('#shopCharacterFilter').selectOption('s2Tuntian');
+  await expect(page.locator('#shopGrid')).toContainText('屯田糧秤');
+  await expect(page.locator('#shopGrid .shop-effect-preview')).toContainText('產糧 +10%');
+  await page.locator('[data-shop-side="zombies"]').click();
+  await page.locator('#shopCharacterFilter').selectOption('s2Medic');
+  await expect(page.locator('#shopGrid')).toContainText('縫魂針囊');
+  await expect(page.locator('#shopGrid .shop-effect-preview')).toContainText('治療 +12%');
+});
+
+test('new healing and shield items change real unit stats and have concrete previews', async ({ page }) => {
+  await openApp(page);
+  const result = await page.evaluate(() => {
+    const preview = key => {
+      const host = document.createElement('div');
+      host.innerHTML = shopPreviewStats(SHOP_ITEMS.find(item => item.key === key));
+      return host.textContent;
+    };
+    const baseMedic = baseUnit('zombies', 's2Medic');
+    const baseCoffin = baseUnit('zombies', 's2Coffin');
+    const previewText = {medic:preview('medicNeedleKit'),coffin:preview('coffinIronBands')};
+    playerProfile = normalizeProfile({inventory:{
+      equipment:{medicNeedleKit:1,coffinIronBands:1},
+      skills:{medicStitching:1},
+      equipped:{plants:{},zombies:{s2Medic:'medicNeedleKit',s2Coffin:'coffinIronBands'}}
+    }});
+    const medic = effectiveUnit('zombies', 's2Medic');
+    const coffin = effectiveUnit('zombies', 's2Coffin');
+    return {
+      preview:previewText,
+      base:{medicHeal:baseMedic.heal,medicCooldown:baseMedic.cooldown,coffinHp:baseCoffin.hp,coffinShield:baseCoffin.shieldHp},
+      after:{medicHeal:medic.heal,medicCooldown:medic.cooldown,coffinHp:coffin.hp,coffinShield:coffin.shieldHp}
+    };
+  });
+  expect(result.preview.medic).toContain('治療');
+  expect(result.preview.coffin).toContain('棺盾');
+  expect(result.after).toEqual({
+    medicHeal:Math.round(result.base.medicHeal * 1.30),
+    medicCooldown:Math.round(result.base.medicCooldown * 0.90),
+    coffinHp:Math.round(result.base.coffinHp * 1.08),
+    coffinShield:Math.round(result.base.coffinShield * 1.12)
+  });
+});
+
+test('every corrected item effect changes real stats and special attack intervals are previewed', async ({ page }) => {
+  await openApp(page);
+  const result = await page.evaluate(() => {
+    const baseKing=baseUnit('zombies','football'),baseThrower=baseUnit('zombies','peaZombie');
+    playerProfile=normalizeProfile({inventory:{
+      equipment:{corpseKingBoots:1,stonePouch:1},skills:{},
+      equipped:{plants:{},zombies:{football:'corpseKingBoots',peaZombie:'stonePouch'}}
+    }});
+    const king=effectiveUnit('zombies','football'),thrower=effectiveUnit('zombies','peaZombie');
+    const host=document.createElement('div');
+    host.innerHTML=shopPreviewStats(SHOP_ITEMS.find(item=>item.key==='fireCatapultSkill'));
+    return {
+      base:{kingHp:baseKing.hp,kingDamage:baseKing.damage,throwerDamage:baseThrower.damage},
+      after:{kingHp:king.hp,kingDamage:king.damage,throwerDamage:thrower.damage},
+      preview:host.textContent
+    };
+  });
+  expect(result.after).toEqual({
+    kingHp:Math.round(result.base.kingHp*1.10),
+    kingDamage:Math.round(result.base.kingDamage*1.05),
+    throwerDamage:Math.round(result.base.throwerDamage*1.12)
+  });
+  expect(result.preview).toContain('投石間隔');
+  expect(result.preview).toContain('5.2 → 4.9 秒');
+});
+
+test('new equipment purchase deducts once, auto-equips and survives reload', async ({ page }) => {
+  await openApp(page);
+  const purchased = await page.evaluate(async () => {
+    playerProfile = normalizeProfile({gold:1000});
+    saveProfile();
+    await buyShopItem('medicNeedleKit');
+    return {
+      gold:playerProfile.gold,
+      owned:playerProfile.inventory.equipment.medicNeedleKit,
+      equipped:playerProfile.inventory.equipped.zombies.s2Medic
+    };
+  });
+  expect(purchased).toEqual({gold:760,owned:1,equipped:'medicNeedleKit'});
+  await page.evaluate(() => buyShopItem('medicNeedleKit'));
+  expect(await page.evaluate(() => playerProfile.gold)).toBe(760);
+
+  await page.reload();
+  await expect(page.locator('#start')).toHaveClass(/active/);
+  expect(await page.evaluate(() => ({
+    gold:playerProfile.gold,
+    owned:playerProfile.inventory.equipment.medicNeedleKit,
+    equipped:playerProfile.inventory.equipped.zombies.s2Medic
+  }))).toEqual({gold:760,owned:1,equipped:'medicNeedleKit'});
+});
+
+test('cloud catalog migration matches every new purchasable item exactly', async ({ page }) => {
+  await openApp(page);
+  const keys=['tuntianScale','crossbowMechanism','shieldStuds','halberdEdge','xiahouArmor','dianweiHalberds','guojiaScroll','caoCaoBanner','redScarfBlade','corpseKingBoots','jesterVest','bombPowder','titanArmor','stonePouch','necromancerCrown','ratFangCharm','nailQuiver','coffinIronBands','medicNeedleKit','ramIronHead','machaoSkill','zhangfeiSkill','kongmingSkill','crossbowVolley','dianweiGuard','guojiaForesight','bombJesterSkill','fireCatapultSkill','necromancerSkill','medicStitching'];
+  const runtime=await page.evaluate(newKeys=>SHOP_ITEMS.filter(item=>newKeys.includes(item.key)).map(item=>[item.key,item.type,item.side,item.target,item.name,item.price]).sort((a,b)=>a[0].localeCompare(b[0])),keys);
+  const migration=fs.readFileSync(path.join(__dirname,'../supabase/migrations/202610120002_expand_shop_items.sql'),'utf8');
+  const rows=[...migration.matchAll(/\('([^']+)','(equipment|skill)','(plants|zombies)','([^']+)','([^']+)',(\d+),null,true\)/g)].map(match=>[match[1],match[2],match[3],match[4],match[5],Number(match[6])]).sort((a,b)=>a[0].localeCompare(b[0]));
+  expect(runtime).toHaveLength(30);
+  expect(rows).toEqual(runtime);
+  expect(migration).toContain('on conflict(item_key) do update set');
 });
 
 test('shop filters a growing roster and previews the concrete stat change', async ({ page }) => {
