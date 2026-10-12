@@ -90,6 +90,31 @@ test('completing a defense wave grants one strategy point without pausing or ope
  expect(await page.evaluate(t=>{tick();return state.time>t},before.time)).toBe(true);
 });
 
+test('strategy menu remains visible and operable inside native fullscreen',async({page})=>{
+ await openApp(page);
+ await page.evaluate(()=>{
+  currentSeason=1;currentFaction='plants';selectedLevel=1;start('plants');clearInterval(timer);state.openingQueue=[];grantStrategyPoint('fullscreen-test');updateHUD();
+ });
+ await page.locator('#fullscreenBtn').click();
+ await expect.poll(()=>page.evaluate(()=>!!document.fullscreenElement)).toBe(true);
+ await page.locator('#strategyBtn').click();
+ const dialog=page.getByRole('dialog',{name:'選擇軍令'});
+ await expect(dialog).toBeVisible();
+ expect(await page.evaluate(()=>({insideFullscreen:document.fullscreenElement?.contains(document.getElementById('tacticalOrderDialog'))||false}))).toEqual({insideFullscreen:true});
+ await dialog.locator('[data-tactical-order]').first().click();
+ await expect(dialog).toBeHidden();
+});
+
+test('starting a battle from the level confirmation requests fullscreen by default',async({page})=>{
+ await openApp(page);
+ await page.evaluate(()=>{playerProfile=normalizeProfile({});markStoryRead('plants',1,'opening',1);chooseFaction('plants',1)});
+ const card=page.locator('#levelGrid .level-card').first();
+ await card.locator('.level-start').click();
+ await card.locator('.level-detail-start').click();
+ await expect(page.locator('#game')).toHaveClass(/active/);
+ await expect.poll(()=>page.evaluate(()=>!!document.fullscreenElement||document.getElementById('game').classList.contains('fullscreen-mode'))).toBe(true);
+});
+
 test('player may open or defer strategy selection and only a chosen order spends one point',async({page})=>{
  await openApp(page);
  await page.evaluate(()=>{

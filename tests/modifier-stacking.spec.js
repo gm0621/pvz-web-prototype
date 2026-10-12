@@ -24,7 +24,7 @@ test('central modifier pipeline declares every layer and every tactical-order co
 test('unit layers apply synergy before tactical order, clamp once, and preserve source tables',async({page})=>{
  await open(page);
  const result=await page.evaluate(()=>{
-  playerProfile=normalizeProfile({});playerProfile.inventory.equipment.greenDragonArmor=true;playerProfile.inventory.skills.guanyuSkill=true;playerProfile.inventory.equipped.plants.firepea='greenDragonArmor';playerProfile.characterLevels.plants.firepea.level=3;currentSeason=1;currentFaction='plants';selectedLevel=1;start('plants');clearInterval(timer);
+  playerProfile=normalizeProfile({});playerProfile.inventory.equipment.greenDragonArmor=true;playerProfile.inventory.skills.guanyuSkill=true;playerProfile.inventory.equipped.plants.firepea='greenDragonArmor';playerProfile.characterLevels.plants.firepea.level=3;currentSeason=1;currentFaction='plants';selectedLevel=1;start('plants');clearInterval(timer);state.gameplay.challenge=createChallengeBattleState([]);
   const before=JSON.stringify({plants:PLANT_TYPES,zombies:ZOMBIE_TYPES});
   state.plants=[];state.zombies=[];addPlant('firepea',1,1);addPlant('zhangfei',2,2);addPlant('liubei',3,3);addZombie('normal',7,1);
   state.gameplay.orders.selected=['tuntian','last-stand'];

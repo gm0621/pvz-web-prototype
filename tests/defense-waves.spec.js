@@ -51,3 +51,10 @@ test('wave HUD stays readable and grid taps work in portrait, landscape and full
  expect(errors).toEqual([]);
 });
 test('attack mode has no defense wave controller or banner',async({page})=>{await setup(page,2);expect(await page.evaluate(()=>{start('zombies');clearInterval(timer);updateHUD();return !state.waveDirector&&document.getElementById('waveStatus').hidden})).toBe(true)});
+
+test('wave report and military-intel status stay above the first battlefield row',async({page})=>{
+ await page.setViewportSize({width:1600,height:700});await setup(page,1,6);
+ await page.evaluate(()=>{state.openingQueue=[];state.enemiesSpawned=state.waveDirector.plan[0].after;state.time=80000;aiAct();updateHUD()});
+ const boxes=await page.evaluate(()=>{const board=document.getElementById('board').getBoundingClientRect();return ['waveReport','waveStatus'].map(id=>{const rect=document.getElementById(id).getBoundingClientRect();return {id,bottom:rect.bottom,boardTop:board.top,visible:rect.width>0&&rect.height>0}})});
+ for(const box of boxes.filter(item=>item.visible))expect(box.bottom,box.id).toBeLessThanOrEqual(box.boardTop+1);
+});

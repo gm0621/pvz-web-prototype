@@ -202,7 +202,7 @@ test('pilot rule state restores without advancing and renders board cues',async(
  expect(result.after).toEqual(result.before);
  expect(result.time).toBe(10000);
  expect(result.paused).toBe(true);
- expect(result.cueBefore).toContain('運糧兵');
+ expect(result.cueBefore).toContain('運糧車');
  expect(result.cueAfter).toBe(result.cueBefore);
  await page.locator('#pauseBtn').click();
  await expect(page.locator('#pauseOverlay')).not.toBeVisible();
@@ -348,4 +348,30 @@ test('all new archetype runtimes survive browser reload without advancing and re
   expect(restored.rule,route.id).toEqual(expected);
   if(route.id==='fog-vision')expect(restored.time).toBe(9000);
  }
+});
+
+test('grain escort is a visible wagon with a destination and an explicit arrived state',async({page})=>{
+ await openApp(page);
+ await page.evaluate(()=>{completeCampaignLevel('plants',1,1);currentSeason=1;currentFaction='plants';selectedLevel=2;start('plants');clearInterval(timer);render()});
+ const cue=page.locator('[data-stage-rule-cue="escort-grain"]');
+ await expect(cue.locator('img.escort-wagon-image')).toHaveAttribute('src',/grain-wagon\.svg$/);
+ await expect(cue).toContainText('前往右側城門');
+ await expect(page.locator('.escort-destination')).toContainText('右側城門');
+ await expect.poll(()=>cue.locator('img.escort-wagon-image').evaluate(image=>({complete:image.complete,width:image.naturalWidth,height:image.naturalHeight}))).toMatchObject({complete:true,width:expect.any(Number),height:expect.any(Number)});
+ const wagonSize=await cue.locator('img.escort-wagon-image').evaluate(image=>({width:image.naturalWidth,height:image.naturalHeight}));
+ expect(wagonSize.width).toBeGreaterThan(0);
+ expect(wagonSize.height).toBeGreaterThan(0);
+ await page.evaluate(()=>{const escort=state.gameplay.stageRule.data.escort;escort.progress=100;escort.c=7.3;render()});
+ await expect(cue).toContainText('已抵達城門');
+ await expect(cue).toContainText('擊敗關底敵人');
+ await expect(cue).not.toContainText('進度 100%');
+ await expect(page.locator('.escort-destination')).toBeHidden();
+ const opening=await page.evaluate(()=>campaignStoryData(1).plants[2].opening.map(line=>line.text).join(''));
+ expect(opening).toContain('左側');
+ expect(opening).toContain('右側城門');
+ expect(opening).toContain('抵達後');
+ const laterEscort=await page.evaluate(()=>campaignStoryData(1).plants[7].opening.map(line=>line.text).join(''));
+ expect(laterEscort).toContain('左側');
+ expect(laterEscort).toContain('右側城門');
+ expect(laterEscort).toContain('抵達後');
 });

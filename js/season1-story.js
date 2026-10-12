@@ -43,10 +43,10 @@ function openCampaignStory(faction,level,scene,{replay=false,onComplete=null,sea
  renderCampaignStory();storyElement('storyDialog').showModal();storyElement('storyNext').focus();return true;
 }
 function requestCampaignBattle(faction,level=selectedLevel,options={}){
- const season=currentSeason,battleOptions={challengeIds:[...new Set(Array.isArray(options?.challengeIds)?options.challengeIds:[])],difficulty:normalizeBattleDifficulty(options?.difficulty,'medium')};
+ const season=currentSeason,battleOptions={challengeIds:[...new Set(Array.isArray(options?.challengeIds)?options.challengeIds:[])],difficulty:normalizeBattleDifficulty(options?.difficulty,'medium')},requestFullscreen=options?.fullscreen===true;
  if(!isCampaignLevelUnlocked(faction,level,season))return false;
  if(activeCampaignStory)return false;
- const begin=()=>{if(currentSeason!==season||!isCampaignLevelUnlocked(faction,level,season))return false;selectedLevel=level;currentFaction=faction;start(faction,battleOptions);return true};
+ const begin=()=>{if(currentSeason!==season||!isCampaignLevelUnlocked(faction,level,season))return false;if(requestFullscreen)enterBattleFullscreenByDefault();selectedLevel=level;currentFaction=faction;start(faction,battleOptions);return true};
  if(campaignStoryData(season)[faction]?.[level]&&!hasReadStory(faction,level,'opening',season)){
   if(storyElement('game').classList.contains('active')){currentFaction=faction;backToLevelSelect()}
   pauseAndSaveBattle('story');clearInterval(timer);

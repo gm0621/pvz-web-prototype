@@ -45,8 +45,8 @@ const KEEP_MOWERS_RULE=immutableRule({
  isFailed:runtime=>runtime.mowersRemaining<5||!!runtime.breached
 });
 const ESCORT_GRAIN_RULE=immutableRule({
- id:'escort-grain',title:'護送運糧兵',archetype:'escort',
- objective:()=>['護送中央路運糧兵走完全程','清除靠近運糧兵的敵軍，避免其生命歸零','運糧兵抵達後再擊敗關底大魔王'],
+ id:'escort-grain',title:'護送運糧車',archetype:'escort',
+ objective:()=>['護送中央路糧車抵達右側城門','清除靠近糧車的敵軍，避免其生命歸零','糧車抵達後再擊敗關底敵人'],
  start:context=>({kind:'escort-grain',breached:false,lastTick:context.time||0,lastDamageAt:context.time||0,escort:{hp:300,maxHp:300,progress:0,c:.7,r:2}}),
  tick:(runtime,context)=>{
   const escort={...runtime.escort},now=context.time||0,dt=Math.max(0,now-(runtime.lastTick||0));

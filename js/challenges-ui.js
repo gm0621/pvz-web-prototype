@@ -6,8 +6,10 @@ const BATTLE_DIFFICULTIES=Object.freeze({
 function normalizeBattleDifficulty(value,fallback='medium'){return Object.prototype.hasOwnProperty.call(BATTLE_DIFFICULTIES,value)?value:fallback}
 function battleDifficultyConfig(value){return BATTLE_DIFFICULTIES[normalizeBattleDifficulty(value)]}
 function syncDifficultyChallengeState(card){
- const difficulty=selectedBattleDifficulty(card),noHero=card?.querySelector('.challenge-option input[value="no-hero"]');if(!noHero)return;
- noHero.checked=difficulty==='hard';noHero.disabled=true;const option=noHero.closest('.challenge-option'),description=option?.querySelector('.challenge-option-description'),status=option?.classList.contains('earned')?'已取得':'尚未取得',condition=difficulty==='hard'?'困難難度固定規則：本關不得部署武將。':'此限制只在困難難度啟用。';option?.classList.toggle('difficulty-required',difficulty==='hard');if(description)description.textContent=condition;noHero.setAttribute('aria-label',`不用武將：${condition}${status}`);
+ const difficulty=selectedBattleDifficulty(card),option=card?.querySelector('.challenge-option[data-challenge-id="no-hero"]');if(!option)return;
+ const description=option.querySelector('.challenge-option-description'),owned=option.classList.contains('earned');option.classList.toggle('difficulty-required',difficulty==='hard');
+ if(description)description.textContent=difficulty==='hard'?'困難難度固定規則：本關不得部署武將。':'不部署任何武將並完成關卡。';
+ if(!owned){const status=option.querySelector('.challenge-medal-state');if(status)status.textContent=difficulty==='hard'?'◎ 自動追蹤・困難規則同步符合':'◎ 開戰後自動追蹤'}
 }
 function appendDifficultySelector(card,season,faction,level,unlocked){
  const selector=document.createElement('fieldset'),legendId=`difficulty-${season}-${faction}-${level}`;selector.className='difficulty-selector';selector.setAttribute('aria-labelledby',legendId);
@@ -29,12 +31,12 @@ function appendChallengeSelector(card,season,faction,level,unlocked){
  const definitions=challengesForRoute(season,faction,level);if(definitions.length!==3)return null;
  const selector=document.createElement('fieldset'),legendId=`challenge-${season}-${faction}-${level}`;selector.className='challenge-selector';selector.setAttribute('aria-labelledby',legendId);
  const earned=definitions.filter(challengeMedalEarned).length;
- selector.innerHTML=`<legend id="${legendId}" class="challenge-selector-head"><span>🏅 額外挑戰（選填）</span><span class="challenge-medal-count">${earned}/3 已取得</span></legend><div class="challenge-option-list"></div>`;
+ selector.innerHTML=`<legend id="${legendId}" class="challenge-selector-head"><span>🏅 本關挑戰（自動追蹤）</span><span class="challenge-medal-count">${earned}/3 已取得</span></legend><div class="challenge-option-list"></div>`;
  const list=selector.querySelector('.challenge-option-list');
- for(const definition of definitions){const owned=challengeMedalEarned(definition),label=document.createElement('label');label.className=`challenge-option${owned?' earned':''}`;const condition=challengeConditionText(definition),status=owned?'已取得':'尚未取得';label.innerHTML=`<input type="checkbox" value="${definition.id}" ${unlocked?'':'disabled'} aria-label="${definition.name}：${condition}${status}"><span class="challenge-option-copy"><span class="challenge-option-name">🏅 ${definition.name}</span><span class="challenge-option-description">${condition}</span><span class="challenge-medal-state">${status}</span></span>`;list.append(label)}
+ for(const definition of definitions){const owned=challengeMedalEarned(definition),item=document.createElement('article');item.className=`challenge-option${owned?' earned':''}`;item.dataset.challengeId=definition.id;const condition=challengeConditionText(definition),status=owned?'✓ 已取得':unlocked?'◎ 開戰後自動追蹤':'🔒 關卡尚未解鎖';item.setAttribute('aria-label',`${definition.name}：${condition}${status}`);item.innerHTML=`<span class="challenge-option-icon" aria-hidden="true">${owned?'✓':'◎'}</span><span class="challenge-option-copy"><span class="challenge-option-name">🏅 ${definition.name}</span><span class="challenge-option-description">${condition}</span><span class="challenge-medal-state">${status}</span></span>`;list.append(item)}
  const startButton=card.querySelector('.level-start');startButton?.before(selector);syncDifficultyChallengeState(card);return selector;
 }
-function selectedChallengeIds(card){return [...(card?.querySelectorAll('.challenge-option input:checked')||[])].map(input=>input.value)}
+function selectedChallengeIds(card){return [...(card?.querySelectorAll('.challenge-option[data-challenge-id]')||[])].map(item=>item.dataset.challengeId)}
 function challengeFailureReason(definition,telemetry){
  const outcome=challengeOutcomeEvent(telemetry),events=telemetry?.events||[],side=definition.faction;if(!outcome)return '未達成：本場沒有完整戰果';if(outcome.win!==true)return '未達成：本場未獲勝';
  if(definition.id==='no-hero')return '未達成：本場曾部署武將';if(definition.id==='gate-health')return `未達成：目標生命 ${Math.round(Number(outcome.objectiveHealthPct||0)*100)}%，要求至少 ${Math.round((definition.minHealthPct??.5)*100)}%`;

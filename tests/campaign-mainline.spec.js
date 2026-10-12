@@ -35,12 +35,12 @@ test('mainline has a cause, a goal for every chapter, connected outcomes and a r
 test('defense story teaches the real special rule of every ordinary stage',()=>{
  const s=data('js/season1-story-data.js','SEASON1_STORY'),chapter=level=>[...s.plants[level].opening,...s.plants[level].victory,...s.plants[level].defeat].map(x=>x.text).join('\n');
  expect(chapter(1)).toMatch(/五路推車.*不得啟動|不得動用.*推車/);
- expect(chapter(2)).toMatch(/運糧兵|中央路.*糧/);
+ expect(chapter(2)).toMatch(/糧車|中央路.*糧/);
  expect(chapter(3)).toMatch(/烽火.*封鎖|封鎖.*部署/);
  expect(chapter(4)).toMatch(/保留.*80.*軍糧|80.*軍糧.*保留/);
  expect(chapter(5)).toMatch(/視界.*輪轉|斥候.*輪轉/);
  expect(chapter(6)).toMatch(/五路推車.*不得啟動|不得動用.*推車/);
- expect(chapter(7)).toMatch(/運糧兵|中央路.*糧/);
+ expect(chapter(7)).toMatch(/糧車|中央路.*糧/);
  expect(chapter(8)).toMatch(/保留.*80.*軍糧|80.*軍糧.*保留/);
  expect(chapter(9)).toMatch(/烽火.*封鎖|封鎖.*部署/);
  expect(s.plants[9].opening.map(x=>x.text).join('\n')).not.toMatch(/屍帝/);
@@ -52,7 +52,7 @@ test('first-season level cards match the accepted art themes and real defense ru
  const copy=await page.evaluate(()=>Object.fromEntries([1,6,7,8,9,10].map(level=>[level,{name:LEVELS[level].name,text:LEVELS[level].cardText,hint:LEVELS[level].plantHint}])));
  expect(copy[1].name).toContain('草坪軍營初戰');expect(copy[1].text).toMatch(/軍營.*推車.*不得啟動/);expect(copy[1].text).not.toContain('推車還能救急');
  expect(copy[6].name).toContain('夜半爆破');expect(copy[6].hint).toMatch(/五路推車.*不得啟動|不得動用.*推車/);
- expect(copy[7].name).toContain('屍旗巨人');expect(copy[7].text).toContain('屍旗大胖');expect(copy[7].text).not.toContain('火石');expect(copy[7].hint).toContain('運糧兵');
+ expect(copy[7].name).toContain('屍旗巨人');expect(copy[7].text).toContain('屍旗大胖');expect(copy[7].text).not.toContain('火石');expect(copy[7].hint).toContain('糧車');
  expect(copy[8].text).toContain('孔明');expect(copy[8].hint).toMatch(/80.*軍糧|軍糧.*80/);
  expect(copy[9].name).toContain('蜀將集結');expect(`${copy[9].text}\n${copy[9].hint}`).toMatch(/烽火.*封路|封鎖.*部署/);
  expect(copy[10].hint).toMatch(/烽煙視界.*輪轉|視界.*輪轉/);

@@ -37,10 +37,11 @@ test('state migration gives new and legacy battles versioned JSON-safe gameplay 
    freshJson,
    savedGameplay,
    normalizedMalformed:[
-    normalizeGameplayState(null),
-    normalizeGameplayState([]),
-    normalizeGameplayState({version:999,extra:'ignored'})
+    normalizeGameplayState(null,{season:1,faction:'plants',level:1}),
+    normalizeGameplayState([],{season:1,faction:'plants',level:1}),
+    normalizeGameplayState({version:999,extra:'ignored'},{season:1,faction:'plants',level:1})
    ],
+   malformedDefault:createGameplayState({season:1,faction:'plants',level:1}),
    freshUnsafe:jsonUnsafePaths(fresh),
    restored,
    restoredGameplay:state?.gameplay,
@@ -51,7 +52,7 @@ test('state migration gives new and legacy battles versioned JSON-safe gameplay 
  expect(result.fresh).toEqual(expect.objectContaining({version:1,telemetry:expect.any(Object)}));
  expect(result.fresh).toEqual(result.freshJson);
  expect(result.savedGameplay).toEqual(result.fresh);
- expect(result.normalizedMalformed).toEqual([result.fresh,result.fresh,result.fresh]);
+ expect(result.normalizedMalformed).toEqual([result.malformedDefault,result.malformedDefault,result.malformedDefault]);
  expect(result.freshUnsafe).toEqual([]);
  expect(result.fresh.version).toBeGreaterThan(0);
  expect(result.restored).toBe(true);

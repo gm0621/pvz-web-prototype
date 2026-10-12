@@ -122,7 +122,7 @@ test('a very fast attack win shows a live verification countdown and still allow
     cloudLockOwned=true;
     cloudMatchId='00000000-0000-4000-8000-000000000010';
     state.cloudMatchStartedAt=Date.now();
-    supabaseClient={rpc:async name=>name==='sgz_claim_level_reward'?{data:null,error:{message:'MATCH_TOO_SHORT'}}:{data:null,error:null}};
+    supabaseClient={rpc:async name=>name==='sgz_claim_match_rewards'?{data:null,error:{message:'MATCH_TOO_SHORT'}}:{data:null,error:null}};
     void end(true,'突破成功！','第十關完成');
   });
   await expect(page.locator('#modalText')).toContainText(/倒數.*秒/);
@@ -177,7 +177,7 @@ test('a short server-verified attack win retries without relocking level four', 
     serverAfterClaim.campaignProgress.zombies.highestLevel=3;
     let attempts=0,pulls=0;
     supabaseClient={rpc:async name=>{
-      if(name==='sgz_claim_level_reward'){
+      if(name==='sgz_claim_match_rewards'){
         attempts++;
         if(attempts===1)return {data:null,error:{message:'MATCH_TOO_SHORT'}};
         return {data:{profile:serverAfterClaim,save_version:4,active_device_id:getDeviceId(),active_device_name:'Chrome',active_seen_at:new Date().toISOString(),updated_at:new Date().toISOString()},error:null};

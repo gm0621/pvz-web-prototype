@@ -17,8 +17,10 @@ body.level-detail-open{overflow:hidden}
 .game:not(.fullscreen-mode) .board{width:100%;min-height:min(72vh,760px)}
 .game:not(.fullscreen-mode) .cards-panel{max-height:116px;overflow:hidden}
 .game:not(.fullscreen-mode) .battle-resource-strip{position:relative;z-index:20;margin-bottom:4px}
-.game:not(.fullscreen-mode) .wave-report,.game:not(.fullscreen-mode) .wave-status{position:absolute;z-index:24;left:8px;right:auto;top:calc(100% + 6px);width:min(680px,calc(100vw - 48px));max-width:calc(100% - 16px);margin:0;box-shadow:0 8px 22px #000b;overflow-anchor:none}
-.game:not(.fullscreen-mode) .wave-report:not([hidden])+.wave-status:not([hidden]){top:calc(100% + 48px)}
+.game:not(.fullscreen-mode) .wave-report,.game:not(.fullscreen-mode) .wave-status{position:relative;z-index:24;inset:auto;width:100%;max-width:none;margin:3px 0;box-shadow:0 5px 14px #0008;overflow-anchor:none}
+.game:not(.fullscreen-mode) .wave-report{padding-right:146px}
+.game:not(.fullscreen-mode) .wave-status{padding-right:112px}
+.game:not(.fullscreen-mode) #waveReportClose{right:108px}
 .game:not(.fullscreen-mode) .wave-status[data-story="on"]{height:auto;min-height:0;max-height:none;overflow:visible}
 .game:not(.fullscreen-mode) .battle-intel{position:absolute;z-index:31;top:58px;right:12px;display:block!important;width:auto;min-width:0;max-height:none;overflow:visible}
 .battle-intel-toggle{min-width:92px;min-height:42px;padding:8px 14px;border:2px solid #facc1599;border-radius:999px;background:#0f172ae8;color:#fef3c7;font-weight:950;box-shadow:0 6px 18px #0009;cursor:pointer}
@@ -41,7 +43,10 @@ body.level-detail-open{overflow:hidden}
  .game:not(.fullscreen-mode) .battle-intel{top:52px;right:6px}
  .battle-intel-toggle{min-width:78px;min-height:38px;padding:6px 10px;font-size:12px}
  .battle-intel-drawer{position:fixed;z-index:130;top:76px;right:8px;left:8px;width:auto;max-height:calc(100dvh - 92px)}
- .game:not(.fullscreen-mode) .wave-report,.game:not(.fullscreen-mode) .wave-status{left:4px;width:calc(100vw - 24px);max-width:calc(100% - 8px)}
+ .game:not(.fullscreen-mode) .wave-report,.game:not(.fullscreen-mode) .wave-status{inset:auto;width:100%;max-width:none}
+ .game:not(.fullscreen-mode) .wave-report{padding-right:118px}
+ .game:not(.fullscreen-mode) .wave-status{padding-right:92px}
+ .game:not(.fullscreen-mode) #waveReportClose{right:84px}
  .game:not(.fullscreen-mode) .wave-status[data-story="on"]{max-height:none;overflow:visible}
 }
 

@@ -78,7 +78,7 @@ function gameplayStageRuleContext(context){
  let levelConfig=null;try{levelConfig=typeof campaignLevels==='function'?campaignLevels(season)?.[level]:null}catch(error){}
  return {season,faction,level,levelConfig,time:0,zombies:[],bossSpawned:false,qinBossAlive:false};
 }
-function createGameplayState(context){const ruleContext=gameplayStageRuleContext(context);return {version:GAMEPLAY_STATE_VERSION,telemetry:createBattleTelemetry(),report:createBattleReportState(),telegraphs:createBattleTelegraphState(),orders:createTacticalOrderState(),challenge:createChallengeBattleState(context?.challengeIds),stageRule:createStageRuleRuntime(ruleContext)}}
+function createGameplayState(context){const ruleContext=gameplayStageRuleContext(context),challengeIds=Array.isArray(context?.challengeIds)?context.challengeIds:challengesForRoute(ruleContext.season,ruleContext.faction,ruleContext.level).map(definition=>definition.id);return {version:GAMEPLAY_STATE_VERSION,telemetry:createBattleTelemetry(),report:createBattleReportState(),telegraphs:createBattleTelegraphState(),orders:createTacticalOrderState(),challenge:createChallengeBattleState(challengeIds),stageRule:createStageRuleRuntime(ruleContext)}}
 function finiteNonnegative(value){value=Number(value);return Number.isFinite(value)&&value>=0?value:0}
 function normalizeSource(raw){
  if(!raw||typeof raw!=='object'||Array.isArray(raw))return null;
@@ -161,7 +161,8 @@ function normalizeTacticalOrders(raw){
 function normalizeGameplayState(raw,context){
  const ruleContext=gameplayStageRuleContext(context);
  if(!raw||typeof raw!=='object'||Array.isArray(raw)||raw.version!==GAMEPLAY_STATE_VERSION)return createGameplayState(ruleContext);
- const gameplay={version:GAMEPLAY_STATE_VERSION,telemetry:normalizeBattleTelemetry(raw.telemetry),report:normalizeBattleReport(raw.report),telegraphs:normalizeBattleTelegraphs(raw.telegraphs),orders:normalizeTacticalOrders(raw.orders),stageRule:normalizeStageRuleRuntime(raw.stageRule,ruleContext),challenge:normalizeChallengeBattleState(raw.challenge)};
+ const automaticChallengeIds=challengesForRoute(ruleContext.season,ruleContext.faction,ruleContext.level).map(definition=>definition.id);
+ const gameplay={version:GAMEPLAY_STATE_VERSION,telemetry:normalizeBattleTelemetry(raw.telemetry),report:normalizeBattleReport(raw.report),telegraphs:normalizeBattleTelegraphs(raw.telegraphs),orders:normalizeTacticalOrders(raw.orders),stageRule:normalizeStageRuleRuntime(raw.stageRule,ruleContext),challenge:createChallengeBattleState(automaticChallengeIds)};
  if(!Object.prototype.hasOwnProperty.call(raw,'report'))gameplay.report.initialized=false;
  return gameplay;
 }

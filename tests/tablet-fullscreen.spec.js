@@ -3,7 +3,7 @@ test.use({hasTouch:true,isMobile:true,deviceScaleFactor:1});
 for(const [width,height] of [[768,1024],[1024,768],[820,1180],[1180,820],[1366,1024]])for(const faction of ['plants','zombies'])for(const fallback of [false,true]){
  test(`tablet ${width}x${height} ${faction} ${fallback?'fallback':'native'}`,async({page,browserName},info)=>{
   await page.setViewportSize({width,height});await page.route('https://cdn.jsdelivr.net/**',r=>r.fulfill({body:''}));await page.goto(process.env.GAME_URL||'/');
-  await page.evaluate(({faction,fallback})=>{currentUser=null;playerProfile=defaultProfile();for(let n=1;n<=10;n++)completeCampaignLevel('plants',n,1);currentSeason=1;selectedLevel=1;start(faction);clearInterval(timer);if(fallback)document.getElementById('game').requestFullscreen=undefined},{faction,fallback});
+  await page.evaluate(({faction,fallback})=>{currentUser=null;playerProfile=defaultProfile();for(let n=1;n<=10;n++)completeCampaignLevel('plants',n,1);currentSeason=1;selectedLevel=1;start(faction);clearInterval(timer);if(fallback)battleFullscreenHost().requestFullscreen=undefined},{faction,fallback});
   const key=faction==='plants'?'peashooter':'normal';await page.locator(`#cards [data-key="${key}"]`).click();
   await expect(page.locator('#grid .deploy-allowed')).toHaveCount(faction==='plants'?35:10);
   await page.locator('#fullscreenBtn').click();await expect(page.locator('#game')).toHaveClass(/fullscreen-mode/);

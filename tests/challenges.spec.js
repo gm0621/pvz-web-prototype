@@ -43,7 +43,7 @@ test('legacy profiles and battles migrate challenge state without losing progres
  expect(result.profile.campaignProgress.plants.highestLevel).toBe(2);
  expect(result.profile.inventory.skins.legacyFrame).toBe(1);
  expect(result.profile.challenges).toEqual({version:1,medals:{},claims:{}});
- expect(result.battleChallenge).toEqual({version:1,activeIds:[],fairMode:false,protectedEntityId:null});
+ expect(result.battleChallenge).toEqual({version:1,activeIds:['no-hero','gate-health','resource-cap'],fairMode:true,protectedEntityId:null});
  expect(result.battleChallenge).toEqual(result.json);
 });
 
@@ -134,24 +134,23 @@ test('cloud profile is authoritative for milestone cosmetics and signed-in impor
  expect(result.imported).toEqual({name:'匯入名稱',count:15,classes:['challenge-cosmetic-frame-bronze']});expect(result.upgraded).toEqual({name:'雲端30',count:30,classes:['challenge-cosmetic-banner-vanguard','challenge-cosmetic-frame-bronze'],banners:1});
 });
 
-test('fair challenge mode removes permanent power only from challenge battles',async({page})=>{
+test('automatic challenge mode removes permanent power while non-challenge resolution remains available',async({page})=>{
  await open(page);
  const result=await page.evaluate(()=>{
   playerProfile=normalizeProfile({characterLevels:{plants:{firepea:{level:5,xp:0}}}});completeCampaignLevel('plants',1,1);completeCampaignLevel('plants',2,1);completeCampaignLevel('plants',3,1);selectedLevel=4;start('plants');clearInterval(timer);
-  const base=baseUnit('plants','firepea'),normal=resolveBattleUnit('plants','firepea',state);
-  start('plants',{challengeIds:['no-relocation']});clearInterval(timer);
-  const fair=resolveBattleUnit('plants','firepea',state),fairProc=rollSuperSkill('firepea',()=>.3);state.lastHuman.firepea=0;state.time=effectiveUnit('plants','firepea').cooldown;const fairCooldown={cooling:isCooling('firepea'),reason:deploymentReadyReason('firepea')};
-  start('plants');clearInterval(timer);
-  const replay=resolveBattleUnit('plants','firepea',state);state.lastHuman.firepea=0;state.time=effectiveUnit('plants','firepea').cooldown;const normalCooldown={cooling:isCooling('firepea'),reason:deploymentReadyReason('firepea')};
-  return {baseHp:base.hp,normalHp:normal.unit.hp,fairHp:fair.unit.hp,replayHp:replay.unit.hp,fairLayers:fair.layers.slice(0,3).map(layer=>layer.unit.hp),fairProc,fairCooldown,normalCooldown};
+  const base=baseUnit('plants','firepea'),automaticIds=[...state.gameplay.challenge.activeIds],fair=resolveBattleUnit('plants','firepea',state),fairProc=rollSuperSkill('firepea',()=>.3);state.lastHuman.firepea=0;state.time=effectiveUnit('plants','firepea').cooldown;const fairCooldown={cooling:isCooling('firepea'),reason:deploymentReadyReason('firepea')};
+  state.gameplay.challenge=createChallengeBattleState([]);const normal=resolveBattleUnit('plants','firepea',state);state.lastHuman.firepea=0;state.time=effectiveUnit('plants','firepea').cooldown;const normalCooldown={cooling:isCooling('firepea'),reason:deploymentReadyReason('firepea')};
+  state.gameplay.challenge=createChallengeBattleState(automaticIds);start('plants');clearInterval(timer);const replay=resolveBattleUnit('plants','firepea',state);
+  return {baseHp:base.hp,automaticIds,normalHp:normal.unit.hp,fairHp:fair.unit.hp,replayHp:replay.unit.hp,fairLayers:fair.layers.slice(0,3).map(layer=>layer.unit.hp),fairProc,fairCooldown,normalCooldown};
  });
  expect(result.normalHp).toBeGreaterThan(result.baseHp);
+ expect(result.automaticIds).toHaveLength(3);
  expect(result.fairHp).toBe(result.baseHp);
  expect(result.fairLayers).toEqual([result.baseHp,result.baseHp,result.baseHp]);
  expect(result.fairProc).toBe(false);
  expect(result.fairCooldown.cooling).toBe(true);expect(result.fairCooldown.reason).toContain('冷卻');
  expect(result.normalCooldown).toEqual({cooling:false,reason:''});
- expect(result.replayHp).toBe(result.normalHp);
+ expect(result.replayHp).toBe(result.baseHp);
 });
 
 test('challenge evaluator derives all verdicts from telemetry and fails closed without outcome',async({page})=>{
@@ -185,18 +184,18 @@ test('protect-unit binds the first designated entity and rejects a replacement',
  await open(page);
  const result=await page.evaluate(()=>{
   playerProfile=normalizeProfile({});completeCampaignLevel('plants',1,1);completeCampaignLevel('plants',2,1);completeCampaignLevel('plants',3,1);selectedLevel=4;start('plants',{challengeIds:['protect-unit']});clearInterval(timer);
-  const type=activeChallengeDefinitions(state)[0].protectedUnitType;state.resource=9999;deploySelected(type,0,0);
+  const protectedDefinition=activeChallengeDefinitions(state).find(definition=>definition.id==='protect-unit'),type=protectedDefinition.protectedUnitType;state.resource=9999;deploySelected(type,0,0);
   const boundId=state.gameplay.challenge.protectedEntityId;state.plants=state.plants.filter(unit=>unit.id!==boundId);state.time+=activeUnit('plants',type).cooldown;deploySelected(type,1,0);
   const replacementId=state.plants.find(unit=>unit.type===type)?.id;recordChallengeOutcome(true,state);
-  const definition=activeChallengeDefinitions(state)[0];return {boundId,replacementId,storedId:state.gameplay.challenge.protectedEntityId,verdict:evaluateChallengeVerdict(definition,state.gameplay.telemetry)};
+  return {boundId,replacementId,storedId:state.gameplay.challenge.protectedEntityId,verdict:evaluateChallengeVerdict(protectedDefinition,state.gameplay.telemetry)};
  });
  expect(result.boundId).toBeTruthy();expect(result.replacementId).toBeTruthy();expect(result.replacementId).not.toBe(result.boundId);expect(result.storedId).toBe(result.boundId);expect(result.verdict.passed).toBe(false);
 });
 
-test('legacy serialized gameplay normalizes an inactive challenge and preserves telemetry',async({page})=>{
+test('legacy serialized gameplay enables automatic challenges and preserves telemetry',async({page})=>{
  await open(page);
  const result=await page.evaluate(()=>normalizeGameplayState({version:1,telemetry:{nextEventId:2,events:[{id:1,type:'wave',time:10,wave:1}],totals:{},bySource:{},byTarget:{}},report:{},telegraphs:{},orders:{},stageRule:{}},{season:1,faction:'plants',level:1}));
- expect(result.challenge).toEqual({version:1,activeIds:[],fairMode:false,protectedEntityId:null});expect(result.telemetry.events).toHaveLength(1);expect(result.telemetry.events[0].type).toBe('wave');
+ expect(result.challenge).toEqual({version:1,activeIds:['no-hero','gate-health','resource-cap'],fairMode:true,protectedEntityId:null});expect(result.telemetry.events).toHaveLength(1);expect(result.telemetry.events[0].type).toBe('wave');
 });
 
 test('production actions emit challenge deployment relocation leak and outcome events',async({page})=>{
@@ -236,7 +235,7 @@ test('guest challenge medals persist once while defeat replay and cloud failure 
   return {api,first,stored,replay,defeated,cloudFailed:playerProfile.challenges};
  });
  expect(result.api).toBe('function');
- expect(Object.keys(result.first.medals)).toHaveLength(1);
+ expect(Object.keys(result.first.medals)).toHaveLength(3);
  expect(result.stored).toEqual(result.first);
  expect(result.replay).toEqual(result.first);
  expect(result.defeated).toEqual(result.first);
@@ -261,7 +260,7 @@ test('cloud challenge claim uses one atomic RPC with telemetry digest and never 
  });
  expect(result.success).toBe(true);expect(result.failed).toBe(false);expect(result.normal).toBe(true);
  expect(result.calls[0].name).toBe('sgz_claim_match_rewards');
- expect(result.calls[0].params.p_challenge_ids).toEqual(['no-hero']);
+ expect(result.calls[0].params.p_challenge_ids).toEqual(['no-hero','gate-health','resource-cap']);
  expect(result.calls[0].params.p_telemetry_digest).toMatch(/^[a-f0-9]{64}$/);
  expect(result.calls[0].params.p_telemetry).toEqual(expect.objectContaining({version:1,season:1,faction:'plants',level:1}));
  expect(JSON.parse(result.calls[0].params.p_telemetry_canonical)).toEqual(result.calls[0].params.p_telemetry);
@@ -269,7 +268,7 @@ test('cloud challenge claim uses one atomic RPC with telemetry digest and never 
  expect(result.afterSuccess.medals['1:plants:1:no-hero']).toEqual({earnedAt:'server'});
  expect(result.afterFailure.medals).toEqual({});
  expect(result.calls[1].name).toBe('sgz_claim_match_rewards');
- expect(result.calls[2].name).toBe('sgz_claim_level_reward');
+ expect(result.calls[2].name).toBe('sgz_claim_match_rewards');
 });
 
 test('real stale cloud claim cannot overwrite a newer battle profile or match token',async({page})=>{
@@ -298,14 +297,31 @@ test('level cards show route-scoped medal counts and accessible challenge select
   playerProfile=normalizeProfile({challenges:{medals:{'1:plants:1:no-hero':{earnedAt:'now'},'2:zombies:1:no-hero':{earnedAt:'now'}},claims:{}}});
   currentSeason=1;currentFaction='plants';buildLevelCards();
   const card=[...document.querySelectorAll('#levelGrid .level-card')][0],locked=[...document.querySelectorAll('#levelGrid .level-card')][1];
-  const first={count:card.querySelector('.challenge-medal-count')?.textContent,options:[...card.querySelectorAll('.challenge-option')].map(row=>({text:row.textContent.trim(),name:row.querySelector('input')?.getAttribute('aria-label'),disabled:row.querySelector('input')?.disabled}))};
-  const lockedState=[...locked.querySelectorAll('.challenge-option input')].map(input=>input.disabled);
+  const first={count:card.querySelector('.challenge-medal-count')?.textContent,options:[...card.querySelectorAll('.challenge-option')].map(row=>({text:row.textContent.trim(),name:row.getAttribute('aria-label'),id:row.dataset.challengeId}))};
+  const lockedState=[...locked.querySelectorAll('.challenge-option')].map(row=>row.textContent.includes('關卡尚未解鎖'));
   currentSeason=2;currentFaction='zombies';buildSeason2LevelCards();
   const second=[...document.querySelectorAll('#levelGrid .level-card')][0];
   return {first,lockedState,second:{count:second.querySelector('.challenge-medal-count')?.textContent,options:second.querySelectorAll('.challenge-option').length}};
  });
  expect(result.first.count).toContain('1/3');expect(result.first.options).toHaveLength(3);expect(result.first.options[0].name).toBeTruthy();expect(result.first.options.some(option=>option.text.includes('已取得'))).toBe(true);
  expect(result.lockedState).toEqual([true,true,true]);expect(result.second).toEqual({count:expect.stringContaining('1/3'),options:3});
+});
+
+test('all route challenges are tracked automatically without opt-in checkboxes',async({page})=>{
+ await open(page);
+ const result=await page.evaluate(()=>{
+  playerProfile=normalizeProfile({});currentSeason=1;currentFaction='plants';buildLevelCards();
+  const card=document.querySelector('#levelGrid .level-card'),expected=challengesForRoute(1,'plants',1).map(definition=>definition.id);
+  const preview={checkboxes:card.querySelectorAll('.challenge-option input[type="checkbox"]').length,rows:[...card.querySelectorAll('.challenge-option')].map(row=>({id:row.dataset.challengeId,status:row.querySelector('.challenge-medal-state')?.textContent}))};
+  card.querySelector('.level-start').click();card.querySelector('.level-detail-start').click();const storyOpen=$('storyDialog').open;storyElement('storySkip').click();clearInterval(timer);
+  return {expected,preview,storyOpen,activeIds:state?.gameplay?.challenge?.activeIds,fairMode:state?.gameplay?.challenge?.fairMode};
+ });
+ expect(result.preview.checkboxes).toBe(0);
+ expect(result.preview.rows.map(row=>row.id)).toEqual(result.expected);
+ expect(result.preview.rows.every(row=>row.status?.includes('自動追蹤'))).toBe(true);
+ expect(result.storyOpen).toBe(true);
+ expect(result.activeIds).toEqual(result.expected);
+ expect(result.fairMode).toBe(true);
 });
 
 test('every unlocked stage offers easy medium and hard with easy selected by default',async({page})=>{
@@ -372,15 +388,15 @@ test('legacy battle saves without difficulty resume as medium while new hard sav
  expect(result.hardResult).toEqual({difficulty:'hard',time:7654,blocksHeroes:true});
 });
 
-test('selected challenges cross the opening story into the production battle seam',async({page})=>{
+test('automatic challenges cross the opening story into the production battle seam',async({page})=>{
  await open(page);
  const result=await page.evaluate(()=>{
   playerProfile=normalizeProfile({});currentSeason=1;currentFaction='plants';buildLevelCards();
-  const card=document.querySelector('#levelGrid .level-card'),inputs=[...card.querySelectorAll('.challenge-option input')];card.querySelector('.difficulty-option input[value="hard"]').click();inputs[2].click();
-  const chosen=inputs.filter(input=>input.checked).map(input=>input.value);card.querySelector('.level-start').click();card.querySelector('.level-detail-start').click();const storyOpen=$('storyDialog').open;storyElement('storySkip').click();clearInterval(timer);
+  const card=document.querySelector('#levelGrid .level-card'),chosen=challengesForRoute(1,'plants',1).map(definition=>definition.id);card.querySelector('.difficulty-option input[value="hard"]').click();
+  card.querySelector('.level-start').click();card.querySelector('.level-detail-start').click();const storyOpen=$('storyDialog').open;storyElement('storySkip').click();clearInterval(timer);
   return {chosen,storyOpen,difficulty:state?.difficulty,activeIds:state?.gameplay?.challenge?.activeIds,fairMode:state?.gameplay?.challenge?.fairMode};
  });
- expect(result.storyOpen).toBe(true);expect(result.difficulty).toBe('hard');expect(result.activeIds).toEqual(result.chosen);expect(result.activeIds).toHaveLength(2);expect(result.fairMode).toBe(true);
+ expect(result.storyOpen).toBe(true);expect(result.difficulty).toBe('hard');expect(result.activeIds).toEqual(result.chosen);expect(result.activeIds).toHaveLength(3);expect(result.fairMode).toBe(true);
 });
 
 test('challenge results explain each verdict without blocking story or campaign advance',async({page})=>{
@@ -397,27 +413,27 @@ test('challenge results explain each verdict without blocking story or campaign 
  expect(result.next).toEqual({hidden:false,disabled:false});expect(result.storyHidden).toBe(false);expect(result.dialog).toEqual(['dialog','true','modalTitle']);expect(result.storyOverlay).toEqual({open:true,inert:false,focused:true});
 });
 
-test('retry keeps challenges and difficulty while the next route keeps difficulty without extra challenges',async({page})=>{
+test('retry and next route keep difficulty and automatically track their route challenges',async({page})=>{
  await open(page);
  const result=await page.evaluate(async()=>{
   currentUser=null;playerProfile=normalizeProfile({});selectedLevel=1;currentSeason=1;start('plants',{difficulty:'hard',challengeIds:['no-hero','resource-cap']});clearInterval(timer);await end(true,'勝利','測試');
   $('modalRestart').click();if($('storyDialog').open)storyElement('storySkip').click();clearInterval(timer);const retry={ids:[...state.gameplay.challenge.activeIds],difficulty:state.difficulty};await end(true,'勝利','測試');$('modalNext').click();
-  if($('storyDialog').open)storyElement('storySkip').click();clearInterval(timer);return {retry,nextLevel:state.level,nextDifficulty:state.difficulty,nextIds:state.gameplay.challenge.activeIds,nextFair:state.gameplay.challenge.fairMode};
+  if($('storyDialog').open)storyElement('storySkip').click();clearInterval(timer);return {retry,nextLevel:state.level,nextDifficulty:state.difficulty,nextIds:state.gameplay.challenge.activeIds,nextExpected:challengesForRoute(1,'plants',2).map(definition=>definition.id),nextFair:state.gameplay.challenge.fairMode};
  });
- expect(result.retry).toEqual({ids:['no-hero','resource-cap'],difficulty:'hard'});expect(result.nextLevel).toBe(2);expect(result.nextDifficulty).toBe('hard');expect(result.nextIds).toEqual([]);expect(result.nextFair).toBe(false);
+ expect(result.retry).toEqual({ids:['no-hero','gate-health','resource-cap'],difficulty:'hard'});expect(result.nextLevel).toBe(2);expect(result.nextDifficulty).toBe('hard');expect(result.nextIds).toEqual(result.nextExpected);expect(result.nextFair).toBe(true);
 });
 
-test('defeat explains failure, ordinary battles hide results, and cloud pending never grants optimistically',async({page})=>{
+test('defeat explains every automatic challenge and cloud pending never grants optimistically',async({page})=>{
  await open(page);
  const result=await page.evaluate(async()=>{
   currentUser=null;playerProfile=normalizeProfile({});selectedLevel=1;start('plants',{challengeIds:['no-hero']});clearInterval(timer);await end(false,'失敗','測試');
   const defeat={hidden:$('challengeResultPanel').classList.contains('hidden'),text:$('challengeResultPanel').textContent};
-  start('plants');clearInterval(timer);await end(false,'失敗','測試');const ordinaryHidden=$('challengeResultPanel').classList.contains('hidden');
+  start('plants');clearInterval(timer);await end(false,'失敗','測試');const automaticVisible=!$('challengeResultPanel').classList.contains('hidden');
   currentUser={id:'cloud-user'};cloudLockOwned=true;selectedLevel=1;start('plants',{challengeIds:['no-hero']});clearInterval(timer);let resolveClaim;claimCloudMatchReward=()=>new Promise(resolve=>{resolveClaim=resolve});
   const ending=end(true,'勝利','測試');await new Promise(resolve=>setTimeout(resolve,0));const pending=$('challengeResultPanel').textContent;resolveClaim(false);await ending;const failed=$('challengeResultPanel').textContent;
-  return {defeat,ordinaryHidden,pending,failed,medals:playerProfile.challenges.medals};
+  return {defeat,automaticVisible,pending,failed,medals:playerProfile.challenges.medals};
  });
- expect(result.defeat.hidden).toBe(false);expect(result.defeat.text).toContain('本場未獲勝');expect(result.ordinaryHidden).toBe(true);
+ expect(result.defeat.hidden).toBe(false);expect(result.defeat.text).toContain('本場未獲勝');expect(result.automaticVisible).toBe(true);
  expect(result.pending).toContain('等待雲端確認');expect(result.pending).not.toContain('已取得勳章');expect(result.failed).toContain('雲端同步失敗');expect(result.medals).toEqual({});
 });
 

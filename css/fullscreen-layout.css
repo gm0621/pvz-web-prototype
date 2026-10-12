@@ -1,5 +1,6 @@
 /* Shared native/fallback layout. The tray is in flow, never laid over the fifth lane. */
 html.battle-fullscreen-open{overflow:hidden;overscroll-behavior:none}
+.battle-fullscreen-host:fullscreen{width:100vw;height:100vh;overflow:hidden;background:#020617}
 #game.screen.game.fullscreen-mode{position:fixed;top:var(--battle-view-top,0px);left:var(--battle-view-left,0px);width:var(--battle-view-width,100vw);height:var(--battle-view-height,100vh)!important;min-height:0!important;max-width:none;display:grid!important;grid-template-columns:minmax(0,1fr);grid-template-rows:auto minmax(0,1fr) auto;gap:6px;overflow:hidden;z-index:50;padding:6px max(8px,env(safe-area-inset-right)) max(8px,env(safe-area-inset-bottom)) max(8px,env(safe-area-inset-left))!important}
 #game.screen.game.fullscreen-mode .hud{display:contents!important}
 #game.screen.game.fullscreen-mode .top-toolbar{grid-row:1;grid-column:1;min-width:0;flex-wrap:wrap;padding:5px 6px 5px 110px;gap:5px;margin:0}

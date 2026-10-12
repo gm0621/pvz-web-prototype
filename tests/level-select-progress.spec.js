@@ -147,6 +147,10 @@ test('first visit tip appears once and mobile sticky continue appears only after
  await open(page);
  await page.evaluate(()=>{localStorage.removeItem('sgZombieLevelSelectTipSeen');chooseFaction('plants',1)});
  await expect(page.locator('#levelSelectTip')).toBeVisible();
+ await expect(page.locator('#levelSelectTip')).toContainText('三項挑戰會自動追蹤');
+ await expect(page.locator('#campaignProgressHint')).toContainText('三項挑戰會在開戰後自動追蹤');
+ await expect(page.locator('#levelSelectTip')).not.toContainText('選填');
+ await expect(page.locator('#campaignProgressHint')).not.toContainText('選填');
  await expect(page.locator('#dismissLevelSelectTip')).toBeFocused();
  await page.locator('#dismissLevelSelectTip').click();
  await expect(page.locator('#levelSelectTip')).toBeHidden();
