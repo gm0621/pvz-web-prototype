@@ -51,10 +51,10 @@ test('locked scenes cannot be replayed and defeat never advances the campaign',a
  await chooseFirst(page);await page.locator('#storySkip').click();await page.evaluate(async()=>{clearInterval(timer);await end(false,'防守失敗','測試')});await expect(page.locator('#storyDialog')).not.toBeVisible();await expect(page.locator('#modalTitle')).toHaveText('防守失敗');await page.locator('#modalStory').click();await expect(page.locator('#storyText')).toContainText('往城門退');
  await page.locator('#storySkip').click();expect(await page.evaluate(()=>isCampaignLevelCompleted('plants',1))).toBe(false);await page.locator('#modalRestart').click();await expect(page.locator('#storyDialog')).not.toBeVisible();await expect(page.locator('#game')).toHaveClass(/active/);
 });
-test('victory shows results first, waits for Continue Story, and replay never grants rewards',async({page})=>{
+test('victory shows rewards first, closes them into required story, and replay never grants rewards',async({page})=>{
  await openGame(page);await chooseFirst(page);await page.locator('#storySkip').click();await page.evaluate(async()=>{clearInterval(timer);await end(true,'防守成功','測試結算')});
  await expect(page.locator('#modalTitle')).toHaveText('防守成功');await expect(page.locator('#rewardPanel')).toBeVisible();
- await expect(page.locator('#storyDialog')).not.toBeVisible();await expect(page.locator('#modalStory')).toHaveText('繼續劇情 ▶');
+ await expect(page.locator('#storyDialog')).not.toBeVisible();await expect(page.locator('#modalStory')).toHaveText('關閉獎勵');await expect(page.locator('#modalNext')).not.toBeVisible();await expect(page.locator('#modalMainMenu')).not.toBeVisible();
  const settled=await page.evaluate(()=>JSON.stringify(playerProfile));await page.locator('#modalStory').click();
  expect(await page.evaluate(()=>JSON.stringify(playerProfile))).toBe(settled);
  await expect(page.locator('#storyDialog')).toBeVisible();await expect(page.locator('#storyText')).toContainText('鐵盔頭目');
@@ -68,8 +68,8 @@ test('victory shows results first, waits for Continue Story, and replay never gr
 });
 test('leaving results cancels the old story action and a new season cannot inherit it',async({page})=>{
  await openGame(page);await chooseFirst(page);await page.locator('#storySkip').click();await page.evaluate(async()=>{clearInterval(timer);await end(true,'防守成功','結算');window.__oldStoryAction=document.getElementById('modalStory').onclick});
- await page.locator('#modalMainMenu').click();expect(await page.evaluate(()=>window.__oldStoryAction())).toBe(false);await expect(page.locator('#storyDialog')).not.toBeVisible();
- expect(await page.evaluate(()=>hasReadStory('plants',1,'victory'))).toBe(false);
+ await page.locator('#modalStory').click();await page.locator('#storySkip').click();await page.locator('#modalMainMenu').click();expect(await page.evaluate(()=>window.__oldStoryAction())).toBe(false);await expect(page.locator('#storyDialog')).not.toBeVisible();
+ expect(await page.evaluate(()=>hasReadStory('plants',1,'victory'))).toBe(true);
  await page.evaluate(()=>{chooseFaction('plants',2);selectedLevel=1;start('plants');clearInterval(timer)});await expect(page.locator('#modalStory')).not.toBeVisible();expect(await page.evaluate(()=>window.__oldStoryAction())).toBe(false);
  await page.evaluate(()=>end(true,'通關','結算'));await expect(page.locator('#modalStory')).toBeVisible();await expect(page.locator('#storyDialog')).not.toBeVisible();
 });
@@ -79,11 +79,20 @@ test('short landscape results stay on-screen and all exit controls remain reacha
  const bounds=await page.locator('#modal .modal-card').boundingBox();expect(bounds.y+bounds.height).toBeLessThanOrEqual(390);
  await page.locator('#modalStory').click();await page.locator('#storySkip').click();await page.locator('#modalMainMenu').click();await expect(page.locator('#start')).toHaveClass(/active/);
 });
-test('closing a result story can reopen it and reading it does not duplicate rewards',async({page})=>{
+test('required result story only allows Next or Skip and does not duplicate rewards',async({page})=>{
  await openGame(page);await chooseFirst(page);await page.locator('#storySkip').click();await page.evaluate(async()=>{clearInterval(timer);await end(true,'防守成功','結算')});
- const before=await page.evaluate(()=>JSON.stringify(playerProfile));await page.locator('#modalStory').click();await page.locator('#storyClose').click();await expect(page.locator('#modalStory')).toBeVisible();
- await page.locator('#modalStory').click();await page.locator('#storySkip').click();await expect(page.locator('#modalStory')).not.toBeVisible();expect(await page.evaluate(()=>JSON.stringify(playerProfile))).toBe(before);
+ const before=await page.evaluate(()=>JSON.stringify(playerProfile));await page.locator('#modalStory').click();await expect(page.locator('#storyClose')).not.toBeVisible();await page.keyboard.press('Escape');await expect(page.locator('#storyDialog')).toBeVisible();
+ await page.goBack();await expect(page.locator('#storyDialog')).toBeVisible();await expect(page.locator('#game')).toHaveClass(/active/);
+ await page.locator('#storySkip').click();await expect(page.locator('#modalStory')).not.toBeVisible();expect(await page.evaluate(()=>JSON.stringify(playerProfile))).toBe(before);
  await expect(page.locator('#modalNext')).toBeVisible();
+});
+test('every newly playable first-season character speaks before their first battle',async({page})=>{
+ await openGame(page);const missing=await page.evaluate(()=>{
+  const out=[];
+  for(let level=1;level<=8;level++){const key=UNIT_ORDER.plants.find(id=>UNLOCK_LEVEL.plants[id]===level+1),name=PLANT_TYPES[key]?.name;if(name&&!SEASON1_STORY.plants[level].victory.some(line=>line.speaker===name))out.push(`plants/${level}/${name}`)}
+  for(let level=1;level<=9;level++){const key=UNIT_ORDER.zombies.find(id=>UNLOCK_LEVEL.zombies[id]===level+1),name=ZOMBIE_TYPES[key]?.name;if(name&&!SEASON1_STORY.zombies[level].victory.some(line=>line.speaker===name))out.push(`zombies/${level}/${name}`)}
+  if(!SEASON1_STORY.zombies[10].victory.some(line=>line.speaker===ZOMBIE_TYPES.necromancer.name))out.push('zombies/10/necromancer');return out
+ });expect(missing).toEqual([]);
 });
 test('first-season opening blocks simulation and cloud match creation until skipped',async({page})=>{
  await openGame(page);await page.evaluate(()=>{window.__storyStarts=0;startCloudMatch=()=>{window.__storyStarts++}});await chooseFirst(page);

@@ -23,12 +23,12 @@ function renderCampaignStory(){
  const portrait=storyElement('storyPortrait');portrait.hidden=!unit?.asset;
  if(unit?.asset){portrait.src=unit.asset;portrait.alt=line.speaker}else{portrait.removeAttribute('src');portrait.alt=''}
 }
-function openCampaignStory(faction,level,scene,{replay=false,onComplete=null,season=currentSeason}={}){
+function openCampaignStory(faction,level,scene,{replay=false,required=false,onComplete=null,season=currentSeason}={}){
  const data=campaignStoryData(season)[faction]?.[level];if(!data?.[scene]?.length)return false;
  closeCampaignStory(false);
  const lines=data[scene].slice();
 
- activeCampaignStory={faction,level,season,scene,replay,onComplete,lines,index:0,focus:document.activeElement};
+ activeCampaignStory={faction,level,season,scene,replay,required,onComplete,lines,index:0,focus:document.activeElement};
  storyElement('storyTitle').textContent=campaignLevels(season)[level].name;
  storyElement('storyRoute').textContent=`${season===2?'魏國篇．北境鐵壁':'蜀國篇．屍潮來襲'}｜${faction==='plants'?'守城戰記':'攻城戰記・另一種可能'}${replay?'｜回看':''}`;
  storyElement('storySubtitle').textContent=data.subtitle;
@@ -36,6 +36,7 @@ function openCampaignStory(faction,level,scene,{replay=false,onComplete=null,sea
  storyElement('storyReplayVictory').hidden=!isCampaignLevelCompleted(faction,level,season);
  storyElement('storyReplayOpening').setAttribute('aria-pressed',String(scene==='opening'));
  storyElement('storyReplayVictory').setAttribute('aria-pressed',String(scene==='victory'));
+ storyElement('storyClose').hidden=required;
  storyElement('storyClose').setAttribute('aria-label',!replay&&scene==='opening'?'關閉劇情，不開始戰鬥':'關閉劇情');
  const stage=storyElement('storyStage'),lv=campaignLevels(season)[level];stage.className=`story-stage ${(LEVEL_THEME[lv.theme]||LEVEL_THEME.day).art}`;
  stage.style.cssText=lv.cardArt?`background-image:linear-gradient(180deg,#06142022,#06142088),url('${lv.cardArt}') !important`:'';
@@ -62,17 +63,18 @@ function replayCampaignStory(faction,level,scene='opening'){
  if(!isCampaignLevelUnlocked(faction,level,currentSeason)||!['opening','victory'].includes(scene)||scene==='victory'&&!isCampaignLevelCompleted(faction,level,currentSeason))return false;
  return openCampaignStory(faction,level,scene,{replay:true});
 }
-function resetBattleStoryResult(){const button=storyElement('modalStory');button.classList.add('hidden');button.onclick=null}
+function setBattleStoryPending(pending){storyElement('modal')?.querySelector('.modal-card')?.classList.toggle('story-pending',pending)}
+function resetBattleStoryResult(){const button=storyElement('modalStory');button.classList.add('hidden');button.onclick=null;setBattleStoryPending(false)}
 function finishBattleStoryResult(battle,win,verified){resetBattleStoryResult();if(typeof revealFinaleRouteChoice==='function')revealFinaleRouteChoice(battle,win,verified)}
 function presentBattleStoryResult(battle,win,verified){
  if(battle!==state)return false;
  resetBattleStoryResult();
  if(!campaignStoryData(battle?.season)[battle?.faction]?.[battle?.level]||!storyElement('game').classList.contains('active')||win&&!verified)return false;
  const scene=win?'victory':'defeat';if(hasReadStory(battle.faction,battle.level,scene,battle.season))return false;
- const button=storyElement('modalStory');button.textContent=win?'繼續劇情 ▶':'查看戰後劇情 ▶';button.classList.remove('hidden');
+ const button=storyElement('modalStory');button.textContent=win?'關閉獎勵':'關閉戰果';button.classList.remove('hidden');setBattleStoryPending(true);
  button.onclick=()=>{
   if(battle!==state||!battle.over||!storyElement('game').classList.contains('active')||!storyElement('modal').classList.contains('show')||activeCampaignStory)return false;
-  return openCampaignStory(battle.faction,battle.level,scene,{onComplete:()=>finishBattleStoryResult(battle,win,verified),season:battle.season});
+  return openCampaignStory(battle.faction,battle.level,scene,{required:true,onComplete:()=>finishBattleStoryResult(battle,win,verified),season:battle.season});
  };
  return true;
 }
@@ -82,6 +84,6 @@ storyElement('storyNext').onclick=()=>{if(!activeCampaignStory)return;if(activeC
 storyElement('storyPrev').onclick=()=>{if(activeCampaignStory?.index>0){activeCampaignStory.index--;renderCampaignStory()}};
 storyElement('storySkip').onclick=()=>closeCampaignStory(true);
 storyElement('storyClose').onclick=()=>closeCampaignStory(false);
-storyElement('storyDialog').addEventListener('cancel',event=>{event.preventDefault();closeCampaignStory(false)});
+storyElement('storyDialog').addEventListener('cancel',event=>{event.preventDefault();if(!activeCampaignStory?.required)closeCampaignStory(false)});
 storyElement('storyPortrait').onerror=()=>{storyElement('storyPortrait').hidden=true};
-window.addEventListener('popstate',()=>closeCampaignStory(false));
+window.addEventListener('popstate',event=>{if(activeCampaignStory?.required){event.stopImmediatePropagation();if(typeof syncAppHistory==='function')syncAppHistory('battle');return}closeCampaignStory(false)});

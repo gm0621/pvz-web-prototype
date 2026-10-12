@@ -27,10 +27,14 @@ test('mainline has a cause, a goal for every chapter, connected outcomes and a r
  expect(text(s.zombies[1].opening)).toMatch(/另一種/);
  expect(text(s.zombies[10].victory)).toMatch(/不是你的祭品/);
  const s2=data('js/season2-story-data.js','SEASON2_STORY');
- expect(Object.keys(s2.plants)).toEqual(['1','2']);expect(Object.keys(s2.zombies)).toEqual(['1','2']);
+ expect(Object.keys(s2.plants)).toEqual(['1','2','3','4','5','6','7','8','9','10']);expect(Object.keys(s2.zombies)).toEqual(['1','2','3','4','5','6','7','8','9','10']);
  expect(text(s2.plants[1].opening)).toMatch(/蜀地.*急報/);
  expect(text(s2.plants[1].opening)).toMatch(/棺車/);
  expect(text(s2.zombies[1].opening)).toMatch(/另一種可能/);
+ expect(text(s2.plants[10].victory)).toMatch(/共鳴斷裂/);
+ expect(text(s2.plants[10].victory)).toMatch(/曹操/);
+ expect(text(s2.zombies[10].victory)).toMatch(/耗材|魂火|祭品/);
+ expect(text(s2.zombies[10].victory)).toMatch(/督軍|屍督/);
 });
 test('defense story teaches the real special rule of every ordinary stage',()=>{
  const s=data('js/season1-story-data.js','SEASON1_STORY'),chapter=level=>[...s.plants[level].opening,...s.plants[level].victory,...s.plants[level].defeat].map(x=>x.text).join('\n');
@@ -94,7 +98,7 @@ test('all revised dialogue fits desktop/mobile and short landscape with reachabl
      for(const id of ['storyText','storyNext','storyPrev','storySkip','storyClose']){
       const e=document.getElementById(id),r=e.getBoundingClientRect();
       if(r.width<=0||r.height<=0||r.top<0||r.bottom>innerHeight+1||r.left<0||r.right>innerWidth+1)out.push(`${season}/${side}/${level}/${scene}/${i}: ${id} off-screen`);
-      if(id==='storyText'&&e.scrollWidth>e.clientWidth+1)out.push('text horizontal overflow');
+      if(id==='storyText'&&e.scrollWidth>e.clientWidth+1)out.push(`${season}/${side}/${level}/${scene}/${i}: text horizontal overflow (${e.scrollWidth}/${e.clientWidth}) ${activeCampaignStory.lines[i].text}`);
      }
     }closeCampaignStory(false);
    }return out;

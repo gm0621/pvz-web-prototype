@@ -19,6 +19,9 @@ async function openStageEight(page,{legacyGap=false}={}){
 for(const legacyGap of [false,true])test(`Shu defense eight victory opens nine and survives reload (legacy gap: ${legacyGap})`,async({page})=>{
  await openStageEight(page,{legacyGap});
  await page.evaluate(()=>end(true,'防守成功！','第八關完成'));
+ await page.locator('#modalStory').click();
+ await page.locator('#storySkip').click();
+ await expect(page.locator('#modalNext')).toBeVisible();
  await expect(page.locator('#modalNext')).toBeEnabled();
  await page.locator('#modalNext').click();
  await expect(page.locator('#storyDialog')).toBeVisible();

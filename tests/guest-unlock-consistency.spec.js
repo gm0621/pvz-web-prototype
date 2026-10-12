@@ -33,6 +33,7 @@ test('sparse guest final victory CTA starts the Qin finale and keeps unearned zo
  await page.locator('#plantStartBtn').click();await page.locator('[data-season-choice="1"]').click();
  await startLevelCard(page,'[data-jump-level="10"]');
  await page.evaluate(()=>{clearInterval(timer);end(true,'防守成功！','隔離結算流程測試')});
+ await page.locator('#modalStory').click();await page.locator('#storySkip').click();
  await expect(page.locator('#modalNext')).toBeEnabled();
  await expect(page.locator('#modalNext')).toContainText('挑戰秦皇');
  await page.locator('#modalNext').click();
