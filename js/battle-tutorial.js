@@ -2,16 +2,17 @@ const BATTLE_LESSON_KEY='sgzBattleLessons_v1';
 let activeBattleLesson=null;
 
 function battleLessonProgress(){
- try{const value=JSON.parse(localStorage.getItem(BATTLE_LESSON_KEY)||'{}');return value&&typeof value==='object'&&!Array.isArray(value)?value:{}}
+ try{const value=JSON.parse(localStorage.getItem(BATTLE_LESSON_KEY)||'{}'),local=value&&typeof value==='object'&&!Array.isArray(value)?value:{};return {...local,...(playerProfile?.onboarding?.battleLessons||{})}}
  catch{return {}}
 }
-function hasLearnedBattleLesson(id){return battleLessonProgress()[id]===true}
+function hasLearnedBattleLesson(id){return typeof onboardingFlag==='function'?onboardingFlag('battleLessons',id):battleLessonProgress()[id]===true}
 function hasPendingBattleLesson(id){return battleLessonProgress()[`${id}:pending`]===true}
 function markBattleLessonPending(id){
  try{const progress=battleLessonProgress();progress[`${id}:pending`]=true;localStorage.setItem(BATTLE_LESSON_KEY,JSON.stringify(progress))}catch{/* A storage failure must not block play. */}
 }
 function markBattleLessonLearned(id){
  try{const progress=battleLessonProgress();progress[id]=true;delete progress[`${id}:pending`];localStorage.setItem(BATTLE_LESSON_KEY,JSON.stringify(progress))}catch{/* A storage failure must not block play. */}
+ if(typeof markOnboardingComplete==='function')markOnboardingComplete('battleLessons',id);
 }
 function battleLessonConfig(faction,season,level,guided){
  if(season!==1||faction!=='plants')return null;

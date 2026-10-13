@@ -5,7 +5,7 @@ async function chooseFirst(page){await page.locator('#plantStartBtn').click();aw
 test('attack story keeps the alternate timeline and normal unlock gate',async({page})=>{
  await openGame(page);expect(await page.evaluate(()=>requestCampaignBattle('zombies',1))).toBe(false);
  await page.evaluate(()=>{for(let level=1;level<=10;level++)completeCampaignLevel('plants',level);refreshCampaignUI()});
- await page.locator('#zombieStartBtn').click();await page.locator('[data-season-choice="1"]').click();await startLevelCard(page,'[data-jump-level="1"]');await expect(page.locator('#storyRoute')).toContainText('另一種可能');await expect(page.locator('#storyText')).toContainText('你已看過蜀軍');
+ await page.locator('#zombieStartBtn').click();await page.locator('[data-season-choice="1"]').click();await startLevelCard(page,'[data-jump-level="1"]');await expect(page.locator('#storyRoute')).toContainText('另一種可能');await expect(page.locator('#storyText')).toContainText('役魂鈴逼著');
  await page.locator('#storySkip').click();expect(await page.evaluate(()=>state.faction)).toBe('zombies');expect(await page.evaluate(()=>isCampaignLevelCompleted('zombies',1))).toBe(false);
 });
 test('cloud pending waits before its ending; an older saved battle also gets its ending',async({page})=>{
@@ -81,9 +81,9 @@ test('short landscape results stay on-screen and all exit controls remain reacha
 });
 test('required result story only allows Next or Skip and does not duplicate rewards',async({page})=>{
  await openGame(page);await chooseFirst(page);await page.locator('#storySkip').click();await page.evaluate(async()=>{clearInterval(timer);await end(true,'防守成功','結算')});
- const before=await page.evaluate(()=>JSON.stringify(playerProfile));await page.locator('#modalStory').click();await expect(page.locator('#storyClose')).not.toBeVisible();await page.keyboard.press('Escape');await expect(page.locator('#storyDialog')).toBeVisible();
+ const before=await page.evaluate(()=>({gold:playerProfile.gold,xp:playerProfile.xp,level:playerProfile.level,completed:JSON.stringify(playerProfile.completedLevels),medals:JSON.stringify(playerProfile.challenges.medals)}));await page.locator('#modalStory').click();await expect(page.locator('#storyClose')).not.toBeVisible();await page.keyboard.press('Escape');await expect(page.locator('#storyDialog')).toBeVisible();
  await page.goBack();await expect(page.locator('#storyDialog')).toBeVisible();await expect(page.locator('#game')).toHaveClass(/active/);
- await page.locator('#storySkip').click();await expect(page.locator('#modalStory')).not.toBeVisible();expect(await page.evaluate(()=>JSON.stringify(playerProfile))).toBe(before);
+ await page.locator('#storySkip').click();await expect(page.locator('#modalStory')).not.toBeVisible();expect(await page.evaluate(()=>({gold:playerProfile.gold,xp:playerProfile.xp,level:playerProfile.level,completed:JSON.stringify(playerProfile.completedLevels),medals:JSON.stringify(playerProfile.challenges.medals)}))).toEqual(before);expect(await page.evaluate(()=>playerProfile.onboarding.storyRead['plants:1:victory'])).toBe(true);
  await expect(page.locator('#modalNext')).toBeVisible();
 });
 test('every newly playable first-season character speaks before their first battle',async({page})=>{
@@ -94,11 +94,23 @@ test('every newly playable first-season character speaks before their first batt
   if(!SEASON1_STORY.zombies[10].victory.some(line=>line.speaker===ZOMBIE_TYPES.necromancer.name))out.push('zombies/10/necromancer');return out
  });expect(missing).toEqual([]);
 });
+test('every first-season level has an explicit three-line opening brief',async({page})=>{
+ await openGame(page);const result=await page.evaluate(()=>{
+  const invalid=[],reused=[];
+  for(const side of ['plants','zombies'])for(const [level,chapter] of Object.entries(SEASON1_STORY[side])){
+   if(!Array.isArray(chapter.openingBrief)||chapter.openingBrief.length!==3||chapter.openingBrief.some(line=>!line?.speaker||!line?.text))invalid.push(`${side}/${level}`);
+   if(JSON.stringify(chapter.openingBrief)===JSON.stringify(chapter.opening.slice(0,3)))reused.push(`${side}/${level}`);
+  }
+  return {invalid,reused};
+ });
+ expect(result).toEqual({invalid:[],reused:[]});
+});
 test('first-season opening blocks simulation and cloud match creation until skipped',async({page})=>{
  await openGame(page);await page.evaluate(()=>{window.__storyStarts=0;startCloudMatch=()=>{window.__storyStarts++}});await chooseFirst(page);
- await expect(page.getByRole('dialog',{name:'第一關：草坪軍營初戰'})).toBeVisible();await expect(page.locator('#storyText')).toContainText('古戰場');
+ await expect(page.getByRole('dialog',{name:'第一關：草坪軍營初戰'})).toBeVisible();await expect(page.locator('#storyText')).toContainText('役魂鈴');
  expect(await page.evaluate(()=>({starts:window.__storyStarts,playing:!!state&&!state.over&&!state.paused}))).toEqual({starts:0,playing:false});
  expect(await page.evaluate(()=>activeCampaignStory.lines.length)).toBe(3);
+ expect(await page.evaluate(()=>activeCampaignStory.lines)).toEqual(await page.evaluate(()=>SEASON1_STORY.plants[1].openingBrief));
  await page.locator('#storyNext').click();await page.locator('#storyNext').click();await expect(page.locator('#storyCount')).toHaveText('3 / 3');
  await page.locator('#storySkip').click();await expect(page.locator('#storyDialog')).not.toBeVisible();await expect(page.locator('#game')).toHaveClass(/active/);
  expect(await page.evaluate(()=>window.__storyStarts)).toBe(1);expect(await page.evaluate(()=>state.time)).toBeLessThan(2000);

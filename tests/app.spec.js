@@ -77,6 +77,67 @@ test('restoring an existing login session keeps the player on the main menu', as
   await expect.poll(() => page.evaluate(() => playerProfile.name)).toBe('雲端舊存檔');
 });
 
+test('onboarding progress migrates from legacy storage and cloud responses only add completed flags', async ({ page }) => {
+  await openApp(page);
+  const result = await page.evaluate(() => {
+    localStorage.setItem('sgzBattleLessons_v1', JSON.stringify({removeUnit:true,'strategy:pending':true}));
+    playerProfile=normalizeProfile({onboarding:{storyRead:{'plants:2:opening':true},battleLessons:{firstDefense:true}}});
+    migrateLegacyOnboardingProgress();
+    currentUser={id:'user-1'};cloudSaveVersion=1;
+    applyCloudResult({
+      profile:{onboarding:{storyRead:{'zombies:1:opening':true},battleLessons:{strategy:true}}},
+      save_version:2,active_device_id:getDeviceId(),updated_at:new Date().toISOString()
+    });
+    saveProfile(false,false,false);
+    return {
+      onboarding:playerProfile.onboarding,
+      saved:JSON.parse(localStorage.getItem(PROFILE_KEY)).onboarding,
+      legacyLessons:JSON.parse(localStorage.getItem('sgzBattleLessons_v1'))
+    };
+  });
+  expect(result.onboarding.storyRead).toEqual(expect.objectContaining({'plants:2:opening':true,'zombies:1:opening':true}));
+  expect(result.onboarding.battleLessons).toEqual({firstDefense:true,removeUnit:true,strategy:true});
+  expect(result.saved).toEqual(result.onboarding);
+  expect(result.legacyLessons).toEqual(expect.objectContaining({firstDefense:true,removeUnit:true,strategy:true,'strategy:pending':true}));
+});
+
+test('cloud pull uploads the union when an older cloud profile lacks local onboarding progress', async ({ page }) => {
+  await openApp(page);
+  const result=await page.evaluate(async()=>{
+    localStorage.setItem('sgzStoryRead_v1',JSON.stringify({'plants:4:opening':true}));
+    localStorage.setItem('sgzBattleLessons_v1',JSON.stringify({strategy:true}));
+    currentUser={id:'cloud-user',email:'cloud@example.com'};
+    playerProfile=normalizeProfile({updatedAt:'2020-01-01T00:00:00.000Z',onboarding:{storyRead:{'plants:3:opening':true},battleLessons:{removeUnit:true}}});
+    let pushes=0;
+    const row={profile:normalizeProfile({updatedAt:'2026-01-01T00:00:00.000Z',onboarding:{storyRead:{'plants:1:opening':true},battleLessons:{firstDefense:true}}}),save_version:7,updated_at:'2026-01-01T00:00:00.000Z',active_device_id:'remote'};
+    const chain={select(){return this},eq(){return this},async maybeSingle(){return {data:row,error:null}}};
+    initSupabaseClient=()=>({from:()=>chain});
+    claimCloudDevice=async()=>true;
+    pushCloudProfile=async()=>{pushes++;return true};
+    const ok=await pullCloudProfile(false,'force');
+    return {ok,pushes,onboarding:playerProfile.onboarding};
+  });
+  expect(result).toEqual({ok:true,pushes:1,onboarding:{storyRead:{'plants:1:opening':true,'plants:3:opening':true,'plants:4:opening':true},battleLessons:{firstDefense:true,removeUnit:true,strategy:true}}});
+});
+
+test('marking a story or lesson complete persists it in both profile and local fallback', async ({ page }) => {
+  await openApp(page);
+  const result=await page.evaluate(()=>{
+    playerProfile=normalizeProfile({});
+    markStoryRead('plants',4,'opening');
+    markBattleLessonLearned('relocateUnit');
+    return {
+      profile:playerProfile.onboarding,
+      localStory:JSON.parse(localStorage.getItem('sgzStoryRead_v1')),
+      localLessons:JSON.parse(localStorage.getItem('sgzBattleLessons_v1'))
+    };
+  });
+  expect(result.profile.storyRead['plants:4:opening']).toBe(true);
+  expect(result.profile.battleLessons.relocateUnit).toBe(true);
+  expect(result.localStory['plants:4:opening']).toBe(true);
+  expect(result.localLessons.relocateUnit).toBe(true);
+});
+
 test('campaign progression unlocks defense 1-10 before attack 1-10 and then marks all clear', async ({ page }) => {
   await openApp(page);
   const result = await page.evaluate(() => {

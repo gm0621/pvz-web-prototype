@@ -4,8 +4,8 @@ let activeCampaignStory=null;
 const storyElement=id=>document.getElementById(id);
 function campaignStoryData(season){return season===2?SEASON2_STORY:SEASON1_STORY}
 function storyReadKey(faction,level,scene,season=1){return `${season===1?'':'s'+season+':'}${faction}:${level}:${scene}`}
-function hasReadStory(faction,level,scene,season=1){try{const read=JSON.parse(localStorage.getItem(STORY_READ_KEY)||'{}');return read?.[storyReadKey(faction,level,scene,season)]===true}catch{return false}}
-function markStoryRead(faction,level,scene,season=1){try{const stored=JSON.parse(localStorage.getItem(STORY_READ_KEY)||'{}');const read=stored&&typeof stored==='object'&&!Array.isArray(stored)?stored:{};read[storyReadKey(faction,level,scene,season)]=true;localStorage.setItem(STORY_READ_KEY,JSON.stringify(read))}catch{/* Storage unavailable must never prevent playing. */}}
+function hasReadStory(faction,level,scene,season=1){const key=storyReadKey(faction,level,scene,season);if(typeof onboardingFlag==='function')return onboardingFlag('storyRead',key);try{const read=JSON.parse(localStorage.getItem(STORY_READ_KEY)||'{}');return read?.[key]===true}catch{return false}}
+function markStoryRead(faction,level,scene,season=1){const key=storyReadKey(faction,level,scene,season);if(typeof markOnboardingComplete==='function')return markOnboardingComplete('storyRead',key);try{const stored=JSON.parse(localStorage.getItem(STORY_READ_KEY)||'{}');const read=stored&&typeof stored==='object'&&!Array.isArray(stored)?stored:{};read[key]=true;localStorage.setItem(STORY_READ_KEY,JSON.stringify(read));return true}catch{return false}}
 function closeCampaignStory(complete=false){
  const story=activeCampaignStory;if(!story)return;
  activeCampaignStory=null;storyElement('storyDialog').close();
@@ -26,7 +26,7 @@ function renderCampaignStory(){
 function openCampaignStory(faction,level,scene,{replay=false,required=false,onComplete=null,season=currentSeason,compact=false}={}){
  const data=campaignStoryData(season)[faction]?.[level];if(!data?.[scene]?.length)return false;
  closeCampaignStory(false);
- const lines=compact&&scene==='opening'?data[scene].slice(0,3):data[scene].slice();
+ const lines=compact&&scene==='opening'?(data.openingBrief||data[scene].slice(0,3)).slice():data[scene].slice();
 
  activeCampaignStory={faction,level,season,scene,replay,required,onComplete,lines,index:0,focus:document.activeElement};
  storyElement('storyTitle').textContent=campaignLevels(season)[level].name;
