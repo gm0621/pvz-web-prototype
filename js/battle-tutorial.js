@@ -115,7 +115,7 @@ function afterTutorialDeployment(key,deployed){
   else if(tutorial.step==='archer'&&key==='peashooter')completeBattleLesson('firstDefense');
   return;
  }
- if(tutorial.id==='relocateUnit'&&tutorial.step==='await-deploy'&&deployed){tutorial.step='relocate';tutorial.targetId=deployed.id;openBattleLesson('relocateUnit','relocate')}
+ if(tutorial.id==='relocateUnit'&&tutorial.step==='await-deploy'&&deployed&&key!=='potato'){tutorial.step='relocate';tutorial.targetId=deployed.id;openBattleLesson('relocateUnit','relocate')}
 }
 function afterTutorialRemoval(plant){if(state?.tutorial?.id==='removeUnit'&&plant?.id===state.tutorial.targetId)completeBattleLesson('removeUnit')}
 function afterTutorialRelocation(plant){if(state?.tutorial?.id==='relocateUnit'&&plant?.id===state.tutorial.targetId)completeBattleLesson('relocateUnit')}

@@ -107,14 +107,18 @@ test('defense HUD hides AI budget and actions unlock only when their story needs
  await expect(page.locator('#removeUnitBtn')).toBeVisible();
  await expect(page.locator('#relocateUnitBtn')).toBeVisible();
  await expect(page.locator('#strategyBtn')).toBeHidden();
- await page.locator('#cards .card[data-key="sunflower"]').click();
+ await page.locator('#cards .card[data-key="potato"]').click();
  await page.locator('.cell[data-r="2"][data-c="2"]').click();
+ await expect(page.locator('#battleLessonDialog')).toBeHidden();
+ expect(await page.evaluate(()=>state.tutorial.step)).toBe('await-deploy');
+ await page.locator('#cards .card[data-key="sunflower"]').click();
+ await page.locator('.cell[data-r="2"][data-c="3"]').click();
  await expect(page.locator('#battleLessonTitle')).toContainText('換列支援');
  await page.locator('#battleLessonContinue').click();
  await page.locator('#relocateUnitBtn').click();
- await page.locator('.cell[data-r="2"][data-c="2"]').click();
- await page.locator('.cell[data-r="1"][data-c="2"]').click();
- expect(await page.evaluate(()=>({row:state.plants[0].r,learned:JSON.parse(localStorage.getItem('sgzBattleLessons_v1')).relocateUnit}))).toEqual({row:1,learned:true});
+ await page.locator('.cell[data-r="2"][data-c="3"]').click();
+ await page.locator('.cell[data-r="1"][data-c="3"]').click();
+ expect(await page.evaluate(()=>({row:state.plants.find(plant=>plant.type==='sunflower').r,learned:JSON.parse(localStorage.getItem('sgzBattleLessons_v1')).relocateUnit}))).toEqual({row:1,learned:true});
 
  await page.evaluate(()=>{backToHome();completeCampaignLevel('plants',4);selectedLevel=5;start('plants',{guidedOpening:true});clearInterval(timer);grantStrategyPoint('onboarding-test')});
  await expect(page.locator('#strategyBtn')).toBeVisible();
@@ -133,4 +137,16 @@ test('completed lessons do not interrupt replay and mobile has no horizontal ove
  await expect(page.locator('#battleLessonDialog')).toBeHidden();
  await expect(page.locator('#removeUnitBtn')).toBeVisible();
  if(testInfo.project.name==='mobile')expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);
+});
+
+test('leaving an interactive lesson restores pause controls in the next battle',async({page})=>{
+ await openFresh(page);
+ await page.locator('[data-new-player-start]:visible').click();
+ await page.locator('#storySkip').click();
+ await page.locator('#battleLessonContinue').click();
+ await expect(page.locator('#pauseBtn')).toBeDisabled();
+ await page.evaluate(()=>backToHome());
+ await page.evaluate(()=>{localStorage.setItem('sgzBattleLessons_v1',JSON.stringify({firstDefense:true}));selectedLevel=1;start('plants');clearInterval(timer)});
+ await expect(page.locator('#pauseBtn')).toBeEnabled();
+ expect(await page.evaluate(()=>({paused:state.paused,tutorial:state.tutorial}))).toEqual({paused:false,tutorial:null});
 });
