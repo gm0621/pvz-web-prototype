@@ -224,6 +224,49 @@ test('campaign UI disables locked faction and labels completed current and locke
   expect(advanced[3].disabled).toBeTruthy();
 });
 
+test('new players get one clear easy first-battle path before advanced choices', async ({ page }, testInfo) => {
+  await page.route('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2', route => route.fulfill({contentType: 'application/javascript', body: mockSupabase}));
+  await page.goto('/?freshPlayer=1');
+  await expect(page.locator('#start')).toHaveClass(/active/);
+  const entry=page.locator('#newPlayerStartCard');
+  await expect(entry).toBeVisible();
+  await expect(entry.locator('.new-player-step')).toHaveCount(4);
+  await expect(entry).toContainText('軍糧會自動增加');
+  await expect(entry).toContainText('選角色，再點格子部署');
+  await expect(entry).toContainText('擋住僵屍');
+  await expect(entry).toContainText('撐過所有波次');
+  const startButton=page.locator('[data-new-player-start]:visible');
+  await expect(startButton).toHaveCount(1);
+  await expect(page.locator('#plantStartBtn')).toHaveClass(/secondary/);
+  await expect(page.locator('#zombieStartBtn')).toHaveClass(/secondary/);
+  expect(await startButton.evaluate(button => {
+    const rect=button.getBoundingClientRect();
+    return rect.top>=0&&rect.bottom<=innerHeight&&rect.left>=0&&rect.right<=innerWidth;
+  })).toBeTruthy();
+
+  if(testInfo.project.name==='mobile'){
+    await page.setViewportSize({width:844,height:390});
+    await expect(startButton).toBeVisible();
+    await expect(startButton).toHaveCSS('position','fixed');
+    expect(await startButton.evaluate(button => {
+      const rect=button.getBoundingClientRect();
+      return rect.top>=0&&rect.bottom<=innerHeight&&rect.left>=0&&rect.right<=innerWidth;
+    })).toBeTruthy();
+    await page.setViewportSize({width:390,height:844});
+  }
+
+  await startButton.click();
+  await expect(page.locator('#storyDialog')).toBeVisible();
+  expect(await page.evaluate(() => ({season:currentSeason,faction:activeCampaignStory?.faction,level:activeCampaignStory?.level}))).toEqual({season:1,faction:'plants',level:1});
+  await page.locator('#storySkip').click();
+  await expect(page.locator('#game')).toHaveClass(/active/);
+  expect(await page.evaluate(() => ({season:state.season,faction:state.faction,level:state.level,difficulty:state.difficulty}))).toEqual({season:1,faction:'plants',level:1,difficulty:'easy'});
+
+  await page.evaluate(() => {clearInterval(timer);completeCampaignLevel('plants',1,1);clearBattleSave();backToHome();updateProgressUI()});
+  await expect(entry).toBeHidden();
+  await expect(page.locator('#plantStartBtn')).toHaveClass(/primary/);
+});
+
 test('home can enter level selection and shop', async ({ page }) => {
   await openApp(page);
   await page.locator('#plantStartBtn').click();
