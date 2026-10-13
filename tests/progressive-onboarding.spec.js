@@ -22,6 +22,8 @@ test('first entry uses a three-line hook while replay preserves the complete ope
  await expect(page.locator('#storyCount')).toHaveText('1 / 3');
  await page.locator('#storySkip').click();
  await expect(page.locator('#battleLessonDialog')).toBeVisible();
+ expect(await page.locator('#battleLessonDialog').evaluate(dialog=>dialog.parentElement?.id)).toBe('battleFullscreenHost');
+ await expect(page.locator('#battleLessonContinue')).toBeFocused();
  await page.locator('#battleLessonContinue').click();
  await page.evaluate(()=>{clearInterval(timer);backToLevelSelect()});
  await page.evaluate(()=>replayCampaignStory('plants',1));
@@ -29,43 +31,81 @@ test('first entry uses a three-line hook while replay preserves the complete ope
  await expect(page.locator('#storyCount')).toHaveText('1 / 16');
 });
 
-test('first battle pauses safely and teaches three roles through real deployment',async({page})=>{
+test('first battle reveals a real threat, locks a solvable lane, and teaches all four roles',async({page})=>{
  await openFresh(page);
  await page.locator('[data-new-player-start]:visible').click();
  await page.locator('#storySkip').click();
  await expect(page.locator('#battleLessonDialog')).toBeVisible();
- await expect(page.locator('#battleLessonTitle')).toContainText('備妥軍糧');
- expect(await page.evaluate(()=>state.paused)).toBe(true);
- await expect(page.locator('#cards .card:visible')).toHaveCount(1);
- await expect(page.locator('#cards [data-key="sunflower"]')).toBeVisible();
+ await expect(page.locator('#battleLessonTitle')).toContainText('第 3 路');
+ expect(await page.evaluate(()=>({
+  paused:state.paused,
+  time:state.time,
+  resource:state.resource,
+  enemies:state.zombies.map(z=>({type:z.type,row:z.r,column:z.c})),
+  spawned:state.enemiesSpawned
+ }))).toEqual({paused:true,time:0,resource:300,enemies:[{type:'normal',row:2,column:7.6}],spawned:1});
+ const scoutBox=await page.locator('.entity.zombie').boundingBox(),boardBox=await page.locator('#board').boundingBox();
+ expect(scoutBox).not.toBeNull();expect(boardBox).not.toBeNull();
+ expect(scoutBox.x).toBeLessThan(boardBox.x+boardBox.width);expect(scoutBox.x+scoutBox.width).toBeGreaterThan(boardBox.x);
 
  await page.locator('#battleLessonContinue').click();
- await page.waitForTimeout(150);
- expect(await page.evaluate(()=>({paused:state.paused,time:state.time,pauseDisabled:document.getElementById('pauseBtn').disabled}))).toEqual({paused:true,time:0,pauseDisabled:true});
+ await expect(page.locator('#battleLessonTitle')).toContainText('備妥軍糧');
+ await expect(page.locator('#battleLessonText')).toContainText('50 軍糧');
+ await page.locator('#battleLessonContinue').click();
+ await expect(page.locator('#cards .card:visible')).toHaveCount(1);
  await page.locator('#cards [data-key="sunflower"]').click();
- await page.locator('.cell[data-r="2"][data-c="0"]').focus();
- await page.keyboard.press('Enter');
- await expect(page.locator('#battleLessonDialog')).toBeVisible();
- await expect(page.locator('#battleLessonTitle')).toContainText('擋住敵人');
- await expect(page.locator('#cards [data-key="wallnut"]')).toBeVisible();
+ await expect(page.locator('.cell[data-r="2"][data-c="0"]')).toHaveClass(/deploy-allowed/);
+ await expect(page.locator('.cell[data-r="1"][data-c="0"]')).toHaveClass(/deploy-blocked/);
+ await page.locator('.cell[data-r="1"][data-c="0"]').click();
+ expect(await page.evaluate(()=>state.plants.length)).toBe(0);
+ await page.locator('.cell[data-r="2"][data-c="0"]').click();
 
+ await expect(page.locator('#battleLessonTitle')).toContainText('擋住第 3 路');
  await page.locator('#battleLessonContinue').click();
  await page.locator('#cards [data-key="wallnut"]').click();
- await page.locator('.cell[data-r="2"][data-c="2"]').click();
- await expect(page.locator('#battleLessonTitle')).toContainText('後方攻擊');
- await expect(page.locator('#cards [data-key="peashooter"]')).toBeVisible();
+ await expect(page.locator('.cell[data-r="2"][data-c="4"]')).toHaveClass(/deploy-allowed/);
+ await page.locator('.cell[data-r="2"][data-c="4"]').click();
 
+ await expect(page.locator('#battleLessonTitle')).toContainText('後方攻擊');
  await page.locator('#battleLessonContinue').click();
- await page.waitForTimeout(150);
- expect(await page.evaluate(()=>({paused:state.paused,time:state.time}))).toEqual({paused:true,time:0});
  await page.locator('#cards [data-key="peashooter"]').click();
- await page.locator('.cell[data-r="2"][data-c="1"]').click();
+ await expect(page.locator('.cell[data-r="2"][data-c="2"]')).toHaveClass(/deploy-allowed/);
+ await page.locator('.cell[data-r="2"][data-c="2"]').click();
+
+ await expect(page.locator('#battleLessonTitle')).toContainText('伏兵');
+ await expect(page.locator('#battleLessonText')).toContainText('4.5 秒');
+ await page.locator('#battleLessonContinue').click();
+ await page.locator('#cards [data-key="potato"]').click();
+ await expect(page.locator('.cell[data-r="2"][data-c="5"]')).toHaveClass(/deploy-allowed/);
+ await page.locator('.cell[data-r="2"][data-c="5"]').click();
+
  await expect(page.locator('#battleLessonDialog')).toBeHidden();
  await expect(page.locator('#cards .card:visible')).toHaveCount(4);
- const learned=await page.evaluate(()=>({learned:JSON.parse(localStorage.getItem('sgzBattleLessons_v1')).firstDefense,paused:state.paused,time:state.time}));
- expect(learned.learned).toBe(true);
- expect(learned.paused).toBe(false);
+ const learned=await page.evaluate(()=>({
+  learned:JSON.parse(localStorage.getItem('sgzBattleLessons_v1')).firstDefense,
+  paused:state.paused,
+  time:state.time,
+  resource:state.resource,
+  rows:state.plants.map(p=>p.r),
+  guided:state.guidedDefense
+ }));
+ expect(learned).toMatchObject({learned:true,paused:false,resource:75,rows:[2,2,2,2],guided:{lane:2,remaining:2}});
  expect(learned.time).toBeLessThanOrEqual(100);
+});
+
+test('the next two guided enemies stay in the taught lane before adaptive AI unlocks',async({page})=>{
+ await openFresh(page);
+ await page.evaluate(()=>{
+  selectedLevel=1;
+  start('plants',{guidedOpening:true});
+  clearInterval(timer);
+  while(activeBattleLesson)closeBattleLesson();
+  const placements=[['sunflower',2,0],['wallnut',2,4],['peashooter',2,2],['potato',2,5]];
+  for(const [key,row,column] of placements){if(activeBattleLesson)closeBattleLesson();deploySelected(key,row,column)}
+  spawnRandomZombie('normal');
+  spawnRandomZombie('cone');
+ });
+ expect(await page.evaluate(()=>({rows:state.zombies.map(z=>z.r),remaining:state.guidedDefense.remaining}))).toEqual({rows:[2,2,2],remaining:0});
 });
 
 test('unfinished and saved lessons resume instead of being skipped',async({page})=>{
@@ -77,11 +117,21 @@ test('unfinished and saved lessons resume instead of being skipped',async({page}
  await page.reload();
  await page.evaluate(()=>restoreBattleIfAvailable());
  await expect(page.locator('#battleLessonDialog')).toBeVisible();
- await expect(page.locator('#battleLessonTitle')).toContainText('備妥軍糧');
+ await expect(page.locator('#battleLessonTitle')).toContainText('第 3 路');
  await page.locator('#battleLessonContinue').click();
  await page.evaluate(()=>backToHome());
  await page.evaluate(()=>{selectedLevel=1;start('plants');clearInterval(timer)});
  await expect(page.locator('#battleLessonDialog')).toBeVisible();
+});
+
+test('restoring a partially completed first lesson never grants its 300 resource twice',async({page})=>{
+ await openFresh(page);
+ await page.evaluate(()=>{
+  selectedLevel=1;start('plants',{guidedOpening:true});clearInterval(timer);
+  while(activeBattleLesson)closeBattleLesson();
+  deploySelected('sunflower',2,0);persistBattleState();restoreBattleIfAvailable();clearInterval(timer);
+ });
+ expect(await page.evaluate(()=>({resource:state.resource,step:state.tutorial.step,granted:state.tutorial.resourceGranted,plants:state.plants.length}))).toEqual({resource:250,step:'shield',granted:true,plants:1});
 });
 
 test('defense HUD hides AI budget and actions unlock only when their story needs them',async({page})=>{
@@ -143,6 +193,7 @@ test('leaving an interactive lesson restores pause controls in the next battle',
  await openFresh(page);
  await page.locator('[data-new-player-start]:visible').click();
  await page.locator('#storySkip').click();
+ await page.locator('#battleLessonContinue').click();
  await page.locator('#battleLessonContinue').click();
  await expect(page.locator('#pauseBtn')).toBeDisabled();
  await page.evaluate(()=>backToHome());

@@ -19,6 +19,27 @@ for(const faction of ['plants','zombies'])test(`season two ${faction} unlocks an
   result.started.forEach((stage,i)=>{expect(stage.level).toBe(i+1);expect(stage.name).toBeTruthy();expect(stage.cards).toHaveLength(i+2);expect(stage.enemies).toBeGreaterThanOrEqual(14);expect(stage.boss).toMatch(/^s2/)});
 });
 
+test('every season-two first-play route has a compact danger, mechanic, and goal briefing',async({page})=>{
+ await open(page);
+ const result=await page.evaluate(()=>['plants','zombies'].flatMap(faction=>Array.from({length:10},(_,index)=>{
+  const level=index+1,chapter=SEASON2_STORY[faction][level];
+  return {faction,level,brief:chapter.openingBrief,opening:chapter.opening};
+ })));
+ expect(result).toHaveLength(20);
+ const keywords={
+  plants:[/霜徑.*10 秒/,/推車.*第一次漏怪/,/(?:軍糧.*80|80.*軍糧)/,/中央路糧車/,/視界.*9 秒/,/烽火.*12 秒/,/推車.*第一次漏怪/,/(?:軍糧.*80|80.*軍糧)/,/霜徑.*10 秒/,/視界.*9 秒/],
+  zombies:[/破門撞屍/,/不同路線/,/標出.*路線/,/箭塔.*倒數/,/破門撞屍/,/不同路線/,/標出.*路線/,/箭塔.*倒數/,/不同路線/,/破門撞屍/]
+ };
+ for(const route of result){
+  expect(route.brief).toHaveLength(3);
+  route.brief.forEach(line=>{expect(line.speaker).toBeTruthy();expect(line.text.length).toBeGreaterThan(10)});
+  expect(route.brief[0]).toEqual(route.opening[0]);
+  expect(route.brief[1].speaker).toBe('戰術提示');expect(route.brief[1].text).toMatch(keywords[route.faction][route.level-1]);
+  expect(route.brief[2].speaker).toBe('本關目標');
+  expect(route.brief[2].text).toMatch(/守住|擊敗|保護|突破|摧毀|拆掉|奪得|完成/);
+ }
+});
+
 test('stages three to ten carry distinct story, difficulty and battle data',async({page})=>{
   await open(page);
   const data=await page.evaluate(()=>Array.from({length:8},(_,i)=>i+3).map(level=>({

@@ -12,6 +12,8 @@ function deploymentReadyReason(key){
 }
 function deploymentCellReason(r,c){
  if(!Number.isInteger(r)||!Number.isInteger(c)||r<0||r>=ROWS||c<0||c>=COLS)return '請選戰場內的格子';
+ const tutorialTarget=typeof firstDefensePlacement==='function'?firstDefensePlacement():null;
+ if(tutorialTarget&&(r!==tutorialTarget.r||c!==tutorialTarget.c))return `教學請放在第 ${tutorialTarget.r+1} 路第 ${tutorialTarget.c+1} 欄`;
  const blockedLane=stageRuleBlockedLane(state?.gameplay?.stageRule?.data);if(r===blockedLane)return `第 ${r+1} 路正遭烽火封鎖`;
  if(state.faction==='plants'){
   if(c>6)return '守軍只能放左側第 1～7 欄';
@@ -29,7 +31,8 @@ function setBattleText(id,text){const el=$(id);if(el&&el.textContent!==text)el.t
 function updateDeploymentGuide(){
  const grid=$('grid');if(!state||!grid)return;
  const key=state.selected,reason=key?deploymentReadyReason(key):'',active=!!key&&!state.over&&(!state.paused||battleTutorialInteractionAllowed('deploy',key))&&!state.actionMode;
- const signature=[key,reason,active,state.faction,stageRuleBlockedLane(state.gameplay?.stageRule?.data),state.plants.map(p=>`${p.r},${p.c}`).join(';')].join('|');
+ const tutorialTarget=typeof firstDefensePlacement==='function'?firstDefensePlacement():null;
+ const signature=[key,reason,active,state.faction,stageRuleBlockedLane(state.gameplay?.stageRule?.data),tutorialTarget?`${tutorialTarget.r},${tutorialTarget.c}`:'',state.plants.map(p=>`${p.r},${p.c}`).join(';')].join('|');
  if(grid.dataset.deploymentSignature!==signature){
   grid.dataset.deploymentSignature=signature;
   grid.querySelectorAll('.cell').forEach(cell=>{

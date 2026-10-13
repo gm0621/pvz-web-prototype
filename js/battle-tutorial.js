@@ -19,7 +19,7 @@ function battleLessonConfig(faction,season,level,guided){
  const lessonId=level===1?'firstDefense':level===3?'removeUnit':level===4?'relocateUnit':level===5?'strategy':null;
  if(!lessonId||hasLearnedBattleLesson(lessonId)||!guided&&!hasPendingBattleLesson(lessonId))return null;
  if(guided)markBattleLessonPending(lessonId);
- if(lessonId==='firstDefense')return {id:lessonId,step:'food'};
+ if(lessonId==='firstDefense')return {id:lessonId,step:'scout'};
  if(lessonId==='removeUnit')return {id:lessonId,step:'remove'};
  if(lessonId==='relocateUnit')return {id:lessonId,step:'await-deploy'};
  if(lessonId==='strategy')return {id:lessonId,step:'await-point'};
@@ -41,12 +41,12 @@ function battleFeatureAvailable(feature,battle=state){
 function battleTutorialUnitAllowed(key,battle=state){
  const tutorial=battle?.tutorial;
  if(tutorial?.id!=='firstDefense'||hasLearnedBattleLesson('firstDefense'))return true;
- const stages={food:['sunflower'],shield:['sunflower','wallnut'],archer:['sunflower','wallnut','peashooter']};
+ const stages={scout:[],food:['sunflower'],shield:['sunflower','wallnut'],archer:['sunflower','wallnut','peashooter'],ambush:['sunflower','wallnut','peashooter','potato']};
  return (stages[tutorial.step]||Object.keys(PLANT_TYPES)).includes(key);
 }
 function battleTutorialInteractionAllowed(kind,key=null,battle=state){
  const tutorial=battle?.tutorial;if(!tutorial?.interactionPaused||!battle.paused||activeBattleLesson)return false;
- if(kind==='deploy'&&tutorial.id==='firstDefense')return key===(tutorial.step==='food'?'sunflower':tutorial.step==='shield'?'wallnut':'peashooter');
+ if(kind==='deploy'&&tutorial.id==='firstDefense')return key===({food:'sunflower',shield:'wallnut',archer:'peashooter',ambush:'potato'}[tutorial.step]);
  if(kind==='remove')return tutorial.id==='removeUnit'&&tutorial.step==='remove';
  if(kind==='relocate')return tutorial.id==='relocateUnit'&&tutorial.step==='relocate';
  if(kind==='strategy')return tutorial.id==='strategy'&&tutorial.step==='strategy';
@@ -55,12 +55,14 @@ function battleTutorialInteractionAllowed(kind,key=null,battle=state){
 function battleLessonCopy(id,step){
  const copy={
   firstDefense:{
-   food:{title:'第一步｜備妥軍糧',speaker:'軍糧官',text:'敵軍尚未抵達，先把糧草接上。部署軍糧官後，軍糧會持續增加。',action:'開始部署軍糧官'},
-   shield:{title:'第二步｜擋住敵人',speaker:'盾將',text:'弓兵需要時間射擊。把盾將放在前方，先攔住逼近的屍兵。',action:'部署盾將'},
-   archer:{title:'第三步｜從後方攻擊',speaker:'蜀軍弓兵',text:'盾將負責阻擋，我會從後方攻擊。把弓兵部署在盾將後面。',action:'部署蜀軍弓兵'}
+   scout:{title:'敵軍現身｜第 3 路',speaker:'蜀軍斥候',text:'先看清楚再布防：第一名赤巾小屍已在第 3 路現身。戰鬥暫停期間，敵人不會前進。',action:'看清路線後開始教學'},
+   food:{title:'第一步｜備妥軍糧',speaker:'軍糧官',text:'每次部署都會消耗軍糧；軍糧官需要 50 軍糧，部署後會定時補給。請放在第 3 路第 1 欄，不阻擋後方射線。',action:'部署軍糧官'},
+   shield:{title:'第二步｜擋住第 3 路',speaker:'盾將',text:'敵人已確認從第 3 路逼近。請把盾將放在第 3 路第 5 欄，替後方弓兵爭取攻擊時間。',action:'部署盾將'},
+   archer:{title:'第三步｜從後方攻擊',speaker:'蜀軍弓兵',text:'請把弓兵放在第 3 路第 3 欄；我會隔著盾將持續攻擊同一路的敵人。',action:'部署蜀軍弓兵'},
+   ambush:{title:'第四步｜伏兵先埋、接近才爆發',speaker:'伏兵',text:'伏兵需要 25 軍糧，埋下後要準備 4.5 秒，敵人靠近才會引爆。請放在第 3 路第 6 欄；完成後仍保留 75 軍糧供你補防。',action:'部署伏兵'}
   },
-  removeUnit:{remove:{title:'新功能｜撤回傷兵',speaker:'盾將',text:'前排盾將中了屍毒，必須在毒霧落下前撤回。使用「移除武將」，再點擊被標記的傷兵。',action:'開始撤離'}},
-  relocateUnit:{relocate:{title:'新功能｜換列支援',speaker:'蜀軍弓兵',text:'敵軍改從鄰路逼近。使用「換列」，選擇剛部署的守軍，再移到同欄相鄰空格。',action:'開始調動'}},
+  removeUnit:{remove:{title:'新功能｜撤回傷兵',speaker:'盾將',text:'這名盾將已經重傷，繼續留在前排很快會被擊倒。使用「移除武將」，再點擊被標記的傷兵，騰出位置重新部署。',action:'開始撤離'}},
+  relocateUnit:{relocate:{title:'新功能｜換列支援',speaker:'蜀軍弓兵',text:'先練習把守軍調往相鄰路線。使用「換列」，選擇剛部署的守軍，再移到同欄相鄰空格；真正遇到轉線敵軍時就能立即補防。',action:'開始調動'}},
   strategy:{strategy:{title:'新功能｜使用軍令',speaker:'軍師',text:'你已取得第一個策略點。使用策略點選擇一項軍令，完成後戰鬥才會繼續。',action:'選擇軍令'}}
  };
  return copy[id]?.[step]||null;
@@ -85,20 +87,41 @@ function closeBattleLesson(){
  document.getElementById('battleLessonDialog')?.close();document.getElementById('game')?.classList.remove('battle-lesson-open');
  const tutorial=state.tutorial;if(tutorial){delete tutorial.dialogStep;tutorial.interactionPaused=true}
  state.paused=true;applyPausedBattleUI();updateBattleActionUI();persistBattleState();
- const focus=lesson.id==='firstDefense'?document.querySelector(`#cards [data-key="${lesson.step==='food'?'sunflower':lesson.step==='shield'?'wallnut':'peashooter'}"]`):lesson.id==='removeUnit'?document.getElementById('removeUnitBtn'):lesson.id==='relocateUnit'?document.getElementById('relocateUnitBtn'):document.getElementById('strategyBtn');
+ if(lesson.id==='firstDefense'&&lesson.step==='scout'&&tutorial){tutorial.step='food';tutorial.interactionPaused=false;buildCards();return openBattleLesson('firstDefense','food')}
+ const firstDefenseKey={food:'sunflower',shield:'wallnut',archer:'peashooter',ambush:'potato'}[lesson.step];
+ const focus=lesson.id==='firstDefense'?document.querySelector(`#cards [data-key="${firstDefenseKey}"]`):lesson.id==='removeUnit'?document.getElementById('removeUnitBtn'):lesson.id==='relocateUnit'?document.getElementById('relocateUnitBtn'):document.getElementById('strategyBtn');
  focus?.focus({preventScroll:true});return true;
 }
 function cancelBattleLesson(){
  activeBattleLesson=null;const dialog=document.getElementById('battleLessonDialog');if(dialog?.open)dialog.close();document.getElementById('game')?.classList.remove('battle-lesson-open');
 }
+function ensureFirstDefenseScenario(){
+ if(state?.tutorial?.id!=='firstDefense')return false;
+ if(state.tutorial.resourceGranted!==true){
+  if(state.tutorial.step==='scout'&&!state.plants.length)state.resource=Math.max(state.resource,300);
+  state.tutorial.resourceGranted=true;
+ }
+ state.guidedDefense=state.guidedDefense||{lane:2,remaining:3};
+ if(!state.zombies.some(z=>z.tutorialScout&&z.hp>0)){
+  const scout=addZombie('normal',7.6,state.guidedDefense.lane);scout.tutorialScout=true;
+  state.enemiesSpawned=(state.enemiesSpawned||0)+1;state.lastAI.normal=state.time||0;
+  state.guidedDefense.remaining=Math.max(0,state.guidedDefense.remaining-1);
+ }
+ return true;
+}
+function firstDefensePlacement(){
+ const tutorial=state?.tutorial;if(tutorial?.id!=='firstDefense')return null;
+ return {food:{r:2,c:0},shield:{r:2,c:4},archer:{r:2,c:2},ambush:{r:2,c:5}}[tutorial.step]||null;
+}
 function initializeBattleTutorial(){
  const tutorial=state?.tutorial;if(!tutorial)return false;
- if(tutorial.id==='firstDefense'){const guidedCost=['sunflower','wallnut','peashooter'].reduce((total,key)=>total+battleDeploymentCost(PLANT_TYPES[key].cost),0);state.resource=Math.max(state.resource,guidedCost)}
+ if(tutorial.id==='firstDefense')ensureFirstDefenseScenario();
  if(tutorial.id==='removeUnit'&&!tutorial.targetId){const wounded=addPlant('wallnut',0,2);wounded.hp=Math.max(1,Math.round(wounded.maxHp*.25));wounded.tutorialTarget='remove';tutorial.targetId=wounded.id}
  return true;
 }
 function startBattleTutorial(){
  const tutorial=state?.tutorial;if(!tutorial)return false;
+ if(tutorial.id==='firstDefense')ensureFirstDefenseScenario();
  if(tutorial.dialogStep)return openBattleLesson(tutorial.id,tutorial.dialogStep);
  if(tutorial.id==='firstDefense')return openBattleLesson(tutorial.id,tutorial.step);
  if(tutorial.id==='removeUnit')return openBattleLesson(tutorial.id,'remove');
@@ -113,7 +136,8 @@ function afterTutorialDeployment(key,deployed){
  if(tutorial.id==='firstDefense'){
   if(tutorial.step==='food'&&key==='sunflower'){tutorial.step='shield';buildCards();openBattleLesson('firstDefense','shield')}
   else if(tutorial.step==='shield'&&key==='wallnut'){tutorial.step='archer';buildCards();openBattleLesson('firstDefense','archer')}
-  else if(tutorial.step==='archer'&&key==='peashooter')completeBattleLesson('firstDefense');
+  else if(tutorial.step==='archer'&&key==='peashooter'){tutorial.step='ambush';buildCards();openBattleLesson('firstDefense','ambush')}
+  else if(tutorial.step==='ambush'&&key==='potato')completeBattleLesson('firstDefense');
   return;
  }
  if(tutorial.id==='relocateUnit'&&tutorial.step==='await-deploy'&&deployed&&key!=='potato'){tutorial.step='relocate';tutorial.targetId=deployed.id;openBattleLesson('relocateUnit','relocate')}

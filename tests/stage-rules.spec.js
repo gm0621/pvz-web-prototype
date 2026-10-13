@@ -138,12 +138,37 @@ test('pilot defense rules have deterministic win, loss and battle-time mechanics
    frost:{lane:frost.runtime.frozenLane,cycle:frost.runtime.cycle,multiplier:stageRuleMovementMultiplier('zombies',frost.runtime.frozenLane,frost.runtime)}
   };
  });
- expect(result.mower).toEqual({failed:true,remaining:4});
+ expect(result.mower).toEqual({failed:false,remaining:4});
  expect(result.escort.afterPressure.escort.hp).toBeLessThan(300);
  expect(result.escort.afterSafe.escort.progress).toBeGreaterThan(result.escort.afterPressure.escort.progress);
  expect(result.escort.failed).toBe(false);
  expect(result.lock).toEqual({lane:1,cycle:1});
  expect(result.frost).toEqual({lane:1,cycle:1,multiplier:.55});
+});
+
+test('a fresh lane mower clears the leak before verdict and only a later breach loses',async({page})=>{
+ await openApp(page);
+ const result=await page.evaluate(()=>{
+  currentUser=null;playerProfile=defaultProfile();currentSeason=1;currentFaction='plants';selectedLevel=1;start('plants');clearInterval(timer);cancelBattleLesson();state.tutorial=null;
+  state.zombies=[];const first=addZombie('normal',.24,2);triggerMower(2);
+  const rescue={over:state.over,hp:first.hp,used:state.lawnmowers[2].used,active:state.lawnmowers[2].active,remaining:state.gameplay.stageRule.data.mowersRemaining};
+  state.lawnmowers[2].active=false;state.zombies=[];const second=addZombie('normal',-.05,2);actZombies();
+  return {rescue,second:{over:state.over,hp:second.hp},title:document.getElementById('modalTitle').textContent};
+ });
+ expect(result.rescue).toEqual({over:false,hp:0,used:true,active:true,remaining:4});
+ expect(result.second.over).toBe(true);
+ expect(result.title).toContain('突破');
+});
+
+test('restoring during a mower run preserves its use without leaving a frozen active mower',async({page})=>{
+ await openApp(page);
+ const result=await page.evaluate(()=>{
+  currentUser=null;playerProfile=defaultProfile();currentSeason=1;currentFaction='plants';selectedLevel=1;start('plants');clearInterval(timer);cancelBattleLesson();state.tutorial=null;
+  state.zombies=[];addZombie('normal',.24,2);triggerMower(2);persistBattleState();restoreBattleIfAvailable();clearInterval(timer);
+  return {mower:state.lawnmowers[2],over:state.over,remaining:state.gameplay.stageRule.data.mowersRemaining};
+ });
+ expect(result.mower).toMatchObject({used:true,active:false,x:10});
+ expect(result).toMatchObject({over:false,remaining:4});
 });
 
 test('pilot attack objectives require their designated target and escort',async({page})=>{
@@ -174,7 +199,7 @@ test('all six pilot verdicts are wired through the live battle end path',async({
    state.gameplay.stageRule=createStageRuleRuntime(stageRuleContextFor(state.levelConfig,faction,season,level,state));
   };
   begin(1,'plants',1);state.bossSpawned=true;state.zombies=[];checkEnd();
-  begin(1,'plants',1);recordStageRuleEvent({type:'mower-used',lane:0});checkEnd();
+  begin(1,'plants',1);recordStageRuleEvent({type:'mower-used',lane:0});checkEnd();recordStageRuleEvent({type:'breach',lane:0});checkEnd();
   begin(1,'plants',2);state.bossSpawned=true;state.zombies=[];Object.assign(state.gameplay.stageRule.data.escort,{progress:100,hp:1});checkEnd();
   begin(1,'plants',2);state.gameplay.stageRule.data.escort.hp=0;checkEnd();
   begin(1,'plants',3);state.bossSpawned=true;state.zombies=[];checkEnd();

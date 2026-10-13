@@ -43,7 +43,7 @@ test('cloud verification failure cannot play or mark a victory story',async({pag
 test('back and reload cancel unread intros while paused battles resume without replay',async({page})=>{
  await openGame(page);await chooseFirst(page);await page.goBack();await expect(page.locator('#storyDialog')).not.toBeVisible();expect(await page.evaluate(()=>hasReadStory('plants',1,'opening'))).toBe(false);
  await page.evaluate(()=>backToHome());await chooseFirst(page);await page.reload();await expect(page.locator('#storyDialog')).not.toBeVisible();expect(await page.evaluate(()=>!!state&&!state.over)).toBe(false);
- await chooseFirst(page);await page.locator('#storySkip').click();await page.locator('#battleLessonContinue').click();await page.locator('#backBtn').click();const saved=await page.evaluate(()=>JSON.parse(localStorage.getItem(BATTLE_SAVE_KEY)).state.time);
+ await chooseFirst(page);await page.locator('#storySkip').click();await page.locator('#battleLessonContinue').click();await page.locator('#battleLessonContinue').click();await page.locator('#backBtn').click();const saved=await page.evaluate(()=>JSON.parse(localStorage.getItem(BATTLE_SAVE_KEY)).state.time);
  await page.locator('#resumeBattleBtn').click();await expect(page.locator('#storyDialog')).not.toBeVisible();expect(await page.evaluate(()=>({paused:state.paused,time:state.time}))).toEqual({paused:true,time:saved});
 });
 test('locked scenes cannot be replayed and defeat never advances the campaign',async({page})=>{

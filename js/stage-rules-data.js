@@ -37,12 +37,12 @@ const QIN_FINALE_RULE=immutableRule({
  isFailed:runtime=>!!runtime.breached
 });
 const KEEP_MOWERS_RULE=immutableRule({
- id:'keep-mowers',title:'五路推車守備',archetype:'protect',
- objective:()=>['保住五路推車，全關不得啟動任何一台','運用基礎守軍擋住每一路試探','擊敗全數敵軍與關底大魔王'],
+ id:'keep-mowers',title:'五路推車防線',archetype:'protect',
+ objective:()=>['每一路推車可在首次漏怪時自動清除該路敵軍','已啟動推車的路線若再次被突破，戰鬥才會失敗','善用守軍保留更多推車，並擊敗全數敵軍與關底大魔王'],
  start:()=>({kind:'keep-mowers',breached:false,mowersRemaining:5}),
  onEvent:(runtime,event)=>event.type==='mower-used'?{...runtime,mowersRemaining:Math.max(0,runtime.mowersRemaining-1)}:event.type==='breach'?{...runtime,breached:true}:runtime,
- isComplete:(runtime,context)=>runtime.mowersRemaining===5&&defenseCleared(context),
- isFailed:runtime=>runtime.mowersRemaining<5||!!runtime.breached
+ isComplete:(runtime,context)=>defenseCleared(context),
+ isFailed:runtime=>!!runtime.breached
 });
 const ESCORT_GRAIN_RULE=immutableRule({
  id:'escort-grain',title:'護送運糧車',archetype:'escort',
