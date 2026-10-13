@@ -246,6 +246,7 @@ function createTacticalOrderOffer(triggerId){
 function updateStrategyButton(){
  const button=document.getElementById('strategyBtn'),orders=state?.gameplay?.orders;
  if(!button)return;
+ const available=battleFeatureAvailable('strategy');button.hidden=!available;
  const points=Math.max(0,Math.floor(Number(orders?.points)||0));
  button.textContent=`🧭 策略點 ${points}`;
  button.disabled=!state||state.over||points<1;
@@ -254,17 +255,17 @@ function updateStrategyButton(){
 }
 function grantStrategyPoint(source='milestone'){
  const orders=tacticalOrderState();
- if(!orders||state.over)return false;
+ if(!orders||state.over||!battleFeatureAvailable('strategy'))return false;
  orders.points=Math.max(0,Math.floor(Number(orders.points)||0))+1;
  updateStrategyButton();persistBattleState();
- log(`獲得 1 策略點（目前 ${orders.points} 點）；可自行決定是否使用軍令。`);
+ log(`獲得 1 策略點（目前 ${orders.points} 點）；可自行決定是否使用軍令。`);maybeTeachStrategyPoint();
  return true;
 }
 function openTacticalOrderMenu(){
  const orders=tacticalOrderState();
  if(!orders||state.over||orders.points<1||typeof activeCampaignStory!=='undefined'&&activeCampaignStory)return false;
  if(!orders.offer&&!createTacticalOrderOffer(`manual-${orders.nextOfferId}`))return false;
- orders.dialogOpen=true;orders.resumeAfterSelection=!state.paused;
+ orders.dialogOpen=true;orders.resumeAfterSelection=battleTutorialInteractionAllowed('strategy')?state.tutorial?.resumeAfter===true:!state.paused;
  state.paused=true;state.actionMode=null;state.movingPlantId=null;
  applyPausedBattleUI();updateBattleActionUI();renderTacticalOrderOffer();persistBattleState();
  return true;
@@ -313,6 +314,7 @@ function chooseTacticalOrder(id){
  applyTacticalOrderEntityTransition(entitySnapshot);
  const resume=orders.resumeAfterSelection===true;
  orders.points--;orders.offer=null;orders.dialogOpen=false;delete orders.resumeAfterSelection;
+ afterTutorialStrategyUse();
  state.paused=!resume;
  renderTacticalOrderOffer();applyPausedBattleUI();if(typeof updateDeploymentCardCosts==='function')updateDeploymentCardCosts();updateBattleActionUI();updateHUD();persistBattleState();
  const focusTarget=document.getElementById(state.paused?'pauseResumeBtn':'strategyBtn');focusTarget?.focus({preventScroll:true});

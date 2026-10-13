@@ -1,7 +1,7 @@
 // Battle-only presentation and legal placement rules; never writes campaign progress.
 function deploymentReadyReason(key){
  if(!state||state.over)return '戰鬥已結束';
- if(state.paused)return '已暫停，繼續後才能出兵';
+ if(state.paused&&!battleTutorialInteractionAllowed('deploy',key))return '已暫停，繼續後才能出兵';
  const d=(state.faction==='plants'?PLANT_TYPES:ZOMBIE_TYPES)[key];
  if(!d||!canUseUnit(state.faction,key,state.level))return '角色尚未開放';
  if(battleDifficultyConfig(state.difficulty).blocksHeroes&&challengeUnitIsHero(key))return `困難難度不得部署武將：${d.name}`;
@@ -28,7 +28,7 @@ function clearDeploymentSelection(){
 function setBattleText(id,text){const el=$(id);if(el&&el.textContent!==text)el.textContent=text}
 function updateDeploymentGuide(){
  const grid=$('grid');if(!state||!grid)return;
- const key=state.selected,reason=key?deploymentReadyReason(key):'',active=!!key&&!state.over&&!state.paused&&!state.actionMode;
+ const key=state.selected,reason=key?deploymentReadyReason(key):'',active=!!key&&!state.over&&(!state.paused||battleTutorialInteractionAllowed('deploy',key))&&!state.actionMode;
  const signature=[key,reason,active,state.faction,stageRuleBlockedLane(state.gameplay?.stageRule?.data),state.plants.map(p=>`${p.r},${p.c}`).join(';')].join('|');
  if(grid.dataset.deploymentSignature!==signature){
   grid.dataset.deploymentSignature=signature;
@@ -39,7 +39,8 @@ function updateDeploymentGuide(){
   });
  }
  const side=state.faction==='plants'?'左側第 1～7 欄空格':'右側第 8、9 欄';
- setBattleText('deploymentHint',state.over?'戰鬥已結束':state.paused?'已暫停，繼續後才能出兵':state.actionMode?'操作模式中；選角色可返回出兵':key?(reason||`✓ 綠框可放｜${side}｜再點角色取消`):`選角色查看可放位置｜${side}`);
+ const tutorialDeploy=key&&battleTutorialInteractionAllowed('deploy',key);
+ setBattleText('deploymentHint',state.over?'戰鬥已結束':state.paused&&!tutorialDeploy?'已暫停，繼續後才能出兵':state.actionMode?'操作模式中；選角色可返回出兵':key?(reason||`✓ 綠框可放｜${side}｜再點角色取消`):`選角色查看可放位置｜${side}`);
 }
 function updateAttackStatus(){
  const el=$('attackStatus');if(!el||!state)return;

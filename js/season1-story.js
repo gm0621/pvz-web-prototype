@@ -23,10 +23,10 @@ function renderCampaignStory(){
  const portrait=storyElement('storyPortrait');portrait.hidden=!unit?.asset;
  if(unit?.asset){portrait.src=unit.asset;portrait.alt=line.speaker}else{portrait.removeAttribute('src');portrait.alt=''}
 }
-function openCampaignStory(faction,level,scene,{replay=false,required=false,onComplete=null,season=currentSeason}={}){
+function openCampaignStory(faction,level,scene,{replay=false,required=false,onComplete=null,season=currentSeason,compact=false}={}){
  const data=campaignStoryData(season)[faction]?.[level];if(!data?.[scene]?.length)return false;
  closeCampaignStory(false);
- const lines=data[scene].slice();
+ const lines=compact&&scene==='opening'?data[scene].slice(0,3):data[scene].slice();
 
  activeCampaignStory={faction,level,season,scene,replay,required,onComplete,lines,index:0,focus:document.activeElement};
  storyElement('storyTitle').textContent=campaignLevels(season)[level].name;
@@ -47,11 +47,12 @@ function requestCampaignBattle(faction,level=selectedLevel,options={}){
  const season=currentSeason,battleOptions={challengeIds:[...new Set(Array.isArray(options?.challengeIds)?options.challengeIds:[])],difficulty:normalizeBattleDifficulty(options?.difficulty,'medium')},requestFullscreen=options?.fullscreen===true;
  if(!isCampaignLevelUnlocked(faction,level,season))return false;
  if(activeCampaignStory)return false;
- const begin=()=>{if(currentSeason!==season||!isCampaignLevelUnlocked(faction,level,season))return false;if(requestFullscreen)enterBattleFullscreenByDefault();selectedLevel=level;currentFaction=faction;start(faction,battleOptions);return true};
- if(campaignStoryData(season)[faction]?.[level]&&!hasReadStory(faction,level,'opening',season)){
+ const guidedOpening=!!campaignStoryData(season)[faction]?.[level]&&!hasReadStory(faction,level,'opening',season);
+ const begin=()=>{if(currentSeason!==season||!isCampaignLevelUnlocked(faction,level,season))return false;if(requestFullscreen)enterBattleFullscreenByDefault();selectedLevel=level;currentFaction=faction;start(faction,{...battleOptions,guidedOpening});return true};
+ if(guidedOpening){
   if(storyElement('game').classList.contains('active')){currentFaction=faction;backToLevelSelect()}
   pauseAndSaveBattle('story');clearInterval(timer);
-  return openCampaignStory(faction,level,'opening',{onComplete:begin,season});
+  return openCampaignStory(faction,level,'opening',{onComplete:begin,season,compact:true});
  }
  return begin();
 }

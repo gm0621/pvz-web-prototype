@@ -93,7 +93,7 @@ test('completing a defense wave grants one strategy point without pausing or ope
 test('strategy menu remains visible and operable inside native fullscreen',async({page})=>{
  await openApp(page);
  await page.evaluate(()=>{
-  currentSeason=1;currentFaction='plants';selectedLevel=1;start('plants');clearInterval(timer);state.openingQueue=[];grantStrategyPoint('fullscreen-test');updateHUD();
+  currentSeason=1;currentFaction='plants';for(let level=1;level<5;level++)completeCampaignLevel('plants',level);selectedLevel=5;start('plants');clearInterval(timer);state.openingQueue=[];grantStrategyPoint('fullscreen-test');updateHUD();
  });
  await page.locator('#fullscreenBtn').click();
  await expect.poll(()=>page.evaluate(()=>!!document.fullscreenElement)).toBe(true);
@@ -158,7 +158,8 @@ test('attack milestones grant at most two strategy points without interrupting e
  for(const season of [1,2])results.push(await page.evaluate(season=>{
   currentSeason=season;
   for(let level=1;level<=10;level++)completeCampaignLevel('plants',level,season);
-  selectedLevel=1;start('zombies');clearInterval(timer);state.nextAI=Infinity;state.aiResource=0;
+  for(let level=1;level<=10;level++)completeCampaignLevel('zombies',level,season);
+  selectedLevel=5;start('zombies');clearInterval(timer);state.nextAI=Infinity;state.aiResource=0;
   const defender=state.plants[0],attacker=addZombie(season===2?'s2Rat':'normal',5,defender.r);
   applyBattleDamage(defender,defender.hp,{source:attacker,kind:'test-break'});cleanup();tick();
   const first={points:state.gameplay.orders.points,offer:state.gameplay.orders.offer,paused:state.paused,milestones:[...state.gameplay.orders.attackMilestones]};
@@ -177,8 +178,8 @@ test('attack milestones grant at most two strategy points without interrupting e
 test('strategy points and a pending offer survive reload without reopening while retry starts fresh',async({page})=>{
  await openApp(page);
  const before=await page.evaluate(()=>{
-  currentSeason=1;for(let level=1;level<=10;level++)completeCampaignLevel('plants',level,1);saveProfile();
-  selectedLevel=1;start('zombies');clearInterval(timer);state.nextAI=Infinity;state.aiResource=0;
+  currentSeason=1;for(let level=1;level<=10;level++)completeCampaignLevel('plants',level,1);for(let level=1;level<=10;level++)completeCampaignLevel('zombies',level,1);saveProfile();
+  selectedLevel=5;start('zombies');clearInterval(timer);state.nextAI=Infinity;state.aiResource=0;
   state.time=Math.ceil(state.levelConfig.attackTimeLimit*.6);tick();openTacticalOrderMenu();persistBattleState();
   return {points:state.gameplay.orders.points,offer:[...state.gameplay.orders.offer],dialogOpen:state.gameplay.orders.dialogOpen};
  });
@@ -191,7 +192,7 @@ test('strategy points and a pending offer survive reload without reopening while
  await page.locator('#strategyBtn').click();
  await expect(page.getByRole('dialog',{name:'選擇軍令'})).toBeVisible();
  expect(await page.evaluate(()=>state.gameplay.orders.offer)).toEqual(before.offer);
- const retry=await page.evaluate(()=>{selectedLevel=1;start('zombies');clearInterval(timer);return structuredClone(state.gameplay.orders)});
+ const retry=await page.evaluate(()=>{selectedLevel=5;start('zombies');clearInterval(timer);return structuredClone(state.gameplay.orders)});
  expect(retry).toEqual({selected:[],offer:null,history:[],nextOfferId:1,attackMilestones:[],points:0,dialogOpen:false});
 });
 

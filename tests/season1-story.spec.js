@@ -43,7 +43,7 @@ test('cloud verification failure cannot play or mark a victory story',async({pag
 test('back and reload cancel unread intros while paused battles resume without replay',async({page})=>{
  await openGame(page);await chooseFirst(page);await page.goBack();await expect(page.locator('#storyDialog')).not.toBeVisible();expect(await page.evaluate(()=>hasReadStory('plants',1,'opening'))).toBe(false);
  await page.evaluate(()=>backToHome());await chooseFirst(page);await page.reload();await expect(page.locator('#storyDialog')).not.toBeVisible();expect(await page.evaluate(()=>!!state&&!state.over)).toBe(false);
- await chooseFirst(page);await page.locator('#storySkip').click();await page.locator('#backBtn').click();const saved=await page.evaluate(()=>JSON.parse(localStorage.getItem(BATTLE_SAVE_KEY)).state.time);
+ await chooseFirst(page);await page.locator('#storySkip').click();await page.locator('#battleLessonContinue').click();await page.locator('#backBtn').click();const saved=await page.evaluate(()=>JSON.parse(localStorage.getItem(BATTLE_SAVE_KEY)).state.time);
  await page.locator('#resumeBattleBtn').click();await expect(page.locator('#storyDialog')).not.toBeVisible();expect(await page.evaluate(()=>({paused:state.paused,time:state.time}))).toEqual({paused:true,time:saved});
 });
 test('locked scenes cannot be replayed and defeat never advances the campaign',async({page})=>{
@@ -98,8 +98,8 @@ test('first-season opening blocks simulation and cloud match creation until skip
  await openGame(page);await page.evaluate(()=>{window.__storyStarts=0;startCloudMatch=()=>{window.__storyStarts++}});await chooseFirst(page);
  await expect(page.getByRole('dialog',{name:'第一關：草坪軍營初戰'})).toBeVisible();await expect(page.locator('#storyText')).toContainText('古戰場');
  expect(await page.evaluate(()=>({starts:window.__storyStarts,playing:!!state&&!state.over&&!state.paused}))).toEqual({starts:0,playing:false});
- const firstSoldier=await page.evaluate(()=>activeCampaignStory.lines.findIndex(x=>x.speaker==='蜀軍弓兵'));expect(firstSoldier).toBeGreaterThan(0);
- for(let i=0;i<firstSoldier;i++)await page.locator('#storyNext').click();await expect(page.locator('#storySpeaker')).toHaveText('蜀軍弓兵');await expect(page.locator('#storyPortrait')).toBeVisible();
+ expect(await page.evaluate(()=>activeCampaignStory.lines.length)).toBe(3);
+ await page.locator('#storyNext').click();await page.locator('#storyNext').click();await expect(page.locator('#storyCount')).toHaveText('3 / 3');
  await page.locator('#storySkip').click();await expect(page.locator('#storyDialog')).not.toBeVisible();await expect(page.locator('#game')).toHaveClass(/active/);
  expect(await page.evaluate(()=>window.__storyStarts)).toBe(1);expect(await page.evaluate(()=>state.time)).toBeLessThan(2000);
 });

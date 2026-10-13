@@ -20,7 +20,8 @@ test('finite waves cover all defense stages without changing quotas or introduci
    if(!waveTroops.some((x,i)=>i&&x.t-waveTroops[i-1].t<lv.minSpawnSpacing))issues.push('no burst');
    if(new Set(waveTroops.map(x=>x.r)).size<3)issues.push('lanes');
    if(state.aiResource<0)issues.push('negative budget');
-   if(state.gameplay.orders.points!==warnings.length||state.gameplay.orders.history.length!==0)issues.push('strategy-points');
+   const expectedPoints=season!==1||lv.level>=5?warnings.length:0;
+   if(state.gameplay.orders.points!==expectedPoints||state.gameplay.orders.history.length!==0)issues.push('strategy-points');
    runs.push({season,level:lv.level,issues,count:troops.length,waves:warnings.length,duration:state.time});
   }return runs;
  });expect(runs).toHaveLength(20);for(const r of runs){expect(r.issues,JSON.stringify(r)).toEqual([]);expect(r.waves).toBeGreaterThanOrEqual(2)}

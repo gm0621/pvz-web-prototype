@@ -40,10 +40,10 @@ test('zombie click highlights exactly right two columns; invalid cell costs noth
  await expect(page.locator('#deploymentHint')).toContainText('冷卻');
 });
 test('defender occupied cells, cancel, action mode, insufficient resource and paused deployment use one rule',async({page})=>{
- await battle(page,{faction:'plants'});await expect(page.locator('#attackStatus')).toBeHidden();
- await page.locator('#cards [data-key="peashooter"]').click();await expect(page.locator('#grid .deploy-allowed')).toHaveCount(35);
+ await battle(page,{faction:'plants',level:3});await page.evaluate(()=>{state.plants=[];render()});await expect(page.locator('#attackStatus')).toBeHidden();
+ await page.locator('#cards [data-key="peashooter"]').click();await expect(page.locator('#grid .deploy-allowed')).toHaveCount(28);
  await page.locator('.cell[data-r="2"][data-c="1"]').click();await page.locator('#cards [data-key="sunflower"]').click();
- await expect(page.locator('#grid .deploy-allowed')).toHaveCount(34);await expect(page.locator('.cell[data-r="2"][data-c="1"]')).toHaveClass(/deploy-blocked/);
+ await expect(page.locator('#grid .deploy-allowed')).toHaveCount(27);await expect(page.locator('.cell[data-r="2"][data-c="1"]')).toHaveClass(/deploy-blocked/);
  await page.locator('#cards [data-key="sunflower"]').click();await expect(page.locator('#grid .deploy-allowed')).toHaveCount(0);
  await page.locator('#cards [data-key="sunflower"]').click();await page.locator('#removeUnitBtn').click();await expect(page.locator('#grid .deploy-allowed')).toHaveCount(0);
  await page.locator('#cards [data-key="sunflower"]').click();await page.locator('#pauseBtn').click();await expect(page.locator('#grid .deploy-allowed')).toHaveCount(0);

@@ -1150,7 +1150,9 @@ test('Kongming and Pang Tong wait for targets, cast once, remain, and provide su
 test('defender removal mode frees an occupied cell without refunding grain', async ({ page }) => {
   await openApp(page);
   const result = await page.evaluate(() => {
-    selectedLevel = 1;
+    completeCampaignLevel('plants', 1);
+    completeCampaignLevel('plants', 2);
+    selectedLevel = 3;
     start('plants');
     clearInterval(timer);
     state.resource = 200;
@@ -1406,10 +1408,12 @@ test('manual pause and background restore preserve the unfinished battle without
   expect(restored).toEqual({level:1,time:12350,resource:333,plants:1,zombies:1,paused:true,pauseLabel:'▶ 繼續遊戲',timeAfterPausedTick:12350,pausedAfterContinue:false});
 });
 
-test('visible battle action controls work by tap and stay disabled for attackers', async ({ page }) => {
+test('unlocked battle action controls work by tap and stay hidden for attackers', async ({ page }) => {
   await openApp(page);
   await page.evaluate(() => {
-    selectedLevel = 1;
+    completeCampaignLevel('plants', 1);
+    completeCampaignLevel('plants', 2);
+    selectedLevel = 3;
     start('plants');
     clearInterval(timer);
     state.resource = 200;
@@ -1429,8 +1433,8 @@ test('visible battle action controls work by tap and stay disabled for attackers
     start('zombies');
     clearInterval(timer);
   });
-  await expect(page.locator('#removeUnitBtn')).toBeDisabled();
-  await expect(page.locator('#relocateUnitBtn')).toBeDisabled();
+  await expect(page.locator('#removeUnitBtn')).toBeHidden();
+  await expect(page.locator('#relocateUnitBtn')).toBeHidden();
 });
 
 test('general talents always apply while random super skills only add their stronger bonus', async ({ page }) => {

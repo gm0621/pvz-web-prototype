@@ -47,7 +47,7 @@ test('battle overlays and timers clean up immediately on replay level-select and
  await open(page);
  const result=await page.evaluate(async({dirtyBattle,overlaySnapshot})=>{
   dirtyBattle=eval(`(${dirtyBattle})`);overlaySnapshot=eval(`(${overlaySnapshot})`);const wait=ms=>new Promise(resolve=>setTimeout(resolve,ms));
-  playerProfile=normalizeProfile({});currentSeason=1;selectedLevel=1;start('plants');clearInterval(timer);
+  playerProfile=normalizeProfile({});currentSeason=1;for(let level=1;level<5;level++)completeCampaignLevel('plants',level);selectedLevel=5;start('plants');clearInterval(timer);
   const beforeReplay=dirtyBattle();
   start('plants');clearInterval(timer);const replayImmediate=overlaySnapshot();await wait(250);const replayDelayed=overlaySnapshot();
   dirtyBattle();backToLevelSelect(false);const levelSelectImmediate=overlaySnapshot();await wait(250);const levelSelectDelayed=overlaySnapshot();
