@@ -269,12 +269,13 @@ test('new players get one clear easy first-battle path before advanced choices',
 
 test('home can enter level selection and shop', async ({ page }) => {
   await openApp(page);
-  await page.locator('#plantStartBtn').click();
-  await expect(page.locator('#levelScreen')).toHaveClass(/active/);
-  await page.locator('#backFactionBtn').click();
   await page.locator('#shopBtn').click();
   await expect(page.locator('#shop')).toHaveClass(/active/);
   await expect(page.locator('#shopGrid .shop-item')).toHaveCount(36);
+  await page.locator('#shopBackBtn').click();
+  await page.locator('#plantStartBtn').click();
+  await expect(page.locator('#levelScreen')).toHaveClass(/active/);
+  await page.locator('#backFactionBtn').click();
 });
 
 test('shop faction labels separate items into 三國方 and 僵屍方', async ({ page }) => {
