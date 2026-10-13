@@ -234,6 +234,19 @@ test('home can enter level selection and shop', async ({ page }) => {
   await expect(page.locator('#shopGrid .shop-item')).toHaveCount(36);
 });
 
+test('shop faction labels separate items into 三國方 and 僵屍方', async ({ page }) => {
+  await openApp(page);
+  await page.evaluate(() => showShop('equipment'));
+  const filters=page.locator('#shopFilters');
+  await expect(filters.getByRole('button',{name:'三國方',exact:true})).toBeVisible();
+  await expect(filters.getByRole('button',{name:'僵屍方',exact:true})).toBeVisible();
+  await expect(filters).not.toContainText('三國守方');
+  await filters.getByRole('button',{name:'三國方',exact:true}).click();
+  await expect(page.locator('#shopGrid .shop-item')).toHaveCount(20);
+  await expect(page.locator('#shopGrid .shop-item').first()).toContainText('三國方｜');
+  await expect(page.locator('#shopGrid')).not.toContainText('僵屍方｜');
+});
+
 test('shop expands both seasons with concrete equipment and skill choices', async ({ page }) => {
   await openApp(page);
   const catalog = await page.evaluate(() => ({
