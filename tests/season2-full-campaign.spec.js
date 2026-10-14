@@ -77,6 +77,10 @@ test('a first clear shows a celebratory character unlock reveal with skill, repl
   await page.evaluate(async()=>{await end(true,'勝利','fixture')});
   await expect(page.locator('#unlockReveal')).toBeVisible();await expect(page.locator('#unlockReveal')).toContainText('恭喜解鎖');await expect(page.locator('#unlockReveal')).toContainText('夏侯惇');await expect(page.locator('#unlockReveal')).toContainText('拔矢不屈');await expect(page.locator('#unlockReveal img')).toHaveAttribute('src',/xiahou-dun\.webp/);
   await expect(page.locator('#unlockReveal .unlock-demo-board svg')).toBeVisible();await expect(page.locator('#unlockReveal .unlock-demo-replay')).toBeVisible();await expect(page.locator('#unlockReveal .unlock-demo-detail')).toBeVisible();
+  await page.locator('#unlockReveal .unlock-demo-detail').click();await expect(page.locator('#charModal')).toBeVisible();
+  await expect(page.locator('#modal')).toBeVisible();
+  await page.locator('#charModalClose').click();await expect(page.locator('#charModal')).not.toBeVisible();
+  await expect(page.locator('#modal')).toBeVisible();
   await page.evaluate(()=>{backToLevelSelect();markStoryRead('plants',3,'opening',2);selectedLevel=3;start('plants');clearInterval(timer)});await page.evaluate(async()=>{await end(true,'勝利','fixture')});
   await expect(page.locator('#unlockReveal')).toHaveCount(0);
 });

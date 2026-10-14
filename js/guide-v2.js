@@ -48,7 +48,7 @@ function showGuideV2(roster,key,mode='current',abilityId=null){
  const selector=$('guideAbility');selector.replaceChildren(...m.abilities.map(a=>{const label=a.id.startsWith('skill')?a.label.replace(/^(機率|條件)?技能/,'技能攻擊'):a.label;const o=guideNode('option',label);o.value=a.id;return o}));if(abilityId&&m.abilities.some(a=>a.id===abilityId))selector.value=abilityId;
  const summons=$('guideSummons');summons.replaceChildren();
  const keys=[...new Set(m.abilities.flatMap(a=>a.summons||[]))];if(keys.length){summons.append(guideNode('h3','召喚物詳細資料'));for(const k of keys){const base=(m.side==='plants'?PLANT_TYPES:ZOMBIE_TYPES)[k],b=guideNode('button',`查看 ${base.name}`);b.dataset.guideSummon=k;b.onclick=()=>showGuideV2(m.side,k);summons.append(b)}}
- modal.classList.add('show');guideChooseAbility();modal.querySelector('.char-detail-card').scrollTop=0;$('charModalClose').focus({preventScroll:true});
+ if(!modal.open)modal.showModal();modal.classList.add('show');guideChooseAbility();modal.querySelector('.char-detail-card').scrollTop=0;$('charModalClose').focus({preventScroll:true});
 }
 function guideChooseAbility(){
  guideStopDemo();guideDemoFrame=0;const m=guideDemoModel,a=m.abilities.find(a=>a.id===$('guideAbility').value);guideDemoAbility=a;
