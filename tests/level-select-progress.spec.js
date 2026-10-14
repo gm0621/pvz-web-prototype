@@ -5,6 +5,40 @@ async function open(page){
  await page.goto('/');
 }
 
+async function seedReturningPlayer(page){
+ await page.evaluate(()=>{playerProfile=normalizeProfile({season2Progress:{plants:{highestLevel:1,completedLevels:{1:1}}}})});
+}
+
+test('new players see one simple first-stage action until their first persisted clear',async({page})=>{
+ await open(page);
+ await page.evaluate(()=>showSeasonPicker('plants'));
+ await expect(page.locator('#seasonPicker')).toBeVisible();
+ await expect(page.locator('#campaignProgressPanel')).toBeHidden();
+ await page.locator('[data-season-choice="1"]').click();
+ const screen=page.locator('#levelScreen');
+ await expect(screen).toHaveClass(/newcomer-simple/);
+ await expect(page.locator('#campaignProgressTitle')).toContainText('第一關');
+ await expect(page.locator('#continueCampaignBtn')).toHaveText('開始第一關 ▶');
+ await expect(page.locator('#levelGrid')).toBeHidden();
+ await expect(page.locator('#browseLevelsBtn')).toBeHidden();
+ await expect(page.locator('#campaignProgressTrack')).toBeHidden();
+ await expect(page.locator('#levelSelectTip')).toBeHidden();
+ await expect(page.locator('#campaignProgressHint')).toContainText('第一次先直接開始');
+ await page.locator('#continueCampaignBtn').click();
+ await expect(page.locator('#storyDialog')).toHaveAttribute('open','');
+ await expect(page.locator('#levelGrid .level-card-details:not([hidden])')).toHaveCount(0);
+ await page.locator('#storySkip').click();
+ expect(await page.evaluate(()=>state.difficulty)).toBe('easy');
+
+ await page.evaluate(()=>{clearInterval(timer);completeCampaignLevel('plants',1,1);saveProfile(false,false)});
+ await page.reload();
+ await page.evaluate(()=>chooseFaction('plants',1));
+ await expect(screen).not.toHaveClass(/newcomer-simple/);
+ await expect(page.locator('#levelGrid')).toBeVisible();
+ await expect(page.locator('#browseLevelsBtn')).toBeVisible();
+ await expect(page.locator('#campaignProgressTrack')).toBeVisible();
+});
+
 test('level select leads with current progress and continues the next mainline stage',async({page})=>{
  await open(page);
  await page.evaluate(()=>{
@@ -29,8 +63,8 @@ test('level select leads with current progress and continues the next mainline s
 
 test('level details are progressive disclosure and an unfinished battle remains a distinct priority',async({page})=>{
  await open(page);
+ await seedReturningPlayer(page);
  await page.evaluate(()=>{
-  playerProfile=normalizeProfile({});
   currentSeason=1;selectedLevel=1;start('plants');clearInterval(timer);state.time=4321;
   state.waveDirector={version:1,plan:[{after:3,count:2},{after:7,count:3}],index:1,active:{id:2,count:3,sent:1},restUntil:0,story:{version:1,seen:{},event:null}};
   persistBattleState();backToLevelSelect(false);
@@ -69,6 +103,7 @@ test('progress track shows previous current and next stage around the recommenda
 
 test('progress track keeps three meaningful nodes at the start boundary',async({page})=>{
  await open(page);
+ await seedReturningPlayer(page);
  await page.evaluate(()=>chooseFaction('plants',1));
  const nodes=page.locator('#campaignProgressTrack .campaign-track-node');
  await expect(nodes).toHaveCount(3);
@@ -80,6 +115,7 @@ test('progress track keeps three meaningful nodes at the start boundary',async({
 
 test('browse action opens the recommended level in a modal',async({page})=>{
  await open(page);
+ await seedReturningPlayer(page);
  await page.evaluate(()=>chooseFaction('plants',1));
  await expect(page.locator('#browseLevelsBtn')).toHaveText('查看推薦關卡詳情');
  await page.locator('#browseLevelsBtn').click();
@@ -93,6 +129,7 @@ test('browse action opens the recommended level in a modal',async({page})=>{
 
 test('primary level action requires choosing difficulty in the modal before battle',async({page})=>{
  await open(page);
+ await seedReturningPlayer(page);
  await page.evaluate(()=>{markStoryRead('plants',1,'opening');chooseFaction('plants',1)});
  const first=page.locator('#levelGrid .level-card').first();
  await expect(first.locator('.level-start')).toHaveText('選擇難度並開始');
@@ -107,6 +144,7 @@ test('primary level action requires choosing difficulty in the modal before batt
 
 test('level detail modal traps keyboard focus, closes globally, and restores the actual opener',async({page})=>{
  await open(page);
+ await seedReturningPlayer(page);
  await page.evaluate(()=>{localStorage.setItem('sgZombieLevelSelectTipSeen','1');chooseFaction('plants',1)});
  const first=page.locator('#levelGrid .level-card').first(),start=first.locator('.level-start'),dialog=first.locator('.level-card-details');
  await start.click();
@@ -125,6 +163,7 @@ test('level detail modal traps keyboard focus, closes globally, and restores the
 
 test('level detail modal closes with Escape and restores focus before returning from battle',async({page})=>{
  await open(page);
+ await seedReturningPlayer(page);
  await page.evaluate(()=>{localStorage.setItem('sgZombieLevelSelectTipSeen','1');chooseFaction('plants',1)});
  const first=page.locator('#levelGrid .level-card').first();
  const second=page.locator('#levelGrid .level-card').nth(1);
@@ -145,6 +184,7 @@ test('level detail modal closes with Escape and restores focus before returning 
 test('first visit tip appears once and mobile sticky continue appears only after primary action scrolls away',async({page})=>{
  await page.setViewportSize({width:390,height:844});
  await open(page);
+ await seedReturningPlayer(page);
  await page.evaluate(()=>{localStorage.removeItem('sgZombieLevelSelectTipSeen');chooseFaction('plants',1)});
  await expect(page.locator('#levelSelectTip')).toBeVisible();
  await expect(page.locator('#levelSelectTip')).toContainText('三項挑戰會自動追蹤');

@@ -140,6 +140,7 @@ function processSeason2AttackEvents(){
 function setSeasonPickerVisible(visible){
  if(visible)resetLevelDetailsState();
  $('seasonPicker').classList.toggle('hidden',!visible);$('levelGrid').classList.toggle('hidden',visible);
+ $('campaignProgressPanel')?.classList.toggle('hidden',visible);if(visible){$('levelSelectTip')?.classList.add('hidden');$('levelScreen')?.classList.remove('newcomer-simple')}
  $('campaignHeading').textContent=visible?'選擇季度':'選擇關卡';
  $('backFactionBtn').setAttribute('aria-label',visible?'回陣營選擇':'回季度選擇');
 }

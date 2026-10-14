@@ -1,5 +1,5 @@
 const {test,expect}=require('@playwright/test');
-async function startLevelCard(page,selector){await page.locator(selector).click();await page.locator('.level-card-details:not([hidden]) .level-detail-start').click()}
+async function startLevelCard(page,selector){if(await page.locator('#levelScreen').evaluate(node=>node.classList.contains('newcomer-simple')))await page.locator('#continueCampaignBtn').click();else{await page.locator(selector).click();await page.locator('.level-card-details:not([hidden]) .level-detail-start').click()}}
 async function open(page){await page.route('https://cdn.jsdelivr.net/**',r=>r.fulfill({contentType:'application/javascript',body:''}));await page.goto('/');await page.evaluate(()=>{for(const f of ['plants','zombies'])markStoryRead(f,1,'opening',2)})}
 test('second season first defense starts with its own two soldiers and no stage-two bypass',async({page})=>{
  await open(page);

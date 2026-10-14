@@ -1,7 +1,7 @@
 const {test,expect}=require('@playwright/test');
 async function openGame(page){await page.route('https://cdn.jsdelivr.net/**',r=>r.fulfill({contentType:'application/javascript',body:''}));await page.goto('/');await expect(page.locator('#start')).toHaveClass(/active/);}
 async function startLevelCard(page,selector){await page.locator(selector).click();await page.locator('.level-card-details:not([hidden]) .level-detail-start').click()}
-async function chooseFirst(page){await page.locator('#plantStartBtn').click();await page.locator('[data-season-choice="1"]').click();await startLevelCard(page,'[data-jump-level="1"]')}
+async function chooseFirst(page){await page.locator('#plantStartBtn').click();await page.locator('[data-season-choice="1"]').click();await page.locator('#continueCampaignBtn').click()}
 test('attack story keeps the alternate timeline and normal unlock gate',async({page})=>{
  await openGame(page);expect(await page.evaluate(()=>requestCampaignBattle('zombies',1))).toBe(false);
  await page.evaluate(()=>{for(let level=1;level<=10;level++)completeCampaignLevel('plants',level);refreshCampaignUI()});

@@ -1,5 +1,5 @@
 const {test,expect}=require('@playwright/test');
-async function startLevelCard(page,selector){await page.locator(selector).click();await page.locator('.level-card-details:not([hidden]) .level-detail-start').click()}
+async function startLevelCard(page,selector){if(await page.locator('#levelScreen').evaluate(node=>node.classList.contains('newcomer-simple')))await page.locator('#continueCampaignBtn').click();else{await page.locator(selector).click();await page.locator('.level-card-details:not([hidden]) .level-detail-start').click()}}
 async function open(page){await page.route('https://cdn.jsdelivr.net/**',r=>r.fulfill({body:''}));await page.goto('/');}
 test('season two intro waits, can cancel, and season one read flags cannot suppress it',async({page})=>{
  await open(page);await page.evaluate(()=>{markStoryRead('plants',1,'opening');chooseFaction('plants',2);window.__starts=0;startCloudMatch=()=>{window.__starts++;return Promise.resolve()}});await startLevelCard(page,'[data-jump-level="1"]');await expect(page.locator('#storyDialog')).toBeVisible();await expect(page.locator('#storyRoute')).toContainText('北境鐵壁');expect(await page.evaluate(()=>window.__starts)).toBe(0);

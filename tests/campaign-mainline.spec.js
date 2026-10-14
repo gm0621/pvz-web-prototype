@@ -66,13 +66,12 @@ test('new prologue is readable, prev/close/replay are safe, and reading to the e
  await page.goto('/');await expect(page.locator('#start')).toHaveClass(/active/);
  await page.locator('#plantStartBtn').click();await page.locator('[data-season-choice="1"]').click();
  const profile=await page.evaluate(()=>JSON.stringify(playerProfile));
- await page.locator('#levelGrid .level-card').first().locator('.level-detail-toggle').click();
- await page.locator('[data-story-level="1"]').click();await expect(page.locator('#storyText')).toContainText('古戰場');
- await page.locator('#storyNext').click();await page.locator('#storyPrev').click();await expect(page.locator('#storyText')).toContainText('古戰場');
+ await page.locator('#continueCampaignBtn').click();await expect(page.locator('#storyText')).toContainText('役魂鈴喚醒屍兵');
+ await page.locator('#storyNext').click();await page.locator('#storyPrev').click();await expect(page.locator('#storyText')).toContainText('役魂鈴喚醒屍兵');
  await page.locator('#storyClose').click();expect(await page.evaluate(()=>JSON.stringify(playerProfile))).toBe(profile);
  expect(await page.evaluate(()=>hasReadStory('plants',1,'opening'))).toBe(false);
  await page.evaluate(()=>{window.__mainlineStarts=0;startCloudMatch=()=>{window.__mainlineStarts++}});
- await page.locator('#levelGrid .level-card').first().locator('.level-detail-start').click();
+ await page.locator('#continueCampaignBtn').click();
  const length=await page.evaluate(()=>activeCampaignStory.lines.length);
  for(let i=0;i<length;i++){
   expect(await page.evaluate(()=>window.__mainlineStarts)).toBe(0);

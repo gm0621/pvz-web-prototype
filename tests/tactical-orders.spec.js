@@ -107,7 +107,7 @@ test('strategy menu remains visible and operable inside native fullscreen',async
 
 test('starting a battle from the level confirmation requests fullscreen by default',async({page})=>{
  await openApp(page);
- await page.evaluate(()=>{playerProfile=normalizeProfile({});markStoryRead('plants',1,'opening',1);chooseFaction('plants',1)});
+ await page.evaluate(()=>{playerProfile=normalizeProfile({season2Progress:{plants:{highestLevel:1,completedLevels:{1:1}}}});markStoryRead('plants',1,'opening',1);chooseFaction('plants',1)});
  const card=page.locator('#levelGrid .level-card').first();
  await card.locator('.level-start').click();
  await card.locator('.level-detail-start').click();

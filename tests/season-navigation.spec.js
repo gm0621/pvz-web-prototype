@@ -15,7 +15,7 @@ test('faction entry offers seasons before levels while first-season attack stays
   await page.locator('#backFactionBtn').click();await expect(page.locator('#seasonPicker')).toBeVisible();
   await page.locator('#backFactionBtn').click();await expect(page.locator('#start')).toHaveClass(/active/);
  }
- await page.locator('#plantStartBtn').click();await page.locator('[data-season-choice="1"]').click();await page.locator('#levelGrid button').first().click();await page.locator('.level-card-details:not([hidden]) .level-detail-start').click();await expect(page.locator('#storyDialog')).toBeVisible();await page.locator('#storySkip').click();await expect(page.locator('#game')).toHaveClass(/active/); expect(await page.evaluate(()=>state.season)).toBe(1);
+ await page.locator('#plantStartBtn').click();await page.locator('[data-season-choice="1"]').click();await page.locator('#continueCampaignBtn').click();await expect(page.locator('#storyDialog')).toBeVisible();await page.locator('#storySkip').click();await expect(page.locator('#game')).toHaveClass(/active/); expect(await page.evaluate(()=>state.season)).toBe(1);
 });
 test('browser back follows levels to seasons to home',async({page})=>{
  await page.route('https://cdn.jsdelivr.net/**',r=>r.fulfill({contentType:'application/javascript',body:''}));await page.goto('/');
@@ -24,6 +24,7 @@ test('browser back follows levels to seasons to home',async({page})=>{
 });
 test('browser back clears an open level modal before rebuilding the season',async({page})=>{
  await page.route('https://cdn.jsdelivr.net/**',r=>r.fulfill({contentType:'application/javascript',body:''}));await page.goto('/');
+ await page.evaluate(()=>completeCampaignLevel('plants',1,2));
  await page.locator('#plantStartBtn').click();await page.locator('[data-season-choice="1"]').click();
  await page.locator('#levelGrid .level-card').first().locator('.level-start').click();
  await expect(page.locator('body')).toHaveClass(/level-detail-open/);
@@ -37,11 +38,11 @@ test('browser back clears an open level modal before rebuilding the season',asyn
 });
 test('browsing another season preserves and resumes the paused battle',async({page})=>{
  await page.route('https://cdn.jsdelivr.net/**',r=>r.fulfill({contentType:'application/javascript',body:''}));await page.goto('/');
- await page.locator('#zombieStartBtn').click();await page.locator('[data-season-choice="2"]').click();await page.locator('#levelGrid button').first().click();await page.locator('.level-card-details:not([hidden]) .level-detail-start').click();
+ await page.locator('#zombieStartBtn').click();await page.locator('[data-season-choice="2"]').click();await page.locator('#continueCampaignBtn').click();
  await page.locator('#storySkip').click();await page.locator('#cards .card').first().click();await page.locator('.cell[data-r="2"][data-c="8"]').click();await page.locator('#backBtn').click();
  const saved=await page.evaluate(()=>localStorage.getItem(BATTLE_SAVE_KEY));
  await page.locator('#plantStartBtn').click();await page.locator('[data-season-choice="1"]').click();expect(await page.evaluate(()=>localStorage.getItem(BATTLE_SAVE_KEY))).toBe(saved);
  await page.locator('#continueCampaignBtn').click();await expect(page.locator('#game')).toHaveClass(/active/);
  expect(await page.evaluate(()=>({season:state.season,faction:state.faction,paused:state.paused}))).toEqual({season:2,faction:'zombies',paused:true});
- await page.locator('#gameFloatBackBtn').click();await expect(page.locator('#levelGrid')).toBeVisible();await expect(page.locator('#seasonPicker')).toBeHidden();
+ await page.locator('#gameFloatBackBtn').click();await expect(page.locator('#levelGrid')).toBeHidden();await expect(page.locator('#seasonPicker')).toBeHidden();
 });
