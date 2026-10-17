@@ -80,6 +80,33 @@ test('six Shu heroes stay inside the first legal column on desktop and mobile',a
  }
 });
 
+test('undersized Shu heroes use calibrated battle sizes without leaving the board',async({page})=>{
+ await open(page);
+ const result=await page.evaluate(async()=>{
+  playerProfile.campaignProgress.plants={completedLevels:{1:1},highestLevel:1};
+  markStoryRead('plants',2,'opening',1);currentSeason=1;selectedLevel=2;start('plants');clearInterval(timer);
+  const expected=window.innerWidth<=720?{zhangfei:65,machao:68,huangzhong:62,liubei:64}:{zhangfei:82,machao:86,huangzhong:78,liubei:80};
+  const visibleBounds=async image=>{await image.decode();const canvas=document.createElement('canvas');canvas.width=image.naturalWidth;canvas.height=image.naturalHeight;const context=canvas.getContext('2d');context.drawImage(image,0,0);const {data,width,height}=context.getImageData(0,0,canvas.width,canvas.height);let left=width,top=height,right=-1,bottom=-1;for(let y=0;y<height;y++)for(let x=0;x<width;x++)if(data[(y*width+x)*4+3]>8){left=Math.min(left,x);top=Math.min(top,y);right=Math.max(right,x);bottom=Math.max(bottom,y)}return{left:left/width,top:top/height,right:(right+1)/width,bottom:(bottom+1)/height}};
+  const out={};
+  for(const [key,size] of Object.entries(expected)){
+   out[key]={expected:size,corners:[]};
+   for(const [col,row] of [[0,0],[COLS-1,0],[0,ROWS-1],[COLS-1,ROWS-1]]){
+    state.plants=[];state.zombies=[];state.projectiles=[];state.pendingPlantShots=[];state.time=2000;
+    addPlant(key,col,row);state.plants[0].bornAt=0;render();
+    const board=document.querySelector('#board').getBoundingClientRect(),image=document.querySelector(`#board .type-${key} .char-img`),box=image.getBoundingClientRect(),visible=await visibleBounds(image);
+    const visibleBox={left:box.left+box.width*visible.left,right:box.left+box.width*visible.right,top:box.top+box.height*visible.top,bottom:box.top+box.height*visible.bottom};
+    out[key].corners.push({col,row,width:box.width,height:box.height,left:visibleBox.left-board.left,right:board.right-visibleBox.right,top:visibleBox.top-board.top,bottom:board.bottom-visibleBox.bottom,inside:visibleBox.left>=board.left-.5&&visibleBox.right<=board.right+.5&&visibleBox.top>=board.top-.5&&visibleBox.bottom<=board.bottom+.5});
+   }
+  }
+  return out;
+ });
+ for(const [key,item] of Object.entries(result))for(const corner of item.corners){
+  expect(corner.width,key).toBe(item.expected);
+  expect(corner.height,key).toBe(item.expected);
+  expect(corner.inside,`${key} ${JSON.stringify(corner)}`).toBe(true);
+ }
+});
+
 test('six Shu battle idle images match their opening and closing attack footprint',async({page})=>{
  await open(page);
  const visible=await page.evaluate(async heroKeys=>{
