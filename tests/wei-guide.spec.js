@@ -35,7 +35,10 @@ test('Wei playable guide has separate Shu Wei zombie tabs and cannot mutate prog
     await expect(page.locator('#charModalRange')).toBeVisible();
     await expect(page.locator('#guideDemo')).toBeVisible();
     await expect(page.locator('#charModalStats')).not.toContainText('下一級');
-    if(i>=4) await expect(page.locator('#charModalSkill')).toContainText('機率技能');
+    const abilityIds=await page.evaluate(()=>guideDemoModel.abilities.map(a=>a.id));
+    await expect(page.locator('#charModalSkill .guide-ability-summary')).toHaveCount(abilityIds.length);
+    for(const id of abilityIds)await expect(page.locator(`#charModalSkill [data-ability-id="${id}"]`)).toHaveCount(1);
+    if(abilityIds.some(id=>id.startsWith('skill')))await expect(page.locator('#charModalSkill')).toContainText('機率技能');
     expect(await page.locator('.char-detail-card').evaluate(el=>el.scrollWidth<=el.clientWidth+1)).toBe(true);
     await page.locator('#charModalClose').click();
   }

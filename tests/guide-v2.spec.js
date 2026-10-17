@@ -9,6 +9,32 @@ test('unified guide covers every roster and summon without mutating game data',a
   document.querySelector('#charModalClose').click();return {count:entries.length,failures,unchanged:before===snapshot()};
  });expect(result.count).toBeGreaterThan(45);expect(result.failures).toEqual([]);expect(result.unchanged).toBe(true);expect(errors).toEqual([]);
 });
+test('probability skill upgrade label says next level instead of lower level',async({page})=>{
+ await open(page);await page.evaluate(()=>showCharacterDetail('plants','zhangfei'));
+ await expect(page.locator('#charModalStats')).toContainText('下一級 27%');
+ await expect(page.locator('#charModalStats')).not.toContainText('下級 27%');
+});
+
+test('ability introduction separates overview, selected effect and supporting rules',async({page})=>{
+ await open(page);await page.evaluate(()=>showCharacterDetail('plants','zhangfei'));
+ await expect(page.locator('#charModalSkill .guide-ability-summary')).toHaveCount(3);
+ await expect(page.locator('#charModalSkill')).toContainText('普通行動');
+ await expect(page.locator('#charModalSkill')).toContainText('固定天賦');
+ await expect(page.locator('#charModalSkill')).toContainText('機率技能');
+ await expect(page.locator('#charModalSkill')).toContainText('25% 發動');
+ await expect(page.locator('#guideAbilityTitle')).toHaveText('近戰');
+ await expect(page.locator('#guideAbilityInfo .guide-ability-effect')).toHaveCount(1);
+ await expect(page.locator('#guideAbilityInfo .guide-ability-rule')).toHaveCount(4);
+ await page.locator('#charModalSkill [data-ability-id="talent"]').click();
+ await expect(page.locator('#guideAbilityTitle')).toHaveText('彈開效果');
+ await expect(page.locator('#charModalSkill [data-ability-id="talent"]')).toHaveAttribute('aria-pressed','true');
+ await page.locator('#guideAbility').selectOption('skill');
+ await expect(page.locator('#guideAbilityTitle')).toHaveText('震軍爆擊');
+ await expect(page.locator('#guideAbilityKind')).toHaveText('機率技能');
+ await expect(page.locator('#guideAbilityLead')).toContainText('1.8 倍');
+ expect(await page.locator('.char-detail-card').evaluate(el=>el.scrollWidth<=el.clientWidth+1)).toBe(true);
+});
+
 test('Wei detail uses character attack animation without condition scenarios and keeps timer isolated',async({page})=>{
  await open(page);await page.getByRole('button',{name:'魏國',exact:true}).click();await page.locator('[data-wei-key="halberd-soldier"]').click();
  await expect(page.locator('#charModalRange')).toBeVisible();await expect(page.locator('#charModalStats')).toContainText('近戰');await expect(page.locator('#charModalStats')).not.toContainText('防禦力');

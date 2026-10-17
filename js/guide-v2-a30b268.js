@@ -5,7 +5,7 @@ function guideStopDemo(){if(guideDemoTimer!==null)clearTimeout(guideDemoTimer);g
 function guideScheduleDemo(delay=520){guideStopDemo();if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;guideDemoTimer=setTimeout(()=>{guideDemoTimer=null;guideTick()},delay)}
 function guideV2Init(){
  const modal=$('charModal');modal.classList.add('guide-v2');modal.setAttribute('role','dialog');modal.setAttribute('aria-modal','true');modal.setAttribute('aria-labelledby','charModalName');
- modal.querySelector('.char-detail-body').innerHTML=`<section class="guide-main"><h3 id="charModalSkillTitle">普通行動、天賦與技能</h3><p id="charModalSkill" class="skill-copy"></p><label class="guide-field">選擇招式<select id="guideAbility"></select></label><div id="guideAbilityInfo" class="guide-ability-info"></div><section id="guideDemo" aria-label="角色動畫示範"><div class="guide-demo-heading"><strong>角色動畫示範</strong><span id="guideDemoBadge"></span></div><div id="charModalRange" class="range-board"></div><p class="guide-range-note" id="guideRangeNote"></p><div class="guide-demo-controls"><button id="guidePlay" type="button">▶ 播放</button><button id="guideStep" type="button">下一幀</button><button id="guideReplay" type="button">↺ 重播</button><label>速度<select id="guideSpeed" aria-label="動畫速度"><option value="1">正常</option><option value="2">慢速</option></select></label></div><ol class="guide-timeline"><li>待機</li><li>鎖定</li><li>攻擊</li><li>命中</li><li>收招</li></ol><p id="guideDemoCaption" aria-live="polite"></p><p class="guide-disclaimer">角色動畫與效果為獨立示範，不扣資源、不改存檔；實戰數值仍以目前等級、裝備與技能規則為準。</p></section></section><aside class="guide-side"><h3 id="charModalStatsTitle">能力數值</h3><label class="guide-field">數值模式<select id="guideStatMode"><option value="current">目前等級＋裝備</option><option value="base">基礎數值</option><option value="next">下一級預覽（不升級）</option></select></label><div class="stat-grid" id="charModalStats"></div><div id="guideSummons"></div><h3>配置與限制</h3><p id="guideNotes"></p><p id="guideRandomNote"></p></aside>`;
+ modal.querySelector('.char-detail-body').innerHTML=`<section class="guide-main"><h3 id="charModalSkillTitle">能力總覽與招式詳解</h3><div id="charModalSkill" class="guide-ability-overview" aria-label="能力總覽"></div><label class="guide-field guide-ability-picker">查看招式詳細資料<select id="guideAbility"></select></label><div id="guideAbilityInfo" class="guide-ability-info" aria-live="polite"></div><section id="guideDemo" aria-label="角色動畫示範"><div class="guide-demo-heading"><strong>角色動畫示範</strong><span id="guideDemoBadge"></span></div><div id="charModalRange" class="range-board"></div><p class="guide-range-note" id="guideRangeNote"></p><div class="guide-demo-controls"><button id="guidePlay" type="button">▶ 播放</button><button id="guideStep" type="button">下一幀</button><button id="guideReplay" type="button">↺ 重播</button><label>速度<select id="guideSpeed" aria-label="動畫速度"><option value="1">正常</option><option value="2">慢速</option></select></label></div><ol class="guide-timeline"><li>待機</li><li>鎖定</li><li>攻擊</li><li>命中</li><li>收招</li></ol><p id="guideDemoCaption" aria-live="polite"></p><p class="guide-disclaimer">角色動畫與效果為獨立示範，不扣資源、不改存檔；實戰數值仍以目前等級、裝備與技能規則為準。</p></section></section><aside class="guide-side"><h3 id="charModalStatsTitle">能力數值</h3><label class="guide-field">數值模式<select id="guideStatMode"><option value="current">目前等級＋裝備</option><option value="base">基礎數值</option><option value="next">下一級預覽（不升級）</option></select></label><div class="stat-grid" id="charModalStats"></div><div id="guideSummons"></div><h3>配置與限制</h3><p id="guideNotes"></p><p id="guideRandomNote"></p></aside>`;
  $('guideAbility').onchange=()=>guideChooseAbility();
 
  $('guideStatMode').onchange=()=>{const m=guideDemoModel,id=guideDemoAbility.id;showGuideV2(m.roster,m.key,$('guideStatMode').value,id)};
@@ -22,6 +22,19 @@ function guideV2Init(){
  new MutationObserver(()=>{if(!modal.classList.contains('show'))guideStopDemo()}).observe(modal,{attributes:true,attributeFilter:['class']});
 }
 function guideStat(label,value){const item=guideNode('div',null,'stat-pill');item.append(guideNode('b',label),guideNode('span',value));return item}
+function guideAbilityKind(a){return a.id.startsWith('skill')?'機率技能':a.id==='talent'?'固定天賦':'普通行動'}
+function guideAbilityTitle(a){return (a.label.includes('｜')?a.label.split('｜').pop():a.label).replace(/^(普通攻擊|普通行動|天賦|技能攻擊|機率技能|條件技能)[：:]?/,'').trim()||a.label}
+function guideAbilitySummary(a){
+ const item=guideNode('button',null,'guide-ability-summary');item.type='button';item.dataset.abilityId=a.id;item.setAttribute('aria-pressed','false');
+ const status=a.id.startsWith('skill')?(a.chance?`${a.chance}% 發動`:'條件發動'):a.id==='talent'?'固定生效':'每次行動';
+ item.append(guideNode('span',guideAbilityKind(a),'guide-ability-type'),guideNode('b',guideAbilityTitle(a)),guideNode('small',status));
+ item.onclick=()=>{$('guideAbility').value=a.id;guideChooseAbility()};return item;
+}
+function guideOperationSummary(key){
+ const text=relocationDetail(key);if(!text)return null;
+ const item=guideNode('div',null,'guide-operation-summary');
+ item.append(guideNode('span','戰場操作','guide-ability-type'),guideNode('b','相鄰換列'),guideNode('span',text));return item;
+}
 function showGuideV2(roster,key,mode='current',abilityId=null){
  const m=guideV2Model(roster,key,mode);if(!m)return;
  if(!$('guideDemo'))guideV2Init();
@@ -30,8 +43,9 @@ function showGuideV2(roster,key,mode='current',abilityId=null){
  $('charModalImg').src=m.asset;$('charModalImg').alt=m.name;$('charModalName').textContent=m.name;
  $('charModalRole').textContent=`${roster==='wei'?'魏國':m.side==='plants'?'蜀國':'僵屍方'}｜第${m.season===2?'二':'一'}季｜${m.status}`;
  $('charModalIntro').textContent=m.intro;
- const talents=m.abilities.filter(a=>a.id==='talent'),skills=m.abilities.filter(a=>a.id==='skill');
- $('charModalSkill').textContent=[m.fixedNote||talents.map(a=>`${a.label.replace('｜','：')}（${m.preview?'設計候選':'固定生效'}）`).join(''),...skills.map(a=>`${a.label.replace('｜','：')}${a.chance?`，目前 Lv.${mode==='base'?1:m.level} 發動率 ${a.chance}%`:'，數值待定'}`),m.randomNote,m.season===1?relocationDetail(key):''].join(' ');
+ const skills=m.abilities.filter(a=>a.id==='skill');
+ const overview=$('charModalSkill'),operation=m.season===1?guideOperationSummary(key):null;
+ overview.replaceChildren(...m.abilities.map(guideAbilitySummary));if(operation)overview.append(operation);
  const statMode=$('guideStatMode');statMode.value=mode;statMode.options[0].textContent=m.preview?'候選／待定（未實裝）':'目前等級＋裝備';statMode.disabled=m.preview;statMode.setAttribute('aria-label',m.preview?'未實裝角色僅顯示候選或待定數值':'數值模式');
  const {d}=m,melee=m.abilities.find(a=>a.id==='melee'),ranged=m.abilities.find(a=>a.id==='ranged');
  $('charModalStatsTitle').textContent=m.preview?'候選／待定數值':mode==='base'?'基礎數值':`Lv.${m.level} ${mode==='next'?'下一級預覽':'目前能力'}`;
@@ -43,7 +57,7 @@ function showGuideV2(roster,key,mode='current',abilityId=null){
  ['卡片部署冷卻',m.base?.hidden?'不適用，依召喚者週期':guideSeconds(d.cooldown)],
  ['移動',d.speed?`${d.speed} 格／遊戲步（非每秒）；緩速、跳越另計。`:'固定站位／設計以招式說明為準。']
  ].map(([k,v])=>guideStat(k,v)));
- if(skills[0]?.chance){const chance=skills[0].chance,next=m.season===1?Math.round(superSkillChance(key,(mode==='base'?1:m.level)+1)*100):m.preview?Math.min(60,chance+2):chance;$('charModalStats').append(guideStat(m.preview?'機率技能候選':'機率技能發動率',`${chance}%（下級 ${next}%）${m.preview?'・尚未實裝':''}`))}
+ if(skills[0]?.chance){const chance=skills[0].chance,next=m.season===1?Math.round(superSkillChance(key,(mode==='base'?1:m.level)+1)*100):m.preview?Math.min(60,chance+2):chance;$('charModalStats').append(guideStat(m.preview?'機率技能候選':'機率技能發動率',`${chance}%（下一級 ${next}%）${m.preview?'・尚未實裝':''}`))}
  $('guideNotes').textContent=m.notes;$('guideRandomNote').textContent=m.randomNote;
  const selector=$('guideAbility');selector.replaceChildren(...m.abilities.map(a=>{const label=a.id.startsWith('skill')?a.label.replace(/^(機率|條件)?技能/,'技能攻擊'):a.label;const o=guideNode('option',label);o.value=a.id;return o}));if(abilityId&&m.abilities.some(a=>a.id===abilityId))selector.value=abilityId;
  const summons=$('guideSummons');summons.replaceChildren();
@@ -52,8 +66,13 @@ function showGuideV2(roster,key,mode='current',abilityId=null){
 }
 function guideChooseAbility(){
  guideStopDemo();guideDemoFrame=0;const m=guideDemoModel,a=m.abilities.find(a=>a.id===$('guideAbility').value);guideDemoAbility=a;
- const details=[['發動條件',a.condition],['攻擊／影響範圍',a.rangeText],['傷害與效果',a.effect],['間隔／持續／冷卻',a.timing],['限制與例外',a.limits]];
- $('guideAbilityInfo').replaceChildren(...details.map(([k,v])=>guideStat(k,v)));
+ const effect=guideNode('section',null,'guide-ability-effect'),heading=guideNode('div',null,'guide-ability-effect-copy');
+ heading.append(guideNode('span',guideAbilityKind(a),'guide-ability-kind'),guideNode('h4',guideAbilityTitle(a)),guideNode('p',a.effect));
+ effect.append(heading);effect.querySelector('span').id='guideAbilityKind';effect.querySelector('h4').id='guideAbilityTitle';effect.querySelector('p').id='guideAbilityLead';
+ const rules=guideNode('div',null,'guide-ability-rules');
+ for(const [k,v]of[['如何發動',a.condition],['影響範圍',a.rangeText],['時間與冷卻',a.timing],['限制',a.limits]]){const item=guideNode('div',null,'guide-ability-rule');item.append(guideNode('b',k),guideNode('span',v));rules.append(item)}
+ $('guideAbilityInfo').replaceChildren(effect,rules);
+ document.querySelectorAll('#charModalSkill .guide-ability-summary').forEach(item=>item.setAttribute('aria-pressed',String(item.dataset.abilityId===a.id)));
  const animationLabel=a.id.startsWith('skill')?'機率技能｜只有發動時出現強化特效':a.id==='talent'?'固定天賦｜每次符合條件都生效':'普通攻擊｜每次合法攻擊';
  $('guideDemoBadge').textContent=m.preview?`${animationLabel}・概念預覽`:animationLabel;
  $('guideRangeNote').textContent=`${a.rangeText}。${a.reach===null?'範圍未定，不繪製假射程。':'金色為招式範圍、藍色為角色、紅色為示範目標；角色會播放目前實際攻擊圖幀。'}`;

@@ -1006,7 +1006,13 @@ test('named generals gain random super-skill chance with level while strategists
       lowRoll: heroes.map(key => rollSuperSkill(key, () => 0.249)),
       highRoll: heroes.map(key => rollSuperSkill(key, () => 0.99)),
       excluded: ['kongming','pangtong'].map(key => ({chance: superSkillChance(key, 99), roll: rollSuperSkill(key, () => 0)})),
-      ui: (() => { showCharacterDetail('plants','firepea'); return {detail:document.querySelector('#charModalSkill').textContent,stats:document.querySelector('#charModalStats').textContent}; })()
+      ui: (() => {
+        showCharacterDetail('plants','firepea');
+        return {
+          abilities:[...document.querySelectorAll('#charModalSkill .guide-ability-summary')].map(item=>({kind:item.querySelector('.guide-ability-type')?.textContent,title:item.querySelector('b')?.textContent,status:item.querySelector('small')?.textContent})),
+          stats:document.querySelector('#charModalStats').textContent
+        };
+      })()
     };
   });
   expect(result.level1).toEqual([0.25,0.25,0.25,0.25,0.25,0.25]);
@@ -1015,11 +1021,12 @@ test('named generals gain random super-skill chance with level while strategists
   expect(result.lowRoll.every(Boolean)).toBeTruthy();
   expect(result.highRoll.some(Boolean)).toBeFalsy();
   expect(result.excluded).toEqual([{chance:0,roll:false},{chance:0,roll:false}]);
-  expect(result.ui.detail).toContain('目前 Lv.1 發動率 25%');
-  expect(result.ui.detail).toContain('天賦：火焰效果（固定生效）');
-  expect(result.ui.detail).toContain('機率技能：青龍爆擊');
-  expect(result.ui.detail).not.toContain('未觸發時只使用普通攻擊');
-  expect(result.ui.stats).toContain('25%（下級 27%）');
+  expect(result.ui.abilities).toEqual([
+    {kind:'普通行動',title:'遠程',status:'每次行動'},
+    {kind:'固定天賦',title:'火焰效果',status:'固定生效'},
+    {kind:'機率技能',title:'青龍爆擊',status:'25% 發動'}
+  ]);
+  expect(result.ui.stats).toContain('25%（下一級 27%）');
 });
 
 test('character guide lighting follows real campaign unlock progress instead of the selected level', async ({ page }) => {
@@ -1146,7 +1153,8 @@ test('character guide uses balanced ability sections and labels key zombie talen
       talents:Object.fromEntries(['football','jester','bombJester','corpseTitan','fireCatapult','qinEmperor','necromancer'].map(key=>[key,document.querySelector(`#characterGrid .type-${key} .ability-summary`)?.textContent]))
     };
     showCharacterDetail('zombies','corpseTitan');
-    zombie.detail=document.querySelector('#charModalSkill').textContent;
+    const detail=document.querySelector('#charModalSkill [data-ability-id="talent"]');
+    zombie.detail={kind:detail.querySelector('.guide-ability-type')?.textContent,title:detail.querySelector('b')?.textContent,status:detail.querySelector('small')?.textContent};
     return {plant,zombie};
   });
   expect(result.plant.allHaveAbility).toBeTruthy();
@@ -1159,7 +1167,7 @@ test('character guide uses balanced ability sections and labels key zombie talen
   expect(result.zombie.basic).toContain('招式：');
   const expected={football:'屍王疾行',jester:'亂陣狂笑',bombJester:'終幕爆彈',corpseTitan:'破城震擊',fireCatapult:'烈焰轟石',qinEmperor:'兵馬俑召令',necromancer:'幽冥禁咒'};
   for(const [key,name] of Object.entries(expected))expect(result.zombie.talents[key]).toContain(`天賦：${name}`);
-  expect(result.zombie.detail).toContain('天賦：破城震擊（固定生效）');
+  expect(result.zombie.detail).toEqual({kind:'固定天賦',title:'破城震擊',status:'固定生效'});
 });
 
 test('Kongming and Pang Tong wait for targets, cast once, remain, and provide support', async ({ page }) => {

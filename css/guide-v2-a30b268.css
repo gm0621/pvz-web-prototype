@@ -18,8 +18,27 @@
 #charModal.guide-v2 .stat-pill{display:flex;flex-direction:column;gap:5px;background:#21374a;border:1px solid #456073;border-radius:10px;padding:11px 13px;min-width:0}
 #charModal.guide-v2 .stat-pill b{color:#acd8ec;font-size:12px}
 #charModal.guide-v2 .stat-pill span{color:#f2f4f8;font-size:14px;line-height:1.65;white-space:normal;overflow-wrap:anywhere}
-#charModal.guide-v2 .guide-ability-info{display:grid;gap:7px;margin-bottom:18px}
-#charModal.guide-v2 #charModalSkill{font-size:13px;color:#bfd1e0;line-height:1.6;white-space:normal}
+#charModal.guide-v2 .guide-ability-overview{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:8px;margin:0 0 14px}
+#charModal.guide-v2 button.guide-ability-summary{display:grid;grid-template-columns:1fr auto;gap:4px 8px;align-content:start;text-align:left;min-height:86px;padding:11px 12px;background:#172b3b;border:1px solid #45677a;border-radius:12px}
+#charModal.guide-v2 .guide-ability-summary .guide-ability-type{grid-column:1/-1;color:#9ec8db;font-size:11px;font-weight:800;letter-spacing:.05em}
+#charModal.guide-v2 .guide-ability-summary b{color:#f5f8fb;font-size:15px;line-height:1.35}
+#charModal.guide-v2 .guide-ability-summary small{align-self:center;color:#bad0dc;font-size:11px;white-space:nowrap}
+#charModal.guide-v2 .guide-ability-summary[aria-pressed="true"]{border-color:#f1c868;background:linear-gradient(145deg,#344032,#1d3544);box-shadow:0 0 0 2px #f1c86822}
+#charModal.guide-v2 .guide-ability-summary[aria-pressed="true"] .guide-ability-type,#charModal.guide-v2 .guide-ability-summary[aria-pressed="true"] small{color:#ffe3a1}
+#charModal.guide-v2 .guide-operation-summary{grid-column:1/-1;display:grid;grid-template-columns:auto minmax(90px,.35fr) 1fr;align-items:center;gap:8px 12px;padding:10px 12px;border:1px dashed #63879a;border-radius:10px;background:#142a39;color:#cfe0e8}
+#charModal.guide-v2 .guide-operation-summary .guide-ability-type{color:#9ec8db;font-size:11px;font-weight:800;letter-spacing:.05em}
+#charModal.guide-v2 .guide-operation-summary b{color:#f5f8fb;font-size:14px}
+#charModal.guide-v2 .guide-operation-summary>span:last-child{font-size:12px;line-height:1.55}
+#charModal.guide-v2 .guide-ability-picker{margin:0 0 10px}
+#charModal.guide-v2 .guide-ability-info{display:grid;gap:9px;margin-bottom:18px}
+#charModal.guide-v2 .guide-ability-effect{border:1px solid #c89b3c;background:linear-gradient(135deg,#3e321f,#20384a);border-radius:14px;padding:14px 16px;box-shadow:inset 4px 0 0 #f1c868}
+#charModal.guide-v2 .guide-ability-kind{display:inline-block;margin-bottom:5px;padding:3px 7px;border-radius:999px;background:#f1c868;color:#182431;font-size:11px;font-weight:900}
+#charModal.guide-v2 .guide-ability-effect h4{margin:0 0 5px;color:#fff7d6;font-size:20px}
+#charModal.guide-v2 .guide-ability-effect p{margin:0;color:#fff;font-size:15px;line-height:1.65}
+#charModal.guide-v2 .guide-ability-rules{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+#charModal.guide-v2 .guide-ability-rule{display:flex;flex-direction:column;gap:5px;min-width:0;padding:10px 12px;border:1px solid #3e596b;border-radius:10px;background:#1a3041}
+#charModal.guide-v2 .guide-ability-rule b{color:#a9d8ec;font-size:12px}
+#charModal.guide-v2 .guide-ability-rule span{color:#e9f0f5;font-size:13px;line-height:1.6;overflow-wrap:anywhere}
 #charModal.guide-v2 #guideDemo{border:1px solid #658391;border-radius:14px;background:#0f2230;padding:12px}
 #charModal.guide-v2 .guide-demo-heading{display:flex;justify-content:space-between;gap:8px;align-items:center;margin-bottom:10px;flex-wrap:wrap}
 #charModal.guide-v2 #guideDemoBadge{font-size:11px;color:#ffdd88;background:#493c22;padding:5px 8px;border-radius:6px}
@@ -58,6 +77,11 @@
  #charModal.guide-v2 .char-detail-head img{width:64px;height:64px}
  #charModal.guide-v2 .char-detail-head h2{font-size:20px}
  #charModal.guide-v2 .char-detail-body{grid-template-columns:minmax(0,1fr);padding:12px;gap:18px}
+ #charModal.guide-v2 .guide-ability-overview{grid-template-columns:1fr;gap:7px}
+ #charModal.guide-v2 button.guide-ability-summary{grid-template-columns:minmax(0,1fr) auto;min-height:0;padding:10px 12px}
+ #charModal.guide-v2 .guide-operation-summary{grid-template-columns:1fr;gap:4px}
+ #charModal.guide-v2 .guide-ability-rules{grid-template-columns:1fr}
+ #charModal.guide-v2 .guide-ability-effect{padding:13px 14px}
  #charModal.guide-v2 .guide-side{border-top:1px solid #496476;padding-top:18px}
  #charModal.guide-v2 .char-detail-close{top:16px;right:18px}
  #charModal.guide-v2 .guide-demo-heading{padding-right:62px}
