@@ -38,7 +38,10 @@ test('seven Wei generals use eight attack frames and resolve their attack on the
   expect(value.frames).toHaveLength(8);
   expect(value.battleAsset).toMatch(new RegExp(`${slug}/idle\\.webp$`));
   expect(value.frames[0]).toMatch(new RegExp(`${slug}/attack-00\\.webp$`));
-  expect(value.frames[7]).toMatch(new RegExp(`${slug}/attack-07\\.webp$`));
+  if(['guo-jia','sima-yi'].includes(slug)){
+   expect(value.frames.map(src=>src.match(/attack-(\d+)\.webp$/)?.[1])).toEqual(['00','01','02','03','04','05','07','00']);
+   expect(value.frames.some(src=>src.endsWith('/attack-06.webp'))).toBe(false);
+  }else expect(value.frames[7]).toMatch(new RegExp(`${slug}/attack-07\\.webp$`));
   expect(value.firstSrc).toMatch(/attack-00\.webp$/);
   expect(value.beforeHit.hp).toBe(value.before);
   expect(value.beforeHit.pending).toBe(1);
