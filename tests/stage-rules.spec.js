@@ -188,6 +188,45 @@ test('pilot attack objectives require their designated target and escort',async(
  expect(result.escortComplete).toBe(true);
 });
 
+test('season-two attackers leave after an incomplete breach so later units can finish the objective',async({page})=>{
+ await openApp(page);
+ const result=await page.evaluate(()=>{
+  currentUser=null;playerProfile=defaultProfile();for(let level=1;level<=10;level++)completeCampaignLevel('plants',level,1);completeCampaignLevel('zombies',1,2);currentSeason=2;currentFaction='zombies';selectedLevel=2;start('zombies');clearInterval(timer);cancelBattleLesson();state.tutorial=null;
+  state.plants=[];state.zombies=[];state.lawnmowers.forEach(mower=>{mower.used=true;mower.active=false});
+  const first=addZombie('s2Rat',.001,0),second=addZombie('s2Rat',.001,1);
+  actSeason2Zombies();
+  return {
+   over:state.over,
+   capturedLanes:[...state.gameplay.stageRule.data.capturedLanes],
+   firstActive:state.zombies.some(unit=>unit.id===first.id&&unit.hp>0),
+   secondC:second.c,
+   title:document.getElementById('modalTitle').textContent
+  };
+ });
+ expect(result).toMatchObject({over:true,capturedLanes:[0,1],firstActive:false});
+ expect(result.title).toContain('通關');
+ expect(result.secondC).toBeLessThan(0);
+});
+
+test('season-two escort ram can finish after an ordinary zombie breaches first',async({page})=>{
+ await openApp(page);
+ const result=await page.evaluate(async()=>{
+  currentUser=null;playerProfile=defaultProfile();for(let level=1;level<=10;level++)completeCampaignLevel('plants',level,1);currentSeason=2;currentFaction='zombies';selectedLevel=1;start('zombies');clearInterval(timer);cancelBattleLesson();state.tutorial=null;
+  state.plants=[];state.lawnmowers.forEach(mower=>{mower.used=true;mower.active=false});
+  const ram=state.zombies.find(unit=>unit.stageEscort==='gate-ram'),ordinary=addZombie('s2Rat',.001,0);ram.c=.001;state.zombies=[ordinary,ram];
+  await actSeason2Zombies();
+  return {
+   over:state.over,
+   escortBreached:state.gameplay.stageRule.data.escortBreached,
+   ordinaryActive:state.zombies.some(unit=>unit.id===ordinary.id&&unit.hp>0),
+   completed:isCampaignLevelCompleted('zombies',1,2),
+   outcomes:state.gameplay.telemetry.events.filter(event=>event.type==='outcome').length,
+   title:document.getElementById('modalTitle').textContent
+  };
+ });
+ expect(result).toEqual({over:true,escortBreached:true,ordinaryActive:false,completed:true,outcomes:1,title:'霜土前哨通關！'});
+});
+
 test('all six pilot verdicts are wired through the live battle end path',async({page})=>{
  await openApp(page);
  const outcomes=await page.evaluate(()=>{
