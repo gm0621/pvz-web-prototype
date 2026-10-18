@@ -96,20 +96,20 @@ test('屍巫、狂笑與重槌 use their declared warning windows before applyin
  ]);
 });
 
-test('秦皇天下一統 warns the chosen lane for 1.4 seconds before damage',async({page})=>{
+test('秦皇天下一統 warns three chosen lanes for 1.4 seconds before damage',async({page})=>{
  await openApp(page);
  const result=await page.evaluate(()=>{
   playerProfile=normalizeProfile({});for(let level=1;level<=10;level++)completeCampaignLevel('plants',level);
   currentSeason=1;currentFaction='plants';selectedLevel=11;start('plants');clearInterval(timer);state.paused=false;state.time=50000;
-  const boss=qinBossEntity(),plant={id:'qin-target',type:'wallnut',r:3,c:3,hp:500,maxHp:500,last:0,bornAt:0};state.plants=[plant];
-  const before=plant.hp;executeQinCommand(boss,3);const warning=state.gameplay.telegraphs.active.find(item=>item.kind==='qin-unification')||null;
-  if(warning){state.time=warning.executeAt-50;processEnemyTelegraphs()}const early=plant.hp;
+  const boss=qinBossEntity();state.plants=[2,3,4].map(r=>({id:`qin-target-${r}`,type:'wallnut',r,c:3,hp:500,maxHp:500,last:0,bornAt:0}));
+  const health=()=>Object.fromEntries(state.plants.map(plant=>[plant.r,plant.hp])),before=health();executeQinCommand(boss,3);const warning=state.gameplay.telegraphs.active.find(item=>item.kind==='qin-unification')||null;
+  if(warning){state.time=warning.executeAt-50;processEnemyTelegraphs()}const early=health();
   if(warning){state.time=warning.executeAt;processEnemyTelegraphs()}
-  return {warning,before,early,after:plant.hp,remaining:state.gameplay.telegraphs.active.length};
+  return {warning,before,early,after:health(),remaining:state.gameplay.telegraphs.active.length};
  });
- expect(result.warning).toMatchObject({kind:'qin-unification',duration:1400,cancelOnSourceDeath:false,targets:[{r:3}]});
- expect(result.early).toBe(result.before);
- expect(result.after).toBeLessThan(result.before);
+ expect(result.warning).toMatchObject({kind:'qin-unification',duration:1400,cancelOnSourceDeath:false,targets:[{r:4},{r:3},{r:2}],data:{phase:3,damage:110,stunDuration:1500}});
+ expect(result.early).toEqual(result.before);
+ expect(result.after).toEqual({2:390,3:390,4:390});
  expect(result.remaining).toBe(0);
 });
 

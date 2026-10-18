@@ -159,6 +159,33 @@ test('finale starts the three-phase boss and three tiger seals break formation',
  expect(after.commandRow).toBe(1);
 });
 
+test('Qin commands strike more lanes each phase while escorts stay secondary',async({page})=>{
+ await openApp(page);
+ const result=await page.evaluate(()=>{
+  playerProfile=normalizeProfile({});for(let level=1;level<=10;level++)completeCampaignLevel('plants',level);
+  currentSeason=1;selectedLevel=11;start('plants');clearInterval(timer);
+  const boss=qinBossEntity(),phases=[];
+  for(const phase of [1,2,3]){
+   state.zombies=state.zombies.filter(unit=>unit===boss);state.plants=[];gameplayTelegraphs().active=[];
+   for(let row=0;row<5;row++)for(let column=0;column<=row;column++)addPlant('wallnut',column,row);
+   boss.hp=boss.maxHp*({1:.9,2:.6,3:.2}[phase]);state.qinBoss.lastPhase=phase;state.qinBoss.phase=phase;state.qinBoss.command=100;state.qinBoss.nextCaptainAt=Infinity;
+   processQinBoss();
+   const telegraph=gameplayTelegraphs().active.find(item=>item.kind==='qin-unification'),summons=state.zombies.filter(unit=>unit.summoned).length,before=state.plants.map(unit=>({id:unit.id,hp:unit.hp}));
+   state.time=telegraph?.executeAt||state.time;processEnemyTelegraphs();
+   const hitRows=[...new Set(state.plants.filter(unit=>unit.hp<before.find(item=>item.id===unit.id).hp).map(unit=>unit.r))];
+   const losses=hitRows.map(row=>{const unit=state.plants.find(plant=>plant.r===row),old=before.find(item=>item.id===unit.id);return old.hp-unit.hp});
+   const stuns=hitRows.map(row=>Math.max(...state.plants.filter(unit=>unit.r===row).map(unit=>(unit.stunUntil||state.time)-state.time)));
+   phases.push({phase,targets:telegraph?.targets.map(target=>target.r)||[],summons,hitRows,losses,stuns});
+  }
+  return phases;
+ });
+ expect(result).toEqual([
+  {phase:1,targets:[4],summons:0,hitRows:[4],losses:[60],stuns:[600]},
+  {phase:2,targets:[4,3],summons:1,hitRows:[3,4],losses:[85,85],stuns:[1000,1000]},
+  {phase:3,targets:[4,3,2],summons:2,hitRows:[2,3,4],losses:[110,110,110],stuns:[1500,1500,1500]}
+ ]);
+});
+
 test('Qin formation guard resists lane focus until tiger seals open the damage window',async({page})=>{
  await openApp(page);
  const result=await page.evaluate(()=>{
