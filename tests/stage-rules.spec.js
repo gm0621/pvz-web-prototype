@@ -146,6 +146,23 @@ test('pilot defense rules have deterministic win, loss and battle-time mechanics
  expect(result.frost).toEqual({lane:1,cycle:1,multiplier:.55});
 });
 
+test('fog movement speed stays fixed instead of compounding on every tick',async({page})=>{
+ await openApp(page);
+ const result=await page.evaluate(()=>{
+  playerProfile=defaultProfile();
+  for(let level=1;level<10;level++)completeCampaignLevel('plants',level,2);
+  currentSeason=2;currentFaction='plants';selectedLevel=10;start('plants');clearInterval(timer);
+  const baseBefore=ZOMBIE_TYPES.s2Rat.speed,row=1,speeds=[];
+  for(let index=0;index<200;index++)speeds.push(battleMovementSpeed('zombies','s2Rat',row,state));
+  return {baseBefore,baseAfter:ZOMBIE_TYPES.s2Rat.speed,first:speeds[0],last:speeds.at(-1),unique:new Set(speeds).size};
+ });
+ expect(result.baseBefore).toBeCloseTo(.015,8);
+ expect(result.baseAfter).toBeCloseTo(.015,8);
+ expect(result.first).toBeCloseTo(.0168,8);
+ expect(result.last).toBeCloseTo(.0168,8);
+ expect(result.unique).toBe(1);
+});
+
 test('a fresh lane mower clears the leak before verdict and only a later breach loses',async({page})=>{
  await openApp(page);
  const result=await page.evaluate(()=>{

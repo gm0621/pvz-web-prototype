@@ -198,7 +198,8 @@ function clampBattleUnit(unit,baseline){
  return out;
 }
 function resolveBattleUnit(side,key,battle=state,context={}){
- const playerControlled=!!battle&&battle.faction===side,base=baseUnit(side,key);if(!base)return {unit:base,layers:[],sources:[]};
+ const playerControlled=!!battle&&battle.faction===side,source=baseUnit(side,key);if(!source)return {unit:source,layers:[],sources:[]};
+ const base={...source};
  const fairMode=playerControlled&&battle?.gameplay?.challenge?.fairMode===true,permanentLayers=playerControlled&&!fairMode&&typeof permanentUnitLayers==='function'?permanentUnitLayers(side,key):null,permanent=permanentLayers?.fixedTalent||base;
  const layers=[
   {id:'base-equipment',unit:{...(permanentLayers?.equipment||base)}},
