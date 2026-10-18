@@ -34,6 +34,26 @@ test('battle keeps optional intelligence collapsed and transient status out of b
  await expect(drawer).toBeHidden();
 });
 
+test('mobile battle title wraps below the intelligence control without overlap',async({page})=>{
+ await open(page);
+ await page.evaluate(()=>{
+  playerProfile=normalizeProfile({});for(let level=1;level<10;level++)completeCampaignLevel('plants',level,2);
+  currentSeason=2;selectedLevel=10;markStoryRead('plants',10,'opening',2);start('plants');clearInterval(timer);cancelBattleLesson();
+ });
+ for(const viewport of [{width:390,height:844},{width:320,height:740}]){
+  await page.setViewportSize(viewport);
+  const layout=await page.evaluate(()=>{
+   const title=document.getElementById('modeTitle'),toggle=document.getElementById('battleIntelToggle');
+   const titleBox=title.getBoundingClientRect(),toggleBox=toggle.getBoundingClientRect(),style=getComputedStyle(title);
+   return {title:{left:titleBox.left,right:titleBox.right,top:titleBox.top,bottom:titleBox.bottom,height:titleBox.height},toggle:{left:toggleBox.left,right:toggleBox.right,top:toggleBox.top,bottom:toggleBox.bottom},whiteSpace:style.whiteSpace,overflow:document.documentElement.scrollWidth>innerWidth};
+  });
+  expect(layout.whiteSpace).not.toBe('nowrap');
+  expect(layout.title.bottom<=layout.toggle.top||layout.toggle.bottom<=layout.title.top||layout.title.right<=layout.toggle.left||layout.toggle.right<=layout.title.left).toBe(true);
+  expect(layout.title.height).toBeGreaterThan(20);
+  expect(layout.overflow).toBe(false);
+ }
+});
+
 test('defense wave completion shows one nonblocking telemetry report with real leaders',async({page})=>{
  await open(page);
  const result=await page.evaluate(()=>{

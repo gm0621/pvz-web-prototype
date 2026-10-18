@@ -44,8 +44,9 @@ body.level-detail-open{overflow:hidden}
  .level-detail-dialog-card .level-art{height:min(26vh,220px)}
  .game:not(.fullscreen-mode) .board{min-height:0}
  .game:not(.fullscreen-mode) .cards-panel{max-height:none}
- .game:not(.fullscreen-mode) .battle-intel{top:52px;right:6px}
+ .game:not(.fullscreen-mode) .battle-intel{top:6px;right:6px}
  .battle-intel-toggle{min-width:78px;min-height:38px;padding:6px 10px;font-size:12px}
+ .compact-level-title{min-height:42px;white-space:normal;overflow:visible;text-overflow:clip;line-height:1.25}
  .battle-intel-drawer{position:fixed;z-index:130;top:76px;right:8px;left:8px;width:auto;max-height:calc(100dvh - 92px)}
  .game:not(.fullscreen-mode) .wave-report,.game:not(.fullscreen-mode) .wave-status{inset:auto;width:100%;max-width:none}
  .game:not(.fullscreen-mode) .wave-report{padding-right:118px}
