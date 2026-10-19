@@ -20,8 +20,8 @@ const mockSupabase = `
       getSession: async () => {
         const params=new URL(location.href).searchParams;
         if(params.has('slowSession'))await new Promise(resolve=>setTimeout(resolve,80));
-        if(params.has('rejectSession'))throw new Error('temporary auth lookup failure');
-        if(params.has('errorSession'))return {data:{session:null},error:{message:'temporary auth lookup failure'}};
+        if(params.has('rejectSession')){queueMicrotask(()=>authListener('INITIAL_SESSION',null));throw new Error('temporary auth lookup failure')}
+        if(params.has('errorSession')){queueMicrotask(()=>authListener('INITIAL_SESSION',null));return {data:{session:null},error:{message:'temporary auth lookup failure'}}}
         return {data: {session: params.has('existingSession') ? {user: {id: 'user-1', email: 'player@example.com'}} : null},error:null};
       },
       onAuthStateChange: cb => { authListener = cb; return {data: {subscription: {unsubscribe(){}}}}; },

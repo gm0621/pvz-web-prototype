@@ -6,9 +6,10 @@ function showAccountScreen(mode='login'){if(currentUser){showProfileCenter();ret
 function submitAccountForm(){return accountMode==='signup'?signUpEmail():signInEmail()}
 async function initAuth(){
  const client=initSupabaseClient();if(!client){finalizeBattleIdentity(true);return}
- client.auth.onAuthStateChange(async(event,session)=>{currentUser=session?.user||null;cloudMatchId=null;updateAccountStatus();if(event==='PASSWORD_RECOVERY'){showProfileCenter();accountStatus('驗證完成，請在「帳號與安全」設定新密碼。')}else if(currentUser)await pullCloudProfile(false);finalizeBattleIdentity(false)});
+ let initialLookupResolved=false;
+ client.auth.onAuthStateChange(async(event,session)=>{if(event==='INITIAL_SESSION'&&!session&&!initialLookupResolved)return;currentUser=session?.user||null;cloudMatchId=null;updateAccountStatus();if(event==='PASSWORD_RECOVERY'){showProfileCenter();accountStatus('驗證完成，請在「帳號與安全」設定新密碼。')}else if(currentUser)await pullCloudProfile(false);finalizeBattleIdentity(false)});
  try{
-  const {data,error}=await client.auth.getSession();if(error)throw error;
+  const {data,error}=await client.auth.getSession();if(error)throw error;initialLookupResolved=true;
   currentUser=data?.session?.user||null;updateAccountStatus();if(currentUser)await pullCloudProfile(false);finalizeBattleIdentity(true)
  }catch(error){updateAccountStatus();accountStatus('登入狀態確認失敗；暫不載入未完成戰局。',true)}
 }
