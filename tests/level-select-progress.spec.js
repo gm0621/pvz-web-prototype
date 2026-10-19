@@ -228,9 +228,9 @@ test('cross-route resume names the saved route and ignores incompatible snapshot
  await expect(page.locator('#campaignProgressTitle')).toContainText('第二季・僵屍進攻');
  await expect(page.locator('#campaignProgressTitle')).toContainText('第 4 關');
  await page.evaluate(()=>{
-  const snapshot=JSON.parse(localStorage.getItem(BATTLE_SAVE_KEY));
+  const snapshot=JSON.parse(localStorage.getItem(battleSaveStorageKey()));
   snapshot.version=-1;
-  localStorage.setItem(BATTLE_SAVE_KEY,JSON.stringify(snapshot));
+  localStorage.setItem(battleSaveStorageKey(),JSON.stringify(snapshot));
   chooseFaction('plants',1);
  });
  await expect(page.locator('#campaignProgressKicker')).toHaveText('下一關');

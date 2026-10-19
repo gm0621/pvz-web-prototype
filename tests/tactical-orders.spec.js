@@ -80,7 +80,7 @@ test('completing a defense wave grants one strategy point without pausing or ope
   start('plants');clearInterval(timer);state.openingQueue=[];state.time=80000;state.aiResource=1000;
   state.waveDirector.active={id:1,count:1,sent:0,warnedAt:state.time-5000,nextAt:state.time,rallied:true,rows:[]};
   updateDefenseWaves();updateHUD();
-  const saved=JSON.parse(localStorage.getItem(BATTLE_SAVE_KEY));
+  const saved=JSON.parse(localStorage.getItem(battleSaveStorageKey()));
   return {time:state.time,paused:state.paused,points:state.gameplay.orders.points,offer:state.gameplay.orders.offer,savedPoints:saved?.state?.gameplay?.orders?.points||0};
  });
  expect(before).toEqual({time:80000,paused:false,points:1,offer:null,savedPoints:1});

@@ -25,10 +25,10 @@ test('state migration gives new and legacy battles versioned JSON-safe gameplay 
   const fresh=state.gameplay;
   const freshJson=JSON.parse(JSON.stringify(fresh));
   pauseAndSaveBattle('test');
-  const snapshot=JSON.parse(localStorage.getItem(BATTLE_SAVE_KEY));
+  const snapshot=JSON.parse(localStorage.getItem(battleSaveStorageKey()));
   const savedGameplay=snapshot.state.gameplay;
   delete snapshot.state.gameplay;
-  localStorage.setItem(BATTLE_SAVE_KEY,JSON.stringify(snapshot));
+  localStorage.setItem(battleSaveStorageKey(),JSON.stringify(snapshot));
   const restored=restoreBattleIfAvailable();
   clearInterval(timer);
   return {

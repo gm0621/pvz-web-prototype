@@ -17,7 +17,7 @@ const mockSupabase = `
   const row = device => ({profile, save_version: version, active_device_id: device || localStorage.getItem('sgZombieDeviceId'), active_device_name: 'Chrome 電腦', active_seen_at: new Date().toISOString(), updated_at: oldCloud ? '2025-01-01T00:00:00.000Z' : new Date().toISOString()});
   const client = {
     auth: {
-      getSession: async () => ({data: {session: new URL(location.href).searchParams.has('existingSession') ? {user: {id: 'user-1', email: 'player@example.com'}} : null}}),
+      getSession: async () => {if(new URL(location.href).searchParams.has('slowSession'))await new Promise(resolve=>setTimeout(resolve,80));return {data: {session: new URL(location.href).searchParams.has('existingSession') ? {user: {id: 'user-1', email: 'player@example.com'}} : null}}},
       onAuthStateChange: cb => { authListener = cb; return {data: {subscription: {unsubscribe(){}}}}; },
       signInWithPassword: async ({email}) => ({data: {user: {id: 'user-1', email}}, error: null}),
       signInWithOAuth: async args => { window.__supabaseCalls.push(['oauth', args]); return {data: {}, error: null}; },
@@ -1336,7 +1336,7 @@ test('leaving a battle for level select keeps a paused cache that resumes at the
   await page.locator('#gameFloatBackBtn').click();
   await expect(page.locator('#levelScreen')).toHaveClass(/active/);
   await expect(page.locator('#profile')).not.toHaveClass(/active/);
-  const cached=await page.evaluate(()=>JSON.parse(localStorage.getItem(BATTLE_SAVE_KEY)||'null'));
+  const cached=await page.evaluate(()=>JSON.parse(localStorage.getItem(battleSaveStorageKey())||'null'));
   expect(cached?.state).toMatchObject({time:23450,resource:287,paused:true,level:1,faction:'plants'});
   await expect(page.locator('#continueCampaignBtn')).toBeVisible();
   await expect(page.locator('#continueCampaignBtn')).toContainText('繼續未完成戰局');
@@ -1362,26 +1362,54 @@ test('battle home button returns to the main menu and offers the cached battle',
   await expect(page.locator('#start')).toHaveClass(/active/);
   await expect(page.locator('#profile')).not.toHaveClass(/active/);
   await expect(page.locator('#resumeBattleBtn')).toBeVisible();
-  expect(await page.evaluate(()=>JSON.parse(localStorage.getItem(BATTLE_SAVE_KEY)).state.time)).toBe(14500);
+  expect(await page.evaluate(()=>JSON.parse(localStorage.getItem(battleSaveStorageKey())).state.time)).toBe(14500);
 
   await page.locator('#resumeBattleBtn').click();
   await expect(page.locator('#game')).toHaveClass(/active/);
   expect(await page.evaluate(()=>({time:state.time,resource:state.resource,paused:state.paused}))).toEqual({time:14500,resource:246,paused:true});
 });
 
-test('unfinished battle cache is isolated to the account that created it', async ({ page }) => {
+test('unfinished battle caches remain isolated when another account starts a new battle', async ({ page }) => {
   await openApp(page);
   const result=await page.evaluate(()=>{
-    currentUser={id:'account-A'};playerProfile=normalizeProfile({});selectedLevel=1;start('plants');clearInterval(timer);
-    state.time=12345;state.resource=777;cloudMatchId='match-owned-by-A';const persisted=persistBattleState();
-    const snapshot=JSON.parse(localStorage.getItem(BATTLE_SAVE_KEY));
+    currentUser={id:'account-A'};authIdentityResolved=true;playerProfile=normalizeProfile({});selectedLevel=1;start('plants');clearInterval(timer);
+    state.time=12345;state.resource=777;cloudMatchId='match-owned-by-A';const persisted=persistBattleState(),accountAKey=battleSaveStorageKey();
+    const snapshot=JSON.parse(localStorage.getItem(accountAKey));
     currentUser={id:'account-B'};playerProfile=normalizeProfile({});state=null;cloudMatchId=null;
     updateAccountStatus();const resumeHiddenAfterSwitch=document.querySelector('#resumeBattleBtn').classList.contains('hidden');
-    const restored=restoreBattleIfAvailable(),stateIsNullAfterForeign=state===null,cachePreserved=!!localStorage.getItem(BATTLE_SAVE_KEY);
-    currentUser={id:'account-A'};updateAccountStatus();const resumeVisibleForOwner=!document.querySelector('#resumeBattleBtn').classList.contains('hidden'),ownerRestored=restoreBattleIfAvailable();
-    return {persisted,ownerUserId:snapshot.ownerUserId,restored,stateIsNullAfterForeign,cachePreserved,resumeHiddenAfterSwitch,resumeVisibleForOwner,ownerRestored,time:state?.time,resource:state?.resource,cloudMatchId};
+    const restored=restoreBattleIfAvailable(),accountACacheBeforeB=!!localStorage.getItem(accountAKey);
+    selectedLevel=1;start('plants');clearInterval(timer);state.time=22222;persistBattleState();const accountBKey=battleSaveStorageKey(),accountBCache=!!localStorage.getItem(accountBKey),accountACacheAfterB=!!localStorage.getItem(accountAKey);
+    currentUser={id:'account-A'};state=null;cloudMatchId=null;updateAccountStatus();const resumeVisibleForOwner=!document.querySelector('#resumeBattleBtn').classList.contains('hidden'),ownerRestored=restoreBattleIfAvailable();
+    return {persisted,ownerUserId:snapshot.ownerUserId,differentKeys:accountAKey!==accountBKey,restored,accountACacheBeforeB,accountACacheAfterB,accountBCache,resumeHiddenAfterSwitch,resumeVisibleForOwner,ownerRestored,time:state?.time,resource:state?.resource,cloudMatchId};
   });
-  expect(result).toEqual({persisted:true,ownerUserId:'account-A',restored:false,stateIsNullAfterForeign:true,cachePreserved:true,resumeHiddenAfterSwitch:true,resumeVisibleForOwner:true,ownerRestored:true,time:12345,resource:777,cloudMatchId:'match-owned-by-A'});
+  expect(result).toEqual({persisted:true,ownerUserId:'account-A',differentKeys:true,restored:false,accountACacheBeforeB:true,accountACacheAfterB:true,accountBCache:true,resumeHiddenAfterSwitch:true,resumeVisibleForOwner:true,ownerRestored:true,time:12345,resource:777,cloudMatchId:'match-owned-by-A'});
+});
+
+test('ownerless legacy battle waits for slow auth and is never claimed by a signed-in account', async ({ page }) => {
+  await openApp(page);
+  await page.evaluate(()=>{
+    selectedLevel=1;start('plants');clearInterval(timer);state.time=31337;cloudMatchId='legacy-match';persistBattleState();
+    const scoped=battleSaveStorageKey(),snapshot=JSON.parse(localStorage.getItem(scoped));delete snapshot.ownerUserId;delete snapshot.ownerPrincipal;
+    localStorage.setItem(BATTLE_SAVE_KEY,JSON.stringify(snapshot));localStorage.removeItem(scoped);state=null;document.querySelector('#game').classList.remove('active');
+  });
+  await page.goto('/?existingSession=1&slowSession=1');
+  await page.waitForFunction(()=>authIdentityResolved===true);
+  await expect(page.locator('#start')).toHaveClass(/active/);
+  await expect(page.locator('#game')).not.toHaveClass(/active/);
+  expect(await page.evaluate(()=>({stateIsNull:state==null,legacyPreserved:!!localStorage.getItem(BATTLE_SAVE_KEY),accountCache:!!localStorage.getItem(battleSaveStorageKey()),resumeHidden:document.querySelector('#resumeBattleBtn').classList.contains('hidden')}))).toEqual({stateIsNull:true,legacyPreserved:true,accountCache:false,resumeHidden:true});
+});
+
+test('unambiguous ownerless guest battle migrates once and drops its cloud match id', async ({ page }) => {
+  await openApp(page);
+  await page.evaluate(()=>{
+    selectedLevel=1;start('plants');clearInterval(timer);state.time=42424;cloudMatchId='must-not-migrate';persistBattleState();
+    const scoped=battleSaveStorageKey(),snapshot=JSON.parse(localStorage.getItem(scoped));delete snapshot.ownerUserId;delete snapshot.ownerPrincipal;
+    localStorage.setItem(BATTLE_SAVE_KEY,JSON.stringify(snapshot));localStorage.removeItem(scoped);state=null;document.querySelector('#game').classList.remove('active');
+  });
+  await page.reload();
+  await page.waitForFunction(()=>authIdentityResolved===true&&document.querySelector('#game').classList.contains('active'));
+  const migrated=await page.evaluate(()=>({time:state?.time,cloudMatchId,legacy:localStorage.getItem(BATTLE_SAVE_KEY),scoped:!!localStorage.getItem(battleSaveStorageKey()),owner:JSON.parse(localStorage.getItem(battleSaveStorageKey())).ownerPrincipal,deviceId:localStorage.getItem(DEVICE_KEY)}));
+  expect(migrated).toEqual({time:42424,cloudMatchId:null,legacy:null,scoped:true,owner:`guest:${migrated.deviceId}`,deviceId:migrated.deviceId});
 });
 
 test('short landscape fullscreen pause resume button stays above the deployment cards', async ({ page }) => {
@@ -1433,9 +1461,9 @@ test('unfinished battle cache does not expire merely because the player was away
     state.time=32100;
     state.resource=199;
     persistBattleState();
-    const snapshot=JSON.parse(localStorage.getItem(BATTLE_SAVE_KEY));
+    const snapshot=JSON.parse(localStorage.getItem(battleSaveStorageKey()));
     snapshot.savedAt=Date.now()-30*24*60*60*1000;
-    localStorage.setItem(BATTLE_SAVE_KEY,JSON.stringify(snapshot));
+    localStorage.setItem(battleSaveStorageKey(),JSON.stringify(snapshot));
     document.querySelector('#game').classList.remove('active');
   });
 
@@ -1447,9 +1475,9 @@ test('unfinished battle cache does not expire merely because the player was away
 test('invalid battle cache is cleared and never opens a broken resume screen', async ({ page }) => {
   await openApp(page);
   const result=await page.evaluate(()=>{
-    localStorage.setItem(BATTLE_SAVE_KEY,JSON.stringify({version:BATTLE_SAVE_VERSION+1,state:{level:1,faction:'plants'}}));
+    localStorage.setItem(battleSaveStorageKey(),JSON.stringify({version:BATTLE_SAVE_VERSION+1,ownerPrincipal:currentBattlePrincipal(),state:{level:1,faction:'plants'}}));
     const restored=restoreBattleIfAvailable();
-    return {restored,cached:localStorage.getItem(BATTLE_SAVE_KEY),resumeHidden:document.querySelector('#resumeBattleCard').classList.contains('hidden'),homeActive:document.querySelector('#start').classList.contains('active')};
+    return {restored,cached:localStorage.getItem(battleSaveStorageKey()),resumeHidden:document.querySelector('#resumeBattleCard').classList.contains('hidden'),homeActive:document.querySelector('#start').classList.contains('active')};
   });
   expect(result).toEqual({restored:false,cached:null,resumeHidden:true,homeActive:true});
 });
@@ -1469,7 +1497,7 @@ test('browser back during a battle stays in the app and caches the paused game',
   await expect(page).toHaveURL(appUrl);
   await expect(page.locator('#start')).toHaveClass(/active/);
   await expect(page.locator('#profile')).not.toHaveClass(/active/);
-  const cached=await page.evaluate(()=>JSON.parse(localStorage.getItem(BATTLE_SAVE_KEY)||'null'));
+  const cached=await page.evaluate(()=>JSON.parse(localStorage.getItem(battleSaveStorageKey())||'null'));
   expect(cached?.state).toMatchObject({time:17800,resource:211,paused:true});
 });
 
@@ -1484,7 +1512,7 @@ test('manual pause and background restore preserve the unfinished battle without
     addPlant('peashooter', 2, 2);
     addZombie('normal', 7.5, 2);
     togglePause();
-    const manualSaved = JSON.parse(localStorage.getItem(BATTLE_SAVE_KEY));
+    const manualSaved = JSON.parse(localStorage.getItem(battleSaveStorageKey()));
     togglePause();
     pauseAndSaveBattle('background');
     tick();

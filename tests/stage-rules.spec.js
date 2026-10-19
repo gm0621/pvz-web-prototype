@@ -37,7 +37,7 @@ test('new and restored battles keep JSON-safe stage-rule runtime state',async({p
   const serializable=fresh?JSON.parse(JSON.stringify(fresh)):null;
   if(state.gameplay.stageRule)state.gameplay.stageRule.data.events=3;
   pauseAndSaveBattle('test');
-  const saved=JSON.parse(localStorage.getItem(BATTLE_SAVE_KEY)).state.gameplay.stageRule||null;
+  const saved=JSON.parse(localStorage.getItem(battleSaveStorageKey())).state.gameplay.stageRule||null;
   state=null;$('game').classList.remove('active');
   const restored=restoreBattleIfAvailable();clearInterval(timer);
   const unknown=normalizeGameplayState({...state.gameplay,stageRule:{id:'removed-rule',data:{breached:true,events:99}}},{season:2,faction:'plants',level:1,levelConfig:SEASON2_LEVELS[1],time:0,zombies:[],bossSpawned:false,qinBossAlive:false}).stageRule;

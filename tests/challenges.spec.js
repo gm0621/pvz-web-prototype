@@ -500,7 +500,7 @@ test('legacy battle saves without difficulty resume as medium while new hard sav
  await open(page);
  const result=await page.evaluate(()=>{
   playerProfile=normalizeProfile({});currentSeason=1;selectedLevel=1;start('plants',{difficulty:'medium'});clearInterval(timer);state.time=4321;persistBattleState();
-  const legacy=JSON.parse(localStorage.getItem(BATTLE_SAVE_KEY));delete legacy.state.difficulty;localStorage.setItem(BATTLE_SAVE_KEY,JSON.stringify(legacy));restoreBattleIfAvailable();clearInterval(timer);const legacyResult={difficulty:state.difficulty,time:state.time};
+  const legacy=JSON.parse(localStorage.getItem(battleSaveStorageKey()));delete legacy.state.difficulty;localStorage.setItem(battleSaveStorageKey(),JSON.stringify(legacy));restoreBattleIfAvailable();clearInterval(timer);const legacyResult={difficulty:state.difficulty,time:state.time};
   start('plants',{difficulty:'hard'});clearInterval(timer);state.time=7654;persistBattleState();restoreBattleIfAvailable();clearInterval(timer);const hardResult={difficulty:state.difficulty,time:state.time,blocksHeroes:battleDifficultyConfig(state.difficulty).blocksHeroes};
   return {legacyResult,hardResult};
  });

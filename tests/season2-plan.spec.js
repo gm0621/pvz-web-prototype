@@ -68,7 +68,7 @@ test('visiting season-two plans preserves and resumes a paused first-season batt
  await page.locator('#backBtn').click();
  await expect(page.locator('#resumeBattleBtn')).toBeVisible();
  await expect(page.locator('#season2PreviewLink')).toBeInViewport();
- const cached=await page.evaluate(()=>JSON.parse(localStorage.getItem(BATTLE_SAVE_KEY)).state);
+ const cached=await page.evaluate(()=>JSON.parse(localStorage.getItem(battleSaveStorageKey())).state);
  await page.locator('#season2PreviewLink').click();
  await expect(page.locator('#previewNotice')).toBeVisible();
  await page.locator('[data-plan-mode="attack"]').click();
@@ -76,7 +76,7 @@ test('visiting season-two plans preserves and resumes a paused first-season batt
  // Existing boot behavior restores saved battles directly into the paused battlefield.
  await expect(page.locator('#game')).toHaveClass(/active/);
  await expect(page.locator('#pauseOverlay')).toHaveClass(/show/);
- expect(await page.evaluate(()=>JSON.parse(localStorage.getItem(BATTLE_SAVE_KEY)).state)).toEqual(cached);
+ expect(await page.evaluate(()=>JSON.parse(localStorage.getItem(battleSaveStorageKey())).state)).toEqual(cached);
  expect(await page.evaluate(()=>({time:state.time,resource:state.resource,paused:state.paused,plants:state.plants.length,zombies:state.zombies.length}))).toEqual({time:23450,resource:287,paused:true,plants:1,zombies:1});
 });
 
