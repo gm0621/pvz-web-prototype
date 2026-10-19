@@ -17,7 +17,13 @@ const mockSupabase = `
   const row = device => ({profile, save_version: version, active_device_id: device || localStorage.getItem('sgZombieDeviceId'), active_device_name: 'Chrome 電腦', active_seen_at: new Date().toISOString(), updated_at: oldCloud ? '2025-01-01T00:00:00.000Z' : new Date().toISOString()});
   const client = {
     auth: {
-      getSession: async () => {if(new URL(location.href).searchParams.has('slowSession'))await new Promise(resolve=>setTimeout(resolve,80));return {data: {session: new URL(location.href).searchParams.has('existingSession') ? {user: {id: 'user-1', email: 'player@example.com'}} : null}}},
+      getSession: async () => {
+        const params=new URL(location.href).searchParams;
+        if(params.has('slowSession'))await new Promise(resolve=>setTimeout(resolve,80));
+        if(params.has('rejectSession'))throw new Error('temporary auth lookup failure');
+        if(params.has('errorSession'))return {data:{session:null},error:{message:'temporary auth lookup failure'}};
+        return {data: {session: params.has('existingSession') ? {user: {id: 'user-1', email: 'player@example.com'}} : null},error:null};
+      },
       onAuthStateChange: cb => { authListener = cb; return {data: {subscription: {unsubscribe(){}}}}; },
       signInWithPassword: async ({email}) => ({data: {user: {id: 'user-1', email}}, error: null}),
       signInWithOAuth: async args => { window.__supabaseCalls.push(['oauth', args]); return {data: {}, error: null}; },
@@ -1398,6 +1404,26 @@ test('ownerless legacy battle waits for slow auth and is never claimed by a sign
   await expect(page.locator('#game')).not.toHaveClass(/active/);
   expect(await page.evaluate(()=>({stateIsNull:state==null,legacyPreserved:!!localStorage.getItem(BATTLE_SAVE_KEY),accountCache:!!localStorage.getItem(battleSaveStorageKey()),resumeHidden:document.querySelector('#resumeBattleBtn').classList.contains('hidden')}))).toEqual({stateIsNull:true,legacyPreserved:true,accountCache:false,resumeHidden:true});
 });
+
+for(const [query,label] of [['rejectSession=1','rejects'],['errorSession=1','returns an error']]){
+  test(`ownerless legacy battle remains untouched when auth lookup ${label}`, async ({ page }) => {
+    await openApp(page);
+    await page.evaluate(()=>{
+      selectedLevel=1;start('plants');clearInterval(timer);state.time=51515;cloudMatchId='ambiguous-auth-match';persistBattleState();
+      const scoped=battleSaveStorageKey(),snapshot=JSON.parse(localStorage.getItem(scoped));delete snapshot.ownerUserId;delete snapshot.ownerPrincipal;
+      localStorage.setItem(BATTLE_SAVE_KEY,JSON.stringify(snapshot));localStorage.removeItem(scoped);state=null;document.querySelector('#game').classList.remove('active');
+    });
+    await page.goto('/?'+query);
+    await page.waitForTimeout(120);
+    expect(await page.evaluate(()=>({
+      authIdentityResolved,
+      stateIsNull:state==null,
+      legacyPreserved:!!localStorage.getItem(BATTLE_SAVE_KEY),
+      scopedCache:Object.keys(localStorage).some(key=>key.startsWith(BATTLE_SAVE_KEY+':')),
+      gameActive:document.querySelector('#game').classList.contains('active')
+    }))).toEqual({authIdentityResolved:false,stateIsNull:true,legacyPreserved:true,scopedCache:false,gameActive:false});
+  });
+}
 
 test('unambiguous ownerless guest battle migrates once and drops its cloud match id', async ({ page }) => {
   await openApp(page);
