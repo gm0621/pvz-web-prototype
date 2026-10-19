@@ -44,6 +44,7 @@ test('Qin finale offers the Wei sequel as the main route and zombie season one a
  await expect(page.locator('#finaleZombieRoute')).toContainText('平行戰記');
  await page.locator('#finaleZombieRoute').click();
  await expect(page.locator('#levelScreen')).toHaveClass(/active/);
+ await expect(page.locator('#game')).not.toHaveClass(/active/);
  expect(await page.evaluate(()=>({season:currentSeason,faction:currentFaction}))).toEqual({season:1,faction:'zombies'});
  await page.evaluate(async()=>{
   currentSeason=1;selectedLevel=11;start('plants');clearInterval(timer);
@@ -53,6 +54,7 @@ test('Qin finale offers the Wei sequel as the main route and zombie season one a
  await page.locator('#finaleWeiRoute').click();
  expect(await page.evaluate(()=>({season:currentSeason,faction:currentFaction}))).toEqual({season:2,faction:'plants'});
  await expect(page.locator('#chosenFactionText')).toContainText('第二季・魏國守城');
+ await expect(page.locator('#game')).not.toHaveClass(/active/);
 });
 
 test('unread Qin victory story finishes before the route choice and both choices fit mobile',async({page})=>{
@@ -184,6 +186,23 @@ test('Qin commands strike more lanes each phase while escorts stay secondary',as
   {phase:2,targets:[4,3],summons:1,hitRows:[3,4],losses:[85,85],stuns:[1000,1000]},
   {phase:3,targets:[4,3,2],summons:2,hitRows:[2,3,4],losses:[110,110,110],stuns:[1500,1500,1500]}
  ]);
+});
+
+test('breaking Qin formation cancels an already telegraphed unification command',async({page})=>{
+ await openApp(page);
+ const result=await page.evaluate(()=>{
+  playerProfile=normalizeProfile({});for(let level=1;level<=10;level++)completeCampaignLevel('plants',level);
+  currentSeason=1;selectedLevel=11;start('plants');clearInterval(timer);
+  const boss=qinBossEntity();boss.hp=boss.maxHp*.2;state.qinBoss.lastPhase=3;state.qinBoss.phase=3;state.qinBoss.command=100;state.qinBoss.nextCaptainAt=Infinity;
+  state.plants=[];for(let row=0;row<5;row++)addPlant('wallnut',4,row);
+  processQinBoss();
+  const pending=gameplayTelegraphs().active.find(item=>item.kind==='qin-unification'),before=state.plants.map(unit=>unit.hp);
+  collectQinTigerSeal();collectQinTigerSeal();collectQinTigerSeal();const broken=breakQinFormation();
+  const activeAfterBreak=gameplayTelegraphs().active.filter(item=>item.kind==='qin-unification').length;
+  state.time=pending.executeAt;const resolved=processEnemyTelegraphs();
+  return {broken,activeAfterBreak,resolved,damage:state.plants.map((unit,index)=>before[index]-unit.hp)};
+ });
+ expect(result).toEqual({broken:true,activeAfterBreak:0,resolved:0,damage:[0,0,0,0,0]});
 });
 
 test('Qin formation guard resists lane focus until tiger seals open the damage window',async({page})=>{

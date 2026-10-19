@@ -1369,6 +1369,36 @@ test('battle home button returns to the main menu and offers the cached battle',
   expect(await page.evaluate(()=>({time:state.time,resource:state.resource,paused:state.paused}))).toEqual({time:14500,resource:246,paused:true});
 });
 
+test('unfinished battle cache is isolated to the account that created it', async ({ page }) => {
+  await openApp(page);
+  const result=await page.evaluate(()=>{
+    currentUser={id:'account-A'};playerProfile=normalizeProfile({});selectedLevel=1;start('plants');clearInterval(timer);
+    state.time=12345;state.resource=777;cloudMatchId='match-owned-by-A';const persisted=persistBattleState();
+    const snapshot=JSON.parse(localStorage.getItem(BATTLE_SAVE_KEY));
+    currentUser={id:'account-B'};playerProfile=normalizeProfile({});state=null;cloudMatchId=null;
+    updateAccountStatus();const resumeHiddenAfterSwitch=document.querySelector('#resumeBattleBtn').classList.contains('hidden');
+    const restored=restoreBattleIfAvailable(),stateIsNullAfterForeign=state===null,cachePreserved=!!localStorage.getItem(BATTLE_SAVE_KEY);
+    currentUser={id:'account-A'};updateAccountStatus();const resumeVisibleForOwner=!document.querySelector('#resumeBattleBtn').classList.contains('hidden'),ownerRestored=restoreBattleIfAvailable();
+    return {persisted,ownerUserId:snapshot.ownerUserId,restored,stateIsNullAfterForeign,cachePreserved,resumeHiddenAfterSwitch,resumeVisibleForOwner,ownerRestored,time:state?.time,resource:state?.resource,cloudMatchId};
+  });
+  expect(result).toEqual({persisted:true,ownerUserId:'account-A',restored:false,stateIsNullAfterForeign:true,cachePreserved:true,resumeHiddenAfterSwitch:true,resumeVisibleForOwner:true,ownerRestored:true,time:12345,resource:777,cloudMatchId:'match-owned-by-A'});
+});
+
+test('short landscape fullscreen pause resume button stays above the deployment cards', async ({ page }) => {
+  await page.setViewportSize({width:844,height:390});
+  await openApp(page);
+  const target=await page.evaluate(()=>{
+    selectedLevel=1;start('plants');clearInterval(timer);document.querySelector('#game').classList.add('fullscreen-mode');syncFullscreenUI();togglePause();render();
+    const button=document.querySelector('#pauseResumeBtn').getBoundingClientRect(),cards=document.querySelector('.cards-panel').getBoundingClientRect();
+    const point={x:button.left+button.width/2,y:button.bottom-8},hit=document.elementFromPoint(point.x,point.y);
+    return {point,buttonBottom:button.bottom,cardsTop:cards.top,hitId:hit?.id||'',hitClass:hit?.className||''};
+  });
+  expect(target.buttonBottom).toBeLessThanOrEqual(target.cardsTop+1);
+  expect(target.hitId).toBe('pauseResumeBtn');
+  await page.mouse.click(target.point.x,target.point.y);
+  expect(await page.evaluate(()=>state.paused)).toBe(false);
+});
+
 test('resume card keeps every desktop main-menu action inside the viewport', async ({ page }, testInfo) => {
   test.skip(testInfo.project.name!=='desktop');
   await openApp(page);
