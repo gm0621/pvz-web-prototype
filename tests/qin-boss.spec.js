@@ -184,8 +184,76 @@ test('Qin commands strike more lanes each phase while escorts stay secondary',as
  expect(result).toEqual([
   {phase:1,targets:[4],summons:0,hitRows:[4],losses:[60],stuns:[600]},
   {phase:2,targets:[4,3],summons:1,hitRows:[3,4],losses:[85,85],stuns:[1000,1000]},
-  {phase:3,targets:[4,3,2],summons:2,hitRows:[2,3,4],losses:[110,110,110],stuns:[1500,1500,1500]}
+  {phase:3,targets:[4,3,2],summons:0,hitRows:[2,3,4],losses:[110,110,110],stuns:[1500,1500,1500]}
  ]);
+});
+
+test('Qin personally slashes his current lane and rotates through the first ten stage generals',async({page})=>{
+ await openApp(page);
+ const result=await page.evaluate(()=>{
+  playerProfile=normalizeProfile({});for(let level=1;level<=10;level++)completeCampaignLevel('plants',level);
+  currentSeason=1;selectedLevel=11;start('plants',{difficulty:'medium'});clearInterval(timer);
+  const boss=qinBossEntity();state.plants=[];const defender=addPlant('wallnut',4,boss.r),before=defender.hp;
+  state.time=state.qinBoss.nextSlashAt;processQinBoss();
+  const slash=gameplayTelegraphs().active.find(item=>item.kind==='qin-lane-slash');state.time=slash?.executeAt||state.time;processEnemyTelegraphs();
+  const summoned=[];state.zombies=state.zombies.filter(unit=>unit===boss);
+  for(let index=0;index<10;index++){const unit=spawnQinVeteran();summoned.push({type:unit?.type,level:unit?.qinVeteranLevel,veteran:unit?.qinVeteran===true});state.zombies=state.zombies.filter(item=>item===boss)}
+  return {slash:{row:slash?.targets?.[0]?.r,damage:before-defender.hp},summoned,roster:QIN_VETERAN_ROSTER.map(item=>({type:item.type,level:item.level}))};
+ });
+ expect(result.slash).toEqual({row:2,damage:34});
+ expect(result.summoned).toEqual(result.roster.map(item=>({...item,veteran:true})));
+ expect(result.roster).toEqual([
+  {level:1,type:'cone'},{level:2,type:'bucket'},{level:3,type:'poleVault'},{level:4,type:'football'},{level:5,type:'jester'},
+  {level:6,type:'bombJester'},{level:7,type:'corpseTitan'},{level:8,type:'fireCatapult'},{level:9,type:'corpseTitan'},{level:10,type:'necromancer'}
+ ]);
+});
+
+test('hard Qin is stronger without removing generals from the player roster',async({page})=>{
+ await openApp(page);
+ const result=await page.evaluate(()=>{
+  playerProfile=normalizeProfile({});for(let level=1;level<=10;level++)completeCampaignLevel('plants',level);
+  currentSeason=1;selectedLevel=11;start('plants',{difficulty:'medium'});clearInterval(timer);const medium={hp:qinBossEntity().maxHp,slashAt:state.qinBoss.nextSlashAt,generalAt:state.qinBoss.nextGeneralAt};
+  start('plants',{difficulty:'hard'});clearInterval(timer);state.resource=9999;const hard={hp:qinBossEntity().maxHp,slashAt:state.qinBoss.nextSlashAt,generalAt:state.qinBoss.nextGeneralAt,guanyu:deploymentReadyReason('firepea'),zhaoyun:deploymentReadyReason('zhaoyun')};
+  return {medium,hard};
+ });
+ expect(result.medium).toEqual({hp:4200,slashAt:5000,generalAt:18000});
+ expect(result.hard).toEqual({hp:4830,slashAt:4500,generalAt:16200,guanyu:'',zhaoyun:''});
+});
+
+test('hard Qin finale remains beatable through legal economy deployment removal relocation and tiger-seal actions',async({page})=>{
+ await openApp(page);
+ const result=await page.evaluate(()=>{
+  let seed=20261019;Math.random=()=>{seed=(seed*1664525+1013904223)>>>0;return seed/4294967296};
+  playerProfile=normalizeProfile({});for(let level=1;level<=10;level++)completeCampaignLevel('plants',level);
+  currentSeason=1;selectedLevel=11;start('plants',{difficulty:'hard'});clearInterval(timer);state.paused=false;
+  const laneTieOrder=[2,0,4,1,3],formation=()=>[['wallnut',6],['firepea',1],['machao',2],[state.time<70000?'sunflower':'zhaoyun',0],['zhangfei',5],['huangzhong',3],['kongming',4]],seenGenerals=new Set(),deployments=[],relocations=[];let economyConverted=false;
+  for(let steps=0;steps<8400&&!state.over;steps++){
+   if(state.qinBoss?.seals>=3)breakQinFormation();
+   if(!economyConverted&&state.time>=70000){for(let r=0;r<5;r++)if(plantAtCell(r,0)?.type==='sunflower'){state.actionMode='remove';removePlantAt(r,0)}economyConverted=true}
+   if(state.time%500===0){
+    const threats=[0,1,2,3,4].map(r=>({r,nearest:Math.min(9,...state.zombies.filter(unit=>unit.hp>0&&!unit.boss&&unit.r===r).map(unit=>unit.c))}));
+    const endangered=threats.filter(row=>state.lawnmowers[row.r].used&&row.nearest<4.5).sort((a,b)=>a.nearest-b.nearest)[0];
+    if(endangered){
+     const donor=state.plants.filter(unit=>unit.hp>0&&Math.abs(unit.r-endangered.r)===1&&!plantAtCell(endangered.r,Math.round(unit.c))).sort((a,b)=>b.c-a.c||b.hp-a.hp)[0];
+     if(donor){state.actionMode='relocate';state.movingPlantId=donor.id;const from=donor.r,c=Math.round(donor.c);if(relocatePlantAt(endangered.r,c))relocations.push({from,to:endangered.r,c,at:state.time})}
+    }
+    const lanes=[...laneTieOrder].sort((a,b)=>{const score=row=>{const enemies=state.zombies.filter(unit=>unit.hp>0&&!unit.boss&&unit.r===row),nearest=enemies.length?Math.min(...enemies.map(unit=>unit.c)):9;return enemies.length*20+(9-nearest)*20+(state.lawnmowers[row].used?50:0)};return score(b)-score(a)||laneTieOrder.indexOf(a)-laneTieOrder.indexOf(b)});
+    for(const [type,c] of formation())for(const r of lanes){
+     if(state.plants.some(unit=>unit.hp>0&&unit.type===type&&unit.r===r&&Math.round(unit.c)===c))continue;
+     if(deploymentReadyReason(type)||deploymentCellReason(r,c))continue;
+     if(deploySelected(type,r,c))deployments.push({type,c,r,at:state.time});
+    }
+   }
+   for(const unit of state.zombies)if(unit.qinVeteranLevel)seenGenerals.add(unit.qinVeteranLevel);
+   tick();
+  }
+  return {over:state.over,title:$('modalTitle').textContent,time:state.time,resource:state.resource,deployments:deployments.length,relocations:relocations.length,generals:[...seenGenerals].sort((a,b)=>a-b),bossHp:qinBossEntity()?.hp??0,mowersUsed:state.lawnmowers.filter(mower=>mower.used).length,breachers:state.zombies.filter(unit=>unit.c<1.2).map(unit=>({type:unit.type,row:unit.r,c:unit.c,hp:unit.hp,qinveteran:unit.qinVeteranLevel||0,captain:!!unit.qinCaptain,summoned:!!unit.summoned}))};
+ });
+ expect(result.over,JSON.stringify(result)).toBe(true);
+ expect(result.title,JSON.stringify(result)).toBe('終章勝利！');
+ expect(result.time).toBeLessThanOrEqual(420000);
+ expect(result.deployments).toBeGreaterThanOrEqual(10);
+ expect(result.generals.length).toBeGreaterThanOrEqual(4);
 });
 
 test('breaking Qin formation cancels an already telegraphed unification command',async({page})=>{
@@ -228,16 +296,16 @@ test('Qin formation guard resists lane focus until tiger seals open the damage w
   updateQinBossHud();render();
   return {guardedLoss,openLoss,expiredLoss:beforeExpiredHit-boss.hp,guarded:boss.qinGuarded,guardedVisual,vulnerableVisual,restoredGuardVisual:document.querySelector('.entity.boss')?.classList.contains('qin-guarded'),openHud,midwayHud,expiredHud:document.querySelector('#qinPhaseText').textContent};
  });
- expect(result.guardedLoss).toBe(55);
+ expect(result.guardedLoss).toBe(70);
  expect(result.openLoss).toBe(100);
- expect(result.expiredLoss).toBe(55);
+ expect(result.expiredLoss).toBe(70);
  expect(result.guarded).toBeTruthy();
  expect(result.guardedVisual).toBeTruthy();
  expect(result.vulnerableVisual).toBeTruthy();
  expect(result.restoredGuardVisual).toBeTruthy();
  expect(result.openHud).toContain('破陣中・8 秒');
  expect(result.midwayHud).toContain('破陣中・4 秒');
- expect(result.expiredHud).toContain('減傷 45%');
+ expect(result.expiredHud).toContain('減傷 30%');
 });
 
 test('Qin finale clear is persisted and visible in the permanent campaign summary',async({page})=>{

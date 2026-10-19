@@ -1,15 +1,18 @@
 const BATTLE_DIFFICULTIES=Object.freeze({
- easy:Object.freeze({id:'easy',label:'簡單',description:'可正常部署，起始資源增加 25%。',resourceMultiplier:1.25,blocksHeroes:false}),
- medium:Object.freeze({id:'medium',label:'中等',description:'可正常部署，沿用原本關卡平衡。',resourceMultiplier:1,blocksHeroes:false}),
- hard:Object.freeze({id:'hard',label:'困難',description:'普通小兵可部署，但不得部署武將。',resourceMultiplier:1,blocksHeroes:true})
+ easy:Object.freeze({id:'easy',label:'簡單',description:'可正常部署，起始資源增加 25%。',resourceMultiplier:1.25,blocksHeroes:false,enemyHealthMultiplier:1,enemyDamageMultiplier:1,enemyPaceMultiplier:1}),
+ medium:Object.freeze({id:'medium',label:'中等',description:'可正常部署，沿用原本關卡平衡。',resourceMultiplier:1,blocksHeroes:false,enemyHealthMultiplier:1,enemyDamageMultiplier:1,enemyPaceMultiplier:1}),
+ hard:Object.freeze({id:'hard',label:'困難',description:'武將可正常部署；敵軍生命 +15%、傷害 +10%、進攻節奏加快 10%。',resourceMultiplier:1,blocksHeroes:false,enemyHealthMultiplier:1.15,enemyDamageMultiplier:1.1,enemyPaceMultiplier:.9})
 });
 function normalizeBattleDifficulty(value,fallback='medium'){return Object.prototype.hasOwnProperty.call(BATTLE_DIFFICULTIES,value)?value:fallback}
 function battleDifficultyConfig(value){return BATTLE_DIFFICULTIES[normalizeBattleDifficulty(value)]}
+function difficultyScaledEnemyHealth(amount,side,battle=state){const value=Number(amount||0);if(value<=0)return 0;const multiplier=battle&&side!==battle.faction?battleDifficultyConfig(battle.difficulty).enemyHealthMultiplier||1:1;return Math.max(1,Math.round(value*multiplier))}
+function difficultyIncomingDamage(amount,targetSide,battle=state){const multiplier=battle&&targetSide===battle.faction?battleDifficultyConfig(battle.difficulty).enemyDamageMultiplier||1:1;return Number(amount||0)*multiplier}
+function difficultyEnemyPace(amount,battle=state){return Math.max(1,Math.round(Number(amount||0)*(battleDifficultyConfig(battle?.difficulty).enemyPaceMultiplier||1)))}
 function syncDifficultyChallengeState(card){
  const difficulty=selectedBattleDifficulty(card),option=card?.querySelector('.challenge-option[data-challenge-id="no-hero"]');if(!option)return;
- const description=option.querySelector('.challenge-option-description'),owned=option.classList.contains('earned');option.classList.toggle('difficulty-required',difficulty==='hard');
- if(description)description.textContent=difficulty==='hard'?'困難難度固定規則：本關不得部署武將。':'不部署任何武將並完成關卡。';
- if(!owned){const status=option.querySelector('.challenge-medal-state');if(status)status.textContent=difficulty==='hard'?'◎ 自動追蹤・困難規則同步符合':'◎ 開戰後自動追蹤'}
+ const description=option.querySelector('.challenge-option-description'),owned=option.classList.contains('earned');option.classList.remove('difficulty-required');
+ if(description)description.textContent='不部署任何武將並完成關卡。';
+ if(!owned){const status=option.querySelector('.challenge-medal-state');if(status)status.textContent='◎ 開戰後自動追蹤'}
 }
 function appendDifficultySelector(card,season,faction,level,unlocked){
  const selector=document.createElement('fieldset'),legendId=`difficulty-${season}-${faction}-${level}`;selector.className='difficulty-selector';selector.setAttribute('aria-labelledby',legendId);

@@ -468,32 +468,79 @@ test('every unlocked stage offers easy medium and hard with easy selected by def
  }
 });
 
-test('easy and medium allow heroes while hard blocks heroes but still allows ordinary troops',async({page})=>{
+test('hard keeps heroes playable while tougher enemies absorb and deal more damage',async({page})=>{
  await open(page);
  const result=await page.evaluate(()=>{
   playerProfile=normalizeProfile({campaignProgress:{plants:{highestLevel:10,completedLevels:Object.fromEntries(Array.from({length:10},(_,index)=>[index+1,1]))},zombies:{highestLevel:10,completedLevels:Object.fromEntries(Array.from({length:10},(_,index)=>[index+1,1]))}}});
   currentSeason=1;selectedLevel=10;
-  const inspect=(faction,difficulty,hero,troop)=>{start(faction,{difficulty});clearInterval(timer);const initialResource=state.resource;state.resource=9999;return {difficulty:state.difficulty,initialResource,hero:deploymentReadyReason(hero),troop:deploymentReadyReason(troop)}};
+  const inspect=(faction,difficulty,hero,troop)=>{
+   start(faction,{difficulty});clearInterval(timer);
+   const initialResource=state.resource;state.resource=9999;
+   const enemy=faction==='plants'?addZombie('normal',8,2):addPlant('peashooter',4,2),defender=faction==='plants'?addPlant('wallnut',4,2):addZombie('normal',8,3),before=defender.hp;
+   faction==='plants'?damagePlant(defender,100,{sourceSide:'zombies',kind:'test'}):damageZombie(defender,100,{sourceSide:'plants',kind:'test'});
+   return {
+    difficulty:state.difficulty,initialResource,
+    hero:deploymentReadyReason(hero),troop:deploymentReadyReason(troop),
+    enemyHp:enemy.maxHp,damageTaken:before-defender.hp,
+    waveWarning:battleEnemySpawnInterval(5000,state,{difficulty:false}),
+    waveSpacing:battleEnemySpawnInterval(1700),config:battleDifficultyConfig(state.difficulty)
+   };
+  };
   const easy=inspect('plants','easy','firepea','peashooter');
   const medium=inspect('plants','medium','firepea','peashooter');
   const hardPlants=inspect('plants','hard','firepea','peashooter');
   const hardZombies=inspect('zombies','hard','football','normal');
   return {easy,medium,hardPlants,hardZombies};
  });
- expect(result.easy).toMatchObject({difficulty:'easy',initialResource:488,hero:'',troop:''});
- expect(result.medium).toMatchObject({difficulty:'medium',initialResource:390,hero:'',troop:''});
- expect(result.hardPlants.difficulty).toBe('hard');expect(result.hardPlants.hero).toContain('困難');expect(result.hardPlants.troop).toBe('');
- expect(result.hardZombies.difficulty).toBe('hard');expect(result.hardZombies.hero).toContain('困難');expect(result.hardZombies.troop).toBe('');
+ expect(result.easy).toMatchObject({difficulty:'easy',initialResource:488,hero:'',troop:'',enemyHp:110,damageTaken:100,waveWarning:5000,waveSpacing:1700});
+ expect(result.medium).toMatchObject({difficulty:'medium',initialResource:390,hero:'',troop:'',enemyHp:110,damageTaken:100,waveWarning:5000,waveSpacing:1700});
+ expect(result.hardPlants).toMatchObject({difficulty:'hard',hero:'',troop:'',enemyHp:126,damageTaken:110,waveWarning:5000,waveSpacing:1530,config:{blocksHeroes:false,enemyHealthMultiplier:1.15,enemyDamageMultiplier:1.1,enemyPaceMultiplier:.9}});
+ expect(result.hardZombies).toMatchObject({difficulty:'hard',hero:'',troop:'',enemyHp:138,waveWarning:5000,waveSpacing:1530});expect(result.hardZombies.damageTaken).toBeCloseTo(110,8);
 });
 
-test('second-season hard mode follows the same hero-only deployment restriction',async({page})=>{
+test('hard scales enemy Liu Bei summons immediately and keeps them stable across restore',async({page})=>{
+ await open(page);
+ const result=await page.evaluate(()=>{
+  playerProfile=normalizeProfile({});currentSeason=1;selectedLevel=1;start('plants',{difficulty:'hard'});clearInterval(timer);state.faction='zombies';state.plants=[];
+  const liubei={id:'liubei-test',type:'liubei',r:2,c:3,hp:PLANT_TYPES.liubei.hp,maxHp:PLANT_TYPES.liubei.hp};summonMilitia(liubei);summonEliteGuards(liubei);
+  const before=state.plants.filter(unit=>unit.summoned&&['swordSoldier','whiteFeatherGuard'].includes(unit.type)).map(unit=>({id:unit.id,type:unit.type,hp:unit.hp,maxHp:unit.maxHp,expected:Math.round(activeUnit('plants',unit.type).hp*1.15)}));
+  persistBattleState();restoreBattleIfAvailable();clearInterval(timer);
+  const after=before.map(expected=>{const unit=state.plants.find(candidate=>candidate.id===expected.id);return {id:unit.id,type:unit.type,hp:unit.hp,maxHp:unit.maxHp}});
+  return {before,after};
+ });
+ expect(result.before).toHaveLength(4);for(const unit of result.before){expect(unit.hp).toBe(unit.expected);expect(unit.maxHp).toBe(unit.expected)}expect(result.after).toEqual(result.before.map(({expected,...unit})=>unit));
+});
+
+test('hard accelerates actual opening AI wave-rest and Qin schedules without shortening the five-second warning',async({page})=>{
+ await open(page);
+ const result=await page.evaluate(()=>{
+  const completed=Object.fromEntries(Array.from({length:10},(_,index)=>[index+1,1]));playerProfile=normalizeProfile({campaignProgress:{plants:{highestLevel:10,completedLevels:completed},zombies:{highestLevel:10,completedLevels:completed}}});
+  currentSeason=1;selectedLevel=10;start('plants',{difficulty:'hard'});clearInterval(timer);
+  const baseDelay=state.levelConfig.firstZombieDelay,baseOpening=state.levelConfig.openingSpacing,firstDelay=state.nextOpeningZombie;
+  state.time=firstDelay;processLevelEvents();const openingSpacing=state.nextOpeningZombie-state.time;
+  state.openingQueue=[];state.enemiesSpawned=0;state.aiResource=9999;state.waveDirector={version:1,plan:[{after:0,count:1}],index:0,active:null,restUntil:0,story:{version:1,seen:{},event:null}};state.time=20000;updateDefenseWaves();const warning=state.waveDirector.active.nextAt-state.time;
+  state.time=state.waveDirector.active.nextAt;updateDefenseWaves();const waveRest=state.waveDirector.restUntil-state.time;
+  const random=Math.random;Math.random=()=>.5;start('zombies',{difficulty:'hard'});clearInterval(timer);const initialEnemyAI=state.nextAI;Math.random=random;
+  selectedLevel=11;start('plants',{difficulty:'hard'});clearInterval(timer);const captainAt=state.qinBoss.nextCaptainAt;
+  return {baseDelay,baseOpening,firstDelay,openingSpacing,warning,waveRest,initialEnemyAI,captainAt};
+ });
+ expect(result.firstDelay).toBe(Math.round(result.baseDelay*.9));
+ expect(result.openingSpacing).toBe(Math.round(result.baseOpening*.9));
+ expect(result.warning).toBe(5000);expect(result.waveRest).toBe(7200);expect(result.initialEnemyAI).toBe(3870);expect(result.captainAt).toBe(6300);
+});
+
+test('second-season hard mode keeps heroes and symmetrically scales special combat and objectives',async({page})=>{
  await open(page);
  const result=await page.evaluate(()=>{
   const completed=Object.fromEntries(Array.from({length:10},(_,index)=>[index+1,1]));playerProfile=normalizeProfile({season2Progress:{plants:{highestLevel:10,completedLevels:completed},zombies:{highestLevel:10,completedLevels:completed}}});
   currentSeason=2;selectedLevel=10;start('plants',{difficulty:'hard'});clearInterval(timer);state.resource=9999;
-  return {difficulty:state.difficulty,hero:deploymentReadyReason('s2Xiahou'),troop:deploymentReadyReason('s2Crossbow'),title:$('modeTitle').textContent};
+  const target=addPlant('s2Crossbow',4,2),before=target.hp;damageSeason2Plant(target,100,false,{kind:'test'});
+  const defense={difficulty:state.difficulty,hero:deploymentReadyReason('s2Xiahou'),troop:deploymentReadyReason('s2Crossbow'),title:$('modeTitle').textContent,damageTaken:before-target.hp};
+  selectedLevel=4;start('zombies',{difficulty:'hard'});clearInterval(timer);const tower=state.plants.find(unit=>unit.stageTarget==='arrow-tower');
+  return {defense,tower:{hp:tower.hp,maxHp:tower.maxHp,runtimeHp:state.gameplay.stageRule.data.targetHp}};
  });
- expect(result.difficulty).toBe('hard');expect(result.hero).toContain('困難');expect(result.troop).toBe('');expect(result.title).toContain('困難');
+ expect(result.defense).toMatchObject({difficulty:'hard',hero:'',troop:''});expect(result.defense.damageTaken).toBeCloseTo(110,8);expect(result.defense.title).toContain('困難');
+ expect(result.tower).toEqual({hp:414,maxHp:414,runtimeHp:414});
 });
 
 test('legacy battle saves without difficulty resume as medium while new hard saves stay hard',async({page})=>{
@@ -505,7 +552,20 @@ test('legacy battle saves without difficulty resume as medium while new hard sav
   return {legacyResult,hardResult};
  });
  expect(result.legacyResult).toEqual({difficulty:'medium',time:4321});
- expect(result.hardResult).toEqual({difficulty:'hard',time:7654,blocksHeroes:true});
+ expect(result.hardResult).toEqual({difficulty:'hard',time:7654,blocksHeroes:false});
+});
+
+test('legacy hard saves migrate enemy hp and shields exactly once while preserving current ratios',async({page})=>{
+ await open(page);
+ const result=await page.evaluate(()=>{
+  const completed=Object.fromEntries(Array.from({length:10},(_,index)=>[index+1,1]));playerProfile=normalizeProfile({campaignProgress:{plants:{highestLevel:10,completedLevels:completed},zombies:{highestLevel:10,completedLevels:completed}}});
+  currentSeason=1;selectedLevel=1;start('plants',{difficulty:'hard'});clearInterval(timer);const enemy=addZombie('normal',8,2);enemy.maxHp=4;enemy.hp=1;enemy.maxShieldHp=7;enemy.shieldHp=2;delete state.difficultyTuningVersion;persistBattleState();restoreBattleIfAvailable();clearInterval(timer);
+  const migrated=state.zombies.find(unit=>unit.id===enemy.id),ordinary={hp:migrated.hp,maxHp:migrated.maxHp,shieldHp:migrated.shieldHp,maxShieldHp:migrated.maxShieldHp,version:state.difficultyTuningVersion};persistBattleState();restoreBattleIfAvailable();clearInterval(timer);const restoredAgain=state.zombies.find(unit=>unit.id===enemy.id),ordinaryAgain={hp:restoredAgain.hp,maxHp:restoredAgain.maxHp,shieldHp:restoredAgain.shieldHp,maxShieldHp:restoredAgain.maxShieldHp};
+  selectedLevel=11;start('plants',{difficulty:'hard'});clearInterval(timer);const boss=qinBossEntity();boss.maxHp=4200;boss.hp=2100;delete state.difficultyTuningVersion;persistBattleState();restoreBattleIfAvailable();clearInterval(timer);const migratedBoss=qinBossEntity(),qin={hp:migratedBoss.hp,maxHp:migratedBoss.maxHp,version:state.difficultyTuningVersion};persistBattleState();restoreBattleIfAvailable();clearInterval(timer);const qinAgain={hp:qinBossEntity().hp,maxHp:qinBossEntity().maxHp};
+  return {ordinary,ordinaryAgain,qin,qinAgain};
+ });
+ expect(result.ordinary.maxHp).toBe(5);expect(result.ordinary.maxShieldHp).toBe(8);expect(result.ordinary.version).toBe(1);expect(result.ordinary.hp/result.ordinary.maxHp).toBeCloseTo(1/4,12);expect(result.ordinary.shieldHp/result.ordinary.maxShieldHp).toBeCloseTo(2/7,12);expect(result.ordinaryAgain).toEqual({hp:result.ordinary.hp,maxHp:5,shieldHp:result.ordinary.shieldHp,maxShieldHp:8});
+ expect(result.qin).toEqual({hp:2415,maxHp:4830,version:1});expect(result.qinAgain).toEqual({hp:2415,maxHp:4830});
 });
 
 test('automatic challenges cross the opening story into the production battle seam',async({page})=>{

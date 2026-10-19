@@ -47,6 +47,7 @@ const ENEMY_TELEGRAPH_RULES=Object.freeze({
  'jester-laugh':{duration:800,label:'狂笑混亂',icon:'鈴',counter:'換列離開該路，或在狂笑前擊倒鈴鐺丑屍'},
  'titan-smash':{duration:800,label:'破城重槌',icon:'槌',counter:'換列離開九宮格，或在落槌前擊倒屍旗大胖'},
  'qin-unification':{duration:1400,label:'天下一統',icon:'令',counter:'換列離開被標記路線'},
+ 'qin-lane-slash':{duration:900,label:'秦王近衛斬',icon:'劍',counter:'換列離開始皇所在路線'},
  's2-shield-break':{duration:700,label:'斷盾重劈',icon:'斬',counter:'換列，或在重劈前擊倒劈盾屍'},
  's2-hook-drag':{duration:800,label:'纏鏈拖行',icon:'鏈',counter:'換列、卡住前方位置、派許褚免疫，或擊倒纏鏈屍'},
  's2-ram-charge':{duration:900,label:'蓄勢衝撞',icon:'衝',counter:'換列，或在衝撞前擊倒衝車屍'}
@@ -216,7 +217,7 @@ function resolveBattleUnit(side,key,battle=state,context={}){
 function battleDeploymentCost(amount,battle=state){return Math.max(0,Math.round(Number(amount||0)*effectiveBattleModifier('deploymentCost',battle)))}
 function battleRelocationCost(amount,battle=state){return Math.max(0,Math.round(Number(amount||0)*effectiveBattleModifier('relocationCost',battle)))}
 function battleIncomeAmount(amount,recipient='player',battle=state){const key=recipient==='enemy'?'enemyResourceIncome':'resourceIncome';return Math.max(0,Math.round(Number(amount||0)*effectiveBattleModifier(key,battle)))}
-function battleEnemySpawnInterval(amount,battle=state){return Math.max(1,Math.round(Number(amount||0)*effectiveBattleModifier('enemySpawnInterval',battle)))}
+function battleEnemySpawnInterval(amount,battle=state,{difficulty=true}={}){const interval=Number(amount||0)*effectiveBattleModifier('enemySpawnInterval',battle);return difficulty?difficultyEnemyPace(interval,battle):Math.max(1,Math.round(interval))}
 function battleHealingAmount(amount,healerSide=state?.faction,battle=state){const modifier=battle&&healerSide===battle.faction?effectiveBattleModifier('healing',battle):1;return Math.max(0,Math.round(Number(amount||0)*modifier))}
 function battleDamageTaken(amount,side,battle=state){return side===battle?.faction?Number(amount||0)*effectiveBattleModifier('damageTaken',battle):Number(amount||0)}
 function battleMovementSpeed(side,key,row,battle=state,{stat='speed',movementMultiplier=1}={}){return resolveBattleUnit(side,key,battle,{row,movementMultiplier}).unit?.[stat]||0}

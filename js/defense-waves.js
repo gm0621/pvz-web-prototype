@@ -22,7 +22,7 @@ function updateDefenseWaves(){
  if(state.time<director.restUntil)return true;
  const next=director.plan[director.index];
  if(!director.active&&next&&state.enemiesSpawned>=next.after){
-  const warning=battleEnemySpawnInterval(5000);
+  const warning=battleEnemySpawnInterval(5000,state,{difficulty:false});
   director.active={id:director.index+1,count:Math.min(next.count,lv.enemyCount-state.enemiesSpawned),sent:0,warnedAt:state.time,nextAt:state.time+warning,rallied:false,rows:[]};
   beginBattleReportSegment('defense-wave',director.active.id,`第 ${director.active.id} 波`);
   recordBattleEvent('wave',{wave:director.active.id,phase:'start'});
@@ -64,7 +64,7 @@ function updateDefenseWaves(){
   recordBattleEvent('wave',{wave:wave.id,phase:'complete'});
   completeBattleReportSegment('defense-wave',wave.id,`第 ${wave.id} 波`);
   director.index++;director.active=null;
-  director.restUntil=state.time+(lv.enemyCount<25?10000:8000);
+  director.restUntil=state.time+battleEnemySpawnInterval(lv.enemyCount<25?10000:8000);
   state.nextAI=director.restUntil;
   log(state.enemiesSpawned>=lv.enemyCount?'最後一波已全數出陣，準備迎戰大魔王！':'本波已全數出陣，敵軍暫停增援；趁空檔補陣。');
   if(typeof grantStrategyPoint==='function')grantStrategyPoint(`defense-wave-${wave.id}`);

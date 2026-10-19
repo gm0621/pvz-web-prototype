@@ -57,7 +57,7 @@ function actSeason2Plants(){
 function damageSeason2Plant(p,amount,melee=false,context={}){
  if(p.hp<=0)return;let damage=amount;
  if(melee){if(p.type!=='s2Shield'){p.braced=false;p.lastCombatAt=state.time}if(p.boneMarks>0&&state.time<(p.boneExpires||0)){p.boneMarks--;damage+=20;flash(p,'骨釘引爆')}}
- damage=battleDamageTaken(damage,'plants');
+ damage=battleDamageTaken(difficultyIncomingDamage(damage,'plants'),'plants');
  if(p.type==='s2Shield'){const d=PLANT_TYPES.s2Shield,reduction=state.time<(p.armorWeakenedUntil||0)?d.weakenedDamageReduction:d.damageReduction;damage*=1-reduction}
  if(p.unyieldingUntil&&state.time<p.unyieldingUntil)damage*=.7;
  const guard=p.type!=='s2DianWei'&&state.plants.find(g=>g.hp>0&&g.type==='s2DianWei'&&g.r===p.r&&g.c<p.c&&p.c-g.c<=1.2);
