@@ -14,6 +14,9 @@ test('probability skill upgrade label says next level instead of lower level',as
  await expect(page.locator('#charModalStats')).toContainText('下一級 27%');
  await expect(page.locator('#charModalStats')).not.toContainText('下級 27%');
 });
+test('closing a character guide restores focus to its originating card',async({page})=>{
+ await open(page);const card=page.locator('#characterGrid .char-profile').first();await card.focus();await card.click();await expect(page.locator('#charModalClose')).toBeFocused();await page.locator('#charModalClose').click();await expect(card).toBeFocused();
+});
 
 test('ability introduction separates overview, selected effect and supporting rules',async({page})=>{
  await open(page);await page.evaluate(()=>showCharacterDetail('plants','zhangfei'));

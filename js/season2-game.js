@@ -21,10 +21,20 @@ function processSeason2PendingHits(){
   const source=state.plants.find(unit=>unit.id===hit.sourceId&&unit.hp>0);
   const target=state.zombies.find(unit=>unit.id===hit.targetId&&unit.hp>0);
   if(!source||!target)continue;
-  if(hit.projectile){state.projectiles.push({x:source.c+.72,y:source.r+.5,r:source.r,dir:1,damage:hit.damage,from:'plant',speed:.11,targetId:target.id,sourceId:source.id,sourceType:source.type});sfx('shoot');continue}
-  damageZombie(target,hit.damage,{source,kind:'melee'});attackFx(target,hit.fx||'slash');sfx('hit');flash(target,'重刀命中');
+  if(hit.projectile){state.projectiles.push({x:source.c+.72,y:source.r+.5,r:source.r,dir:1,damage:hit.damage,from:'plant',speed:.11,targetId:target.id,sourceId:source.id,sourceType:source.type,guoJiaDisrupt:hit.guoJiaDisrupt});sfx('shoot');continue}
+  damageZombie(target,hit.damage,{source,kind:'melee'});if(hit.stunDuration&&target.hp>0){target.stunUntil=Math.max(target.stunUntil||0,state.time+hit.stunDuration);recordBattleControl(target,{source,sourceSide:'plants',kind:'stun',duration:hit.stunDuration});flash(target,'虎痴壓制')}attackFx(target,hit.fx||'slash');sfx('hit');flash(target,'重刀命中');
  }
  state.pendingHits=waiting;
+}
+function season2BuffBlocked(unit){return (unit?.buffBlockedUntil||0)>state.time}
+function season2PlantAttackRate(p,d){return d.rate*((p.caoHasteUntil||0)>state.time&&!season2BuffBlocked(p) ? .8 : 1)}
+function season2CaoCommand(cao){
+ if(state.time-(cao.lastCommand??-999999)<8000)return false;const allies=state.plants.filter(p=>p!==cao&&p.hp>0&&p.r===cao.r&&Math.abs(p.c-cao.c)<=2&&!season2BuffBlocked(p));if(!allies.length)return false;
+ cao.lastCommand=state.time;for(const ally of allies){ally.caoHasteUntil=state.time+3000;ally.shieldHp=Math.max(ally.shieldHp||0,45);ally.maxShieldHp=Math.max(ally.maxShieldHp||0,45);flash(ally,'魏武軍令')}flash(cao,'軍令如山');return true;
+}
+function season2GuoJiaDisrupt(source,target){
+ if(!source||source.type!=='s2GuoJia'||!target||state.time-(source.lastDisrupt??-999999)<8000||(target.guoJiaProtectedUntil||0)>state.time)return false;
+ const item=gameplayTelegraphs()?.active.find(event=>event.sourceId===target.id&&event.executeAt>state.time);if(!item)return false;const delay=target.boss?300:1000;item.executeAt+=delay;item.duration=item.executeAt-item.createdAt;source.lastDisrupt=state.time;target.guoJiaProtectedUntil=state.time+6000;flash(target,'料敵延策');return true;
 }
 function advanceSeason2Shield(p,d){
  p.braced=true;
@@ -38,18 +48,21 @@ function advanceSeason2Shield(p,d){
 function actSeason2Plants(){
  for(const p of state.plants){
   if(p.hp<=0)continue;const d=activeUnit('plants',p.type);if(!d)continue;
+  if(p.stunUntil&&state.time<p.stunUntil)continue;
   if(p.type==='s2Shield'){advanceSeason2Shield(p,d);continue}
   const target=state.zombies.filter(z=>z.hp>0&&z.r===p.r&&z.c>p.c&&z.c-p.c<=(d.range||1)).sort((a,b)=>a.c-b.c)[0];
   if(p.type==='s2Tuntian'&&state.time-p.last>=d.rate){const safe=state.time-(p.lastDamagedAt??p.bornAt)>=8000,raw=d.produce+(safe?15:0),gain=grantBattleIncome('plants',raw,'produce');p.last=state.time;flash(p,`🌾 +${gain}`);continue}
   if(p.type==='s2Halberd'){const incoming=state.zombies.find(z=>z.hp>0&&!z.boss&&z.r===p.r&&z.c>=p.c&&z.c-p.c<=d.range&&['dash','jump'].includes(z.movementKind)&&state.time-z.movementAt<=100&&z.previousC-z.c>=.4);if(incoming&&state.time-(p.lastIntercept??-6000)>=6000){p.lastIntercept=state.time;damageZombie(incoming,55,{source:p,kind:'intercept'});incoming.movementKind=null;incoming.c=Math.max(incoming.c,p.c+.8);if(incoming.hp>0)recordBattleControl(incoming,{source:p,sourceSide:'plants',kind:'intercept',duration:0});flash(p,'拒馬列戟')}}
-  if(!target||state.time-p.last<d.rate)continue;
+  if(!target||state.time-p.last<season2PlantAttackRate(p,d))continue;
   p.last=state.time;markAttack(p);let damage=d.damage;
   if(p.type==='s2Crossbow'){p.focusStacks=p.focusId===target.id?Math.min(3,(p.focusStacks||0)+1):0;p.focusId=target.id;damage=Math.round(damage*(1+.2*p.focusStacks))}
   if(p.type==='s2Xiahou'&&(p.rage||0)>=100){damage+=60;p.rage=0;p.unyieldingUntil=state.time+2500;flash(p,'獨目修羅')}
   if(p.type==='s2XuHuang'){p.armorStacks=p.armorTarget===target.id?Math.min(3,(p.armorStacks||0)+1):0;p.armorTarget=target.id;damage=Math.round(damage*(1+p.armorStacks*.18))}
   if(p.type==='s2SimaYi')damage=Math.round(damage*(1+Math.min(.6,(state.time-p.bornAt)/45000*.6)));
   if(p.type==='s2ZhangLiao'){target.breakMarkedUntil=state.time+5000;flash(target,'破陣標記')}
-  if(d.attackHitAt){state.pendingHits=state.pendingHits||[];state.pendingHits.push({sourceId:p.id,targetId:target.id,damage,at:state.time+d.attackHitAt,fx:'slash',projectile:(d.range||0)>2})}
+  if(p.type==='s2CaoCao')season2CaoCommand(p);
+  const stunDuration=p.type==='s2XuChu'&&!target.boss&&Math.random()<.2?1200:0;
+  if(d.attackHitAt){state.pendingHits=state.pendingHits||[];state.pendingHits.push({sourceId:p.id,targetId:target.id,damage,at:state.time+d.attackHitAt,fx:'slash',projectile:(d.range||0)>2,stunDuration,guoJiaDisrupt:p.type==='s2GuoJia'})}
   else if((d.range||0)>2){state.projectiles.push({x:p.c+.72,y:p.r+.5,r:p.r,dir:1,damage,from:'plant',speed:.11,targetId:target.id,sourceId:p.id,sourceType:p.type});sfx('shoot')}
   else{damageZombie(target,damage,{source:p,kind:'melee'});attackFx(target,'slash');sfx('hit')}
  }
@@ -60,7 +73,8 @@ function damageSeason2Plant(p,amount,melee=false,context={}){
  damage=battleDamageTaken(difficultyIncomingDamage(damage,'plants'),'plants');
  if(p.type==='s2Shield'){const d=PLANT_TYPES.s2Shield,reduction=state.time<(p.armorWeakenedUntil||0)?d.weakenedDamageReduction:d.damageReduction;damage*=1-reduction}
  if(p.unyieldingUntil&&state.time<p.unyieldingUntil)damage*=.7;
- const guard=p.type!=='s2DianWei'&&state.plants.find(g=>g.hp>0&&g.type==='s2DianWei'&&g.r===p.r&&g.c<p.c&&p.c-g.c<=1.2);
+ if((p.shieldHp||0)>0){const absorbed=Math.min(p.shieldHp,damage);p.shieldHp-=absorbed;damage-=absorbed;if(absorbed>0)flash(p,p.shieldHp>0?'軍令護盾':'軍令護盾破裂')}
+ const guard=!season2BuffBlocked(p)&&p.type!=='s2DianWei'&&state.plants.find(g=>g.hp>0&&g.type==='s2DianWei'&&g.r===p.r&&g.c<p.c&&p.c-g.c<=1.2);
  if(guard){const shared=Math.min(damage*.35,guard.hp-1);applyBattleDamage(guard,shared,{sourceSide:'zombies',targetSide:'plants',kind:'guard-share',...context});damage-=shared;flash(guard,'帳前死衛')}
  p.lastDamagedAt=state.time;applyBattleDamage(p,damage,{sourceSide:'zombies',targetSide:'plants',...context});if(p.type==='s2Xiahou')p.rage=Math.min(100,(p.rage||0)+damage*.8);attackFx(p,'slash');
  if(p.hp<=0)grantBattleIncome('zombies',50,'eat')
@@ -96,11 +110,12 @@ function resolveSeason2EnemyTelegraph(item,z,target){
 function actSeason2Zombies(){
  for(const z of state.zombies){
   if(z.hp<=0)continue;const d=activeUnit('zombies',z.type);if(!d)continue;z.previousC=z.c;
+  if(z.stunUntil&&state.time<z.stunUntil)continue;
   if(z.type==='s2Medic'&&state.time-(z.lastHeal||0)>=5000){const ally=state.zombies.filter(a=>a!==z&&a.type!=='s2Medic'&&a.hp>0&&a.r===z.r&&a.hp<a.maxHp&&Math.abs(a.c-z.c)<2.2).sort((a,b)=>a.hp/a.maxHp-b.hp/b.maxHp)[0];if(ally){const healed=d.heal;z.lastHeal=state.time;ally.hp=Math.min(ally.maxHp,ally.hp+healed);flash(ally,`補肉 +${healed}`)}}
   const target=zombieEnteredBattlefield(z)?state.plants.filter(p=>p.hp>0&&p.r===z.r&&p.c<z.c&&z.c-p.c<=(d.range||.8)).sort((a,b)=>b.c-a.c)[0]:null;
   if(!target){if(z.type==='s2Ram')z.charge=Math.min(90,(z.charge||0)+.06);const movementMultiplier=z.slowUntil&&state.time<z.slowUntil ? .5 : 1;z.c-=battleMovementSpeed('zombies',z.type,z.r,state,{movementMultiplier});if(z.c<=.25){triggerMower(z.r);if(z.hp<=0||state.over)continue}if(z.c<0){const verdict=finishStageBreach(z,state.faction==='zombies',state.faction==='zombies'?'突破成功！':'防線被突破！',`${state.levelConfig.shortName}${state.faction==='zombies'?'攻破！':'失守，可調整陣形再試。'}`);if(verdict||state.over)return verdict;z.hp=0;continue}continue}
   if(z.type==='s2Hook'&&state.time-(z.lastHook||0)>=8000&&!hasEnemyTelegraph(z.id,'s2-hook-drag')){const occupied=state.plants.some(p=>p.hp>0&&p.r===target.r&&Math.round(p.c)===Math.round(target.c+1));if(!occupied&&target.type!=='s2XuChu'){z.lastHook=state.time;createEnemyTelegraph('s2-hook-drag',{source:z,targets:[{id:target.id,r:target.r,c:target.c}],cancelOnSourceDeath:true});flash(z,'纏鏈瞄準');log('⚠️ 纏鏈屍 0.8 秒後拖行目標；換列、卡位、派許褚或擊倒施術者可反制。');continue}}
-  if(state.time-z.last<d.rate)continue;z.last=state.time;markAttack(z);let damage=d.damage;
+  const attackRate=z.hasteUntil>state.time?d.rate*.75:d.rate;if(state.time-z.last<attackRate)continue;z.last=state.time;markAttack(z);let damage=d.damage;
   if(z.type==='s2Rat'&&state.zombies.some(a=>a.hp>0&&a!==z&&a.r===z.r&&Math.abs(a.c-z.c)<1.5))damage=Math.round(damage*1.25);
   if(z.type==='s2Cleaver'){season2CleaverHit(z,target,d);continue}
   if(z.type==='s2Nail'){state.projectiles.push({x:z.c-.1,y:z.r+.5,r:z.r,dir:-1,damage,from:'zombie',speed:.085,targetId:target.id,nail:true,marks:1,sourceId:z.id,sourceType:z.type});sfx('shoot');continue}
@@ -119,8 +134,8 @@ function moveSeason2Projectiles(){
   if(!target)continue;pr.hit=true;
   if(pr.from==='plant'){
    const shield=state.zombies.filter(z=>z.hp>0&&z.type==='s2Coffin'&&(z.shieldHp??ZOMBIE_TYPES.s2Coffin.shieldHp)>0&&z.r===target.r&&z.c<=target.c&&target.c-z.c<=.9).sort((a,b)=>a.c-b.c)[0];
-   let damage=pr.damage;if(shield){shield.shieldHp??=ZOMBIE_TYPES.s2Coffin.shieldHp;const shieldBefore=shield.shieldHp,absorbed=Math.min(shield.shieldHp,damage*.6);shield.shieldHp-=absorbed;damage-=absorbed;if(shieldBefore>0&&shield.shieldHp<=0)triggerBattleFeedback('shield-break');flash(shield,shield.shieldHp>0?'棺板掩護':'棺盾破裂')}
-   damageZombie(target,damage,{sourceId:pr.sourceId,sourceType:pr.sourceType,kind:'projectile'});attackFx(target,'slash');
+   const smoke=state.zombies.find(z=>z.hp>0&&z.type==='s2Smoke'&&z.r===target.r&&Math.abs(z.c-target.c)<=1.35);let damage=smoke?pr.damage*.75:pr.damage;if(shield){shield.shieldHp??=ZOMBIE_TYPES.s2Coffin.shieldHp;const shieldBefore=shield.shieldHp,absorbed=Math.min(shield.shieldHp,damage*.6);shield.shieldHp-=absorbed;damage-=absorbed;if(shieldBefore>0&&shield.shieldHp<=0)triggerBattleFeedback('shield-break');flash(shield,shield.shieldHp>0?'棺板掩護':'棺盾破裂')}
+   damageZombie(target,damage,{sourceId:pr.sourceId,sourceType:pr.sourceType,kind:'projectile'});if(pr.guoJiaDisrupt)season2GuoJiaDisrupt(state.plants.find(p=>p.id===pr.sourceId),target);attackFx(target,'slash');
   }else{
    damageSeason2Plant(target,pr.damage,false,{sourceSide:'zombies',sourceId:pr.sourceId,sourceType:pr.sourceType,kind:'projectile'});if(pr.nail&&target.hp>0){target.boneMarks=Math.min(2,(state.time<(target.boneExpires||0)?target.boneMarks||0:0)+(pr.marks||1));target.boneExpires=state.time+5000;flash(target,`骨釘 ${target.boneMarks}`)}
   }
@@ -134,7 +149,7 @@ function season2DefenseChoice(options){
 }
 function processSeason2AttackEvents(){
  if(state.bossSpawned||state.time<22000+state.level*1500)return;
- const row=state.zombies.filter(z=>z.hp>0).sort((a,b)=>a.c-b.c)[0]?.r??2,cell=[2,1,3,0,4].find(c=>!plantAtCell(row,c));if(cell===undefined)return;
+ const preferredRow=state.zombies.filter(z=>z.hp>0).sort((a,b)=>a.c-b.c)[0]?.r??2,rows=[preferredRow,...[0,1,2,3,4].filter(row=>row!==preferredRow)],placement=rows.map(row=>({row,cell:[2,1,3,0,4].find(c=>!plantAtCell(row,c))})).find(item=>item.cell!==undefined);if(!placement)return;const {row,cell}=placement;
  const leaderKey=SEASON2_UNIT_ORDER.plants[Math.min(11,state.level+1)];state.bossSpawned=true;addPlant(leaderKey,cell,row);const leader=state.plants[state.plants.length-1];leader.boss=true;leader.hp*=1.35;leader.maxHp=leader.hp;flash(leader,`${PLANT_TYPES[leaderKey].name}領軍`);log(`魏軍${PLANT_TYPES[leaderKey].name}進入戰線；觀察其技能，再調整攻城隊順序。`);
 }
 function setSeasonPickerVisible(visible){

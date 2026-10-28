@@ -6,7 +6,7 @@ test('season-two rewards survive reload and unlock only same-route stage two',as
  await expect(page.locator('#modalText')).toContainText('大盾兵');await expect(page.locator('#modalNext')).not.toContainText('全破');
  const progress=await page.evaluate(()=>({first:playerProfile.campaignProgress,second:playerProfile.season2Progress,gold:playerProfile.gold,char:playerProfile.characterLevels.plants.s2Crossbow}));
  expect(progress.first.plants.highestLevel).toBe(0);expect(progress.second.plants.highestLevel).toBe(1);expect(progress.second.zombies.highestLevel).toBe(0);expect(progress.gold).toBeGreaterThan(0);expect(progress.char.xp).toBeGreaterThan(0);
- await page.reload();await page.locator('#plantStartBtn').click();await page.locator('[data-season-choice="2"]').click();await startLevelCard(page,'[data-jump-level="1"]');
+ await page.reload();await expect(page.locator('#storyDialog')).toBeVisible();await page.locator('#storySkip').click();await expect(page.locator('#storyDialog')).not.toBeVisible();await page.locator('#plantStartBtn').click();await page.locator('[data-season-choice="2"]').click();await startLevelCard(page,'[data-jump-level="1"]');
  await expect(page.locator('#cards [data-key="s2Shield"]')).toBeVisible();expect(await page.evaluate(()=>playerProfile.characterLevels.plants.s2Crossbow)).toEqual(progress.char);
  expect(await page.evaluate(()=>isCampaignLevelUnlocked('plants',2))).toBe(true);
  await page.evaluate(()=>backToHome());await page.locator('#plantStartBtn').click();await page.locator('[data-season-choice="1"]').click();await startLevelCard(page,'[data-jump-level="1"]');

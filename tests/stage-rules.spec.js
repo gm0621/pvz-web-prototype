@@ -188,6 +188,27 @@ test('restoring during a mower run preserves its use without leaving a frozen ac
  expect(result).toMatchObject({over:false,remaining:4});
 });
 
+test('an active mower freezes completely while battle is paused',async({page})=>{
+ await openApp(page);
+ await page.evaluate(()=>{currentUser=null;playerProfile=defaultProfile();currentSeason=1;currentFaction='plants';selectedLevel=1;start('plants');clearInterval(timer);cancelBattleLesson();state.tutorial=null;state.zombies=[];triggerMower(2);state.paused=true;window.__pausedMowerX=state.lawnmowers[2].x;addZombie('normal',4,2)});
+ await page.waitForTimeout(180);
+ const result=await page.evaluate(()=>({before:window.__pausedMowerX,after:state.lawnmowers[2].x,zombies:state.zombies.filter(z=>z.r===2&&z.hp>0).length,time:state.time}));
+ expect(result.after).toBe(result.before);expect(result.zombies).toBe(1);expect(result.time).toBe(0);
+});
+
+test('a paused mower interval cannot damage units after the battle state is replaced',async({page})=>{
+ await openApp(page);
+ const targetId=await page.evaluate(()=>{
+  currentUser=null;playerProfile=defaultProfile();currentSeason=1;selectedLevel=1;start('plants');clearInterval(timer);cancelBattleLesson();state.tutorial=null;state.zombies=[];triggerMower(1);state.paused=true;
+  start('plants');clearInterval(timer);cancelBattleLesson();state.tutorial=null;state.zombies=[];return addZombie('normal',3,1).id;
+ });
+ const before=await page.evaluate(id=>state.zombies.find(z=>z.id===id).hp,targetId);
+ await page.waitForTimeout(180);
+ const after=await page.evaluate(id=>state.zombies.find(z=>z.id===id)?.hp,targetId);
+ expect(after).toBe(before);
+ expect(await page.evaluate(()=>state.lawnmowers[1])).toMatchObject({used:false,active:false});
+});
+
 test('pilot attack objectives require their designated target and escort',async({page})=>{
  await openApp(page);
  const result=await page.evaluate(()=>{

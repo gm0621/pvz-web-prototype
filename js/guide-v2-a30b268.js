@@ -12,14 +12,14 @@ function guideV2Init(){
  $('guidePlay').onclick=()=>{if(guideDemoTimer!==null){guideStopDemo();return}if(matchMedia('(prefers-reduced-motion: reduce)').matches){guideAdvance();return}if(guideDemoFrame>=8)guideDemoFrame=0;guideTick()};
  $('guideStep').onclick=()=>{guideStopDemo();guideAdvance()};
  $('guideReplay').onclick=()=>{guideStopDemo();guideDemoFrame=0;guideDrawDemo();if(!matchMedia('(prefers-reduced-motion: reduce)').matches)guideTick()};
- $('charModalClose').addEventListener('click',()=>{guideStopDemo();guideLastFocus?.focus?.()});
+ $('charModalClose').addEventListener('click',guideStopDemo);
  modal.addEventListener('click',e=>{if(e.target===modal)guideStopDemo()});
  modal.addEventListener('keydown',e=>{
   if(e.key==='Escape'){e.preventDefault();$('charModalClose').click()}
   if(e.key==='Tab'){const items=[...modal.querySelectorAll('button:not([disabled]),select:not([disabled]),a[href]')].filter(el=>el.getClientRects().length),first=items[0],last=items[items.length-1];if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus()}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus()}}
  });
  document.addEventListener('visibilitychange',()=>{if(document.hidden)guideStopDemo()});
- new MutationObserver(()=>{if(!modal.classList.contains('show'))guideStopDemo()}).observe(modal,{attributes:true,attributeFilter:['class']});
+ new MutationObserver(()=>{if(!modal.classList.contains('show')){guideStopDemo();requestAnimationFrame(()=>guideLastFocus?.isConnected&&guideLastFocus.focus({preventScroll:true}))}}).observe(modal,{attributes:true,attributeFilter:['class']});
 }
 function guideStat(label,value){const item=guideNode('div',null,'stat-pill');item.append(guideNode('b',label),guideNode('span',value));return item}
 function guideAbilityKind(a){return a.id.startsWith('skill')?'機率技能':a.id==='talent'?'固定天賦':'普通行動'}

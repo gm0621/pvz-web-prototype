@@ -641,8 +641,22 @@ test('confirmation uses in-game dialog instead of native confirm', async ({ page
   await page.locator('#resetLocalProfileBtn').click();
   await expect(page.locator('#confirmDialog')).toHaveClass(/show/);
   await expect(page.locator('#confirmDialogTitle')).toHaveText('重置本機存檔');
+  await expect(page.locator('#confirmDialogCancel')).toBeFocused();
+  await page.keyboard.press('Shift+Tab');
+  await expect(page.locator('#confirmDialogConfirm')).toBeFocused();
+  await page.keyboard.press('Tab');
+  await expect(page.locator('#confirmDialogCancel')).toBeFocused();
   await page.locator('#confirmDialogCancel').click();
   await expect(page.locator('#confirmDialog')).not.toHaveClass(/show/);
+  await expect(page.locator('#resetLocalProfileBtn')).toBeFocused();
+});
+
+test('mobile account and shop primary controls meet 44px touch targets',async({page})=>{
+  await page.setViewportSize({width:320,height:568});await openApp(page);await page.evaluate(()=>showAccountScreen('login'));
+  const account=await page.locator('#accountLoginTab,#accountSignupTab,#accountBackBtn').evaluateAll(nodes=>nodes.filter(n=>n.getClientRects().length).map(n=>({id:n.id,...n.getBoundingClientRect().toJSON()})));
+  await page.evaluate(()=>{playerProfile.gold=3000;showShop('equipment')});
+  const shop=await page.locator('#shopFilters button,.shop-item button:not([disabled]),#shopBackBtn,#shopFloatBackBtn').evaluateAll(nodes=>nodes.filter(n=>n.getClientRects().length).map(n=>({id:n.id||n.textContent.trim(),...n.getBoundingClientRect().toJSON()})));
+  expect([...account,...shop].length).toBeGreaterThan(5);expect([...account,...shop].every(box=>box.width>=44&&box.height>=44)).toBe(true);
 });
 
 test('authenticated purchase uses authoritative RPC', async ({ page }) => {

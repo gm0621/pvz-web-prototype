@@ -1,15 +1,20 @@
 /* First-season story: UI state is deliberately separate from campaign/rewards. */
 const STORY_READ_KEY='sgzStoryRead_v1';
+const PENDING_VICTORY_STORY_KEY='sgzPendingVictoryStory_v1';
 let activeCampaignStory=null;
 const storyElement=id=>document.getElementById(id);
 function campaignStoryData(season){return season===2?SEASON2_STORY:SEASON1_STORY}
 function storyReadKey(faction,level,scene,season=1){return `${season===1?'':'s'+season+':'}${faction}:${level}:${scene}`}
 function hasReadStory(faction,level,scene,season=1){const key=storyReadKey(faction,level,scene,season);if(typeof onboardingFlag==='function')return onboardingFlag('storyRead',key);try{const read=JSON.parse(localStorage.getItem(STORY_READ_KEY)||'{}');return read?.[key]===true}catch{return false}}
 function markStoryRead(faction,level,scene,season=1){const key=storyReadKey(faction,level,scene,season);if(typeof markOnboardingComplete==='function')return markOnboardingComplete('storyRead',key);try{const stored=JSON.parse(localStorage.getItem(STORY_READ_KEY)||'{}');const read=stored&&typeof stored==='object'&&!Array.isArray(stored)?stored:{};read[key]=true;localStorage.setItem(STORY_READ_KEY,JSON.stringify(read));return true}catch{return false}}
+function pendingVictoryStory(){try{const pending=JSON.parse(localStorage.getItem(PENDING_VICTORY_STORY_KEY)||'null');return pending&&['plants','zombies'].includes(pending.faction)&&[1,2].includes(pending.season)&&Number.isInteger(pending.level)?pending:null}catch{return null}}
+function rememberPendingVictoryStory(battle){try{localStorage.setItem(PENDING_VICTORY_STORY_KEY,JSON.stringify({season:battle.season,faction:battle.faction,level:battle.level}))}catch{}}
+function clearPendingVictoryStory(){try{localStorage.removeItem(PENDING_VICTORY_STORY_KEY)}catch{}}
+function resumePendingVictoryStory(){const pending=pendingVictoryStory();if(!pending)return false;if(hasReadStory(pending.faction,pending.level,'victory',pending.season)){clearPendingVictoryStory();return false}const button=storyElement('modalStory');if(storyElement('game')?.classList.contains('active')&&storyElement('modal')?.classList.contains('show')&&!button?.classList.contains('hidden')&&button?.onclick)return button.onclick();return openCampaignStory(pending.faction,pending.level,'victory',{required:true,season:pending.season,onComplete:clearPendingVictoryStory})}
 function closeCampaignStory(complete=false){
  const story=activeCampaignStory;if(!story)return;
  activeCampaignStory=null;storyElement('storyDialog').close();
- if(complete){if(!story.replay)markStoryRead(story.faction,story.level,story.scene,story.season);story.onComplete?.()}
+ if(complete){if(!story.replay){markStoryRead(story.faction,story.level,story.scene,story.season);if(story.scene==='victory')clearPendingVictoryStory()}story.onComplete?.()}
  if(story.focus?.isConnected&&story.focus.getClientRects().length)story.focus.focus({preventScroll:true});
 }
 function renderCampaignStory(){
@@ -72,6 +77,7 @@ function presentBattleStoryResult(battle,win,verified){
  resetBattleStoryResult();
  if(!campaignStoryData(battle?.season)[battle?.faction]?.[battle?.level]||!storyElement('game').classList.contains('active')||win&&!verified)return false;
  const scene=win?'victory':'defeat';if(hasReadStory(battle.faction,battle.level,scene,battle.season))return false;
+ if(win&&verified)rememberPendingVictoryStory(battle);
  const button=storyElement('modalStory');button.textContent=win?'關閉獎勵':'關閉戰果';button.classList.remove('hidden');setBattleStoryPending(true);
  button.onclick=()=>{
   if(battle!==state||!battle.over||!storyElement('game').classList.contains('active')||!storyElement('modal').classList.contains('show')||activeCampaignStory)return false;
@@ -87,4 +93,4 @@ storyElement('storySkip').onclick=()=>closeCampaignStory(true);
 storyElement('storyClose').onclick=()=>closeCampaignStory(false);
 storyElement('storyDialog').addEventListener('cancel',event=>{event.preventDefault();if(!activeCampaignStory?.required)closeCampaignStory(false)});
 storyElement('storyPortrait').onerror=()=>{storyElement('storyPortrait').hidden=true};
-window.addEventListener('popstate',event=>{if(activeCampaignStory?.required){event.stopImmediatePropagation();if(typeof syncAppHistory==='function')syncAppHistory('battle');return}closeCampaignStory(false)});
+window.addEventListener('popstate',event=>{if(activeCampaignStory?.required){event.stopImmediatePropagation();if(typeof syncAppHistory==='function')syncAppHistory('battle');return}if(pendingVictoryStory()){event.stopImmediatePropagation();if(typeof syncAppHistory==='function')syncAppHistory('battle');resumePendingVictoryStory();return}closeCampaignStory(false)});

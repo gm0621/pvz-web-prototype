@@ -46,3 +46,23 @@ test('browsing another season preserves and resumes the paused battle',async({pa
  expect(await page.evaluate(()=>({season:state.season,faction:state.faction,paused:state.paused}))).toEqual({season:2,faction:'zombies',paused:true});
  await page.locator('#gameFloatBackBtn').click();await expect(page.locator('#levelGrid')).toBeHidden();await expect(page.locator('#seasonPicker')).toBeHidden();
 });
+test('browser forward restores seasons and levels after returning home',async({page})=>{
+ await page.route('https://cdn.jsdelivr.net/**',r=>r.fulfill({contentType:'application/javascript',body:''}));await page.goto('/');
+ await page.locator('#plantStartBtn').click();await page.locator('[data-season-choice="2"]').click();
+ await page.goBack();await expect(page.locator('#seasonPicker')).toBeVisible();await page.goBack();await expect(page.locator('#start')).toHaveClass(/active/);
+ await page.goForward();await expect(page.locator('#seasonPicker')).toBeVisible();
+ await page.goForward();await expect(page.locator('#levelScreen')).toHaveClass(/active/);await expect(page.locator('#seasonPicker')).toBeHidden();await expect(page.locator('#chosenFactionText')).toContainText('第二季');
+ expect(await page.evaluate(()=>history.state?.sgzScreen)).toBe('level');
+});
+
+test('browser back pauses and saves a live battle so forward restores it',async({page})=>{
+ await page.route('https://cdn.jsdelivr.net/**',r=>r.fulfill({body:''}));await page.goto('/');
+ await page.evaluate(()=>{currentUser=null;playerProfile=defaultProfile();currentSeason=1;selectedLevel=1;chooseFaction('plants',1);start('plants');clearInterval(timer);state.time=1234});
+ await page.goBack();
+ await expect(page.locator('#levelScreen')).toHaveClass(/active/);
+ expect(await page.evaluate(()=>({paused:state.paused,time:state.time,saved:!!campaignResumeSnapshot()}))).toEqual({paused:true,time:1234,saved:true});
+ await page.goForward();
+ await expect(page.locator('#game')).toHaveClass(/active/);
+ await expect(page.locator('#pauseOverlay')).toHaveClass(/show/);
+ expect(await page.evaluate(()=>({time:state.time,screen:history.state?.sgzScreen}))).toEqual({time:1234,screen:'battle'});
+});

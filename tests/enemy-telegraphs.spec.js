@@ -125,7 +125,7 @@ test('第二季斷盾、拖行與衝撞 telegraph for 0.7–1.0 seconds before r
 
   state.time+=2000;state.gameplay.telegraphs.active=[];p=plant('hook-target');p.type='s2Tuntian';z=zombie('hook','s2Hook');z.lastHook=-999999;z.last=state.time;state.plants=[p];state.zombies=[z];const hookBefore=p.c;actSeason2Zombies();const hook=structuredClone(state.gameplay.telegraphs.active[0]);const hookEarly=p.c;state.time=hook.executeAt;processEnemyTelegraphs();cases.push({kind:hook.kind,duration:hook.duration,before:hookBefore,early:hookEarly,after:p.c,slowUntil:p.slowUntil});
 
-  state.time+=2000;state.gameplay.telegraphs.active=[];p=plant('ram-target');p.type='s2Tuntian';z=zombie('ram','s2Ram');z.charge=60;state.plants=[p];state.zombies=[z];const ramBefore=p.hp;actSeason2Zombies();const ram=structuredClone(state.gameplay.telegraphs.active[0]);const ramEarly=p.hp;state.time=ram.executeAt;processEnemyTelegraphs();cases.push({kind:ram.kind,duration:ram.duration,before:ramBefore,early:ramEarly,after:p.hp});
+  state.time+=2000;state.gameplay.telegraphs.active=[];p=plant('ram-target');p.type='s2Tuntian';z=zombie('ram','s2Ram');z.charge=60;state.plants=[p];state.zombies=[z];const ramBefore=p.hp+(p.shieldHp||0);actSeason2Zombies();const ram=structuredClone(state.gameplay.telegraphs.active[0]);const ramEarly=p.hp+(p.shieldHp||0);state.time=ram.executeAt;processEnemyTelegraphs();cases.push({kind:ram.kind,duration:ram.duration,before:ramBefore,early:ramEarly,after:p.hp+(p.shieldHp||0)});
   return cases;
  });
  expect(result[0]).toMatchObject({kind:'s2-shield-break',duration:700,early:result[0].before});

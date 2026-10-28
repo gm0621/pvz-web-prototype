@@ -86,6 +86,27 @@ test('a first clear shows a celebratory character unlock reveal with skill, repl
   await expect(page.locator('#unlockReveal')).toHaveCount(0);
 });
 
+test('final Wei first clear immediately shows Cao Cao unlock above the fold',async({page})=>{
+ await open(page);
+ await page.evaluate(()=>{
+  chooseFaction('plants',2);
+  for(let level=1;level<10;level++)completeCampaignLevel('plants',level,2);
+  markStoryRead('plants',10,'opening',2);
+  selectedLevel=10;start('plants');clearInterval(timer);
+ });
+ await page.evaluate(async()=>{await end(true,'勝利','fixture')});
+ const reveal=page.locator('#unlockReveal');
+ await expect(reveal).toBeVisible();
+ await expect(reveal).toContainText('恭喜解鎖');
+ await expect(reveal).toContainText('曹操');
+ await expect(reveal.locator('img')).toHaveAttribute('src',/cao-cao(?:\/idle)?\.webp/);
+ const geometry=await reveal.evaluate(element=>{const rect=element.getBoundingClientRect();return {top:rect.top,bottom:rect.bottom,viewport:innerHeight,scrollTop:element.closest('.modal-card')?.scrollTop||0}});
+ expect(geometry.top).toBeGreaterThanOrEqual(0);
+ expect(geometry.top).toBeLessThan(geometry.viewport);
+ expect(geometry.bottom).toBeGreaterThan(0);
+ expect(geometry.scrollTop).toBe(0);
+});
+
 test('first-season unlocks also show an immediate ability demonstration',async({page})=>{
  await open(page);await page.evaluate(()=>{chooseFaction('plants',1);for(let level=1;level<5;level++)completeCampaignLevel('plants',level,1);markStoryRead('plants',5,'opening',1);selectedLevel=5;start('plants');clearInterval(timer)});
  await page.evaluate(async()=>{await end(true,'勝利','fixture')});

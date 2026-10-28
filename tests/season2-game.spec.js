@@ -77,3 +77,46 @@ test('second-season attack uses Wei enemies, bone marks, pack damage and a break
  expect(result.marks).toBe(1);expect(result.packDamage).toBe(36);expect(result.remaining).toBe(0);
  expect(result.firstShield).toEqual({hp:220,shield:80});expect(result.finalShield).toBe(0);
 });
+
+test('season-two smoke, break mark, haste, and finale fallback all affect combat',async({page})=>{
+ await open(page);const result=await page.evaluate(()=>{
+  chooseFaction('plants',2);startLevel('plants',1);clearInterval(timer);state.plants=[];state.zombies=[];state.projectiles=[];state.time=1000;
+  const smoke=addZombie('s2Smoke',4,2),covered=addZombie('s2Rat',5,2);const coveredBefore=covered.hp;state.projectiles=[{x:covered.c+.32,r:2,dir:1,from:'plant',damage:100,speed:.08,sourceId:'shot',sourceType:'s2Crossbow'}];moveProjectiles();const smokeLoss=coveredBefore-covered.hp;
+  state.zombies=[];state.plants=[];const marked=addZombie('s2Rat',5,1),ally=addPlant('s2Crossbow',1,1);marked.breakMarkedUntil=state.time+5000;const markedBefore=marked.hp;damageZombie(marked,100,{source:ally,kind:'projectile'});const markedLoss=markedBefore-marked.hp;
+  state.zombies=[];state.plants=[];const target=addPlant('s2Tuntian',2,3),rat=addZombie('s2Rat',2.6,3);rat.last=0;rat.hasteUntil=1000;state.time=600;const hpBefore=target.hp;actZombies();const hasteLoss=hpBefore-target.hp;
+  state.zombies=[];state.plants=[];state.level=1;state.time=24000;state.bossSpawned=false;addZombie('s2Rat',1,2);for(let c=0;c<5;c++)addPlant('s2Tuntian',c,2);processSeason2AttackEvents();const boss=state.plants.find(p=>p.boss);
+  return {smokeLoss,markedLoss,hasteLoss,bossSpawned:state.bossSpawned,bossRow:boss?.r,blockedRow:2};
+ });
+ expect(result.smokeLoss).toBe(75);expect(result.markedLoss).toBe(115);expect(result.hasteLoss).toBeGreaterThan(0);expect(result.bossSpawned).toBe(true);expect(result.bossRow).not.toBe(result.blockedRow);
+});
+
+test('late Wei utility and the hexer counter work in real season-two combat',async({page})=>{
+ await open(page);const result=await page.evaluate(()=>{
+  chooseFaction('plants',2);startLevel('plants',1);clearInterval(timer);state.plants=[];state.zombies=[];state.projectiles=[];state.pendingHits=[];state.time=12000;
+  const random=Math.random;Math.random=()=>0;
+  const xuChu=addPlant('s2XuChu',2,0),xuTarget=addZombie('s2Coffin',2.7,0);xuChu.last=0;actPlants();state.time+=PLANT_TYPES.s2XuChu.attackHitAt;processSeason2PendingHits();const xuChuStun=xuTarget.stunUntil-state.time;
+  state.plants=[];state.zombies=[];state.pendingHits=[];state.projectiles=[];state.gameplay.telegraphs.active=[];state.time=20000;
+  const guoJia=addPlant('s2GuoJia',1,1),ram=addZombie('s2Ram',3.7,1),dummy=addPlant('s2Shield',3,1);ram.charge=60;actZombies();const beforeDelay=state.gameplay.telegraphs.active[0]?.executeAt;guoJia.last=0;actPlants();state.time+=PLANT_TYPES.s2GuoJia.attackHitAt;processSeason2PendingHits();const shot=state.projectiles.at(-1);shot.x=ram.c+.32;moveProjectiles();const afterDelay=state.gameplay.telegraphs.active[0]?.executeAt;
+  state.plants=[];state.zombies=[];state.pendingHits=[];state.projectiles=[];state.gameplay.telegraphs.active=[];state.time=30000;
+  const cao=addPlant('s2CaoCao',2,2),crossbow=addPlant('s2Crossbow',1,2),caoTarget=addZombie('s2Coffin',5,2);cao.last=0;crossbow.last=state.time-1600;actPlants();const shieldGranted=crossbow.shieldHp||0,crossbowBefore=crossbow.hp;damageSeason2Plant(crossbow,100,true,{source:caoTarget,kind:'melee'});const command={haste:crossbow.caoHasteUntil-state.time,shield:shieldGranted,shieldedLoss:crossbowBefore-crossbow.hp,shots:state.pendingHits.length+state.projectiles.length};
+  state.plants=[];state.zombies=[];state.pendingHits=[];state.projectiles=[];state.time=40000;
+  const dian=addPlant('s2DianWei',1,3),protectedUnit=addPlant('s2Crossbow',2,3),hexer=addZombie('s2Hexer',2.6,3);hexer.last=0;actZombies();const guardBefore=dian.hp,protectedBefore=protectedUnit.hp;damageSeason2Plant(protectedUnit,100,true,{source:hexer,kind:'melee'});const blockedGuard={dianLoss:guardBefore-dian.hp,protectedLoss:protectedBefore-protectedUnit.hp,buffBlockedUntil:protectedUnit.buffBlockedUntil-state.time};
+  Math.random=random;return {xuChuStun,beforeDelay,afterDelay,command,blockedGuard};
+ });
+ expect(result.xuChuStun).toBeGreaterThanOrEqual(1000);
+ expect(result.afterDelay-result.beforeDelay).toBe(1000);
+ expect(result.command.haste).toBeGreaterThanOrEqual(2500);expect(result.command.shield).toBe(45);expect(result.command.shieldedLoss).toBe(55);expect(result.command.shots).toBeGreaterThan(0);
+ expect(result.blockedGuard.buffBlockedUntil).toBe(4000);expect(result.blockedGuard.dianLoss).toBe(0);expect(result.blockedGuard.protectedLoss).toBe(100);
+});
+
+test('mobile attack keeps a zombie deployed in column nine visibly inside the board',async({page})=>{
+ await page.setViewportSize({width:390,height:844});await open(page);
+ await page.evaluate(()=>{chooseFaction('zombies',2);startLevel('zombies',1);clearInterval(timer)});
+ await page.locator('#cards [data-key="s2Rat"]').click();await page.locator('.cell[data-r="2"][data-c="8"]').click();
+ const zombie=page.locator('#board .type-s2Rat');await expect(zombie).toHaveCount(1);
+ await page.evaluate(()=>{state.zombies.push({id:'offboard-rat',type:'s2Rat',r:0,c:9.2,hp:100,maxHp:100,last:0,bornAt:state.time});state.plants.push({id:'right-defender',type:'s2Crossbow',r:1,c:8,hp:100,maxHp:100,last:0,bornAt:state.time});render()});
+ const attackEdgeClasses=await page.evaluate(()=>({rats:[...document.querySelectorAll('#board .type-s2Rat')].map(entity=>entity.classList.contains('attack-edge-right')),defender:document.querySelector('#board .type-s2Crossbow')?.classList.contains('attack-edge-right')}));
+ expect(attackEdgeClasses.rats).toEqual([true,false]);expect(attackEdgeClasses.defender).toBe(false);await page.waitForTimeout(500);
+ const geometry=await page.evaluate(()=>{const board=document.querySelector('#board').getBoundingClientRect(),entity=document.querySelector('#board .type-s2Rat'),image=entity.querySelector('.char-img').getBoundingClientRect(),style=getComputedStyle(entity);return {board:{left:board.left,right:board.right},image:{left:image.left,right:image.right},className:entity.className,marginLeft:style.marginLeft,left:style.left}});
+ expect(geometry.image.left,JSON.stringify(geometry)).toBeGreaterThanOrEqual(geometry.board.left-1);expect(geometry.image.right,JSON.stringify(geometry)).toBeLessThanOrEqual(geometry.board.right+1);
+});

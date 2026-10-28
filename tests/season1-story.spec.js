@@ -114,4 +114,11 @@ test('first-season opening blocks simulation and cloud match creation until skip
  await page.locator('#storyNext').click();await page.locator('#storyNext').click();await expect(page.locator('#storyCount')).toHaveText('3 / 3');
  await page.locator('#storySkip').click();await expect(page.locator('#storyDialog')).not.toBeVisible();await expect(page.locator('#game')).toHaveClass(/active/);
  expect(await page.evaluate(()=>window.__storyStarts)).toBe(1);expect(await page.evaluate(()=>state.time)).toBeLessThan(2000);
+ expect(await page.evaluate(()=>hasReadStory('plants',1,'victory'))).toBe(false);
+});
+test('reload reopens a required unread victory story without duplicating rewards',async({page})=>{
+ await openGame(page);await chooseFirst(page);await page.locator('#storySkip').click();await page.evaluate(async()=>{clearInterval(timer);await end(true,'防守成功','測試')});
+ const before=await page.evaluate(()=>({gold:playerProfile.gold,xp:playerProfile.xp,completed:JSON.stringify(playerProfile.completedLevels)}));await page.reload();
+ await expect(page.locator('#storyDialog')).toBeVisible();await expect(page.locator('#storyClose')).not.toBeVisible();expect(await page.evaluate(()=>hasReadStory('plants',1,'victory'))).toBe(false);
+ await page.locator('#storySkip').click();expect(await page.evaluate(()=>hasReadStory('plants',1,'victory'))).toBe(true);expect(await page.evaluate(()=>({gold:playerProfile.gold,xp:playerProfile.xp,completed:JSON.stringify(playerProfile.completedLevels)}))).toEqual(before);
 });
