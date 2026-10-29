@@ -8,8 +8,7 @@ test('season-two preview has two ten-stage plans, valid independent unlocks and 
  await page.goto('/');
  const before=await page.evaluate(()=>JSON.stringify({...localStorage}));
  const defs=await page.evaluate(()=>JSON.stringify({plants:PLANT_TYPES,zombies:ZOMBIE_TYPES,levels:LEVELS}));
- await page.locator('#season2PreviewLink').click();
- await expect(page).toHaveURL(/season2\.html/);
+ await page.goto('/season2.html');
  await expect(page.locator('#previewNotice')).toContainText('全十關已開放遊玩');
  await expect(page.locator('#season2Title')).toContainText('北境鐵壁');
  for(const mode of ['defense','attack']){

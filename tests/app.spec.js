@@ -60,6 +60,7 @@ async function openApp(page, query='test=1') {
   await page.addInitScript(() => {
     const read={};for(const side of ['plants','zombies'])for(let level=1;level<=10;level++)for(const scene of ['opening','victory','defeat'])read[`${side}:${level}:${scene}`]=true;
     localStorage.setItem('sgzStoryRead_v1',JSON.stringify(read));
+    if(!localStorage.getItem('sgZombieProfile'))localStorage.setItem('sgZombieProfile',JSON.stringify({highestLevel:1,completedLevels:{1:1},campaignProgress:{plants:{highestLevel:1,completedLevels:{1:1}},zombies:{highestLevel:0,completedLevels:{}}}}));
   });
   await page.route('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2', route => route.fulfill({contentType: 'application/javascript', body: mockSupabase}));
   await page.goto('/?' + query);
@@ -295,6 +296,7 @@ test('new players get one clear easy first-battle path before advanced choices',
   await page.route('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2', route => route.fulfill({contentType: 'application/javascript', body: mockSupabase}));
   await page.goto('/?freshPlayer=1');
   await expect(page.locator('#start')).toHaveClass(/active/);
+  await expect(page.locator('#start')).toHaveClass(/new-player-home/);
   const entry=page.locator('#newPlayerStartCard');
   await expect(entry).toBeVisible();
   await expect(entry.locator('.new-player-step')).toHaveCount(4);
@@ -306,6 +308,15 @@ test('new players get one clear easy first-battle path before advanced choices',
   await expect(startButton).toHaveCount(1);
   await expect(page.locator('#plantStartBtn')).toHaveClass(/secondary/);
   await expect(page.locator('#zombieStartBtn')).toHaveClass(/secondary/);
+  await expect(page.locator('.mode-banner.defend')).toBeHidden();
+  await expect(page.locator('.mode-banner.attack')).toBeHidden();
+  await expect(page.locator('.mode-banner.guide')).toBeHidden();
+  await expect(page.locator('.mode-banner.profile-entry')).toBeHidden();
+  await expect(page.locator('.mode-banner.shop-entry')).toBeHidden();
+  await expect(page.locator('#menuProgressStats')).toHaveText('訪客將軍｜Lv.1｜守城 0/10｜攻城尚未解鎖');
+  await expect(page.locator('#menuProgressStats')).not.toContainText('🪙');
+  await expect(page.locator('#season2PreviewLink')).toBeHidden();
+  expect(await page.locator('#menuMusicBtn').evaluate(button => parseFloat(getComputedStyle(button).fontSize))).toBeLessThanOrEqual(12);
   expect(await startButton.evaluate(button => {
     const rect=button.getBoundingClientRect();
     return rect.top>=0&&rect.bottom<=innerHeight&&rect.left>=0&&rect.right<=innerWidth;
@@ -331,6 +342,9 @@ test('new players get one clear easy first-battle path before advanced choices',
 
   await page.evaluate(() => {clearInterval(timer);completeCampaignLevel('plants',1,1);clearBattleSave();backToHome();updateProgressUI()});
   await expect(entry).toBeHidden();
+  await expect(page.locator('#start')).not.toHaveClass(/new-player-home/);
+  await expect(page.locator('.mode-banner.defend')).toBeVisible();
+  await expect(page.locator('.mode-banner.guide')).toBeVisible();
   await expect(page.locator('#plantStartBtn')).toHaveClass(/primary/);
 });
 
