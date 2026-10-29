@@ -1,7 +1,7 @@
 const {test,expect}=require('@playwright/test');
 async function openGame(page){await page.route('https://cdn.jsdelivr.net/**',r=>r.fulfill({contentType:'application/javascript',body:''}));await page.goto('/');await expect(page.locator('#start')).toHaveClass(/active/);}
 async function startLevelCard(page,selector){await page.locator(selector).click();await page.locator('.level-card-details:not([hidden]) .level-detail-start').click()}
-async function chooseFirst(page){await page.locator('#plantStartBtn').click();await page.locator('[data-season-choice="1"]').click();await page.locator('#continueCampaignBtn').click()}
+async function chooseFirst(page){if(await page.locator('#newPlayerStartCard').isVisible())await page.locator('[data-new-player-start]:visible').click();else{await page.locator('#plantStartBtn').click();await page.locator('[data-season-choice="1"]').click();await page.locator('#continueCampaignBtn').click()}}
 test('attack story keeps the alternate timeline and normal unlock gate',async({page})=>{
  await openGame(page);expect(await page.evaluate(()=>requestCampaignBattle('zombies',1))).toBe(false);
  await page.evaluate(()=>{for(let level=1;level<=10;level++)completeCampaignLevel('plants',level);refreshCampaignUI()});
@@ -41,7 +41,7 @@ test('cloud verification failure cannot play or mark a victory story',async({pag
  await expect(page.locator('#storyDialog')).not.toBeVisible();await expect(page.locator('#modalTitle')).toHaveText('戰果同步失敗');expect(await page.evaluate(()=>hasReadStory('plants',1,'victory'))).toBe(false);
 });
 test('back and reload cancel unread intros while paused battles resume without replay',async({page})=>{
- await openGame(page);await chooseFirst(page);await page.goBack();await expect(page.locator('#storyDialog')).not.toBeVisible();expect(await page.evaluate(()=>hasReadStory('plants',1,'opening'))).toBe(false);
+ await openGame(page);await chooseFirst(page);await page.locator('#storyClose').click();await expect(page.locator('#storyDialog')).not.toBeVisible();expect(await page.evaluate(()=>hasReadStory('plants',1,'opening'))).toBe(false);
  await page.evaluate(()=>backToHome());await chooseFirst(page);await page.reload();await expect(page.locator('#storyDialog')).not.toBeVisible();expect(await page.evaluate(()=>!!state&&!state.over)).toBe(false);
  await chooseFirst(page);await page.locator('#storySkip').click();await page.locator('#battleLessonContinue').click();await page.locator('#battleLessonContinue').click();await page.locator('#backBtn').click();const saved=await page.evaluate(()=>JSON.parse(localStorage.getItem(battleSaveStorageKey())).state.time);
  await page.locator('#resumeBattleBtn').click();await expect(page.locator('#storyDialog')).not.toBeVisible();expect(await page.evaluate(()=>({paused:state.paused,time:state.time}))).toEqual({paused:true,time:saved});

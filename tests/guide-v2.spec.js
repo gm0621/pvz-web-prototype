@@ -1,5 +1,5 @@
 const {test,expect}=require('@playwright/test');
-async function open(page){await page.route('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2',r=>r.fulfill({body:'',contentType:'application/javascript'}));await page.goto(process.env.GAME_URL||'/');await page.locator('#charactersBtn').click()}
+async function open(page){await page.route('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2',r=>r.fulfill({body:'',contentType:'application/javascript'}));await page.goto(process.env.GAME_URL||'/');await page.evaluate(()=>{completeCampaignLevel('plants',1);backToHome()});await page.locator('#charactersBtn').click()}
 test('unified guide covers every roster and summon without mutating game data',async({page})=>{
  await open(page);const errors=[];page.on('pageerror',e=>errors.push(e.message));
  const result=await page.evaluate(()=>{

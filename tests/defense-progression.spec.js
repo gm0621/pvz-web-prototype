@@ -7,7 +7,7 @@ async function openStageEight(page,{legacyGap=false}={}){
   currentUser=null;currentSeason=1;playerProfile=defaultProfile();
   for(let level=1;level<8;level++)completeCampaignLevel('plants',level);
   if(legacyGap){playerProfile.campaignProgress.plants.completedLevels[8]=1;delete playerProfile.campaignProgress.plants.completedLevels[4];playerProfile=normalizeProfile(playerProfile)}
-  saveProfile(false,false);markStoryRead('plants',8,'opening');
+  saveProfile(false,false);markStoryRead('plants',8,'opening');backToHome();
  },legacyGap);
  await page.locator('#plantStartBtn').click();
  await page.getByRole('button',{name:/第一季 蜀國篇/}).click();

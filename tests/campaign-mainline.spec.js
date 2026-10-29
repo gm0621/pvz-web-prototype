@@ -64,14 +64,14 @@ test('first-season level cards match the accepted art themes and real defense ru
 test('new prologue is readable, prev/close/replay are safe, and reading to the end starts exactly once',async({page})=>{
  await page.route('https://cdn.jsdelivr.net/**',r=>r.fulfill({contentType:'application/javascript',body:''}));
  await page.goto('/');await expect(page.locator('#start')).toHaveClass(/active/);
- await page.locator('#plantStartBtn').click();await page.locator('[data-season-choice="1"]').click();
+ await page.locator('[data-new-player-start]:visible').click();
  const profile=await page.evaluate(()=>JSON.stringify(playerProfile));
- await page.locator('#continueCampaignBtn').click();await expect(page.locator('#storyText')).toContainText('役魂鈴喚醒屍兵');
+ await expect(page.locator('#storyText')).toContainText('役魂鈴喚醒屍兵');
  await page.locator('#storyNext').click();await page.locator('#storyPrev').click();await expect(page.locator('#storyText')).toContainText('役魂鈴喚醒屍兵');
  await page.locator('#storyClose').click();expect(await page.evaluate(()=>JSON.stringify(playerProfile))).toBe(profile);
  expect(await page.evaluate(()=>hasReadStory('plants',1,'opening'))).toBe(false);
  await page.evaluate(()=>{window.__mainlineStarts=0;startCloudMatch=()=>{window.__mainlineStarts++}});
- await page.locator('#continueCampaignBtn').click();
+ await page.locator('[data-new-player-start]:visible').click();
  const length=await page.evaluate(()=>activeCampaignStory.lines.length);
  for(let i=0;i<length;i++){
   expect(await page.evaluate(()=>window.__mainlineStarts)).toBe(0);

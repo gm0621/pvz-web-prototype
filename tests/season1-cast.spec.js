@@ -29,7 +29,7 @@ test('ten stage cards match battle rosters in both routes without clipped text',
   await page.evaluate(()=>{clearInterval(timer);backToHome()});
  }
 });
-async function open(page){await page.route('https://cdn.jsdelivr.net/**',r=>r.fulfill({body:''}));await page.goto(process.env.GAME_URL||'/');await page.locator('#plantStartBtn').click();await page.locator('[data-season-choice="1"]').click();}
+async function open(page){await page.route('https://cdn.jsdelivr.net/**',r=>r.fulfill({body:''}));await page.goto(process.env.GAME_URL||'/');await page.evaluate(()=>{completeCampaignLevel('plants',1);backToHome()});await page.locator('#plantStartBtn').click();await page.locator('[data-season-choice="1"]').click();}
 test('first-season cast keeps all defenders and separates actual enemy waves from bosses',async({page})=>{
  await open(page);
  const rows=await page.evaluate(()=>Object.values(LEVELS).map(lv=>({level:lv.level,cast:document.querySelectorAll('#levelGrid .level-cast')[lv.level-1].innerText,plants:UNIT_ORDER.plants.filter(k=>UNLOCK_LEVEL.plants[k]<=lv.level).map(k=>PLANT_TYPES[k].name),enemies:[...new Set([...lv.zombieWeights,...(lv.openingZombies||[])])].filter(k=>!ZOMBIE_TYPES[k].hidden&&Number.isFinite(aiDelay(ZOMBIE_TYPES,k))).map(k=>ZOMBIE_TYPES[k].name),boss:ZOMBIE_TYPES[lv.bossType].name})));

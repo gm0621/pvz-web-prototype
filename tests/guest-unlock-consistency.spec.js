@@ -8,7 +8,7 @@ async function openGuest(page,{gap=false,final=true}={}){
   currentUser=null;currentSeason=1;playerProfile=defaultProfile();
   for(let n=1;n<=(final?10:8);n++)completeCampaignLevel('plants',n,1);
   if(gap){delete playerProfile.campaignProgress.plants.completedLevels[4];delete playerProfile.campaignProgress.plants.completedLevels[5];}
-  playerProfile=normalizeProfile(playerProfile);saveProfile(false,false);
+  playerProfile=normalizeProfile(playerProfile);saveProfile(false,false);backToHome();updateProgressUI();
  },{gap,final});
 }
 

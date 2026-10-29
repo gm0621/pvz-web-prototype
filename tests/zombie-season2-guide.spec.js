@@ -2,7 +2,7 @@ const {test,expect}=require('@playwright/test');
 const names=['棺盾小屍','裂盾斧屍','煙罐小屍','鉤鎖屍卒','縫屍醫官','斷旗咒屍','替身偶屍','陷城屍督','鼠牙群屍','腐釘弩屍','毒囊噴屍','破門撞屍'];
 test('season-two zombie guide is separate, complete and never mutates progress',async({page})=>{
  const errors=[];page.on('pageerror',e=>errors.push(e.message));
- await page.route('https://cdn.jsdelivr.net/**',r=>r.abort());await page.goto('/');
+ await page.route('https://cdn.jsdelivr.net/**',r=>r.abort());await page.goto('/');await page.evaluate(()=>{completeCampaignLevel('plants',1);backToHome()});
  const before=await page.evaluate(()=>JSON.stringify({plants:PLANT_TYPES,zombies:ZOMBIE_TYPES,profile:playerProfile,storage:{...localStorage}}));
  await page.locator('#charactersBtn').click();await page.locator('[data-roster=zombies]').click();
  await expect(page.locator('#zombieSeasonTabs')).toBeVisible();

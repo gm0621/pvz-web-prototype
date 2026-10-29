@@ -6,7 +6,7 @@ async function open(page){
 }
 
 async function seedReturningPlayer(page){
- await page.evaluate(()=>{playerProfile=normalizeProfile({season2Progress:{plants:{highestLevel:1,completedLevels:{1:1}}}})});
+ await page.evaluate(()=>{playerProfile=normalizeProfile({season2Progress:{plants:{highestLevel:1,completedLevels:{1:1}}}});backToHome();updateProgressUI()});
 }
 
 test('new players see one simple first-stage action until their first persisted clear',async({page})=>{
@@ -208,6 +208,7 @@ test('first visit tip appears once and mobile sticky continue appears only after
 
 test('season and faction navigation restore focus to the semantic opener',async({page})=>{
  await open(page);
+ await seedReturningPlayer(page);
  await page.locator('#plantStartBtn').click();
  await expect(page.locator('[data-season-choice="1"]')).toBeFocused();
  await page.locator('#backFactionBtn').click();

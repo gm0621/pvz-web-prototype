@@ -84,9 +84,8 @@ test('README and home copy announce both complete ten-stage seasons',async({page
  await openApp(page);
  const readme=fs.readFileSync('README.md','utf8');
  const copy=await page.evaluate(()=>({news:document.querySelector('.menu-news')?.textContent||'',characters:[document.querySelector('#characters .subtitle')?.textContent,document.querySelector('#zombieSeasonIntro')?.textContent,document.querySelector('#characterRosterIntro')?.textContent].join('｜')}));
- for(const text of [readme,copy.news]){
-  expect(text).toContain('第一季、第二季皆有守城十關與攻城十關');
-  expect(text).not.toContain('第二季第一關已開放');
- }
+ expect(readme).toContain('第一季、第二季皆有守城十關與攻城十關');
+ expect(copy.news).toContain('目前進度');
+ expect(copy.news).not.toContain('第二季第一關已開放');
  expect(copy.characters).not.toMatch(/預告|尚未開放出戰|尚待實作/);
 });

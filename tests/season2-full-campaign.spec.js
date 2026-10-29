@@ -116,6 +116,6 @@ test('first-season unlocks also show an immediate ability demonstration',async({
 });
 
 test('season-two selector and preview state the complete campaign is playable',async({page})=>{
-  await open(page);await page.evaluate(()=>completeCampaignLevel('plants',1,1));await page.locator('#plantStartBtn').click();await expect(page.locator('[data-season-choice="2"] .season-status')).toContainText('十關已開放');await page.locator('[data-season-choice="2"]').click();await expect(page.locator('#chosenFactionText')).toContainText('第二季・魏國守城');await expect(page.locator('#campaignProgressPanel')).toContainText('已完成 0 / 10');
+  await open(page);await page.evaluate(()=>{completeCampaignLevel('plants',1,1);backToHome();updateProgressUI()});await page.locator('#plantStartBtn').click();await expect(page.locator('[data-season-choice="2"] .season-status')).toContainText('十關已開放');await page.locator('[data-season-choice="2"]').click();await expect(page.locator('#chosenFactionText')).toContainText('第二季・魏國守城');await expect(page.locator('#campaignProgressPanel')).toContainText('已完成 0 / 10');
   await page.goto('/season2.html');await expect(page.locator('#previewNotice')).toContainText('全十關已開放遊玩');await expect(page.locator('.play-stage-link')).toHaveCount(10);
 });

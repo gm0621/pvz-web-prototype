@@ -7,6 +7,7 @@ test('Wei playable guide has separate Shu Wei zombie tabs and cannot mutate prog
   page.on('pageerror', error=>errors.push(error.message));
   await page.route('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2', route=>route.fulfill({contentType:'application/javascript',body:''}));
   await page.goto('/?wei-guide-test');
+  await page.evaluate(()=>{completeCampaignLevel('plants',1);backToHome()});
   const before=await page.evaluate(()=>JSON.stringify({plants:PLANT_TYPES,zombies:ZOMBIE_TYPES,order:UNIT_ORDER,unlocks:UNLOCK_LEVEL,levels:LEVELS,profile:playerProfile}));
   await page.locator('#charactersBtn').click();
   await expect(page.locator('#characters [data-roster]')).toHaveText(['蜀國','魏國','僵屍方']);

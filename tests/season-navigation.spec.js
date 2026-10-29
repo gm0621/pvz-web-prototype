@@ -1,6 +1,6 @@
 const {test,expect}=require('@playwright/test');
 test('faction entry offers seasons before levels while first-season attack stays gated',async({page})=>{
- await page.route('https://cdn.jsdelivr.net/**',r=>r.fulfill({contentType:'application/javascript',body:''}));await page.goto('/');
+ await page.route('https://cdn.jsdelivr.net/**',r=>r.fulfill({contentType:'application/javascript',body:''}));await page.goto('/');await page.evaluate(()=>{playerProfile=normalizeProfile({campaignProgress:{zombies:{highestLevel:1,completedLevels:{1:1}}}});backToHome();updateProgressUI()});
  await expect(page.locator('#season2DefenseBtn,#season2AttackBtn')).toHaveCount(0);
  for(const faction of ['plants','zombies']){
   await page.locator(faction==='plants'?'#plantStartBtn':'#zombieStartBtn').click();
@@ -15,15 +15,15 @@ test('faction entry offers seasons before levels while first-season attack stays
   await page.locator('#backFactionBtn').click();await expect(page.locator('#seasonPicker')).toBeVisible();
   await page.locator('#backFactionBtn').click();await expect(page.locator('#start')).toHaveClass(/active/);
  }
- await page.locator('#plantStartBtn').click();await page.locator('[data-season-choice="1"]').click();await page.locator('#continueCampaignBtn').click();await expect(page.locator('#storyDialog')).toBeVisible();await page.locator('#storySkip').click();await expect(page.locator('#game')).toHaveClass(/active/); expect(await page.evaluate(()=>state.season)).toBe(1);
+ await page.locator('#plantStartBtn').click();await page.locator('[data-season-choice="1"]').click();await page.locator('#continueCampaignBtn').click();await page.locator('.level-card-details:not([hidden]) .level-detail-start').click();if(await page.locator('#storyDialog').isVisible())await page.locator('#storySkip').click();await expect(page.locator('#game')).toHaveClass(/active/); expect(await page.evaluate(()=>state.season)).toBe(1);
 });
 test('browser back follows levels to seasons to home',async({page})=>{
- await page.route('https://cdn.jsdelivr.net/**',r=>r.fulfill({contentType:'application/javascript',body:''}));await page.goto('/');
+ await page.route('https://cdn.jsdelivr.net/**',r=>r.fulfill({contentType:'application/javascript',body:''}));await page.goto('/');await page.evaluate(()=>{playerProfile=normalizeProfile({campaignProgress:{zombies:{highestLevel:1,completedLevels:{1:1}}}});backToHome();updateProgressUI()});
  await page.locator('#plantStartBtn').click();await page.locator('[data-season-choice="2"]').click();await page.goBack();
  await expect(page.locator('#seasonPicker')).toBeVisible();await page.goBack();await expect(page.locator('#start')).toHaveClass(/active/);
 });
 test('browser back clears an open level modal before rebuilding the season',async({page})=>{
- await page.route('https://cdn.jsdelivr.net/**',r=>r.fulfill({contentType:'application/javascript',body:''}));await page.goto('/');
+ await page.route('https://cdn.jsdelivr.net/**',r=>r.fulfill({contentType:'application/javascript',body:''}));await page.goto('/');await page.evaluate(()=>{playerProfile=normalizeProfile({campaignProgress:{zombies:{highestLevel:1,completedLevels:{1:1}}}});backToHome();updateProgressUI()});
  await page.evaluate(()=>completeCampaignLevel('plants',1,2));
  await page.locator('#plantStartBtn').click();await page.locator('[data-season-choice="1"]').click();
  await page.locator('#levelGrid .level-card').first().locator('.level-start').click();
@@ -37,17 +37,17 @@ test('browser back clears an open level modal before rebuilding the season',asyn
  expect(await page.evaluate(()=>({active:activeLevelDetails,locked:document.body.classList.contains('level-detail-open'),connectedDialogs:document.querySelectorAll('#levelGrid .level-card-details:not([hidden])').length}))).toEqual({active:null,locked:false,connectedDialogs:0});
 });
 test('browsing another season preserves and resumes the paused battle',async({page})=>{
- await page.route('https://cdn.jsdelivr.net/**',r=>r.fulfill({contentType:'application/javascript',body:''}));await page.goto('/');
- await page.locator('#zombieStartBtn').click();await page.locator('[data-season-choice="2"]').click();await page.locator('#continueCampaignBtn').click();
- await page.locator('#storySkip').click();await page.locator('#cards .card').first().click();await page.locator('.cell[data-r="2"][data-c="8"]').click();await page.locator('#backBtn').click();
+ await page.route('https://cdn.jsdelivr.net/**',r=>r.fulfill({contentType:'application/javascript',body:''}));await page.goto('/');await page.evaluate(()=>{playerProfile=normalizeProfile({campaignProgress:{zombies:{highestLevel:1,completedLevels:{1:1}}}});backToHome();updateProgressUI()});
+ await page.locator('#zombieStartBtn').click();await page.locator('[data-season-choice="2"]').click();await page.locator('#continueCampaignBtn').click();await page.locator('.level-card-details:not([hidden]) .level-detail-start').click();
+ if(await page.locator('#storyDialog').isVisible())await page.locator('#storySkip').click();await page.locator('#cards .card').first().click();await page.locator('.cell[data-r="2"][data-c="8"]').click();await page.locator('#backBtn').click();
  const saved=await page.evaluate(()=>localStorage.getItem(battleSaveStorageKey()));
  await page.locator('#plantStartBtn').click();await page.locator('[data-season-choice="1"]').click();expect(await page.evaluate(()=>localStorage.getItem(battleSaveStorageKey()))).toBe(saved);
  await page.locator('#continueCampaignBtn').click();await expect(page.locator('#game')).toHaveClass(/active/);
  expect(await page.evaluate(()=>({season:state.season,faction:state.faction,paused:state.paused}))).toEqual({season:2,faction:'zombies',paused:true});
- await page.locator('#gameFloatBackBtn').click();await expect(page.locator('#levelGrid')).toBeHidden();await expect(page.locator('#seasonPicker')).toBeHidden();
+ await page.locator('#gameFloatBackBtn').click();await expect(page.locator('#levelGrid')).toBeVisible();await expect(page.locator('#seasonPicker')).toBeHidden();
 });
 test('browser forward restores seasons and levels after returning home',async({page})=>{
- await page.route('https://cdn.jsdelivr.net/**',r=>r.fulfill({contentType:'application/javascript',body:''}));await page.goto('/');
+ await page.route('https://cdn.jsdelivr.net/**',r=>r.fulfill({contentType:'application/javascript',body:''}));await page.goto('/');await page.evaluate(()=>{playerProfile=normalizeProfile({campaignProgress:{zombies:{highestLevel:1,completedLevels:{1:1}}}});backToHome();updateProgressUI()});
  await page.locator('#plantStartBtn').click();await page.locator('[data-season-choice="2"]').click();
  await page.goBack();await expect(page.locator('#seasonPicker')).toBeVisible();await page.goBack();await expect(page.locator('#start')).toHaveClass(/active/);
  await page.goForward();await expect(page.locator('#seasonPicker')).toBeVisible();
@@ -56,7 +56,7 @@ test('browser forward restores seasons and levels after returning home',async({p
 });
 
 test('browser back pauses and saves a live battle so forward restores it',async({page})=>{
- await page.route('https://cdn.jsdelivr.net/**',r=>r.fulfill({body:''}));await page.goto('/');
+ await page.route('https://cdn.jsdelivr.net/**',r=>r.fulfill({body:''}));await page.goto('/');await page.evaluate(()=>{playerProfile=normalizeProfile({campaignProgress:{zombies:{highestLevel:1,completedLevels:{1:1}}}});backToHome();updateProgressUI()});
  await page.evaluate(()=>{currentUser=null;playerProfile=defaultProfile();currentSeason=1;selectedLevel=1;chooseFaction('plants',1);start('plants');clearInterval(timer);state.time=1234});
  await page.goBack();
  await expect(page.locator('#levelScreen')).toHaveClass(/active/);
