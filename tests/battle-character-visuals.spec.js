@@ -186,11 +186,24 @@ test('mobile zombies keep every attack frame inside the left board edge', async 
     };
     const boardLeft = document.querySelector('#board').getBoundingClientRect().left;
     const samples = [];
-    for (const type of ['football', 'bombJester']) {
+    const types = ['normal', 'cone', 'bucket', 'football', 'jester', 'bombJester', 'corpseTitan'];
+    for (const type of types) {
+      state.plants = [];
       state.zombies = [];
-      addZombie(type, 0, 2);
-      const unit = state.zombies.at(-1);
+      state.pendingZombieStrikes = [];
+      state.gameplay.telegraphs = createBattleTelegraphState();
+      addPlant('wallnut', 0, 2);
       const definition = ZOMBIE_TYPES[type];
+      addZombie(type, definition.range + definition.speed / 2, 2);
+      const unit = state.zombies.at(-1);
+      unit.bornAt = 0;
+      unit.last = 0;
+      state.time = 19_000;
+      actZombies();
+      state.time = 20_000;
+      actZombies();
+      render();
+      samples.push({ type, frame: 'contact', margin: (await visibleLeft(document.querySelector(`#board .type-${type} .char-img`))) - boardLeft, edgeClass: document.querySelector(`#board .type-${type}`)?.classList.contains('edge-left'), acted: document.querySelector(`#board .type-${type}`)?.classList.contains('attacking') || state.gameplay.telegraphs.active.some(item => item.sourceId === unit.id), contactColumn: unit.c });
       const duration = definition.attackFrameDurations.reduce((sum, value) => sum + value, 0);
       let elapsed = 0;
       for (let frame = 0; frame < definition.attackFrames.length; frame += 1) {
@@ -199,12 +212,91 @@ test('mobile zombies keep every attack frame inside the left board edge', async 
         state.time = 20_000 + elapsed + Math.min(10, definition.attackFrameDurations[frame] / 2);
         render();
         const image = document.querySelector(`#board .type-${type} .char-img`);
-        samples.push({ type, frame, margin: (await visibleLeft(image)) - boardLeft });
+        samples.push({ type, frame, margin: (await visibleLeft(image)) - boardLeft, edgeClass: document.querySelector(`#board .type-${type}`)?.classList.contains('edge-left'), contactColumn: unit.c });
         elapsed += definition.attackFrameDurations[frame];
       }
     }
     return samples;
   });
+  const contacts = result.filter(sample => sample.frame === 'contact');
+  expect(new Set(contacts.map(sample => sample.type))).toEqual(new Set(['normal', 'cone', 'bucket', 'football', 'jester', 'bombJester', 'corpseTitan']));
+  expect(contacts.every(sample => sample.contactColumn > 0 && sample.edgeClass && sample.acted), JSON.stringify(contacts)).toBe(true);
   const clipped = result.filter(sample => sample.margin < -0.5);
   expect(clipped).toEqual([]);
+});
+
+test('first-season zombie attacks and wallnut hit reactions keep stable visible stature', async ({ page }) => {
+  await openAttackBattle(page);
+  await installVisualMeasurement(page);
+  const result = await page.evaluate(async () => {
+    const samples = [];
+    const measureFrames = async ({ side, type, frameKind }) => {
+      state.plants = [];
+      state.zombies = [];
+      const collection = side === 'plants' ? state.plants : state.zombies;
+      if (side === 'plants') addPlant(type, 4, 2);
+      else addZombie(type, 4, 2);
+      const unit = collection.at(-1);
+      const definition = side === 'plants' ? PLANT_TYPES[type] : ZOMBIE_TYPES[type];
+      render();
+      const idle = await visibleArtworkHeight(document.querySelector(`#board .type-${type} .char-img`));
+      const frames = frameKind === 'hit' ? definition.hitFrames : definition.attackFrames;
+      const durations = frameKind === 'hit' ? definition.hitFrameDurations : definition.attackFrameDurations;
+      let elapsed = 0;
+      for (let frame = 0; frame < frames.length; frame += 1) {
+        const startedAt = 30_000;
+        const total = durations.reduce((sum, value) => sum + value, 0);
+        if (frameKind === 'hit') {
+          unit.hitStartedAt = startedAt;
+          unit.hitUntil = startedAt + total;
+        } else {
+          unit.attackStartedAt = startedAt;
+          unit.attackUntil = startedAt + total;
+        }
+        state.time = startedAt + elapsed + Math.min(10, durations[frame] / 2);
+        render();
+        const visible = await visibleArtworkHeight(document.querySelector(`#board .type-${type} .char-img`));
+        samples.push({ type, frameKind, frame, ratio: visible / idle });
+        elapsed += durations[frame];
+      }
+    };
+    for (const type of ['normal', 'cone', 'bucket', 'football', 'jester', 'bombJester', 'corpseTitan']) {
+      await measureFrames({ side: 'zombies', type, frameKind: 'attack' });
+    }
+    await measureFrames({ side: 'plants', type: 'wallnut', frameKind: 'hit' });
+    return samples;
+  });
+  expect(result).toHaveLength(32);
+  const unstable = result.filter(sample => !Number.isFinite(sample.ratio) || sample.ratio < 0.94 || sample.ratio > 1.08);
+  expect(unstable, JSON.stringify(unstable)).toEqual([]);
+});
+
+test('profile replacement synchronizes reduced effects without shifting a left-edge attacker', async ({ page }) => {
+  await openAttackBattle(page);
+  const animation = await page.evaluate(() => {
+    addPlant('wallnut', 0, 2);
+    addZombie('normal', 0.4, 2);
+    const attacker = state.zombies.at(-1);
+    render();
+    const before = document.querySelector('#board .type-normal').getBoundingClientRect().left;
+    playerProfile = normalizeProfile({ ...playerProfile, settings: { ...playerProfile.settings, reducedEffects: true } });
+    attacker.attackStartedAt = state.time;
+    attacker.attackUntil = state.time + 500;
+    render();
+    const during = document.querySelector('#board .type-normal').getBoundingClientRect().left;
+    const enabledClass = document.querySelector('#game').classList.contains('reduced-effects');
+    const animationName = getComputedStyle(document.querySelector('#board .type-normal .sprite')).animationName;
+    playerProfile = normalizeProfile({ ...playerProfile, settings: { ...playerProfile.settings, reducedEffects: false } });
+    render();
+    return {
+      enabledClass,
+      animationName,
+      positionDelta: Math.abs(during - before),
+      disabledClass: document.querySelector('#game').classList.contains('reduced-effects'),
+    };
+  });
+  expect(animation.enabledClass).toBe(true);
+  expect(animation.animationName).toBe('none');
+  expect(animation.positionDelta).toBeLessThanOrEqual(0.5);
+  expect(animation.disabledClass).toBe(false);
 });

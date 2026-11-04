@@ -234,7 +234,7 @@ body[class*="battlefield-"] #board::after{position:absolute;z-index:20;inset:0;d
   .entity.edge-bottom{margin-top:-25px}
   .entity.edge-left{margin-left:5px}
   .entity.edge-right{margin-left:-5px}
-  .entity.zombie.edge-left.attacking{margin-left:18px}
+  .entity.zombie.edge-left{margin-left:25px}
   .entity.zombie.edge-left.attacking .sprite{animation-name:zombieAttackSurgeEdgeLeft}
   .entity.edge-top.type-corpseTitan{margin-top:14px}
   .entity.edge-bottom.type-corpseTitan{margin-top:-30px}
@@ -256,3 +256,5 @@ body[class*="battlefield-"] #board::after{position:absolute;z-index:20;inset:0;d
   78%{transform:translateX(0) rotate(2deg) scale(1.08)}
   100%{transform:translateX(0) rotate(0) scale(1)}
 }
+.game.reduced-effects .entity.attacking .sprite{animation:none!important}
+@media(prefers-reduced-motion:reduce){.entity.attacking .sprite{animation:none!important}}

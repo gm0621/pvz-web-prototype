@@ -1,0 +1,275 @@
+/* Battlefield typography and gilded presentation.
+   Keep every effect crisp: high contrast, narrow shadows, no blurred text. */
+#game.game {
+  font-family: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", system-ui, sans-serif;
+}
+
+#game .top-toolbar {
+  border: 2px solid #b88a2f;
+  background:
+    linear-gradient(115deg, rgb(17 24 39 / 96%), rgb(35 24 16 / 96%) 55%, rgb(15 23 42 / 96%));
+  box-shadow:
+    inset 0 0 0 1px rgb(255 238 170 / 18%),
+    inset 0 1px 0 rgb(255 255 255 / 12%),
+    0 10px 28px rgb(0 0 0 / 48%);
+}
+
+#game .top-toolbar button {
+  font-weight: 900;
+  letter-spacing: .02em;
+  text-shadow: 0 1px 0 rgb(255 255 255 / 22%), 0 1px 2px rgb(0 0 0 / 72%);
+  border-width: 2px;
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 16%), 0 4px 10px rgb(0 0 0 / 28%);
+}
+
+#game .compact-battle-info {
+  position: relative;
+  overflow: hidden;
+  border: 3px double #d8ab42;
+  background:
+    radial-gradient(circle at 12% 0%, rgb(253 224 71 / 18%), transparent 27%),
+    radial-gradient(circle at 88% 100%, rgb(249 115 22 / 12%), transparent 30%),
+    linear-gradient(120deg, rgb(45 29 12 / 97%), rgb(15 23 42 / 98%) 48%, rgb(26 19 15 / 97%));
+  box-shadow:
+    inset 0 0 0 1px rgb(255 244 190 / 15%),
+    inset 0 0 24px rgb(246 176 44 / 8%),
+    0 8px 22px rgb(0 0 0 / 50%);
+}
+
+#game .compact-battle-info::before,
+#game .compact-battle-info::after {
+  content: "◆";
+  position: absolute;
+  top: 50%;
+  z-index: 0;
+  color: #e7bf58;
+  font-size: 10px;
+  text-shadow: 0 0 7px rgb(250 204 21 / 55%);
+  transform: translateY(-50%) rotate(45deg);
+  pointer-events: none;
+}
+
+#game .compact-battle-info::before { left: 5px; }
+#game .compact-battle-info::after { right: 5px; }
+#game .compact-battle-info > * { position: relative; z-index: 1; }
+
+#game .battle-pill {
+  border: 2px solid rgb(231 191 88 / 68%);
+  background: linear-gradient(180deg, rgb(10 15 30 / 96%), rgb(2 6 23 / 92%));
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 12%), 0 3px 10px rgb(0 0 0 / 35%);
+}
+
+#game .pill-label {
+  color: #f5e6bc;
+  font-size: 13px;
+  font-weight: 850;
+  text-shadow: 0 1px 2px #000;
+}
+
+#game .compact-level-title {
+  color: #fff4cf;
+  font-weight: 950;
+  letter-spacing: .035em;
+  text-shadow: 0 2px 0 #4a210b, 0 0 10px rgb(250 204 21 / 24%);
+}
+
+#game .wave-status {
+  border: 2px solid #c49a45;
+  background:
+    linear-gradient(90deg, rgb(74 43 17 / 96%), rgb(35 29 18 / 97%) 52%, rgb(20 24 35 / 97%));
+  color: #fff6da;
+  font-size: 13px;
+  font-weight: 850;
+  line-height: 1.45;
+  text-shadow: 0 1px 2px #000;
+  box-shadow: inset 4px 0 #f1c75b, inset 0 1px rgb(255 255 255 / 12%), 0 5px 14px rgb(0 0 0 / 48%);
+}
+
+#game .wave-status[data-phase="warning"] {
+  border-color: #f59e0b;
+  background: linear-gradient(90deg, rgb(102 46 8 / 97%), rgb(67 32 12 / 97%), rgb(30 24 21 / 97%));
+  box-shadow: inset 4px 0 #fbbf24, 0 0 14px rgb(245 158 11 / 30%);
+}
+
+#game .wave-status[data-phase="active"] {
+  border-color: #ef4444;
+  background: linear-gradient(90deg, rgb(105 23 23 / 97%), rgb(63 24 30 / 97%), rgb(28 24 35 / 97%));
+  box-shadow: inset 4px 0 #fb7185, 0 0 14px rgb(239 68 68 / 32%);
+}
+
+#game .wave-status[data-phase="boss"] {
+  border-color: #c084fc;
+  background: linear-gradient(90deg, rgb(75 29 103 / 97%), rgb(48 25 66 / 97%), rgb(24 22 38 / 97%));
+  box-shadow: inset 4px 0 #e879f9, 0 0 16px rgb(192 132 252 / 36%);
+}
+
+#game .deployment-hint {
+  min-height: 27px;
+  border: 1px solid #5fb98d;
+  background: linear-gradient(90deg, #0b2920, #123d2d 50%, #0b2920);
+  color: #effff7;
+  font-size: 12px;
+  font-weight: 850;
+  letter-spacing: .025em;
+  line-height: 19px;
+  text-shadow: 0 1px 2px #001a10;
+  box-shadow: inset 0 1px rgb(255 255 255 / 9%), 0 3px 9px rgb(0 0 0 / 34%);
+}
+
+#game .lane-label {
+  left: 6px;
+  top: 5px;
+  min-width: 42px;
+  padding: 2px 6px;
+  border: 1px solid rgb(255 224 128 / 64%);
+  border-radius: 999px;
+  background: linear-gradient(90deg, rgb(49 29 10 / 90%), rgb(13 20 30 / 82%));
+  color: #fff4cf;
+  font-size: 12px;
+  font-weight: 900;
+  line-height: 1.25;
+  letter-spacing: .035em;
+  text-shadow: 0 1px 2px #000, 0 0 5px rgb(250 204 21 / 20%);
+  box-shadow: inset 0 1px rgb(255 255 255 / 12%), 0 2px 6px rgb(0 0 0 / 35%);
+}
+
+#game .entity:not(.boss):not(.stage-target):not(.stage-escort):not(.type-blackArmorGuard):not(.type-necromancer):not(.qin-captain):not(.qin-guarded) .label {
+  display: inline-block;
+  max-width: 112px;
+  padding: 2px 6px;
+  border: 1px solid rgb(255 225 143 / 78%);
+  border-radius: 999px;
+  background-image: linear-gradient(180deg, rgb(63 43 18 / 96%), rgb(23 18 18 / 96%));
+  color: #fff8df;
+  font-size: 12px;
+  font-weight: 900;
+  line-height: 1.2;
+  letter-spacing: .02em;
+  white-space: nowrap;
+  text-shadow: 0 1px 2px #000, 0 0 4px rgb(255 220 120 / 18%);
+  box-shadow: inset 0 1px rgb(255 255 255 / 14%), 0 2px 7px rgb(0 0 0 / 60%);
+}
+
+#game .entity.zombie:not(.boss):not(.stage-target):not(.stage-escort):not(.type-blackArmorGuard):not(.type-necromancer):not(.qin-captain):not(.qin-guarded) .label {
+  border-color: rgb(252 165 165 / 78%);
+  background-image: linear-gradient(180deg, rgb(99 25 25 / 96%), rgb(35 15 17 / 96%));
+  color: #fff1e8;
+}
+
+#game .cards-panel {
+  border: 2px solid #a97b2d;
+  background:
+    radial-gradient(circle at 50% 0%, rgb(250 204 21 / 10%), transparent 36%),
+    linear-gradient(135deg, rgb(16 24 40 / 98%), rgb(10 17 31 / 98%));
+  box-shadow: inset 0 0 0 1px rgb(255 237 166 / 12%), inset 0 0 22px rgb(250 204 21 / 5%), 0 10px 26px rgb(0 0 0 / 45%);
+}
+
+#game #cards .card {
+  border: 2px solid rgb(215 169 66 / 52%);
+  background:
+    radial-gradient(circle at 50% 0%, rgb(250 204 21 / 12%), transparent 42%),
+    linear-gradient(180deg, #202d46, #101a2e 70%, #0b1324);
+  box-shadow: inset 0 1px rgb(255 255 255 / 13%), 0 4px 10px rgb(0 0 0 / 35%);
+}
+
+#game #cards .card.selected {
+  border-color: #ffe38a;
+  box-shadow: inset 0 0 0 1px #fff3bd, 0 0 15px rgb(250 204 21 / 50%), 0 5px 12px rgb(0 0 0 / 45%);
+}
+
+#game #cards .card .name {
+  color: #fff7da;
+  font-size: 12px;
+  font-weight: 950;
+  line-height: 1.15;
+  text-shadow: 0 1px 2px #000;
+}
+
+#game #cards .card .cost {
+  color: #ffe56f;
+  font-size: 11px;
+  font-weight: 900;
+  line-height: 1.15;
+  text-shadow: 0 1px 2px #000;
+}
+
+@media (max-width: 720px) {
+  #game .compact-battle-info {
+    border-width: 3px;
+  }
+
+  #game .pill-label { font-size: 12px; }
+  #game .compact-level-title { font-size: 14px; }
+  #game .wave-status { font-size: 12px; }
+  #game .deployment-hint {
+    min-height: 24px;
+    padding: 3px 4px;
+    font-size: 12px;
+    line-height: 16px;
+  }
+  #game .lane-label {
+    min-width: 39px;
+    padding: 2px 5px;
+    font-size: 12px;
+  }
+  #game .entity .label {
+    max-width: 94px;
+    padding: 2px 5px;
+    font-size: 12px !important;
+  }
+}
+
+@media (max-height: 500px) {
+  #game .wave-status { font-size: 12px; }
+  #game .deployment-hint { font-size: 12px; }
+  :is(#game.fullscreen-mode, #game:fullscreen) .cards { padding: 0; }
+  :is(#game.fullscreen-mode, #game:fullscreen) .card {
+    height: 72px !important;
+    min-height: 72px !important;
+    padding: 3px;
+  }
+}
+
+/* Preserve battlefield geometry in compact/fullscreen layouts after increasing type size. */
+#game .entity.edge-top.type-fireCatapult { margin-top: 18px; }
+#game .entity.edge-bottom { margin-top: -22px; }
+:is(#game.fullscreen-mode, #game:fullscreen) .deployment-hint {
+  min-height: 18px;
+  padding: 1px 2px;
+  font-size: 12px;
+  line-height: 14px;
+}
+
+@media (max-width: 720px) {
+  #game .entity.edge-top { margin-top: 20px; }
+  #game .entity.edge-top.type-corpseTitan { margin-top: 14px; }
+  #game .entity.edge-top.type-fireCatapult { margin-top: 31px; }
+  #game .entity.edge-bottom { margin-top: -26px; }
+  #game .entity.edge-bottom.type-corpseTitan { margin-top: -31px; }
+  #game .entity.edge-bottom.type-fireCatapult { margin-top: -35px; }
+  #game .entity.edge-left .label { transform: translateX(5px); }
+  #game .entity.edge-right .label { transform: translateX(-5px); }
+  #game .entity.attack-edge-right { margin-left: -20px; }
+}
+
+/* On the narrowest portrait screen, preserve the authored story card height so
+   its Skip control stays above the fixed card tray without automatic scrolling. */
+@media (max-width: 360px) {
+  #game.game:not(.fullscreen-mode) .top-toolbar,
+  #game.game:not(.fullscreen-mode) .cards-panel { border-width: 1px; }
+  #game.game:not(.fullscreen-mode) .compact-battle-info { border-width: 2px; }
+  #game.game:not(.fullscreen-mode) .deployment-hint {
+    min-height: 22px;
+    padding: 2px;
+    line-height: 16px;
+  }
+  #game.game:not(.fullscreen-mode) .wave-status {
+    border-width: 1px;
+  }
+  #game.game:not(.fullscreen-mode) .wave-status[data-story="on"] {
+    padding: 3px 6px;
+    font-size: 12px;
+    line-height: 1.2;
+  }
+  #game.game:not(.fullscreen-mode) #waveStoryText { line-height: 1.2; }
+}
