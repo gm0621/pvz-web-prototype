@@ -26,7 +26,8 @@ test('battle units and playable cards use the enlarged responsive scale', async 
     addZombie('corpseTitan', 7, 1);
     addZombie('fireCatapult', 7, 3);
     render();
-    const width = selector => Math.round(document.querySelector(selector).getBoundingClientRect().width);
+    const visualWidth = selector => Math.round(document.querySelector(selector).getBoundingClientRect().width);
+    const layoutWidth = selector => Math.round(Number.parseFloat(getComputedStyle(document.querySelector(selector)).width));
     const cardsFitPanel = () => {
       const panel = document.querySelector('.cards-panel').getBoundingClientRect();
       return [...document.querySelectorAll('#cards .card')].every(card => {
@@ -42,17 +43,18 @@ test('battle units and playable cards use the enlarged responsive scale', async 
         });
       });
     };
-    const regularCard = width('#cards .card .card-img');
+    const regularCard = visualWidth('#cards .card .card-img');
     const regularCardsFit = cardsFitPanel();
     document.querySelector('#game').classList.add('fullscreen-mode');
-    const fullscreenCard = width('#cards .card .card-img');
+    const fullscreenCard = visualWidth('#cards .card .card-img');
     const fullscreenCardsFit = cardsFitPanel();
     return {
       viewport: innerWidth,
-      sunflower: width('#board .type-sunflower .char-img'),
-      normal: width('#board .type-normal .char-img'),
-      titan: width('#board .type-corpseTitan .char-img'),
-      catapult: width('#board .type-fireCatapult .char-img'),
+      sunflower: layoutWidth('#board .type-sunflower .char-img'),
+      normal: layoutWidth('#board .type-normal .char-img'),
+      normalVisual: visualWidth('#board .type-normal .char-img'),
+      titan: layoutWidth('#board .type-corpseTitan .char-img'),
+      catapult: layoutWidth('#board .type-fireCatapult .char-img'),
       regularCard,
       fullscreenCard,
       regularCardsFit,
@@ -63,6 +65,7 @@ test('battle units and playable cards use the enlarged responsive scale', async 
   const mobile = sizes.viewport <= 720;
   expect(sizes.sunflower).toBe(mobile ? 58 : 76);
   expect(sizes.normal).toBe(mobile ? 58 : 76);
+  expect(sizes.normalVisual).toBe(mobile ? 84 : 111);
   expect(sizes.titan).toBe(mobile ? 68 : 92);
   expect(sizes.catapult).toBe(mobile ? 76 : 104);
   expect(sizes.regularCard).toBe(mobile ? 48 : 54);

@@ -209,3 +209,50 @@ body[class*="battlefield-"] #board::after{position:absolute;z-index:20;inset:0;d
   .entity.edge-left.type-fireCatapult{margin-left:15px}
   .entity.edge-right.type-fireCatapult{margin-left:-15px}
 }
+
+/* Normalize transparent character canvases and keep attack motion in sync with the 50 ms renderer. */
+.entity .char-img{
+  transform:scale(var(--battle-art-scale,1));
+  transform-origin:50% 88%;
+}
+.entity.attacking .sprite{
+  animation:attackLunge var(--attack-motion-duration,520ms) linear both paused;
+  animation-delay:var(--attack-motion-delay,0ms);
+}
+.entity.zombie.attacking .sprite{
+  animation-name:zombieAttackSurge;
+}
+
+/* Keep enlarged art, names, and health bars inside the four board edges. */
+@media(min-width:721px){
+  .entity.edge-bottom{margin-top:-16px}
+  .entity.edge-top.type-fireCatapult{margin-top:18px}
+  .entity.edge-bottom.type-fireCatapult{margin-top:-22px}
+}
+@media(max-width:720px){
+  .entity.edge-top{margin-top:20px}
+  .entity.edge-bottom{margin-top:-25px}
+  .entity.edge-left{margin-left:5px}
+  .entity.edge-right{margin-left:-5px}
+  .entity.zombie.edge-left.attacking{margin-left:18px}
+  .entity.zombie.edge-left.attacking .sprite{animation-name:zombieAttackSurgeEdgeLeft}
+  .entity.edge-top.type-corpseTitan{margin-top:14px}
+  .entity.edge-bottom.type-corpseTitan{margin-top:-30px}
+  .entity.edge-top.type-fireCatapult{margin-top:32px}
+  .entity.edge-bottom.type-fireCatapult{margin-top:-34px}
+}
+
+@keyframes zombieAttackSurge{
+  0%{transform:translateX(0) rotate(0) scale(1)}
+  30%{transform:translateX(-13px) rotate(4deg) scale(1.12)}
+  58%{transform:translateX(-18px) rotate(-5deg) scale(1.18)}
+  78%{transform:translateX(-7px) rotate(2deg) scale(1.08)}
+  100%{transform:translateX(0) rotate(0) scale(1)}
+}
+@keyframes zombieAttackSurgeEdgeLeft{
+  0%{transform:translateX(0) rotate(0) scale(1)}
+  30%{transform:translateX(0) rotate(4deg) scale(1.12)}
+  58%{transform:translateX(0) rotate(-5deg) scale(1.18)}
+  78%{transform:translateX(0) rotate(2deg) scale(1.08)}
+  100%{transform:translateX(0) rotate(0) scale(1)}
+}
