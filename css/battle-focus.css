@@ -15,7 +15,7 @@ body.level-detail-open{overflow:hidden}
 
 .game:not(.fullscreen-mode) .board-wrap{position:relative;max-width:1600px;grid-template-columns:minmax(0,1fr)!important;gap:4px}
 .game:not(.fullscreen-mode) .board{width:100%;min-height:min(72vh,760px)}
-.game:not(.fullscreen-mode) .cards-panel{max-height:116px;overflow:hidden}
+.game:not(.fullscreen-mode) .cards-panel{max-height:150px;overflow:hidden}
 .game:not(.fullscreen-mode) .battle-resource-strip{position:relative;z-index:20;margin-bottom:4px}
 .battle-status-stack{position:relative;display:grid;min-width:0}
 .battle-status-stack>.wave-report,.battle-status-stack>.wave-status,.battle-status-stack>.attack-status{grid-area:1/1;min-width:0}
