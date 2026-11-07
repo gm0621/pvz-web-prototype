@@ -1,6 +1,21 @@
 // Chapter progression is device-local and scoped to the current battle owner.
 // It never calls the first/second-season reward or progression RPCs.
 const romanceProgressCache=new Map();
+let romanceIdentityFailed=false;
+function refreshRomanceEntryIdentity(failed=romanceIdentityFailed){
+ romanceIdentityFailed=failed&&!authIdentityResolved;
+ let notice=$('romanceIdentityNotice');
+ const visible=currentSeason===3&&$('levelScreen')?.classList.contains('active')&&!authIdentityResolved;
+ if(!visible){if(notice){notice.hidden=true;notice.classList.add('hidden')}return}
+ if(!notice){
+  notice=document.createElement('aside');notice.id='romanceIdentityNotice';notice.className='level-select-tip';notice.setAttribute('role','status');notice.setAttribute('aria-live','polite');
+  const text=document.createElement('span'),retry=document.createElement('button');text.id='romanceIdentityText';retry.id='romanceIdentityRetry';retry.type='button';retry.textContent='重新整理並重試';retry.onclick=()=>location.reload();notice.append(text,retry);$('chosenFactionText').after(notice);
+ }
+ notice.hidden=false;notice.classList.remove('hidden');
+ $('romanceIdentityText').textContent=romanceIdentityFailed?'登入狀態確認失敗。章節仍可瀏覽；請重新整理後再開始，以免將進度存到錯誤帳號。':'正在確認登入狀態，完成後會自動開放開始遊戲；你可以先瀏覽章節。';
+ $('continueCampaignBtn').disabled=true;$('continueCampaignBtn').textContent='正在確認登入狀態…';
+ document.querySelectorAll('#levelGrid .level-start,#levelGrid .level-detail-start').forEach(button=>button.disabled=true);
+}
 function setHomeMode(view='hub'){
  const hub=view!=='zombies',home=$('start');if(!home)return;
  home.dataset.homeView=hub?'hub':'zombies';
@@ -32,7 +47,6 @@ function romanceStoryRead(level,scene,write=false){
  try{const flags=JSON.parse(localStorage.getItem(key)||'{}'),id=`${level}:${scene}`;if(write){flags[id]=true;localStorage.setItem(key,JSON.stringify(flags));return true}return flags[id]===true}catch{return false}
 }
 function enterRomanceMode(){
- if(!authIdentityResolved)return false;
  backToHome(false);chooseFaction('plants',ROMANCE_SEASON);
  $('backFactionBtn').setAttribute('aria-label','回主選單');
  return true;
@@ -62,7 +76,9 @@ function renderRomanceProgressOverview(){
  browse.onclick=()=>openCampaignStory('plants',progress.highestLevel===6?6:1,progress.highestLevel===6?'epilogue':'prologue',{replay:true,season:3});
  $('campaignProgressTrack').hidden=false;$('campaignProgressTrack').replaceChildren(...ROMANCE_STAGE_SPECS.map((_,i)=>{const node=document.createElement('span');node.className='campaign-track-node';node.dataset.state=i<progress.highestLevel?'completed':i+1===next?'current':'next';node.textContent=`${i<progress.highestLevel?'✓':'•'} 1-${i+1}`;if(i+1===next)node.setAttribute('aria-current','step');return node}));
  syncCampaignPrimaryAction('桃園結義',resume?'▶ 繼續未完成戰局':progress.highestLevel===6?'重玩章末決戰':'繼續故事 ▶',()=>resume?restoreBattleIfAvailable():document.querySelector(`#levelGrid [data-jump-level="${next}"]`)?.click());
+ $('continueCampaignBtn').disabled=false;
  $('levelSelectTip').classList.add('hidden');
+ refreshRomanceEntryIdentity();
 }
 function romanceReward(win){
  if(win)completeRomanceLevel(state.level);

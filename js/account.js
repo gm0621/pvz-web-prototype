@@ -6,12 +6,16 @@ function showAccountScreen(mode='login'){if(currentUser){showProfileCenter();ret
 function submitAccountForm(){return accountMode==='signup'?signUpEmail():signInEmail()}
 async function initAuth(){
  const client=initSupabaseClient();if(!client){finalizeBattleIdentity(true);return}
- let initialLookupResolved=false;
- client.auth.onAuthStateChange(async(event,session)=>{if(event==='INITIAL_SESSION'&&!session&&!initialLookupResolved)return;currentUser=session?.user||null;cloudMatchId=null;updateAccountStatus();if(event==='PASSWORD_RECOVERY'){showProfileCenter();accountStatus('驗證完成，請在「帳號與安全」設定新密碼。')}else if(currentUser)await pullCloudProfile(false);finalizeBattleIdentity(false)});
+ // Never await another Supabase request inside its auth callback: the SDK can
+ // hold an auth lock until this callback returns. getSession handles startup.
+ client.auth.onAuthStateChange((event,session)=>{
+  if(event==='INITIAL_SESSION')return;
+  setTimeout(async()=>{currentUser=session?.user||null;cloudMatchId=null;updateAccountStatus();if(event==='PASSWORD_RECOVERY'){showProfileCenter();accountStatus('驗證完成，請在「帳號與安全」設定新密碼。')}else if(currentUser)await pullCloudProfile(false);finalizeBattleIdentity(false)},0);
+ });
  try{
-  const {data,error}=await client.auth.getSession();if(error)throw error;initialLookupResolved=true;
+  const {data,error}=await client.auth.getSession();if(error)throw error;
   currentUser=data?.session?.user||null;updateAccountStatus();if(currentUser)await pullCloudProfile(false);finalizeBattleIdentity(true)
- }catch(error){updateAccountStatus();accountStatus('登入狀態確認失敗；暫不載入未完成戰局。',true)}
+ }catch(error){updateAccountStatus();accountStatus('登入狀態確認失敗；暫不載入未完成戰局。',true);refreshRomanceEntryIdentity(true)}
 }
 async function signInEmail(){const client=initSupabaseClient();if(!client)return accountStatus('雲端尚未設定，無法登入。',true);const email=($('accountEmailInput')?.value||'').trim(),password=$('accountPasswordInput')?.value||'';if(!email||!password)return accountStatus('請輸入 Email 與密碼。',true);const {data,error}=await client.auth.signInWithPassword({email,password});if(error){accountStatus(error.message.toLowerCase().includes('confirm')?'登入失敗：請先到信箱點確認信，再回遊戲登入。':'登入失敗：'+error.message,true);return}currentUser=data.user;cloudMatchId=null;accountStatus('已登入，正在取得雲端資料與同步權限…');await pullCloudProfile(false);finalizeBattleIdentity(false);backToHome()}
 async function signUpEmail(){const client=initSupabaseClient();if(!client)return accountStatus('雲端尚未設定，無法註冊。',true);const email=($('accountEmailInput')?.value||'').trim(),password=$('accountPasswordInput')?.value||'';if(!email||password.length<6)return accountStatus('請輸入 Email，密碼至少 6 位數。',true);const {data,error}=await client.auth.signUp({email,password,options:{emailRedirectTo:APP_URL}});if(error){accountStatus('註冊失敗：'+error.message,true);return}currentUser=data.session?.user||null;cloudMatchId=null;accountStatus(data.session?'註冊完成，已登入並準備同步。':'註冊完成，請到信箱點確認連結；確認後會回到遊戲頁面，再用 Email 登入。',!data.session);if(data.session){await claimCloudDevice(true);await pushCloudProfile(false);finalizeBattleIdentity(false);backToHome()}}
