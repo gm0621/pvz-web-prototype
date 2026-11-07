@@ -1,0 +1,29 @@
+# 武將攻擊逐格素材
+
+本資料夾由內建 image_gen 依既有人物重新繪製，保留透明背景；每張圖為 3 欄 × 2 列、1152 × 768 PNG，每格 384 × 384。只供英雄演義戰場使用，首頁與故事保留原立繪。
+
+- 劉備：雙劍交叉斬，手臂、身體與劍的位置隨動作改變。
+- 關羽：雙手舉刀、劈落、順勢收刀。
+- 張飛：收槍蓄力、踏前突刺、收槍；延伸停頓使用第 4 格，避免第 5 格槍尖貼到分格邊界。
+
+引擎以戰鬥時間推進姿勢，單次動作約 0.58 秒；0.24 秒進入第 4 格並結算命中。近戰攻擊和青龍斬等待實際命中點，暫停／單挑不推進。敵人已退場或出手武將先退場，不追加幽靈傷害。攻擊圖不再以整張立繪旋轉代替動作。影格切換與攻擊延遲見 `hero/engine.mjs` 的 SWING、attackFrame。
+
+生成後使用背景抽取維持乾淨透明區域，再等比縮成網頁尺寸。素材 alpha 與姿勢差異均有瀏覽器檢查。
+
+## 最終動作提示
+
+### guanyu
+
+Use case: identity-preserve. Asset type: production 2D battle ATTACK SPRITE SHEET for a chibi Three Kingdoms game. Redraw the referenced single character in SIX genuinely different consecutive attack poses, maintaining exact identity, outfit, colors, face, weapon and hand-painted shading. Guan Yu, green robes, ornate gold armor, long flowing black beard and green cap, holding ONE long green dragon crescent guandao with BOTH hands. Real two-handed overhead chopping motion: frame 1 guard; frame 2 rotate torso back and raise the weapon behind the head; frame 3 weapon high overhead with elbows bent and knees lowered; frame 4 forcefully chop forward to the RIGHT, extend arms and turn torso; frame 5 follow through with blade LOW to the right and torso bent forward; frame 6 recover back to guard. CRITICAL layout: exactly THREE equal columns by TWO equal rows, six square cells, read left-to-right top row then bottom row. Overall canvas exactly 3:2 landscape. One full-body pose per cell, all characters face RIGHT. Same fixed camera, same character scale, fixed foot baseline at 88% of each cell and torso anchor centered in each cell. Keep the complete character, both feet and entire weapon INSIDE its own cell with 10% padding; no overlap between cells. Clearly redraw arm positions, elbow bends, torso rotation, knees and weapon orientations; do NOT just rotate or translate one unchanged cutout. Clean transparent background throughout, no scenery, no floor, no labels, no lettering, no grid lines, no checkerboard, no aura, no flames, no slash trails or effects (added in engine later). Crisp game-ready art with clean alpha.
+
+### liubei
+
+Use case: identity-preserve. Asset type: production 2D battle ATTACK SPRITE SHEET for a chibi Three Kingdoms game. Redraw the referenced single character in SIX genuinely different consecutive attack poses, maintaining exact identity, outfit, colors, face, weapon and hand-painted shading. Liu Bei, ivory and emerald robes, ornate gold armor, jade crown, brown swept hair, small moustache and short goatee. Holds exactly TWO straight swords, one in each hand. Real double sword attack: frame 1 guard; frame 2 pull both arms and swords backward while twisting torso; frame 3 raise left sword and draw right sword across chest; frame 4 snap both arms outward into a crossing double slash to the RIGHT, torso turns and front knee bends; frame 5 both blades finish LOW to the right in follow-through; frame 6 return to guard. CRITICAL layout: exactly THREE equal columns by TWO equal rows, six square cells, read left-to-right top row then bottom row. Overall canvas exactly 3:2 landscape. One full-body pose per cell, all characters face RIGHT. Same fixed camera, same character scale, fixed foot baseline at 88% of each cell and torso anchor centered in each cell. Keep the complete character, both feet and entire weapon INSIDE its own cell with 10% padding; no overlap between cells. Clearly redraw arm positions, elbow bends, torso rotation, knees and weapon orientations; do NOT just rotate or translate one unchanged cutout. Clean transparent background throughout, no scenery, no floor, no labels, no lettering, no grid lines, no checkerboard, no aura, no flames, no slash trails or effects (added in engine later). Crisp game-ready art with clean alpha.
+
+### zhangfei
+
+Use case: identity-preserve. Asset type: production 2D battle ATTACK SPRITE SHEET for a chibi Three Kingdoms game. Redraw the referenced single character in SIX genuinely different consecutive attack poses, maintaining exact identity, outfit, colors, face, weapon and hand-painted shading. Zhang Fei, red headband, red and charcoal robes with gold dragon armor, bushy black beard and black topknot. ONE long black-shafted serpent spear with a narrow wavy pointed steel spearhead, NOT a crescent guandao. Real two-handed spear thrust: frame 1 guard; frame 2 pull spear back beside waist, twist torso away; frame 3 crouch and coil with elbows bent; frame 4 step forward to the RIGHT and thrust spear horizontally right with both arms extended; frame 5 full extension and weight on front leg; frame 6 pull spear back and recover guard. CRITICAL layout: exactly THREE equal columns by TWO equal rows, six square cells, read left-to-right top row then bottom row. Overall canvas exactly 3:2 landscape. One full-body pose per cell, all characters face RIGHT. Same fixed camera, same character scale, fixed foot baseline at 88% of each cell and torso anchor centered in each cell. Keep the complete character, both feet and entire weapon INSIDE its own cell with 10% padding; no overlap between cells. Clearly redraw arm positions, elbow bends, torso rotation, knees and weapon orientations; do NOT just rotate or translate one unchanged cutout. Clean transparent background throughout, no scenery, no floor, no labels, no lettering, no grid lines, no checkerboard, no aura, no flames, no slash trails or effects (added in engine later). Crisp game-ready art with clean alpha.
+
+## 透明背景處理提示
+
+Remove the entire gradient backdrop from the existing six-frame sheet and replace with actual transparent alpha. Preserve all six warrior poses, weapons, clothing, positions, scales and the 3 × 2 layout. Empty pixels between characters and gaps between arms, body and weapons must be transparent. Do not redraw or resize characters; no floor, shadows, glow, checkerboard or colored backdrop.

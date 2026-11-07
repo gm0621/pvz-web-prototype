@@ -79,8 +79,8 @@ test('units keep their animation nodes and show real attack effects on clearly m
  await page.locator('.ally').evaluate(el=>{window.firstAnimatedUnit=el});await page.clock.runFor(1000);
  expect(await page.locator('.ally').evaluate(el=>el===window.firstAnimatedUnit)).toBe(true);
  await expect(page.locator('.ally .unit-figure')).toHaveCSS('animation-name','unit-march');
- await page.evaluate(()=>{new MutationObserver(()=>{const unit=document.querySelector('.ally.striking .unit-figure');if(unit&&document.querySelector('.combat-effect.slash')){window.sawAnimatedStrike=true;window.strikeAnimation=getComputedStyle(unit).animationName}}).observe(document.querySelector('#field'),{subtree:true,attributes:true,childList:true})});
- await page.clock.runFor(28000);expect(await page.evaluate(()=>!!window.sawAnimatedStrike)).toBe(true);expect(await page.evaluate(()=>window.strikeAnimation)).toBe('melee-swing');
+ await page.evaluate(()=>{new MutationObserver(()=>{const unit=document.querySelector('.ally.striking .unit-figure');if(unit&&document.querySelector('.combat-effect.slash')){window.sawAnimatedStrike=true;window.strikeAnimation=getComputedStyle(unit).animationName;window.strikePose=unit.querySelector('.attack-sprite')?.dataset.frame}}).observe(document.querySelector('#field'),{subtree:true,attributes:true,childList:true})});
+ await page.clock.runFor(28000);expect(await page.evaluate(()=>!!window.sawAnimatedStrike)).toBe(true);expect(await page.evaluate(()=>window.strikeAnimation)).toBe('none');expect(Number(await page.evaluate(()=>window.strikePose))).toBeGreaterThanOrEqual(3);
  await page.locator('#pauseBtn').click();await expect(page.locator('.ally .unit-figure')).toHaveCSS('animation-play-state','paused');
 });
 
@@ -90,5 +90,18 @@ test('hero cards explain uniqueness and progressively introduce the chapter abil
  for(const [level,name,key,ability] of [[2,'仁德','liubei','仁德'],[3,'燕人怒吼','zhangfei','怒吼'],[4,'青龍斬','guanyu','青龍斬'],[5,'黃巾盾兵','guanyu','青龍斬'],[6,'桃園同心','liubei','仁德']]){
   await page.evaluate(level=>localStorage.setItem('heroLegendProgress_v1',JSON.stringify({version:1,completed:level-1})),level);await page.reload();await page.locator('#startBtn').click();await page.locator('#storySkip').click();
   await expect(page.locator('#featureBadge')).toContainText(name);await expect(page.locator(`[data-hero="${key}"] .ability-description`)).toContainText(ability);
+ }
+});
+
+test('all three generals use transparent redrawn attack frames, not a rotated portrait',async({page})=>{
+ await page.clock.install();
+ for(const key of ['liubei','guanyu','zhangfei']){
+  await page.goto('/hero/');await page.locator('#startBtn').click();await page.locator('#storySkip').click();await page.locator(`[data-hero="${key}"]`).click();await page.locator('.lane[data-lane="1"]').click();
+  const sprite=page.locator(`.ally[data-kind="${key}"] .attack-sprite`);await expect(sprite).toBeVisible();
+  const texture=await sprite.evaluate(async el=>{const img=new Image();img.src=getComputedStyle(el).backgroundImage.slice(5,-2);await img.decode();const c=document.createElement('canvas');c.width=img.width;c.height=img.height;const ctx=c.getContext('2d');ctx.drawImage(img,0,0);const empty=ctx.getImageData(0,0,1,1).data[3],cell=img.width/3;const hash=(x,y)=>{const d=ctx.getImageData(x,y,cell,cell).data;let sum=0;for(let i=0;i<d.length;i+=4)sum=(sum+d[i]*d[i+3]+d[i+1]*17+d[i+2]*31)>>>0;return sum};return {width:img.width,height:img.height,empty,guard:hash(0,0),impact:hash(0,cell)}});
+  expect(texture.width/texture.height).toBe(1.5);expect(texture.empty).toBe(0);expect(texture.guard).not.toBe(texture.impact);
+  await page.evaluate(key=>{window.drawnFrames=new Set();new MutationObserver(()=>{const el=document.querySelector(`.ally[data-kind="${key}"].striking .attack-sprite`);if(el)window.drawnFrames.add(Number(el.dataset.frame))}).observe(document.querySelector('#units'),{subtree:true,attributes:true})},key);
+  await page.clock.runFor(26000);const frames=await page.evaluate(()=>[...window.drawnFrames]);expect(frames).toEqual(expect.arrayContaining([0,1,2,3,5]));
+  await expect(page.locator(`.ally[data-kind="${key}"] .sprite-upper`)).toHaveCount(0);
  }
 });

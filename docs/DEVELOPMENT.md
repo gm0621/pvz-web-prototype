@@ -100,6 +100,8 @@ npm test -- --config=playwright.tablet.config.js --workers=1
 - 原遊戲及舊共用演義存檔原封保留；不自動遷移，以免不同身份或規則互相覆寫。
 - 新版劇情與圖片規格見 [獨立版設計](hero-standalone.md)。舊 [第一章設計](romance-chapter-one.md) 僅為歷史規劃，非新版實作規格。
 
+英雄演義逐格動作、命中時間及素材維護見 [攻擊動畫交接](hero-attack-animation.md)。
+
 ## 分支與發布
 
 跨電腦交接前先提交並上傳工作分支；下一台先 fetch，再接同一個分支。只有已上傳的檔案會跟著 GitHub，聊天、登入、瀏覽器存檔及未提交檔案不會。
