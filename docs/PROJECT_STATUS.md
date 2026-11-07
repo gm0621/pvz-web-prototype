@@ -15,7 +15,9 @@
 
 ## 發布狀態
 
-程式已合併，GitHub Pages 的 [發布工作](https://github.com/gm0621/pvz-web-prototype/actions/runs/42342112274) 已啟動；正式站驗證仍在進行，完成後更新本節。不要僅依已合併狀態宣稱已上線。
+GitHub Pages 的 [發布工作](https://github.com/gm0621/pvz-web-prototype/actions/runs/42342624150) 已成功，發布版本為 `fe6f57719d5f8e39d9d73e8700e9ff9b04db4e94`（包含遊戲功能與共用交接文件）。已在 [正式網址](https://gm0621.github.io/pvz-web-prototype/) 用隔離瀏覽器確認首頁恰有「大戰殭屍」「英雄演義」兩個主要入口，英雄演義顯示六關、完整開場可播放，第一關戰鬥可啟動，未捕捉到 JavaScript 執行錯誤。
+
+交接文件 PR：[#3](https://github.com/gm0621/pvz-web-prototype/pull/3)，已合併。本文後續發布紀錄更新只有文件，不變更上述遊戲程式。
 
 ## 已執行驗證
 
