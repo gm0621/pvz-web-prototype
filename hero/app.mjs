@@ -1,5 +1,6 @@
-import {HEROES,STAGES,ENEMY_ART,BOSS_ART,FEATURES,heroDescription} from './story.mjs?v=field-orders-1';
-import {commandHero,moveHero,BOSS_SKILLS,SAVE_KEY,normalizeProgress,createBattle,deploy,canDeploy,stepBattle,attackFrame,SWING} from './engine.mjs?v=field-orders-1';
+import {renderDuel} from './duel-view.mjs?v=bandit-duel-1';
+import {enemyArt,HEROES,STAGES,ENEMY_ART,BOSS_ART,FEATURES,heroDescription} from './story.mjs?v=bandit-duel-1';
+import {commandHero,moveHero,BOSS_SKILLS,SAVE_KEY,normalizeProgress,createBattle,deploy,canDeploy,stepBattle,attackFrame,SWING} from './engine.mjs?v=bandit-duel-1';
 
 const $=id=>document.getElementById(id);
 let progress,screen='home',battle=null,selected=null,storyLevel=1,lineIndex=0,storyPhase='opening',lastFrame=0,resultShown=false,duelShown=false;
@@ -52,7 +53,7 @@ function buildControls(){
 }
 function unitNode(u,enemy){
  const d=enemy?null:HEROES[u.key],el=document.createElement('div');el.dataset.id=String(u.id);el.dataset.lane=String(u.lane);el.dataset.kind=enemy?'enemy':u.key;
- const sheet=!enemy&&u.key!=='archer';const asset=enemy?(u.boss||u.shielded?BOSS_ART:ENEMY_ART):d.asset,name=enemy?u.name:d.name;
+ const sheet=!enemy&&u.key!=='archer';const asset=enemy?(u.boss?enemyArt(u.name):u.shielded?BOSS_ART:ENEMY_ART):d.asset,name=enemy?u.name:d.name;
  el.innerHTML=`<span class="unit-shadow"></span><div class="unit-figure${sheet?' frame-figure':''}">${sheet?`<span class="attack-sprite" style="background-image:url('./assets/attacks/${u.key}.png')"></span>`:`<img class="sprite-upper" src="${asset}" alt=""><img class="sprite-leg leg-left" src="${asset}" alt=""><img class="sprite-leg leg-right" src="${asset}" alt="">`}</div><div class="health"><i></i></div><span class="unit-name">${name}</span>`;return el;
 }
 function renderUnits(){
@@ -69,7 +70,7 @@ function renderUnits(){
 }
 function renderEffects(){
  const root=$('effects'),existing=new Map([...root.children].map(el=>[el.dataset.id,el])),ids=new Set();
- for(const e of battle.effects){const id=String(e.id);ids.add(id);let el=existing.get(id);if(!el){el=document.createElement('span');el.dataset.id=id;el.className=`combat-effect ${e.type}`;if(e.type==='defeat'||e.type==='breach'){const img=document.createElement('img');img.src=e.key?HEROES[e.key].asset:e.boss?BOSS_ART:ENEMY_ART;img.alt='';el.append(img);el.classList.toggle('enemy-exit',!!e.enemy)}else el.textContent=e.type==='heal'||e.type==='oath'?'+':e.type==='roar'?'震':e.type==='cleave'?'斬':e.type==='arrow'?'➶':'';root.append(el)}
+ for(const e of battle.effects){const id=String(e.id);ids.add(id);let el=existing.get(id);if(!el){el=document.createElement('span');el.dataset.id=id;el.className=`combat-effect ${e.type}`;if(e.type==='defeat'||e.type==='breach'){const img=document.createElement('img');img.src=e.key?HEROES[e.key].asset:e.boss?enemyArt(e.bossName):ENEMY_ART;img.alt='';el.append(img);el.classList.toggle('enemy-exit',!!e.enemy)}else el.textContent=e.type==='heal'||e.type==='oath'?'+':e.type==='roar'?'震':e.type==='cleave'?'斬':e.type==='arrow'?'➶':'';root.append(el)}
  const progress=1-e.remaining/e.duration,x=['arrow','breach'].includes(e.type)?e.from+(e.to-e.from)*progress:e.to;
  el.style.left=`${x*100}%`;el.style.top=`${(e.lane+.5)/3*100}%`;el.style.opacity=String(e.type==='arrow'?1:['defeat','breach'].includes(e.type)?1-progress:Math.sin(Math.PI*progress));
  el.style.setProperty('--effect-progress',String(progress));
@@ -97,7 +98,8 @@ function renderBattle(){
  }
  for(const lane of $('lanes').children){const index=Number(lane.dataset.lane),unit=selected!=='archer'&&battle.allies.find(u=>u.key===selected),ready=unit?unit.lane!==index&&battle.time>=(unit.moveReadyAt||0)&&battle.allies.filter(u=>u.lane===index&&u.hp>0).length<3:selected&&!canDeploy(battle,selected,index);lane.classList.toggle('ready',!!ready);lane.disabled=battle.paused||!!battle.duel||!!battle.introPending||battle.over}
  renderUnits();renderEffects();syncPause();const skill=battle.skillNotice&&battle.time<battle.skillNotice.until?battle.skillNotice:null;$('skillBanner').hidden=!skill;if(skill){$('skillBanner').textContent=skill.text;$('skillBanner').dataset.hero=skill.key}
- if(battle.duel&&!duelShown){const d=battle.duel;$('duelTitle').textContent=`${HEROES[d.heroKey].short} 對 ${d.bossName}`;$('duelHero').src=HEROES[d.heroKey].asset;$('duelHero').alt=HEROES[d.heroKey].name;$('duelEnemy').src=BOSS_ART;$('duelDialog').showModal();duelShown=true}
+ if(battle.duel&&!duelShown){const d=battle.duel;$('duelTitle').textContent=`${HEROES[d.heroKey].short} 對 ${d.bossName}`;$('duelHero').src=HEROES[d.heroKey].asset;$('duelHero').alt=HEROES[d.heroKey].name;$('duelEnemy').src=enemyArt(d.bossName);$('duelDialog').showModal();duelShown=true}
+ if(battle.duel)renderDuel(battle);
  if(!battle.duel&&duelShown){$('duelDialog').close();duelShown=false}
  if(battle.over&&!resultShown)showResult();
 }
@@ -128,4 +130,5 @@ for(const key of ['liubei','guanyu','zhangfei']){const preload=new Image();prelo
 $('bossIntroContinue').onclick=()=>{battle.introPending=false;$('bossIntro').close();renderBattle()};
 $('bossIntro').addEventListener('cancel',e=>e.preventDefault());
 $('replayLevel').onclick=()=>startStory(battle.level);
+$('duelPause').onclick=()=>{setPause(!battle.paused);renderBattle()};
 buildControls();updateHome();requestAnimationFrame(frame);

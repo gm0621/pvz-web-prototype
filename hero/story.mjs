@@ -6,6 +6,8 @@ export const HEROES={
 };
 export const ENEMY_ART='../assets/characters/ambush-scout.webp';
 export const BOSS_ART='../assets/characters/shield-general.webp';
+export const DENG_MAO_ART='./assets/deng-mao-bandit.png';
+export function enemyArt(name){return name==='鄧茂'?DENG_MAO_ART:BOSS_ART}
 export const STAGES=[
  {name:'義軍初成',place:'涿縣・桃園',enemyCount:8,interval:4.1,bossName:'演武教頭',bossHp:145,
   scene:"./assets/scenes/peach-garden.jpg",

@@ -33,8 +33,17 @@ test('pause freezes battle, and auto duel freezes combat and supply without any 
  b.paused=false;stepBattle(b,.1);assert.ok(b.duel);
  const time=b.time,food=b.food,hp=b.enemies[0].hp;
  stepBattle(b,.1);assert.equal(b.time,time);assert.equal(b.food,food);assert.equal(b.enemies[0].hp,hp);
- for(let i=0;i<30&&b.duel;i++)stepBattle(b,.1);
- assert.equal(b.duel,null);assert.equal(b.enemies[0].hp,168);assert.equal(b.duelSeen,true);
+ for(let i=0;i<70&&b.duel;i++)stepBattle(b,.1);
+ assert.equal(b.duel,null);assert.equal(b.enemies[0].hp,0);assert.equal(b.duelSeen,true);
+ assert.equal(b.time,time);assert.equal(b.food,food);
+});
+test('duel exchanges hit once, finisher kills and surviving troops prevent premature victory',async()=>{
+ const {createBattle,deploy,stepBattle}=await engine,b=createBattle(3,1);b.nextSpawn=Infinity;b.bossSpawned=true;
+ deploy(b,'zhangfei',1);b.enemies.push({...testEnemy(90,.17),boss:true,name:'鄧茂'},testEnemy(91,.9,2));
+ stepBattle(b,.1);const start=b.enemies[0].hp;
+ for(let i=0;i<8;i++)stepBattle(b,.1);assert.equal(b.enemies[0].hp,start*.88);
+ b.paused=true;const frozen=JSON.stringify(b);stepBattle(b,.1);assert.equal(JSON.stringify(b),frozen);b.paused=false;
+ for(let i=0;i<56;i++)stepBattle(b,.1);assert.equal(b.duel,null);assert.equal(b.enemies.some(e=>e.id===90),false);assert.equal(b.over,false);
 });
 test('three undefended breaches lose naturally',async()=>{
  const {createBattle,stepBattle}=await engine,b=createBattle(1,1);
