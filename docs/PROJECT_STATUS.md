@@ -42,6 +42,8 @@
 
 ## 發布
 
-工作分支 `codex/standalone-hero`，發布前基底 main：`4f60d0f0942662bd2f2860e4f76eeea3aac9c756`。使用者已在本次對話授權通過後合併正式版；網站實際更新需另外確認，不能用提交成功取代上站驗證。
+工作分支 `codex/standalone-hero`，發布前基底 main：`27be55380866932be5c62e2edfbefdd6b2c09baf`（包含手動續玩修正與發布紀錄）。使用者已在本次對話授權通過後合併正式版；網站實際更新需另外確認，不能用提交成功取代上站驗證。
+
+先前 `4f60d0f` 的 [Pages 工作](https://github.com/gm0621/pvz-web-prototype/actions/runs/42346954019) 曾在 `syncing_files` 階段逾時，主版本 `27be553` 已記錄並觸發重新發布。本次發布也必須實際檢查正式網址，不能將合併成功當成上站完成。
 
 正式位置：[大戰殭屍](https://gm0621.github.io/pvz-web-prototype/)、[英雄演義](https://gm0621.github.io/pvz-web-prototype/hero/)。下一位 Agent 先 fetch 確認最新 PR／main，再接續工作。
