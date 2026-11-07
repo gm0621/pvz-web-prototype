@@ -52,10 +52,12 @@ function updateAttackStatus(){
  const seconds=Math.max(0,Math.ceil((state.levelConfig.attackTimeLimit-state.time)/1000));
  setBattleText('attackTimer',`${String(Math.floor(seconds/60)).padStart(2,'0')}:${String(seconds%60).padStart(2,'0')}`);
  el.classList.toggle('warning',seconds<=30);el.classList.toggle('critical',seconds<=10);
- setBattleText('attackStatusText',state.over?'戰鬥結束':state.paused?'已暫停':seconds<=10?'最後衝刺！未突破就失敗':seconds<=30?'時間將盡！未突破就失敗':'突破任一路｜時間到未突破就失敗');
+ const special=state.gameplay?.stageRule?.id!=='standard-attack';
+ const objective=special?'完成上方特殊任務才過關':'突破任一路｜時間到未突破就失敗';
+ setBattleText('attackStatusText',state.over?'戰鬥結束':state.paused?'已暫停':special?objective:seconds<=10?'最後衝刺！未突破就失敗':seconds<=30?'時間將盡！未突破就失敗':objective);
  // Announce thresholds once, not every frame or second. Repeated HUD updates do not spam assistive tech.
  const band=state.over?'over':state.paused?'paused':seconds<=10?'critical':seconds<=30?'warning':'normal';
- if(el.dataset.band!==band){el.dataset.band=band;setBattleText('attackAlert',band==='critical'?'剩餘十秒內，未突破就失敗':band==='warning'?'剩餘三十秒內，請準備突破':band==='paused'?'攻城倒數已暫停':'')}
+ if(el.dataset.band!==band){el.dataset.band=band;setBattleText('attackAlert',band==='critical'?(special?'剩餘十秒內，請完成上方特殊任務':'剩餘十秒內，未突破就失敗'):band==='warning'?(special?'剩餘三十秒內，請查看特殊任務進度':'剩餘三十秒內，請準備突破'):band==='paused'?'攻城倒數已暫停':'')}
 }
 // A narrow first-season rescue plan at existing AI turns. Costs/delays/cooldowns stay in aiAct.
 // undefined = ordinary strategy; null = genuine breach but no legal rescue plan this turn.
