@@ -510,7 +510,13 @@ function renderStageRuleBoard(board){
   cue.classList.add('stage-rule-timer');cue.textContent=runtime.targetDestroyed?'🏹 箭塔已摧毀｜突破城門':`⏱ 箭塔期限 ${Math.max(0,Math.ceil((runtime.deadline-state.time)/1000))} 秒`;board.appendChild(cue);return;
  }
  if(runtime.kind==='hold-reserve'){cue.textContent=`🌾 留糧 ${runtime.current}/${runtime.minimum}`;board.appendChild(cue);return}
- if(runtime.kind==='capture-seals'){cue.textContent=`🔰 奪印 ${runtime.capturedLanes.length}/2｜${runtime.capturedLanes.map(lane=>`第 ${lane+1} 路`).join('、')||'尚未突破'}`;board.appendChild(cue);return}
+ if(runtime.kind==='capture-seals'){
+  const captured=runtime.capturedLanes.length,required=runtime.requiredLanes;
+  const hint=captured===0?'需突破兩條不同路線':captured<required?'已突破一路，請改攻另一路':'兩路突破完成';
+  cue.classList.add('stage-rule-seals');
+  cue.textContent=`🔰 奪印 ${captured}/${required}｜${hint}\n${captured?`已突破：${runtime.capturedLanes.map(lane=>`第 ${lane+1} 路`).join('、')}`:'同一路重複突破只算一次'}`;
+  board.appendChild(cue);return;
+ }
  if(runtime.kind==='formation-shift'){cue.textContent=`⚔ 破陣 ${runtime.completedShifts}/2｜目標第 ${runtime.requiredLane+1} 路`;board.appendChild(cue);return}
  if(runtime.kind==='fog-vision'){cue.classList.add('stage-rule-lane');cue.style.top=`${runtime.visibleLane*CELL_H}%`;cue.style.height=`${CELL_H}%`;cue.textContent=`👁 第 ${runtime.visibleLane+1} 路斥候視界`;board.appendChild(cue);return}
  const lane=runtime.kind==='lane-lock'?runtime.blockedLane:runtime.kind==='rotating-frost'?runtime.frozenLane:null;
