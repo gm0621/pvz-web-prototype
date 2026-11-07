@@ -90,7 +90,7 @@ test('enemy skill telegraphs before damage and can be dodged by changing lanes',
 });
 
 test('allies reaching the frontline remain on guard instead of disappearing',async()=>{
- const {createBattle,deploy,stepBattle}=await import('../../hero/engine.mjs');const b=createBattle(1,1);b.nextSpawn=Infinity;deploy(b,'guanyu',1);const id=b.allies[0].id;
+ const {createBattle,deploy,stepBattle}=await import('../../hero/engine.mjs');const b=createBattle(1,1);b.nextSpawn=Infinity;deploy(b,'guanyu',1);(await engine).commandHero(b,'guanyu','auto');const id=b.allies[0].id;
  for(let i=0;i<500;i++)stepBattle(b,.1);
  assert.equal(b.allies.length,1);assert.equal(b.allies[0].id,id);assert.equal(b.allies[0].x,.84);assert.equal(b.allies[0].action,'holding');
 });
@@ -192,3 +192,8 @@ test('hook locks a target, interrupts its attack, and misses after a lane change
   assert.equal(u.hp,hp-(dodge?0:24));assert.equal(u.x,x+(dodge?0:.09));if(!dodge){assert.equal(u.order,'hold');assert.equal(u.pendingStrike,null)}
  }
 });
+
+ test('all deployed units hold and heroes advance only after an explicit order',async()=>{
+ const {createBattle,deploy,stepBattle,commandHero}=await engine;
+ for(const key of ['liubei','guanyu','zhangfei','archer']){const b=createBattle(1);b.nextSpawn=Infinity;deploy(b,key,1);for(let i=0;i<100;i++)stepBattle(b,.1);assert.equal(b.allies[0].x,.1);assert.equal(b.allies[0].order,'hold');if(key!=='archer'){commandHero(b,key,'forward');stepBattle(b,.1);assert.ok(b.allies[0].x>.1)}}
+ });

@@ -1,6 +1,6 @@
-import {STAGES} from './story.mjs?v=chapter-bosses-1';
+import {STAGES} from './story.mjs?v=hold-guide-1';
 import {hitSound} from './audio.mjs?v=yellow-boss-2';
-import {duelBeat} from './engine.mjs?v=chapter-bosses-1';
+import {duelBeat} from './engine.mjs?v=hold-guide-1';
 export function renderDuel(b){
  const d=b.duel,dialog=document.getElementById('duelDialog');if(!d)return;
  const stage=STAGES[b.level-1]||{},custom=stage.bossName===d.bossName?stage:{},retreat=d.outcome==='retreat';

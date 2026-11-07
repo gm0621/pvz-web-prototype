@@ -1,4 +1,4 @@
-import {HEROES,STAGES,UNLOCKS,FEATURES} from './story.mjs?v=chapter-bosses-1';
+import {HEROES,STAGES,UNLOCKS,FEATURES} from './story.mjs?v=hold-guide-1';
 
 export const SWING={duration:.58,impact:.24,frameTime:.08,frames:6};
 export const DUEL_DURATION=15;
@@ -70,8 +70,8 @@ export function canDeploy(b,key,lane){
 export function deploy(b,key,lane){
  const reason=canDeploy(b,key,lane);if(reason){if(b){b.notice=reason;b.noticeUntil=b.time+2}return false}
  const d=HEROES[key];b.food-=d.cost;b.cooldowns[key]=key==='archer'?b.time+d.cooldown:0;
- b.allies.push({id:b.nextId++,key,lane,x:.1,hp:d.hp,maxHp:d.hp,lastAttack:-10,lastHeal:b.time,lastSkill:b.time,flash:0,action:'marching'});
- b.notice=`${d.name}出陣！`;b.noticeUntil=b.time+1.8;return true;
+ b.allies.push({id:b.nextId++,key,lane,x:.1,hp:d.hp,maxHp:d.hp,lastAttack:-10,lastHeal:b.time,lastSkill:b.time,flash:0,order:'hold',targetX:.1,action:'holding'});
+ b.notice=`${d.name}出陣駐守！${key==='archer'?'敵人進入射程會自動射擊':'點選武將，再點前方才會前進'}`;b.noticeUntil=b.time+1.8;return true;
 }
 function effect(b,type,lane,from,to=from,details={}){const duration=['roar','cleave','oath','heal','boss','rally','hook','thunder'].includes(type)?1:type==='retreat'?.9:type==='breach'?.7:type==='defeat'?.55:.4;const bossName=b.enemies.find(e=>e.boss&&e.lane===lane)?.name;b.effects.push({id:b.nextId++,type,lane,from,to,remaining:duration,duration,bossName,...details})}
 function spawn(b){

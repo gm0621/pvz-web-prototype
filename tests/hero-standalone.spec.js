@@ -80,7 +80,7 @@ test('units keep their animation nodes and show real attack effects on clearly m
  await page.locator('[data-hero="zhangfei"]').click();await page.locator('.lane[data-lane="1"]').click();
  await page.locator('.ally').evaluate(el=>{window.firstAnimatedUnit=el});await page.clock.runFor(1000);
  expect(await page.locator('.ally').evaluate(el=>el===window.firstAnimatedUnit)).toBe(true);
- await expect(page.locator('.ally .unit-figure')).toHaveCSS('animation-name','unit-march');
+ await expect(page.locator('.ally')).toHaveClass(/holding/);await page.locator('.ally').click();await page.locator('[data-order=auto]').click();await page.clock.runFor(100);await expect(page.locator('.ally .unit-figure')).toHaveCSS('animation-name','unit-march');
  await page.evaluate(()=>{new MutationObserver(()=>{const unit=document.querySelector('.ally.striking .unit-figure');if(unit&&document.querySelector('.combat-effect.slash')){window.sawAnimatedStrike=true;window.strikeAnimation=getComputedStyle(unit).animationName;window.strikePose=unit.querySelector('.attack-sprite')?.dataset.frame}}).observe(document.querySelector('#field'),{subtree:true,attributes:true,childList:true})});
  await page.clock.runFor(40000);expect(await page.evaluate(()=>!!window.sawAnimatedStrike)).toBe(true);expect(await page.evaluate(()=>window.strikeAnimation)).toBe('none');expect(Number(await page.evaluate(()=>window.strikePose))).toBeGreaterThanOrEqual(3);
  await page.locator('#pauseBtn').click();await expect(page.locator('.ally .unit-figure')).toHaveCSS('animation-play-state','paused');
@@ -100,6 +100,7 @@ test('all three generals use transparent redrawn attack frames, not a rotated po
  await page.clock.install();
  for(const key of ['liubei','guanyu','zhangfei']){
   await page.goto('/hero/');await page.locator('#startBtn').click();await page.locator('#storySkip').click();await page.locator(`[data-hero="${key}"]`).click();await page.locator('.lane[data-lane="1"]').click();
+  await page.locator(`.ally[data-kind="${key}"]`).click();await page.locator('[data-order=auto]').click();
   const sprite=page.locator(`.ally[data-kind="${key}"] .attack-sprite`);await expect(sprite).toBeVisible();
   const texture=await sprite.evaluate(async el=>{const img=new Image();img.src=getComputedStyle(el).backgroundImage.slice(5,-2);await img.decode();const c=document.createElement('canvas');c.width=img.width;c.height=img.height;const ctx=c.getContext('2d');ctx.drawImage(img,0,0);const empty=ctx.getImageData(0,0,1,1).data[3],cell=img.width/3;const hash=(x,y)=>{const d=ctx.getImageData(x,y,cell,cell).data;let sum=0;for(let i=0;i<d.length;i+=4)sum=(sum+d[i]*d[i+3]+d[i+1]*17+d[i+2]*31)>>>0;return sum};return {width:img.width,height:img.height,empty,guard:hash(0,0),impact:hash(0,cell)}});
   expect(texture.width/texture.height).toBe(1.5);expect(texture.empty).toBe(0);expect(texture.guard).not.toBe(texture.impact);
