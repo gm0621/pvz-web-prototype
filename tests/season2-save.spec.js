@@ -1,3 +1,4 @@
+const {openZombieHome}=require('./support/home-navigation');
 const {test,expect}=require('@playwright/test');
 async function startLevelCard(page,selector){await page.locator(selector).click();await page.locator('.level-card-details:not([hidden]) .level-detail-start').click()}
 async function open(page){await page.route('https://cdn.jsdelivr.net/**',r=>r.fulfill({contentType:'application/javascript',body:''}));await page.goto('/');await page.evaluate(()=>{completeCampaignLevel('zombies',1);backToHome();for(const f of ['plants','zombies'])markStoryRead(f,1,'opening',2)})}
@@ -6,10 +7,10 @@ test('season-two rewards survive reload and unlock only same-route stage two',as
  await expect(page.locator('#modalText')).toContainText('大盾兵');await expect(page.locator('#modalNext')).not.toContainText('全破');
  const progress=await page.evaluate(()=>({first:playerProfile.campaignProgress,second:playerProfile.season2Progress,gold:playerProfile.gold,char:playerProfile.characterLevels.plants.s2Crossbow}));
  expect(progress.first.plants.highestLevel).toBe(0);expect(progress.second.plants.highestLevel).toBe(1);expect(progress.second.zombies.highestLevel).toBe(0);expect(progress.gold).toBeGreaterThan(0);expect(progress.char.xp).toBeGreaterThan(0);
- await page.reload();await expect(page.locator('#storyDialog')).toBeVisible();await page.locator('#storySkip').click();await expect(page.locator('#storyDialog')).not.toBeVisible();await page.locator('#plantStartBtn').click();await page.locator('[data-season-choice="2"]').click();await startLevelCard(page,'[data-jump-level="1"]');
+ await page.reload();await expect(page.locator('#storyDialog')).toBeVisible();await page.locator('#storySkip').click();await expect(page.locator('#storyDialog')).not.toBeVisible();await openZombieHome(page);await page.locator('#plantStartBtn').click();await page.locator('[data-season-choice="2"]').click();await startLevelCard(page,'[data-jump-level="1"]');
  await expect(page.locator('#cards [data-key="s2Shield"]')).toBeVisible();expect(await page.evaluate(()=>playerProfile.characterLevels.plants.s2Crossbow)).toEqual(progress.char);
  expect(await page.evaluate(()=>isCampaignLevelUnlocked('plants',2))).toBe(true);
- await page.evaluate(()=>backToHome());await page.locator('#plantStartBtn').click();await page.locator('[data-season-choice="1"]').click();await startLevelCard(page,'[data-jump-level="1"]');
+ await page.evaluate(()=>backToHome());await openZombieHome(page);await page.locator('#plantStartBtn').click();await page.locator('[data-season-choice="1"]').click();await startLevelCard(page,'[data-jump-level="1"]');
  await expect(page.locator('#storyDialog')).toBeVisible();await page.locator('#storySkip').click();
  await expect(page.locator('#cards [data-key^="s2"]')).toHaveCount(0);expect(await page.evaluate(()=>state.season)).toBe(1);
 });

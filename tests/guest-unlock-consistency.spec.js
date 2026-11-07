@@ -1,3 +1,4 @@
+const {openZombieHome}=require('./support/home-navigation');
 const {test,expect}=require('@playwright/test');
 async function startLevelCard(page,selector){await page.locator(selector).click();await page.locator('.level-card-details:not([hidden]) .level-detail-start').click()}
 
@@ -14,10 +15,10 @@ async function openGuest(page,{gap=false,final=true}={}){
 
 test('guest recorded final clear opens first-season attack without inventing missing clears',async({page})=>{
  await openGuest(page,{gap:true});
- await page.locator('#plantStartBtn').click();await page.locator('[data-season-choice="1"]').click();
+ await openZombieHome(page);await page.locator('#plantStartBtn').click();await page.locator('[data-season-choice="1"]').click();
  await expect(page.locator('#levelGrid .level-card').nth(9)).toContainText('已通關');
  await page.evaluate(()=>backToHome());
- await page.locator('#zombieStartBtn').click();
+ await openZombieHome(page);await page.locator('#zombieStartBtn').click();
  await expect(page.locator('[data-season-choice="1"]')).toBeEnabled();
  await page.locator('[data-season-choice="1"]').click();
  await startLevelCard(page,'[data-jump-level="1"]');await page.locator('#storySkip').click();
@@ -30,7 +31,7 @@ test('guest recorded final clear opens first-season attack without inventing mis
 test('sparse guest final victory CTA starts the Qin finale and keeps unearned zombie characters locked',async({page})=>{
  await openGuest(page,{gap:true,final:false});
  await page.evaluate(()=>{completeCampaignLevel('plants',9,1);saveProfile(false,false);markStoryRead('plants',10,'opening')});
- await page.locator('#plantStartBtn').click();await page.locator('[data-season-choice="1"]').click();
+ await openZombieHome(page);await page.locator('#plantStartBtn').click();await page.locator('[data-season-choice="1"]').click();
  await startLevelCard(page,'[data-jump-level="10"]');
  await page.evaluate(()=>{clearInterval(timer);end(true,'防守成功！','隔離結算流程測試')});
  await page.locator('#modalStory').click();await page.locator('#storySkip').click();
@@ -59,7 +60,7 @@ test('guest guide lights characters available in later completed stages despite 
 test('first-season guide remains unlocked after navigating second season, including final reward',async({page})=>{
  await openGuest(page);
  await page.evaluate(()=>{for(let n=1;n<=10;n++)completeCampaignLevel('zombies',n,1);saveProfile(false,false)});
- await page.locator('#plantStartBtn').click();await page.locator('[data-season-choice="2"]').click();
+ await openZombieHome(page);await page.locator('#plantStartBtn').click();await page.locator('[data-season-choice="2"]').click();
  await page.evaluate(()=>backToHome());await page.locator('#charactersBtn').click();
  await expect(page.locator('#characterGrid .locked')).toHaveCount(0);
  await page.locator('[data-roster="zombies"]').click();

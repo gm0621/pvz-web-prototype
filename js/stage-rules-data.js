@@ -16,12 +16,20 @@ function immutableRule(spec){
  };
  return Object.freeze(contract)
 }
-function standardDefenseObjective(context){return ['守住五條戰線，不讓敵軍進入左側城池',`擊敗本關 ${context.levelConfig?.enemyCount||0} 名敵軍與關底大魔王`,'推車只能救場一次；被突破即告失敗']}
+function standardDefenseObjective(context){if(context.season===3)return ['擊敗全數敵軍與本關敵將','軍糧官在後、盾將在前，刀兵會主動向前接戰','張飛遇鄧茂、關羽遇程遠志時，可接受單挑或繼續混戰'];return ['守住五條戰線，不讓敵軍進入左側城池',`擊敗本關 ${context.levelConfig?.enemyCount||0} 名敵軍與關底大魔王`,'推車只能救場一次；被突破即告失敗']}
 function standardAttackObjective(context){return ['從右側第 8、9 欄持續派兵，突破守軍防線','先消耗該路推車，再讓後續僵屍抵達最左側',`在 ${Math.round((context.levelConfig?.attackTimeLimit||90000)/1000)} 秒內完成突破`]}
 const STANDARD_DEFENSE_RULE=immutableRule({
  id:'standard-defense',title:'標準守城',objective:standardDefenseObjective,
  isComplete:(runtime,context)=>defenseCleared(context),
  isFailed:runtime=>!!runtime.breached
+});
+const ROMANCE_CLASH_RULE=immutableRule({
+ id:'romance-clash',title:'雙方進攻・攻破敵營',
+ objective:()=>['雙方同時出兵，刀兵與武將主動向前推進','將敵營生命降至 0 即獲勝，己營生命降至 0 即失敗','義軍只能在左側第 1～3 欄部署；每名漏過防線的敵軍使己營損失 200 生命'],
+ start:()=>({ownCamp:1000,enemyCamp:800}),
+ onEvent:(runtime,event)=>event.type==='camp-hit'?{...runtime,enemyCamp:Math.max(0,runtime.enemyCamp-Math.max(0,Number(event.damage)||0))}:event.type==='breach'?{...runtime,ownCamp:Math.max(0,runtime.ownCamp-200)}:runtime,
+ isComplete:runtime=>runtime.enemyCamp<=0&&runtime.ownCamp>0,
+ isFailed:runtime=>runtime.ownCamp<=0
 });
 const STANDARD_ATTACK_RULE=immutableRule({
  id:'standard-attack',title:'標準攻城',objective:standardAttackObjective,
@@ -137,6 +145,7 @@ const FORMATION_SHIFT_RULE=immutableRule({
  isFailed:(runtime,context)=>attackExpired(context)
 });
 const STAGE_RULE_REGISTRY=Object.freeze({
+ 'romance-clash':ROMANCE_CLASH_RULE,
  [STANDARD_DEFENSE_RULE.id]:STANDARD_DEFENSE_RULE,[STANDARD_ATTACK_RULE.id]:STANDARD_ATTACK_RULE,[QIN_FINALE_RULE.id]:QIN_FINALE_RULE,
  [KEEP_MOWERS_RULE.id]:KEEP_MOWERS_RULE,[ESCORT_GRAIN_RULE.id]:ESCORT_GRAIN_RULE,[LANE_LOCK_RULE.id]:LANE_LOCK_RULE,
  [DESTROY_ARROW_TOWER_RULE.id]:DESTROY_ARROW_TOWER_RULE,[ROTATING_FROST_RULE.id]:ROTATING_FROST_RULE,[ESCORT_RAM_RULE.id]:ESCORT_RAM_RULE,
@@ -158,10 +167,10 @@ function stageRuleRouteParams(ruleId){return {
  'fog-vision':{cycleMs:9000,speedMultiplier:1.12},'formation-shift':{requiredShifts:2,laneStep:2}
  }[ruleId]||{mode:'standard'}}
 const STAGE_RULE_ROUTES=Object.freeze(Object.fromEntries(Object.entries(STAGE_RULE_ROUTE_IDS).map(([key,ruleId])=>[key,Object.freeze({ruleId,params:Object.freeze(stageRuleRouteParams(ruleId))})])));
-const STAGE_RULES=Object.freeze([STANDARD_DEFENSE_RULE,STANDARD_ATTACK_RULE,QIN_FINALE_RULE,KEEP_MOWERS_RULE,ESCORT_GRAIN_RULE,LANE_LOCK_RULE,DESTROY_ARROW_TOWER_RULE,ROTATING_FROST_RULE,ESCORT_RAM_RULE,HOLD_RESERVE_RULE,CAPTURE_SEALS_RULE,FOG_VISION_RULE,FORMATION_SHIFT_RULE]);
+const STAGE_RULES=Object.freeze([ROMANCE_CLASH_RULE,STANDARD_DEFENSE_RULE,STANDARD_ATTACK_RULE,QIN_FINALE_RULE,KEEP_MOWERS_RULE,ESCORT_GRAIN_RULE,LANE_LOCK_RULE,DESTROY_ARROW_TOWER_RULE,ROTATING_FROST_RULE,ESCORT_RAM_RULE,HOLD_RESERVE_RULE,CAPTURE_SEALS_RULE,FOG_VISION_RULE,FORMATION_SHIFT_RULE]);
 window.STAGE_RULES=STAGE_RULES;
 function stageRuleById(id){return STAGE_RULE_REGISTRY[id]||null}
-function stageRuleConfigFor(context){if(context.levelConfig?.qinBoss)return {ruleId:'qin-finale',params:{boss:true}};return STAGE_RULE_ROUTES[stageRouteKey(context)]||{ruleId:context.faction==='zombies'?'standard-attack':'standard-defense',params:{mode:context.faction==='zombies'?'attack':'defense'}}}
+function stageRuleConfigFor(context){if(context.season===3)return {ruleId:context.levelConfig?.romanceBattle==='clash'?'romance-clash':context.levelConfig?.romanceBattle==='escort'?'escort-grain':'standard-defense',params:{mode:context.levelConfig?.romanceBattle}};if(context.levelConfig?.qinBoss)return {ruleId:'qin-finale',params:{boss:true}};return STAGE_RULE_ROUTES[stageRouteKey(context)]||{ruleId:context.faction==='zombies'?'standard-attack':'standard-defense',params:{mode:context.faction==='zombies'?'attack':'defense'}}}
 function stageRuleFor(context){return stageRuleById(stageRuleConfigFor(context).ruleId)}
 window.stageRuleById=stageRuleById;window.stageRuleConfigFor=stageRuleConfigFor;window.stageRuleFor=stageRuleFor;
 function createStageRuleState(context){const rule=stageRuleFor(context);return {id:rule.id,data:rule.start(context)}}

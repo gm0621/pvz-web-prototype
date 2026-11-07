@@ -1,3 +1,4 @@
+const {openZombieHome}=require('./support/home-navigation');
 const {test,expect}=require('@playwright/test');
 
 async function openStageEight(page,{legacyGap=false}={}){
@@ -9,7 +10,7 @@ async function openStageEight(page,{legacyGap=false}={}){
   if(legacyGap){playerProfile.campaignProgress.plants.completedLevels[8]=1;delete playerProfile.campaignProgress.plants.completedLevels[4];playerProfile=normalizeProfile(playerProfile)}
   saveProfile(false,false);markStoryRead('plants',8,'opening');backToHome();
  },legacyGap);
- await page.locator('#plantStartBtn').click();
+ await openZombieHome(page);await page.locator('#plantStartBtn').click();
  await page.getByRole('button',{name:/第一季 蜀國篇/}).click();
  await page.locator('#levelGrid .level-card').nth(7).locator('button').first().click();
  await page.locator('#levelGrid .level-card').nth(7).locator('.level-detail-start').click();

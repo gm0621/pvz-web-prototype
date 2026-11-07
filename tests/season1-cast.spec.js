@@ -1,3 +1,4 @@
+const {openZombieHome}=require('./support/home-navigation');
 const {test,expect}=require('@playwright/test');
 test('first-season introductions only recommend heroes and attack units available at that stage',async({page})=>{
  await open(page);
@@ -17,7 +18,7 @@ test('ten stage cards match battle rosters in both routes without clipped text',
  // Local progression fixture only; this does not claim gameplay completion.
  await page.evaluate(()=>{for(let n=1;n<=10;n++)completeCampaignLevel('plants',n);for(let n=1;n<10;n++)completeCampaignLevel('zombies',n);backToHome()});
  for(const faction of ['plants','zombies'])for(let n=1;n<=10;n++){
-  await page.locator(faction==='plants'?'#plantStartBtn':'#zombieStartBtn').click();await page.locator('[data-season-choice="1"]').click();
+  await openZombieHome(page);await page.locator(faction==='plants'?'#plantStartBtn':'#zombieStartBtn').click();await page.locator('[data-season-choice="1"]').click();
   const card=page.locator('#levelGrid .level-card').nth(n-1),cast=card.locator('.level-cast');
   await card.scrollIntoViewIfNeeded();
   expect(await cast.evaluate(el=>el.scrollWidth<=el.clientWidth&&el.scrollHeight<=el.clientHeight)).toBe(true);
@@ -29,7 +30,7 @@ test('ten stage cards match battle rosters in both routes without clipped text',
   await page.evaluate(()=>{clearInterval(timer);backToHome()});
  }
 });
-async function open(page){await page.route('https://cdn.jsdelivr.net/**',r=>r.fulfill({body:''}));await page.goto(process.env.GAME_URL||'/');await page.evaluate(()=>{completeCampaignLevel('plants',1);backToHome()});await page.locator('#plantStartBtn').click();await page.locator('[data-season-choice="1"]').click();}
+async function open(page){await page.route('https://cdn.jsdelivr.net/**',r=>r.fulfill({body:''}));await page.goto(process.env.GAME_URL||'/');await page.evaluate(()=>{completeCampaignLevel('plants',1);backToHome()});await openZombieHome(page);await page.locator('#plantStartBtn').click();await page.locator('[data-season-choice="1"]').click();}
 test('first-season cast keeps all defenders and separates actual enemy waves from bosses',async({page})=>{
  await open(page);
  const rows=await page.evaluate(()=>Object.values(LEVELS).map(lv=>({level:lv.level,cast:document.querySelectorAll('#levelGrid .level-cast')[lv.level-1].innerText,plants:UNIT_ORDER.plants.filter(k=>UNLOCK_LEVEL.plants[k]<=lv.level).map(k=>PLANT_TYPES[k].name),enemies:[...new Set([...lv.zombieWeights,...(lv.openingZombies||[])])].filter(k=>!ZOMBIE_TYPES[k].hidden&&Number.isFinite(aiDelay(ZOMBIE_TYPES,k))).map(k=>ZOMBIE_TYPES[k].name),boss:ZOMBIE_TYPES[lv.bossType].name})));

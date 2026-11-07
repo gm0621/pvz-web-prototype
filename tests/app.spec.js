@@ -1,3 +1,4 @@
+const {openZombieHome}=require('./support/home-navigation');
 const { test, expect } = require('@playwright/test');
 const fs = require('node:fs');
 const path = require('node:path');
@@ -297,6 +298,7 @@ test('new players get one clear easy first-battle path before advanced choices',
   await page.goto('/?freshPlayer=1');
   await expect(page.locator('#start')).toHaveClass(/active/);
   await expect(page.locator('#start')).toHaveClass(/new-player-home/);
+  await openZombieHome(page);
   const entry=page.locator('#newPlayerStartCard');
   await expect(entry).toBeVisible();
   await expect(entry.locator('.new-player-step')).toHaveCount(4);
@@ -310,9 +312,9 @@ test('new players get one clear easy first-battle path before advanced choices',
   await expect(page.locator('#zombieStartBtn')).toHaveClass(/secondary/);
   await expect(page.locator('.mode-banner.defend')).toBeHidden();
   await expect(page.locator('.mode-banner.attack')).toBeHidden();
-  await expect(page.locator('.mode-banner.guide')).toBeHidden();
-  await expect(page.locator('.mode-banner.profile-entry')).toBeHidden();
-  await expect(page.locator('.mode-banner.shop-entry')).toBeHidden();
+  await expect(page.locator('.home-utility.guide')).toBeVisible();
+  await expect(page.locator('.home-utility.profile-entry')).toBeVisible();
+  await expect(page.locator('.home-utility.shop-entry')).toBeVisible();
   await expect(page.locator('#menuProgressStats')).toHaveText('訪客將軍｜Lv.1｜守城 0/10｜攻城尚未解鎖');
   await expect(page.locator('#menuProgressStats')).not.toContainText('🪙');
   await expect(page.locator('#season2PreviewLink')).toBeHidden();
@@ -343,8 +345,9 @@ test('new players get one clear easy first-battle path before advanced choices',
   await page.evaluate(() => {clearInterval(timer);completeCampaignLevel('plants',1,1);clearBattleSave();backToHome();updateProgressUI()});
   await expect(entry).toBeHidden();
   await expect(page.locator('#start')).not.toHaveClass(/new-player-home/);
+  await openZombieHome(page);
   await expect(page.locator('.mode-banner.defend')).toBeVisible();
-  await expect(page.locator('.mode-banner.guide')).toBeVisible();
+  await expect(page.locator('.home-utility.guide')).toBeVisible();
   await expect(page.locator('#plantStartBtn')).toHaveClass(/primary/);
 });
 
@@ -354,7 +357,7 @@ test('home can enter level selection and shop', async ({ page }) => {
   await expect(page.locator('#shop')).toHaveClass(/active/);
   await expect(page.locator('#shopGrid .shop-item')).toHaveCount(36);
   await page.locator('#shopBackBtn').click();
-  await page.locator('#plantStartBtn').click();
+  await openZombieHome(page);await page.locator('#plantStartBtn').click();
   await expect(page.locator('#levelScreen')).toHaveClass(/active/);
   await page.locator('#backFactionBtn').click();
 });
@@ -1485,9 +1488,10 @@ test('resume card keeps every desktop main-menu action inside the viewport', asy
   test.skip(testInfo.project.name!=='desktop');
   await openApp(page);
   await page.evaluate(()=>{selectedLevel=1;start('plants');clearInterval(timer);state.time=12000;backToHome()});
+  await openZombieHome(page);
   const bounds=await page.evaluate(()=>{
     const resume=document.querySelector('#resumeBattleCard').getBoundingClientRect();
-    const shop=document.querySelector('#shopBtn').closest('.mode-banner').getBoundingClientRect();
+    const shop=document.querySelector('#shopBtn').closest('.home-utility').getBoundingClientRect();
     return {resumeTop:resume.top,shopBottom:shop.bottom,viewport:innerHeight};
   });
   expect(bounds.resumeTop).toBeGreaterThanOrEqual(0);

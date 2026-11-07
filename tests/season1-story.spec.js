@@ -1,11 +1,12 @@
+const {openZombieHome}=require('./support/home-navigation');
 const {test,expect}=require('@playwright/test');
 async function openGame(page){await page.route('https://cdn.jsdelivr.net/**',r=>r.fulfill({contentType:'application/javascript',body:''}));await page.goto('/');await expect(page.locator('#start')).toHaveClass(/active/);}
 async function startLevelCard(page,selector){await page.locator(selector).click();await page.locator('.level-card-details:not([hidden]) .level-detail-start').click()}
-async function chooseFirst(page){if(await page.locator('#newPlayerStartCard').isVisible())await page.locator('[data-new-player-start]:visible').click();else{await page.locator('#plantStartBtn').click();await page.locator('[data-season-choice="1"]').click();await page.locator('#continueCampaignBtn').click()}}
+async function chooseFirst(page){await openZombieHome(page);if(await page.locator('#newPlayerStartCard').isVisible())await page.locator('[data-new-player-start]:visible').click();else{await openZombieHome(page);await page.locator('#plantStartBtn').click();await page.locator('[data-season-choice="1"]').click();await page.locator('#continueCampaignBtn').click()}}
 test('attack story keeps the alternate timeline and normal unlock gate',async({page})=>{
  await openGame(page);expect(await page.evaluate(()=>requestCampaignBattle('zombies',1))).toBe(false);
  await page.evaluate(()=>{for(let level=1;level<=10;level++)completeCampaignLevel('plants',level);refreshCampaignUI()});
- await page.locator('#zombieStartBtn').click();await page.locator('[data-season-choice="1"]').click();await startLevelCard(page,'[data-jump-level="1"]');await expect(page.locator('#storyRoute')).toContainText('另一種可能');await expect(page.locator('#storyText')).toContainText('役魂鈴逼著');
+ await openZombieHome(page);await page.locator('#zombieStartBtn').click();await page.locator('[data-season-choice="1"]').click();await startLevelCard(page,'[data-jump-level="1"]');await expect(page.locator('#storyRoute')).toContainText('另一種可能');await expect(page.locator('#storyText')).toContainText('役魂鈴逼著');
  await page.locator('#storySkip').click();expect(await page.evaluate(()=>state.faction)).toBe('zombies');expect(await page.evaluate(()=>isCampaignLevelCompleted('zombies',1))).toBe(false);
 });
 test('cloud pending waits before its ending; an older saved battle also gets its ending',async({page})=>{
@@ -59,7 +60,7 @@ test('victory shows rewards first, closes them into required story, and replay n
  expect(await page.evaluate(()=>JSON.stringify(playerProfile))).toBe(settled);
  await expect(page.locator('#storyDialog')).toBeVisible();await expect(page.locator('#storyText')).toContainText('鐵盔頭目');
  await page.locator('#storySkip').click();await page.locator('#modalMainMenu').click();
- await page.locator('#plantStartBtn').click();await page.locator('[data-season-choice="1"]').click();
+ await openZombieHome(page);await page.locator('#plantStartBtn').click();await page.locator('[data-season-choice="1"]').click();
  await page.locator('#levelGrid .level-card').first().locator('.level-detail-toggle').click();
  const before=await page.evaluate(()=>JSON.stringify(playerProfile));await page.locator('[data-story-level="1"]').click();await expect(page.locator('#storyReplayTabs')).toBeVisible();
  await page.locator('#storyReplayVictory').click();await expect(page.locator('#storyText')).toContainText('鐵盔頭目');await page.locator('#storySkip').click();

@@ -52,7 +52,7 @@ const CAMPAIGN_ROUTE_MATRIX=(()=>{
  return Object.freeze(matrix);
 })();
 function campaignRouteMatrixFor(season,faction,level){return CAMPAIGN_ROUTE_MATRIX[`${Number(season)}:${faction}:${Number(level)}`]||null}
-function campaignRouteResultCopy(context,won){
+function campaignRouteResultCopy(context,won){if(context?.season===3)return romanceResultCopy(won,context.level);
  const faction=context?.faction,levelConfig=context?.levelConfig||campaignLevels(context?.season)?.[Number(context?.level)],name=levelConfig?.name||'本關';
  if(won)return faction==='zombies'?{title:'突破成功！',text:`${name}完成：僵屍突破推車後抵達左側。`}:{title:'防守成功！',text:`${name}完成：${Number(levelConfig?.enemyCount)||0} 名殭屍與關底大魔王已全數擊敗。`};
  return faction==='zombies'?{title:'進攻失敗',text:`進攻時間已到；本關可持續出兵 ${Math.round((Number(levelConfig?.attackTimeLimit)||0)/1000)} 秒。`}:{title:'防線被突破！',text:'僵屍突破推車後進入城池。'};
