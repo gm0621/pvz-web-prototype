@@ -1,6 +1,13 @@
 const {test}=require('node:test');
 const assert=require('node:assert/strict');
 const engine=import('../../hero/engine.mjs');
+test('point orders combine lane and position, preserve bounds and reject paused commands',async()=>{
+ const {createBattle,deploy,positionHero,stepBattle}=await engine,b=createBattle(3,1);b.nextSpawn=Infinity;deploy(b,'zhangfei',1);const u=b.allies[0];
+ assert.equal(positionHero(b,'zhangfei',2,.45),true);assert.equal(u.lane,2);assert.equal(u.targetX,.45);
+ assert.equal(positionHero(b,'zhangfei',0,.4),false);b.time+=2;assert.equal(positionHero(b,'zhangfei',0,.4),true);
+ for(let i=0;i<100;i++)stepBattle(b,.1);assert.equal(u.order,'hold');assert.equal(u.x,.4);
+ b.paused=true;assert.equal(positionHero(b,'zhangfei',0,.1),false);b.paused=false;assert.equal(positionHero(b,'zhangfei',0,-2),true);assert.equal(u.targetX,.06);
+});
 test('manual orders move gradually, hold position, freeze and resume automatic advance',async()=>{
  const {createBattle,deploy,commandHero,stepBattle}=await engine,b=createBattle(1,1);b.nextSpawn=Infinity;deploy(b,'zhangfei',1);const u=b.allies[0];
  commandHero(b,'zhangfei','forward');stepBattle(b,.1);assert.ok(u.x>.1&&u.x<.26);

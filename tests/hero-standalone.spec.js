@@ -43,7 +43,7 @@ test('zombie game opens directly to its own factions without shared adventure me
 test('a full first chapter battle can be won through real UI deployments and saves progress',async({page})=>{
  test.setTimeout(90000);await page.clock.install();await battle(page);
  const costs={archer:50,zhangfei:110,liubei:90,guanyu:100};
- for(let second=0;second<170;second++){
+ for(let second=0;second<245;second++){
   if(await page.locator('#bossIntro').isVisible())await page.locator('#bossIntroContinue').click();
   if(await page.locator('#result').isVisible())break;
   for(const lane of [1,0,2]){
@@ -55,6 +55,7 @@ test('a full first chapter battle can be won through real UI deployments and sav
   await page.clock.runFor(1000);
  }
  await expect(page.locator('#resultTitle')).toHaveText('此戰告捷');
+ await expect(page.locator('body')).not.toHaveClass(/battle-focus/);await expect.poll(()=>page.evaluate(()=>!!document.fullscreenElement)).toBe(false);
  expect(await page.evaluate(()=>JSON.parse(localStorage.getItem('heroLegendProgress_v1')).completed)).toBe(1);
  await page.locator('#resultNext').click();await expect(page.locator('#storyTitle')).toHaveText('義軍初成');await expect(page.locator('#storyChapter')).toContainText('戰後');await page.locator('#storySkip').click();await expect(page.locator('#storyTitle')).toHaveText('糧道遇襲');
 });
@@ -81,7 +82,7 @@ test('units keep their animation nodes and show real attack effects on clearly m
  expect(await page.locator('.ally').evaluate(el=>el===window.firstAnimatedUnit)).toBe(true);
  await expect(page.locator('.ally .unit-figure')).toHaveCSS('animation-name','unit-march');
  await page.evaluate(()=>{new MutationObserver(()=>{const unit=document.querySelector('.ally.striking .unit-figure');if(unit&&document.querySelector('.combat-effect.slash')){window.sawAnimatedStrike=true;window.strikeAnimation=getComputedStyle(unit).animationName;window.strikePose=unit.querySelector('.attack-sprite')?.dataset.frame}}).observe(document.querySelector('#field'),{subtree:true,attributes:true,childList:true})});
- await page.clock.runFor(28000);expect(await page.evaluate(()=>!!window.sawAnimatedStrike)).toBe(true);expect(await page.evaluate(()=>window.strikeAnimation)).toBe('none');expect(Number(await page.evaluate(()=>window.strikePose))).toBeGreaterThanOrEqual(3);
+ await page.clock.runFor(40000);expect(await page.evaluate(()=>!!window.sawAnimatedStrike)).toBe(true);expect(await page.evaluate(()=>window.strikeAnimation)).toBe('none');expect(Number(await page.evaluate(()=>window.strikePose))).toBeGreaterThanOrEqual(3);
  await page.locator('#pauseBtn').click();await expect(page.locator('.ally .unit-figure')).toHaveCSS('animation-play-state','paused');
 });
 
@@ -95,6 +96,7 @@ test('hero cards explain uniqueness and progressively introduce the chapter abil
 });
 
 test('all three generals use transparent redrawn attack frames, not a rotated portrait',async({page})=>{
+ test.setTimeout(90000);
  await page.clock.install();
  for(const key of ['liubei','guanyu','zhangfei']){
   await page.goto('/hero/');await page.locator('#startBtn').click();await page.locator('#storySkip').click();await page.locator(`[data-hero="${key}"]`).click();await page.locator('.lane[data-lane="1"]').click();
@@ -102,7 +104,7 @@ test('all three generals use transparent redrawn attack frames, not a rotated po
   const texture=await sprite.evaluate(async el=>{const img=new Image();img.src=getComputedStyle(el).backgroundImage.slice(5,-2);await img.decode();const c=document.createElement('canvas');c.width=img.width;c.height=img.height;const ctx=c.getContext('2d');ctx.drawImage(img,0,0);const empty=ctx.getImageData(0,0,1,1).data[3],cell=img.width/3;const hash=(x,y)=>{const d=ctx.getImageData(x,y,cell,cell).data;let sum=0;for(let i=0;i<d.length;i+=4)sum=(sum+d[i]*d[i+3]+d[i+1]*17+d[i+2]*31)>>>0;return sum};return {width:img.width,height:img.height,empty,guard:hash(0,0),impact:hash(0,cell)}});
   expect(texture.width/texture.height).toBe(1.5);expect(texture.empty).toBe(0);expect(texture.guard).not.toBe(texture.impact);
   await page.evaluate(key=>{window.drawnFrames=new Set();new MutationObserver(()=>{const el=document.querySelector(`.ally[data-kind="${key}"].striking .attack-sprite`);if(el)window.drawnFrames.add(Number(el.dataset.frame))}).observe(document.querySelector('#units'),{subtree:true,attributes:true})},key);
-  await page.clock.runFor(26000);const frames=await page.evaluate(()=>[...window.drawnFrames]);expect(frames).toEqual(expect.arrayContaining([0,1,2,3,5]));
+  await page.clock.runFor(38000);const frames=await page.evaluate(()=>[...window.drawnFrames]);expect(frames).toEqual(expect.arrayContaining([0,1,2,3,5]));
   await expect(page.locator(`.ally[data-kind="${key}"] .sprite-upper`)).toHaveCount(0);
  }
 });

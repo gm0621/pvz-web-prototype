@@ -1,0 +1,2 @@
+AI generated with imagegen. References: deng-mao-bandit.png and cheng-yuanzhi-commander.png.
+Transparent sprite sheet, exactly three columns and two rows. Top: bandit Deng Mao. Bottom: armored Cheng Yuanzhi. Each row: guard, overhead windup, downward weapon slash. Face right, complete body and weapon within each cell with generous margins. Consistent chibi game illustration and proportions. Background removal requested in follow-up edit.

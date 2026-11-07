@@ -1,4 +1,4 @@
-import {HEROES,STAGES,UNLOCKS,FEATURES} from './story.mjs?v=duel-audio-1';
+import {HEROES,STAGES,UNLOCKS,FEATURES} from './story.mjs?v=counter-position-1';
 
 export const SWING={duration:.58,impact:.24,frameTime:.08,frames:6};
 export const DUEL_DURATION=15;
@@ -16,6 +16,16 @@ export function duelBeat(d){return DUEL_BEATS.reduce((last,beat)=>d.elapsed>=bea
 export function attackFrame(unit,time){const elapsed=time-(unit.swingStartedAt??-100);if(elapsed<0||elapsed>=SWING.duration)return 0;const frame=Math.min(5,Math.floor(elapsed/SWING.frameTime));return unit.key==='zhangfei'&&frame===4?3:frame}
 export const SAVE_KEY='heroLegendProgress_v1';
 export const BOSS_SKILLS=['試刀','截糧斬','裂陣重擊','旋風斬','破陣斬','黃天震擊'];
+export function positionHero(b,key,lane,x){
+ if(!b||b.over||b.paused||b.duel||b.introPending||!Number.isFinite(x)||!Number.isInteger(lane)||lane<0||lane>2)return false;
+ const u=b.allies.find(u=>u.key===key&&u.hp>0);if(!u||key==='archer')return false;
+ if(u.lane!==lane&&!moveHero(b,key,lane))return false;
+ const enemy=b.enemies.filter(e=>e.hp>0&&e.lane===lane).sort((a,c)=>a.x-c.x)[0];
+ u.targetX=Math.max(.06,Math.min(.84,x,enemy?Math.max(.06,enemy.x-.08):.84));
+ u.order=Math.abs(u.targetX-u.x)<.005?'hold':u.targetX<u.x?'back':'forward';
+ u.pendingStrike=null;u.pendingCleave=null;u.swingStartedAt=-100;
+ b.notice=`${HEROES[key].short}移往指定位置，抵達後駐守`;b.noticeUntil=b.time+2;return true;
+}
 export function commandHero(b,key,order){
  if(!b||b.over||b.paused||b.duel||b.introPending)return false;
  const u=b.allies.find(u=>u.key===key&&u.hp>0);
@@ -33,7 +43,7 @@ export function moveHero(b,key,lane){
  if(!u||key==='archer'||!Number.isInteger(lane)||lane<0||lane>2)return false;
  const reason=u.lane===lane?'已在這一路':b.time<(u.moveReadyAt||0)?'調動整備中，稍候再換路':b.allies.filter(a=>a.hp>0&&a.lane===lane).length>=3?'這一路已有三名友軍':'';
  if(reason){b.notice=reason;b.noticeUntil=b.time+2;return false}
- u.lane=lane;u.moveReadyAt=b.time+6;u.pendingStrike=null;u.pendingCleave=null;u.swingStartedAt=-100;
+ u.lane=lane;u.moveReadyAt=b.time+2;u.pendingStrike=null;u.pendingCleave=null;u.swingStartedAt=-100;
  const enemy=b.enemies.filter(e=>e.hp>0&&e.lane===lane).sort((a,c)=>a.x-c.x)[0];
  if(enemy)u.x=Math.max(.03,Math.min(u.x,enemy.x-.08));
  if(u.order){u.order='hold';u.targetX=u.x}
@@ -126,7 +136,7 @@ export function stepBattle(b,seconds){
    const ahead=b.allies.filter(a=>a.hp>0&&a.id!==u.id&&a.lane===u.lane&&a.x>u.x+.001&&priority[a.key]>=priority[u.key]).sort((a,c)=>a.x-c.x)[0];
    const limit=ahead?Math.max(u.x,ahead.x-.065):.84;
    if(u.order==='hold')u.action='holding';
-   else if(u.action==='marching'){u.x=Math.min(u.order==='forward'?u.targetX:.84,limit,u.x+d.speed*dt);if(u.order==='forward'&&u.x>=u.targetX-.0001){u.order='hold';u.action='holding'}}
+   else if(u.action==='marching'){u.x=Math.min(u.order==='forward'?u.targetX:.84,limit,u.x+d.speed*dt*(u.order==='forward'?1.2:1));if(u.order==='forward'&&u.x>=u.targetX-.0001){u.order='hold';u.action='holding'}}
    if(u.x>=.839)u.action='holding';
   }
   const nearby=b.enemies.filter(e=>e.hp>0&&e.lane===u.lane&&e.x>=u.x-.02&&e.x-u.x<=.23);
