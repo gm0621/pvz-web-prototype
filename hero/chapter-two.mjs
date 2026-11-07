@@ -1,3 +1,4 @@
+import {CHAPTER_BOSSES} from './chapter-bosses.mjs?v=chapter-bosses-1';
 // 主線依《三國演義》第一回；場間小戰及無名頭目為遊戲補寫。
 export const SECOND_CHAPTER=[
  {chapter:2,number:1,name:'廣宗拜師',place:'廣宗・盧植軍前',enemyCount:16,interval:3.4,bossName:'黃巾督戰頭目',bossTitle:'廣宗外圍',bossHp:310,scene:'./assets/scenes/mountain-front.jpg',
@@ -21,3 +22,5 @@ export const SECOND_CHAPTER=[
  ending:[['張飛','張角敗退了！那些官軍總算逃出山口。'],['關羽','收兵回寨，不可追得太遠。此戰只是擊退，黃巾主力仍在。'],['劉備','董卓問我們現居何職。我如實答他，三人皆是白身，尚未受官。'],['張飛','就因為沒有官職，他便連禮也不肯行？俺們剛替他拼過命！'],['關羽','其人重官位而輕義士，確是令人心寒。'],['張飛','這等無禮之人，若不給他個教訓，難消俺這口氣！'],['劉備','翼德且慢。救人出於本心，不為換一句奉承。軍中不可逞一時之怒。'],['關羽','大哥，這裡既不能相待，便另尋報國之處。'],['劉備','收整本部，與二位商議去路。世道雖薄，桃園之誓不可薄。']],
  victory:'張角被擊退，董卓獲救，卻因三兄弟沒有官職而輕慢相待。第二章完：義士有功，前路仍多波折。',note:'救董卓、因白身受輕慢依原著；戰鬥招式與部分對話為改編。張角並未在此戰身亡。'}
 ];
+
+for(const [i,stage] of SECOND_CHAPTER.entries()){Object.assign(stage,CHAPTER_BOSSES[i+7]);stage.note+=(i<3?' 韓旌、焦魯、杜衡為遊戲原創頭目。':' 符陣與破陣單挑為遊戲想像。')}

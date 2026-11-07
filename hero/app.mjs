@@ -1,8 +1,9 @@
-import {CHAPTER_BACKGROUNDS,STAGE_LEADS} from './prologue.mjs?v=chapter-intro-1';
+import {mountStoryTask} from './story-play.mjs?v=story-play-1';
+import {CHAPTER_BACKGROUNDS,STAGE_LEADS} from './prologue.mjs?v=chapter-bosses-1';
 import {setMusic,setMusicScene,musicTheme,musicOn,setSfx,unlockAudio,hitSound} from './audio.mjs?v=yellow-boss-2';
-import {renderDuel} from './duel-view.mjs?v=yellow-boss-2';
-import {chapterInfo,enemyArt,HEROES,STAGES,ENEMY_ART,SHIELD_ART,FEATURES,heroDescription} from './story.mjs?v=yellow-boss-2';
-import {positionHero,commandHero,moveHero,BOSS_SKILLS,SAVE_KEY,normalizeProgress,createBattle,deploy,canDeploy,stepBattle,attackFrame,SWING} from './engine.mjs?v=yellow-boss-2';
+import {renderDuel} from './duel-view.mjs?v=chapter-bosses-1';
+import {chapterInfo,enemyArt,HEROES,STAGES,ENEMY_ART,SHIELD_ART,FEATURES,heroDescription} from './story.mjs?v=chapter-bosses-1';
+import {positionHero,commandHero,moveHero,BOSS_SKILLS,SAVE_KEY,normalizeProgress,createBattle,deploy,canDeploy,stepBattle,attackFrame,SWING} from './engine.mjs?v=chapter-bosses-1';
 
 const $=id=>document.getElementById(id);
 let progress,screen='home',battle=null,selected=null,storyLevel=1,lineIndex=0,storyPhase='opening',lastFrame=0,resultShown=false,duelShown=false;
@@ -32,6 +33,7 @@ function startStory(level,phase='opening'){
  const stage=STAGES[level-1];$('sceneBackdrop').src=stage.scene;$('sceneBackdrop').alt=stage.place+'，'+stage.name+'的故事場景';renderStory();setPrologue(phase==='opening');
 }
 function setPrologue(visible){
+ if(visible){mountStoryTask(storyLevel,HEROES,()=>hitSound('heal'));$('storyPrologue').scrollTop=0;$('storyPrologue').querySelector('details').open=false}
  const info=chapterInfo(storyLevel),background=CHAPTER_BACKGROUNDS[info.chapter];
  $('storyPrologue').hidden=!visible;$('storyScene').classList.toggle('has-prologue',visible);
  $('storyScene').querySelector('.scene-cast').hidden=visible;$('storyScene').querySelector('.scene-dialogue').hidden=visible;
@@ -82,7 +84,7 @@ function renderUnits(){
   const id=String(u.id);ids.add(id);let el=existing.get(id);if(!el){el=unitNode(u,enemy);root.append(el)}
   const framed=!enemy&&u.key!=='archer',attacking=framed?battle.time-(u.swingStartedAt??-100)<SWING.duration:battle.time-u.lastAttack<.32;
   el.setAttribute('aria-pressed',String(!enemy&&selected===u.key));el.dataset.order=u.order||'auto';el.dataset.lane=String(u.lane);el.dataset.bossName=u.boss?u.name:'';
-  el.className=`unit ${enemy?'enemy':'ally'}${framed?' has-attack-frames':''}${u.boss?' boss':''}${u.shielded?' shielded':''} ${u.action||'guarding'}${attacking?(u.key==='archer'?' shooting':' striking'):''}${u.flash>0&&!attacking?' hit':''}`;
+  el.className=`unit ${enemy?'enemy':'ally'}${framed?' has-attack-frames':''}${u.boss?' boss':''}${battle.time<(u.rallyUntil||0)?' rallied':''}${u.shielded?' shielded':''} ${u.action||'guarding'}${attacking?(u.key==='archer'?' shooting':' striking'):''}${u.flash>0&&!attacking?' hit':''}`;
   if(framed){const frame=attackFrame(u,battle.time),sprite=el.querySelector('.attack-sprite');sprite.dataset.frame=frame;sprite.style.backgroundPosition=`${(frame%3)*50}% ${Math.floor(frame/3)*100}%`;el.classList.toggle('impact',battle.time<(u.impactUntil||0))}
   el.style.left=u.boss?`clamp(50px, ${u.x*100}%, calc(100% - 50px))`:`${u.x*100}%`;el.style.top=`${(u.lane+.5)/3*100}%`;el.querySelector('.unit-name').textContent=(enemy?u.name:HEROES[u.key].name)+(u.action==='holding'?' · 駐守':'');el.querySelector('.health i').style.width=`${Math.max(0,u.hp/u.maxHp*100)}%`;
  }
@@ -90,7 +92,7 @@ function renderUnits(){
 }
 function renderEffects(){
  const sounded=new Set();const root=$('effects'),existing=new Map([...root.children].map(el=>[el.dataset.id,el])),ids=new Set();
- for(const e of battle.effects){const id=String(e.id);ids.add(id);let el=existing.get(id);if(!el){if(['slash','enemy-slash','arrow','cleave','heal','oath','roar','boss','block'].includes(e.type)&&!sounded.has(e.type)){hitSound(e.type);sounded.add(e.type)}el=document.createElement('span');el.dataset.id=id;el.className=`combat-effect ${e.type}`;if(e.type==='defeat'||e.type==='breach'||e.type==='retreat'){const img=document.createElement('img');img.src=e.key?HEROES[e.key].asset:e.boss?enemyArt(e.bossName):e.shielded?SHIELD_ART:ENEMY_ART;img.alt='';el.append(img);el.classList.toggle('enemy-exit',!!e.enemy)}else el.textContent=e.type==='heal'||e.type==='oath'?'+':e.type==='roar'?'震':e.type==='cleave'?'斬':e.type==='arrow'?'➶':'';root.append(el)}
+ for(const e of battle.effects){const id=String(e.id);ids.add(id);let el=existing.get(id);if(!el){if(['slash','enemy-slash','arrow','cleave','heal','oath','roar','boss','block','rally','fire','hook','thunder'].includes(e.type)&&!sounded.has(e.type)){hitSound(({rally:'roar',fire:'boss',hook:'cleave',thunder:'finish'})[e.type]||e.type);sounded.add(e.type)}el=document.createElement('span');el.dataset.id=id;el.className=`combat-effect ${e.type}`;if(e.type==='defeat'||e.type==='breach'||e.type==='retreat'){const img=document.createElement('img');img.src=e.key?HEROES[e.key].asset:e.boss?enemyArt(e.bossName):e.shielded?SHIELD_ART:ENEMY_ART;img.alt='';el.append(img);el.classList.toggle('enemy-exit',!!e.enemy)}else el.textContent=e.type==='heal'||e.type==='oath'?'+':e.type==='roar'?'震':e.type==='cleave'?'斬':e.type==='arrow'?'➶':({rally:'旗',fire:'♨',hook:'⛓',thunder:'ϟ'})[e.type]||'';root.append(el)}
  const progress=1-e.remaining/e.duration,x=['arrow','breach','retreat'].includes(e.type)?e.from+(e.to-e.from)*progress:e.to;
  el.style.left=`${x*100}%`;el.style.top=`${(e.lane+.5)/3*100}%`;el.style.opacity=String(e.type==='arrow'?1:['defeat','breach','retreat'].includes(e.type)?1-progress:Math.sin(Math.PI*progress));
  el.style.setProperty('--effect-progress',String(progress));
@@ -101,7 +103,7 @@ function renderBattle(){
  if(!battle)return;
  const boss=battle.enemies.find(e=>e.boss&&e.hp>0),stage=STAGES[battle.level-1];
  $('bossHud').hidden=!boss;
- if(boss){$('bossHudName').textContent=`${stage.bossTitle||'敵軍大將'}・${boss.name}`;$('bossHudHp').style.width=`${boss.hp/boss.maxHp*100}%`;$('bossHudState').textContent=boss.castAt?'蓄力！換路閃避':boss.enraged?'狂攻・兩路重擊':battle.level===5?(boss.hp/boss.maxHp>.65?'巨盾護身・先削弱再由劉備單挑':'盾勢已破・劉備近身單挑'):'大將出陣';}
+ if(boss){$('bossHudName').textContent=`${stage.bossTitle||'敵軍大將'}・${boss.name}`;$('bossHudHp').style.width=`${boss.hp/boss.maxHp*100}%`;$('bossHudState').textContent=boss.castAt?`${BOSS_SKILLS[battle.level-1]}蓄力！${stage.skillType==='rally'?'敵兵即將加速':'換路閃避'}`:stage.skillType?`${BOSS_SKILLS[battle.level-1]}・${boss.hp/boss.maxHp>stage.duelHpRatio?'先削弱主將':HEROES[stage.duelHero].short+'近身單挑'}`:boss.enraged?'狂攻・兩路重擊':battle.level===5?(boss.hp/boss.maxHp>.65?'巨盾護身・先削弱再由劉備單挑':'盾勢已破・劉備近身單挑'):'大將出陣';}
  for(const lane of $('lanes').children)lane.classList.toggle('danger',!!boss?.castAt&&(boss.castLanes||[boss.lane]).includes(Number(lane.dataset.lane)));
  if(musicOn())$('musicBtn').textContent=`♫ ${musicTheme().name}`;
  const controlled=selected!=='archer'&&battle.allies.find(u=>u.key===selected&&u.hp>0);

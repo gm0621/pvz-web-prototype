@@ -1,4 +1,4 @@
-import {SECOND_CHAPTER} from './chapter-two.mjs?v=yellow-boss-2';
+import {SECOND_CHAPTER} from './chapter-two.mjs?v=chapter-bosses-1';
 export const HEROES={
  archer:{name:'義軍弓兵',short:'弓兵',cost:50,hp:85,damage:13,rate:1.05,range:.29,speed:.045,cooldown:3,description:'遠程支援',asset:'../assets/characters/shu-archer.webp'},
  liubei:{name:'劉備',short:'劉備',cost:90,hp:155,damage:15,rate:1.15,range:.08,speed:.043,cooldown:5,heal:13,description:'回復同路友軍',asset:'./assets/liubei.png'},
@@ -10,7 +10,7 @@ export const SHIELD_ART='./assets/yellow-turban-shield.png';
 export const BOSS_ART='./assets/deng-mao-bandit.png';
 export const DENG_MAO_ART='./assets/deng-mao-bandit.png';
 export const CHENG_YUANZHI_ART='./assets/cheng-yuanzhi-commander.png';
-export function enemyArt(name){return name==='張角'?'./assets/zhang-jiao.png':name==='石魁'?'./assets/shi-kui.png':name==='雷烈'?'./assets/lei-lie.png':name==='鄧茂'?DENG_MAO_ART:name==='程遠志'?CHENG_YUANZHI_ART:BOSS_ART}
+export function enemyArt(name){const chapterBoss=SECOND_CHAPTER.find(s=>s.bossName===name);if(chapterBoss)return chapterBoss.bossArt;return name==='張角'?'./assets/zhang-jiao.png':name==='石魁'?'./assets/shi-kui.png':name==='雷烈'?'./assets/lei-lie.png':name==='鄧茂'?DENG_MAO_ART:name==='程遠志'?CHENG_YUANZHI_ART:BOSS_ART}
 export const STAGES=[
  {name:'義軍初成',place:'涿縣・桃園',enemyCount:8,interval:4.1,bossName:'黃巾前哨',bossHp:145,
   scene:"./assets/scenes/peach-garden.jpg",

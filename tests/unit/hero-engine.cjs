@@ -159,8 +159,36 @@ test('late bosses telegraph two lanes on rage and the remaining lane is safe',as
 });
 test('old first-chapter completion unlocks the second chapter without resetting progress',async()=>{
  const {normalizeProgress,createBattle}=await engine;assert.equal(normalizeProgress({version:1,completed:6}).completed,6);assert.equal(createBattle(7).level,7);assert.equal(createBattle(10).level,10);assert.throws(()=>createBattle(11));
- const {STAGES,FEATURES}=await import('../../hero/story.mjs');assert.equal(STAGES.length,10);assert.equal(FEATURES.length,10);assert.equal(STAGES[4].duelHero,'liubei');assert.equal(STAGES[9].bossName,'張角');assert.equal(STAGES[9].duelHero,undefined);
+ const {STAGES,FEATURES}=await import('../../hero/story.mjs');assert.equal(STAGES.length,10);assert.equal(FEATURES.length,10);assert.equal(STAGES[4].duelHero,'liubei');assert.equal(STAGES[9].bossName,'張角');assert.equal(STAGES[9].duelHero,'liubei');assert.equal(STAGES[9].duelOutcome,'retreat');
 });
 test('Zhang Jiao withdraws instead of using a death or duel finisher',async()=>{
  const {createBattle,stepBattle}=await engine,b=createBattle(10,1);b.nextSpawn=Infinity;b.bossSpawned=true;b.enemies.push({...testEnemy(90,.5),boss:true,name:'張角',hp:0});stepBattle(b,.1);assert.equal(b.bossRetreated,true);assert.equal(b.duel,null);assert.ok(b.effects.some(e=>e.type==='retreat'));assert.equal(b.effects.some(e=>e.type==='defeat'),false);
+});
+
+test('chapter-two duels use the nominated hero and freeze hazards, ending in retreat for Zhang Jiao',async()=>{
+ const {createBattle,deploy,stepBattle,duelBeat}=await engine;const {STAGES}=await import('../../hero/story.mjs');
+ for(let level=7;level<=10;level++){
+  const stage=STAGES[level-1],b=createBattle(level);b.nextSpawn=Infinity;b.bossSpawned=true;deploy(b,stage.duelHero,1);
+  b.enemies.push({...testEnemy(90,.17),boss:true,name:stage.bossName,hp:40,maxHp:300});b.hazards.push({lane:1,nextTick:1,until:4});stepBattle(b,.1);assert.ok(b.duel);
+  const t=b.time,hp=b.allies[0].hp;stepBattle(b,.1);assert.equal(b.time,t);assert.equal(b.allies[0].hp,hp);
+  b.duel.elapsed=13.2;if(level===10)assert.equal(duelBeat(b.duel).text,'張角退走');
+ }
+});
+
+test('rally buffs troops temporarily and fire damage freezes on pause and can be avoided',async()=>{
+ const {createBattle,deploy,stepBattle}=await engine;
+ const b=createBattle(7);b.nextSpawn=Infinity;b.duelSeen=true;deploy(b,'liubei',1);
+ const boss={...testEnemy(90,.3),boss:true,hp:300,maxHp:300,castAt:.05},troop={...testEnemy(91,.8),lane:2};b.enemies.push(boss,troop);stepBattle(b,.1);assert.ok(troop.rallyUntil>b.time);assert.ok(b.effects.some(e=>e.type==='rally'));
+ const expiry=troop.rallyUntil;b.time=expiry;const x=troop.x;stepBattle(b,.1);assert.ok(Math.abs(x-troop.x-troop.speed*.1)<.00001);
+ const f=createBattle(8);f.nextSpawn=Infinity;f.duelSeen=true;deploy(f,'liubei',1);f.enemies.push({...testEnemy(90,.3),boss:true,hp:300,maxHp:300,castAt:.05});stepBattle(f,.1);assert.equal(f.hazards.length,1);
+ const hp=f.allies[0].hp;f.paused=true;stepBattle(f,.1);assert.equal(f.allies[0].hp,hp);f.paused=false;f.allies[0].lane=0;f.time=1.2;stepBattle(f,.1);assert.equal(f.allies[0].hp,hp);
+});
+
+test('hook locks a target, interrupts its attack, and misses after a lane change',async()=>{
+ const {createBattle,deploy,stepBattle}=await engine;
+ for(const dodge of [false,true]){
+  const b=createBattle(9);b.nextSpawn=Infinity;b.duelSeen=true;deploy(b,'zhangfei',1);const u=b.allies[0];u.order='hold';u.lastSkill=100;const x=u.x,hp=u.hp;
+  b.enemies.push({...testEnemy(90,.3),boss:true,hp:300,maxHp:300,castAt:.05,castTargetId:u.id});if(dodge)u.lane=0;stepBattle(b,.1);
+  assert.equal(u.hp,hp-(dodge?0:24));assert.equal(u.x,x+(dodge?0:.09));if(!dodge){assert.equal(u.order,'hold');assert.equal(u.pendingStrike,null)}
+ }
 });
