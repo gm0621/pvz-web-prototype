@@ -310,7 +310,7 @@ function updateRosterTabs(roster){document.querySelectorAll('[data-roster]').for
 function isCharacterGuideUnlocked(roster,key){if(isFinalRewardUnit(roster,key))return isCampaignLevelCompleted('zombies',10,1);const level=UNLOCK_LEVEL[roster]?.[key];if(!level)return false;return Object.keys(LEVELS).some(n=>Number(n)>=level&&isCampaignLevelUnlocked(roster,Number(n),1))}
 function unlockLabel(roster,key,unlocked=isCharacterGuideUnlocked(roster,key)){if(isFinalRewardUnit(roster,key))return unlocked?'已解鎖｜攻城全破獎勵':'完成攻城第十關後解鎖';const lv=UNLOCK_LEVEL[roster]?.[key]||1;if(unlocked)return lv<=1?'已解鎖｜第一關起可用':`已解鎖｜第${levelLabel(lv)}關起可用`;return lv<=1?'第一關尚未解鎖':`通過第${levelLabel(lv-1)}關後解鎖`}
 function buildCharacterGrid(roster='plants'){$('characters').classList.toggle('wei-guide',roster==='wei');$('characterRosterIntro').hidden=roster!=='wei';if(prepareZombieGuide(roster))return;if(roster==='wei')return buildWeiCharacterGrid();const defs=roster==='plants'?PLANT_TYPES:ZOMBIE_TYPES;$('characterGrid').innerHTML='';sortUnits(Object.entries(defs).filter(([key,d])=>!d.hidden&&(d.season||1)===1),roster).forEach(([key,d])=>{const card=document.createElement('article');const unlocked=isCharacterGuideUnlocked(roster,key);card.className='char-profile type-'+key+' '+((['zhangfei','zhaoyun','machao','huangzhong','kongming','pangtong','liubei','jester','bombJester','corpseTitan','fireCatapult','qinEmperor','necromancer'].includes(key))?'general':'')+' '+(unlocked?'':'locked');const resource=roster==='plants'?'軍糧':'腦';card.innerHTML=`<img src="${d.guideAsset||d.asset}" alt="${d.name}"><h3>${d.name}</h3><div class="costline">消耗 ${d.cost} ${resource}</div><div class="hp-line">HP 生命值：${effectiveUnit(roster,key).hp}</div><span class="unlock-badge">${unlockLabel(roster,key,unlocked)}</span><p>${CHARACTER_EXTRAS[key]||d.desc}</p>${characterAbilityCardSummary(key,effectiveUnit(roster,key),roster)}<div class="statusline">點擊查看技能範圍與能力數值</div>`;card.tabIndex=0;card.setAttribute('role','button');card.onclick=()=>showCharacterDetail(roster,key);card.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();showCharacterDetail(roster,key)}};$('characterGrid').appendChild(card)})}
-function updateHUD(){renderBattleReport();renderTacticalOrderOffer();renderCombinationStatus();updateAttackStatus();updateDeploymentGuide();updateDefenseWaveHUD();updateQinBossHud();updateProgressUI();const plant=state.faction==='plants',lv=state.levelConfig;$('resourceIcon').textContent=plant?'🌾':'🧠';$('resourceName').textContent=plant?'軍糧':'腦';$('resourceValue').textContent=Math.floor(state.resource);const enemyPill=document.querySelector('.battle-pill.enemy');if(enemyPill)enemyPill.hidden=true;if($('aiIcon'))$('aiIcon').textContent=plant?'🧠':'🌾';if($('aiValue'))$('aiValue').textContent=Math.floor(state.aiResource);if($('aiName'))$('aiName').textContent=plant?'腦':'軍糧';$('modeTitle').textContent=`${lv.name}｜${battleDifficultyConfig(state.difficulty).label}｜${plant?'三國守方防守':'僵屍進攻'}`;$('modeHint').textContent=plant?`${lv.plantHint}｜殭屍已出陣 ${state.enemiesSpawned}/${lv.enemyCount}${state.bossSpawned?'，大魔王已登場':'，全數派完後大魔王登場'}`:lv.zombieHint;const ruleContext=stageRuleContextFor(lv,state.faction,state.season,state.level,state),rule=stageRuleById(state.gameplay.stageRule.id)||stageRuleFor(ruleContext);$('objectiveTitle').textContent=rule.title;$('objectives').replaceChildren(...rule.objective(ruleContext).map(text=>{const item=document.createElement('li');item.textContent=text;return item}));if(lv.qinBoss)$('modeHint').textContent='終章決戰｜擊敗金色百夫長奪虎符；集滿 3 枚主動破陣，阻止軍令值蓄滿。';$('aiText').hidden=true;$('aiMeter').parentElement.hidden=true;document.querySelectorAll('.card').forEach(card=>{const d=activeUnit(state.faction,card.dataset.key),elapsed=state.time-(state.lastHuman[card.dataset.key]??-999999),cool=Math.max(0,d.cooldown-elapsed);card.classList.toggle('disabled',state.resource<d.cost||cool>0||battleDifficultyConfig(state.difficulty).blocksHeroes&&challengeUnitIsHero(card.dataset.key));card.querySelector('.coolfill').style.width=(cool>0?100-cool/d.cooldown*100:100)+'%'})}
+function updateHUD(){updateStageRuleStatus();renderBattleReport();renderTacticalOrderOffer();renderCombinationStatus();updateAttackStatus();updateDeploymentGuide();updateDefenseWaveHUD();updateQinBossHud();updateProgressUI();const plant=state.faction==='plants',lv=state.levelConfig;$('resourceIcon').textContent=plant?'🌾':'🧠';$('resourceName').textContent=plant?'軍糧':'腦';$('resourceValue').textContent=Math.floor(state.resource);const enemyPill=document.querySelector('.battle-pill.enemy');if(enemyPill)enemyPill.hidden=true;if($('aiIcon'))$('aiIcon').textContent=plant?'🧠':'🌾';if($('aiValue'))$('aiValue').textContent=Math.floor(state.aiResource);if($('aiName'))$('aiName').textContent=plant?'腦':'軍糧';$('modeTitle').textContent=`${lv.name}｜${battleDifficultyConfig(state.difficulty).label}｜${plant?'三國守方防守':'僵屍進攻'}`;$('modeHint').textContent=plant?`${lv.plantHint}｜殭屍已出陣 ${state.enemiesSpawned}/${lv.enemyCount}${state.bossSpawned?'，大魔王已登場':'，全數派完後大魔王登場'}`:lv.zombieHint;const ruleContext=stageRuleContextFor(lv,state.faction,state.season,state.level,state),rule=stageRuleById(state.gameplay.stageRule.id)||stageRuleFor(ruleContext);$('objectiveTitle').textContent=rule.title;$('objectives').replaceChildren(...rule.objective(ruleContext).map(text=>{const item=document.createElement('li');item.textContent=text;return item}));if(lv.qinBoss)$('modeHint').textContent='終章決戰｜擊敗金色百夫長奪虎符；集滿 3 枚主動破陣，阻止軍令值蓄滿。';$('aiText').hidden=true;$('aiMeter').parentElement.hidden=true;document.querySelectorAll('.card').forEach(card=>{const d=activeUnit(state.faction,card.dataset.key),elapsed=state.time-(state.lastHuman[card.dataset.key]??-999999),cool=Math.max(0,d.cooldown-elapsed);card.classList.toggle('disabled',state.resource<d.cost||cool>0||battleDifficultyConfig(state.difficulty).blocksHeroes&&challengeUnitIsHero(card.dataset.key));card.querySelector('.coolfill').style.width=(cool>0?100-cool/d.cooldown*100:100)+'%'})}
 function updateBattleActionUI(){if(!state)return;updateDeploymentGuide();updateAttackStatus();const defending=state.faction==='plants',remove=$('removeUnitBtn'),relocate=$('relocateUnitBtn'),removeAvailable=battleFeatureAvailable('remove'),relocateAvailable=battleFeatureAvailable('relocate'),relocationLesson=state.tutorial?.id==='relocateUnit'&&state.tutorial?.targetId;if(remove){remove.hidden=!removeAvailable;remove.disabled=!defending||!removeAvailable||!!relocationLesson||state.paused&&!battleTutorialInteractionAllowed('remove');remove.classList.toggle('active',state.actionMode==='remove');remove.textContent=state.actionMode==='remove'?'取消移除':'🪏 移除武將'}if(relocate){relocate.hidden=!relocateAvailable;relocate.disabled=!defending||!relocateAvailable||state.paused&&!battleTutorialInteractionAllowed('relocate');relocate.classList.toggle('active',state.actionMode==='relocate');relocate.textContent=state.actionMode==='relocate'?'取消調動':`↕ 換列 · ${RELOCATION_COST}軍糧`}$('game')?.classList.toggle('remove-mode',state.actionMode==='remove');$('game')?.classList.toggle('relocate-mode',state.actionMode==='relocate');updateRelocationTargets()}
 function setBattleActionMode(mode){if(!state||state.over||state.faction!=='plants'||!battleFeatureAvailable(mode)||state.paused&&!battleTutorialInteractionAllowed(mode))return;state.actionMode=state.actionMode===mode?null:mode;state.movingPlantId=null;state.selected=null;document.querySelectorAll('.card').forEach(x=>x.classList.remove('selected'));updateBattleActionUI();if(state.actionMode==='remove')log('移除模式：請點選要撤下的守方角色；撤下不退還軍糧。');if(state.actionMode==='relocate')relocationMessage(`先點選場上守軍，再點同欄上下相鄰空格；成功換列扣 ${RELOCATION_COST} 軍糧。`)}
 function plantAtCell(r,c){return state.plants.find(p=>p.r===r&&Math.abs(p.c-c)<.45)}
@@ -494,7 +494,57 @@ function renderEnemyTelegraphs(board){
  if(telegraphs.length&&matchMedia('(max-width:720px)').matches){const cards=document.querySelector('.cards-panel'),available=cards?Math.floor(cards.getBoundingClientRect().top-board.getBoundingClientRect().top-4):0;if(available>0)board.style.setProperty('--telegraph-safe-board-height',`${Math.max(80,available)}px`)}
 }
 function render(){updateReducedEffectsButton();if(state.actionMode==='relocate')updateRelocationTargets();const board=$('board');board.querySelectorAll('.entity,.projectile,.fx,.lawnmower,.enemy-telegraph,.stage-rule-cue').forEach(n=>n.remove());for(const m of state.lawnmowers)drawMower(m);for(const p of state.plants)drawEntity(p,'plant');for(const z of state.zombies)drawEntity(z,'zombie');for(const pr of state.projectiles){const el=document.createElement('div');el.className='projectile '+(pr.fire?'fire ':'')+(pr.slow?'ice ':'')+(pr.rock?'rock':'')+(pr.critical?' critical':'')+(pr.visualDelay!=null?' volley-stagger':'');if(pr.rock)el.textContent='🪨';if(pr.visualDelay!=null){el.style.setProperty('--volley-delay',`${pr.visualDelay}ms`);el.dataset.volleyIndex=String(pr.volleyIndex??0);if(!reducedBattleEffects()){const progress=Math.max(0,Math.min(1,(state.time-(pr.visualCreatedAt||0)-pr.visualDelay)/200));el.style.opacity=String(progress);el.style.transform=`translateX(${Math.round((1-progress)*-18)}px) scale(${(.72+progress*.28).toFixed(2)})`}}el.style.left=`${pr.x*CELL_W}%`;el.style.top=`${pr.y*CELL_H}%`;board.appendChild(el)}renderStageRuleBoard(board);renderEnemyTelegraphs(board)}
+// Player-facing objectives use the same saved runtime as the victory rules.
+function stageRuleBattleStatus(battle=state){
+ const saved=battle?.gameplay?.stageRule;if(!saved)return null;
+ const runtime=saved.data,id=saved.id,time=battle.time||0;
+ const alive=(battle.zombies||[]).filter(unit=>unit.hp>0);
+ const defense= !battle.bossSpawned?'擊敗全數敵軍與關底大魔王':alive.length?`清除剩餘敵軍 ${alive.length} 名`:'敵軍已清除';
+ const seconds=deadline=>Math.max(0,Math.ceil((deadline-time)/1000));
+ const attackSeconds=seconds(battle.levelConfig?.attackTimeLimit||90000);
+ switch(id){
+  case 'keep-mowers':return [`🚜 推車剩 ${runtime.mowersRemaining}/5｜${defense}`,'推車可救場一次；已用掉推車的路線再次失守就失敗'];
+  case 'escort-grain':{
+   const escort=runtime.escort,arrived=escort.progress>=100;
+   return [arrived?`✓ 糧車已抵達｜${defense}`:`護送中央路糧車到右側｜進度 ${Math.floor(escort.progress)}%・HP ${Math.max(0,Math.ceil(escort.hp))}/${escort.maxHp}`,
+    arrived?'仍須守住城池，並擊敗全數敵軍與關底大魔王':'清除糧車附近敵軍；糧車被毀或城池失守就失敗'];
+  }
+  case 'hold-reserve':{
+   const resource=Math.floor(battle.resource||0),missing=Math.max(0,runtime.minimum-resource);
+   return [`🌾 留糧 ${resource}/${runtime.minimum}｜${defense}`,missing?`還差 ${missing} 軍糧；清完敵軍後可等補給，達標才過關`:'軍糧已達標；保持到清除全數敵軍，城池失守仍會失敗'];
+  }
+  case 'capture-seals':{
+   const count=runtime.capturedLanes.length;
+   return [`🔰 奪印 ${count}/${runtime.requiredLanes}｜${count===0?'需突破兩條不同路線':count<runtime.requiredLanes?'已突破一路，請改攻另一路':'兩路突破完成'}`,
+    `${count?`已突破：${runtime.capturedLanes.map(lane=>`第 ${lane+1} 路`).join('、')}；`:''}同一路只算一次｜剩 ${attackSeconds} 秒`];
+  }
+  case 'formation-shift':return [`⚔ 破陣 ${runtime.completedShifts}/${runtime.requiredShifts}｜${runtime.completedShifts>=runtime.requiredShifts?'輪轉突破完成':`現在突破第 ${runtime.requiredLane+1} 路`}`,
+   `只計標記路線，突破後目標換路｜剩 ${attackSeconds} 秒`];
+  case 'destroy-arrow-tower':return [runtime.targetDestroyed?`✓ 箭塔已摧毀｜${runtime.breached?'突破已完成':'還需突破左側城門'}`:`🏹 先摧毀任務箭塔｜HP ${Math.max(0,Math.ceil(runtime.targetHp))}・箭塔期限 ${seconds(runtime.deadline)} 秒`,
+   runtime.targetDestroyed?'箭塔與城門突破兩項都完成才過關':'只突破城門不會過關；期限內未拆塔就失敗'];
+  case 'escort-ram':{
+   const escort=(battle.zombies||[]).find(unit=>unit.id===runtime.escortId),hp=Math.max(0,Math.ceil(escort?.hp||0));
+   return [runtime.escortBreached?'✓ 任務衝車已抵達左側城門':`護送中央路任務衝車到左側｜HP ${hp}${escort?.maxHp?`/${escort.maxHp}`:''}`,
+    `其他僵屍突破不算；衝車被毀或逾時就失敗｜剩 ${attackSeconds} 秒`];
+  }
+  case 'lane-lock':return [`🔥 第 ${runtime.blockedLane+1} 路封鎖中｜${defense}`,'封鎖每 12 秒換路，該路不可部署；城池失守就失敗'];
+  case 'rotating-frost':return [`❄ 第 ${runtime.frozenLane+1} 路霜徑｜${defense}`,'寒霜每 10 秒換路，敵軍減速 45%；城池失守就失敗'];
+  case 'fog-vision':return [`👁 第 ${runtime.visibleLane+1} 路斥候視界｜${defense}`,'視界每 9 秒換路，其他路敵軍加速 12%；城池失守就失敗'];
+  case 'qin-finale':{
+   const boss=alive.find(unit=>unit.boss&&unit.type==='qinEmperor'),seals=battle.qinBoss?.seals||0,windowLeft=seconds(boss?.vulnerableUntil||0);
+   return [windowLeft?`🐯 破陣中 ${windowLeft} 秒｜集中火力擊敗始皇屍帝`:`🐯 虎符 ${seals}/3｜${seals>=3?'按「破陣號令」打開輸出窗口':'擊敗金色百夫長收集虎符'}`,
+    '勝利目標：擊敗始皇屍帝；任何一路失守就失敗'];
+  }
+  default:return null;
+ }
+}
+function updateStageRuleStatus(){
+ const panel=$('stageRuleStatus'),copy=stageRuleBattleStatus();if(!panel)return;
+ panel.hidden=!copy;if(!copy)return;
+ for(const [id,text] of [['stageRuleStatusGoal',copy[0]],['stageRuleStatusHint',copy[1]]]){const el=$(id);if(el&&el.textContent!==text)el.textContent=text}
+}
 function renderStageRuleBoard(board){
+ updateStageRuleStatus();
  const runtime=state?.gameplay?.stageRule?.data;if(!runtime)return;
  const cue=document.createElement('div');cue.className='stage-rule-cue';cue.dataset.stageRuleCue=runtime.kind||state.gameplay.stageRule.id;
  if(runtime.kind==='escort-grain'){
@@ -506,18 +556,7 @@ function renderStageRuleBoard(board){
   destination.className='stage-rule-cue escort-destination';destination.style.top=`${(escort.r+.5)*CELL_H}%`;destination.hidden=arrived;destination.textContent='🏯 右側城門\n糧車目的地';
   board.append(cue,destination);return;
  }
- if(runtime.kind==='destroy-arrow-tower'){
-  cue.classList.add('stage-rule-timer');cue.textContent=runtime.targetDestroyed?'🏹 箭塔已摧毀｜突破城門':`⏱ 箭塔期限 ${Math.max(0,Math.ceil((runtime.deadline-state.time)/1000))} 秒`;board.appendChild(cue);return;
- }
- if(runtime.kind==='hold-reserve'){cue.textContent=`🌾 留糧 ${runtime.current}/${runtime.minimum}`;board.appendChild(cue);return}
- if(runtime.kind==='capture-seals'){
-  const captured=runtime.capturedLanes.length,required=runtime.requiredLanes;
-  const hint=captured===0?'需突破兩條不同路線':captured<required?'已突破一路，請改攻另一路':'兩路突破完成';
-  cue.classList.add('stage-rule-seals');
-  cue.textContent=`🔰 奪印 ${captured}/${required}｜${hint}\n${captured?`已突破：${runtime.capturedLanes.map(lane=>`第 ${lane+1} 路`).join('、')}`:'同一路重複突破只算一次'}`;
-  board.appendChild(cue);return;
- }
- if(runtime.kind==='formation-shift'){cue.textContent=`⚔ 破陣 ${runtime.completedShifts}/2｜目標第 ${runtime.requiredLane+1} 路`;board.appendChild(cue);return}
+ if(['destroy-arrow-tower','hold-reserve','capture-seals','formation-shift'].includes(runtime.kind))return;
  if(runtime.kind==='fog-vision'){cue.classList.add('stage-rule-lane');cue.style.top=`${runtime.visibleLane*CELL_H}%`;cue.style.height=`${CELL_H}%`;cue.textContent=`👁 第 ${runtime.visibleLane+1} 路斥候視界`;board.appendChild(cue);return}
  const lane=runtime.kind==='lane-lock'?runtime.blockedLane:runtime.kind==='rotating-frost'?runtime.frozenLane:null;
  if(lane!==null){cue.classList.add('stage-rule-lane',runtime.kind==='rotating-frost'?'frost':'locked');cue.style.top=`${lane*CELL_H}%`;cue.style.height=`${CELL_H}%`;cue.textContent=runtime.kind==='rotating-frost'?`❄ 第 ${lane+1} 路霜徑・敵軍減速`:`🔥 第 ${lane+1} 路封鎖・不可部署`;board.appendChild(cue)}

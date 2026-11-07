@@ -12,7 +12,7 @@ test('attack countdown, warning, pause and reload preserve simulation time; dead
  const pauseStyle=await pause.evaluate(el=>{const s=getComputedStyle(el);return {height:el.getBoundingClientRect().height,border:parseFloat(s.borderTopWidth),weight:Number(s.fontWeight)}});
  expect(pauseStyle.height).toBeGreaterThanOrEqual(48);expect(pauseStyle.border).toBeGreaterThanOrEqual(2);expect(pauseStyle.weight).toBeGreaterThanOrEqual(800);
  await page.evaluate(()=>{state.time=state.levelConfig.attackTimeLimit-30000;updateHUD()});await expect(page.locator('#attackStatus')).toHaveClass(/warning/);
- await expect(page.locator('#attackStatus')).toContainText('未突破就失敗');
+ await expect(page.locator('#attackStatus')).toContainText('完成上方特殊任務才過關');
  await page.locator('#pauseBtn').click();expect(await page.evaluate(()=>{const t=state.time;tick();return state.time===t})).toBe(true);
  await expect(pause).toHaveText('▶ 繼續遊戲');await expect(pause).toHaveClass(/resume/);await expect(pause).toHaveAttribute('aria-pressed','true');
  await expect(page.locator('#pauseResumeBtn')).toBeVisible();

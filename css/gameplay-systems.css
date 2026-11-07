@@ -46,7 +46,33 @@
 
 /* Task 10 tracer-bullet objectives: board cues are derived from saved rule state. */
 .stage-rule-cue{position:absolute;z-index:6;box-sizing:border-box;pointer-events:none;font-weight:900;text-shadow:0 2px 3px #000;color:#fff}
-.stage-rule-seals{left:50%;top:5px;transform:translateX(-50%);width:max-content;max-width:calc(100% - 12px);padding:4px 8px;border:1px solid #fde68a;border-radius:8px;background:#172554e8;color:#fef3c7;white-space:pre-line;text-align:center;font-size:clamp(10px,1.3vw,13px);line-height:1.4}
+/* Keep the objective in flow above the board, including both fullscreen modes. */
+.stage-rule-status{display:flex;flex-direction:column;gap:2px;min-width:0;margin:3px 0;padding:4px 8px;border:1px solid #fde68a;border-radius:8px;background:#172554;color:#fef3c7;font-size:12px;line-height:1.35;text-align:center;overflow-wrap:anywhere}
+.stage-rule-status[hidden]{display:none}
+.stage-rule-status strong{color:#fde68a}.stage-rule-status span{color:#e2e8f0;font-size:11px}
+@media(max-width:600px){.stage-rule-status{padding:3px 5px;font-size:11px}.stage-rule-status span{font-size:10px}}
+@media(max-height:500px){.stage-rule-status{gap:0;margin:1px 0;padding:2px 5px;font-size:10px;line-height:1.15}.stage-rule-status span{font-size:10px}}
+/* Share a row with the timer on short landscape screens to preserve cell size. */
+@media(max-height:500px) and (min-width:601px){
+ .battle-resource-strip:has(#attackStatus:not([hidden])){display:grid;grid-template-columns:minmax(0,1fr) 100px;gap:2px}
+ .battle-resource-strip:has(#attackStatus:not([hidden]))> :not(.stage-rule-status):not(.battle-status-stack){grid-column:1/-1}
+ .battle-resource-strip:has(#attackStatus:not([hidden])) .stage-rule-status{grid-column:1;grid-row:2;margin:0}
+ .battle-resource-strip:has(#attackStatus:not([hidden])) .battle-status-stack{grid-column:2;grid-row:2}
+ .battle-resource-strip:has(#attackStatus:not([hidden])) .attack-status{height:100%;box-sizing:border-box}
+ .battle-resource-strip:has(#attackStatus:not([hidden])) #attackStatusText{display:none}
+ .battle-resource-strip:has(#waveStatus:not([hidden])){display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:2px}
+ .battle-resource-strip:has(#waveStatus:not([hidden]))> :not(.stage-rule-status):not(.battle-status-stack){grid-column:1/-1}
+ .battle-resource-strip:has(#waveStatus:not([hidden])) .stage-rule-status{grid-column:1;grid-row:2;justify-content:center;margin:0}
+ .battle-resource-strip:has(#waveStatus:not([hidden])) .battle-status-stack{grid-column:2;grid-row:2}
+ .battle-resource-strip:has(#qinBossHud:not([hidden])){display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:2px}
+ .battle-resource-strip:has(#qinBossHud:not([hidden]))> :not(#qinBossHud):not(.stage-rule-status){grid-column:1/-1}
+ .battle-resource-strip:has(#qinBossHud:not([hidden])) .stage-rule-status{grid-column:2;grid-row:2;justify-content:center;margin:0}
+ .game .battle-resource-strip .qin-boss-hud{grid-column:1;grid-row:2;grid-template-columns:minmax(0,1fr) auto;gap:2px 5px;padding:2px 5px}
+ .game .battle-resource-strip .qin-boss-head,.game .battle-resource-strip .qin-meter.command{display:none}
+ .game .battle-resource-strip .qin-boss-stats{grid-column:1;grid-row:1;gap:3px;font-size:10px}
+ .game .battle-resource-strip .qin-meter.boss{grid-column:1;grid-row:2;height:6px}
+ .game .battle-resource-strip .qin-boss-hud button{grid-column:2;grid-row:1/3;min-height:44px;padding:3px 5px}
+}
 .stage-rule-escort{display:grid;grid-template-columns:72px max-content;align-items:center;gap:3px;transform:translate(-50%,-50%);width:max-content;max-width:230px;padding:2px 6px 2px 2px;border:2px solid #fde68a;border-radius:13px;background:#713f12e8;text-align:left;font-size:clamp(8px,1vw,12px);line-height:1.15;box-shadow:0 0 12px #fbbf24aa}
 .escort-wagon-image{display:block;width:72px;height:54px;object-fit:contain;filter:drop-shadow(0 3px 3px #0009)}
 .escort-wagon-status{white-space:pre-line}.stage-rule-escort.arrived{border-color:#86efac;background:#14532de8;box-shadow:0 0 14px #4ade80aa}
