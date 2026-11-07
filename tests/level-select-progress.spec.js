@@ -213,7 +213,7 @@ test('season and faction navigation restore focus to the semantic opener',async(
  await openZombieHome(page);await page.locator('#plantStartBtn').click();
  await expect(page.locator('[data-season-choice="1"]')).toBeFocused();
  await page.locator('#backFactionBtn').click();
- await expect(page.locator('#zombieCampaignBtn')).toBeFocused();
+ await expect(page.locator('#plantStartBtn')).toBeFocused();
  await openZombieHome(page);await page.locator('#plantStartBtn').click();
  await page.locator('[data-season-choice="1"]').click();
  await page.locator('#backFactionBtn').click();

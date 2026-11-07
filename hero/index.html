@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+ <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+ <meta name="theme-color" content="#183c32"><meta name="description" content="英雄演義：從桃園結義出發，三路布陣、四張兵卡，輕鬆走進三國故事。">
+ <title>英雄演義｜桃園同心</title>
+ <link rel="icon" href="../assets/brand/favicon.png">
+ <link rel="preload" as="image" href="./assets/scenes/peach-garden.jpg">
+ <link rel="stylesheet" href="game.css?v=progressive-4">
+</head>
+<body>
+ <header class="site-bar"><span class="wordmark">英雄演義 <small>桃園同心</small></span><button id="musicBtn" class="quiet-button" aria-pressed="false">♫ 音樂：關</button></header>
+ <main>
+  <section id="home" class="screen home active" aria-labelledby="homeTitle">
+   <div class="home-copy"><span class="eyebrow">一段誓言，一場英雄之旅</span><h1 id="homeTitle">英雄<span>演義</span></h1><p class="home-lead">從一片桃園，走進三國。</p><p class="home-description">與劉備、關羽、張飛並肩出征。<br>選一名英雄，守好三條路。</p><div class="chapter-label">第一章 · 桃園結義</div><button id="startBtn" class="gold-button">開始故事 <span>→</span></button><p id="homeProgress" class="subtle"></p><div id="chapterDots" class="chapter-dots" aria-label="章節進度"></div></div>
+   <div class="home-art" aria-label="劉備、關羽與張飛"><div class="peach-disc"></div><img class="hero-side hero-left" src="./assets/zhangfei.png" alt="張飛"><img class="hero-side hero-right" src="./assets/guanyu.webp" alt="關羽"><img class="hero-center" src="./assets/liubei.png" alt="劉備"><div class="oath-seal">桃園<br>同心</div><span class="art-caption">同心協力 · 救困扶危</span></div>
+   <p class="home-foot">三路布陣 <i>·</i> 四張兵卡 <i>·</i> 自動交鋒</p>
+  </section>
+  <section id="story" class="screen story" aria-labelledby="storyTitle" hidden>
+   <div class="story-toolbar"><button class="home-button" data-home>← 回主選單</button><span id="storyChapter" class="eyebrow"></span><button id="storySkip" class="quiet-button">直接開戰</button></div>
+   <div id="storyScene" class="story-scene">
+    <img id="sceneBackdrop" class="scene-backdrop" alt="">
+    <div class="scene-heading"><span id="storyPlace"></span><h2 id="storyTitle"></h2></div>
+    <div class="scene-cast" aria-label="對話中的人物"><img id="actorLiubei" data-actor="liubei" src="./assets/liubei.png" alt="劉備"><img id="actorGuanyu" data-actor="guanyu" src="./assets/guanyu.webp" alt="關羽"><img id="actorZhangfei" data-actor="zhangfei" src="./assets/zhangfei.png" alt="張飛"></div>
+    <div class="scene-dialogue"><strong id="storySpeaker"></strong><p id="storyLine" aria-live="polite"></p><div class="story-actions"><button id="storyPrevious" class="quiet-button">← 上一句</button><small id="storyCount"></small><button id="storyNext" class="gold-button">下一句 →</button></div></div>
+   </div>
+   <p class="story-footnote">劇情依《三國演義》改編 · 點「下一句」繼續</p>
+  </section>
+  <section id="battle" class="screen battle" aria-labelledby="battleTitle" hidden>
+   <div class="battle-top"><button class="home-button" data-home>← 回主選單</button><div><span id="battleChapter" class="eyebrow"></span><h2 id="battleTitle"></h2><span id="featureBadge" class="feature-badge"></span></div><button id="pauseBtn" class="quiet-button" aria-pressed="false">Ⅱ 暫停</button></div>
+   <div class="battle-stats"><span>🌾 軍糧 <strong id="food">220</strong><small>自動補給</small></span><span id="waveText"></span><span id="lives" aria-label="剩餘防線">♥ ♥ ♥</span></div>
+   <p id="battleNotice" class="battle-notice" role="status" aria-live="polite">點選兵卡，再點一路出兵。</p>
+   <div id="field" class="field"><div class="field-decor" aria-hidden="true"><span>義<br>軍</span><span>黃<br>巾</span></div><div id="lanes" class="lanes"></div><div id="units" class="units" aria-hidden="true"></div><div id="effects" class="battle-effects" aria-hidden="true"></div><div id="skillBanner" class="skill-banner" role="status" hidden></div><div id="pauseOverlay" class="field-pause" hidden><strong>戰局暫停中</strong><button id="resumeBtn" class="gold-button">繼續戰鬥</button></div></div>
+   <div class="deploy-caption"><span id="selectionHint">先選一張兵卡，再點戰場路線</span><small>每路最多三名友軍</small></div><div id="cards" class="cards" aria-label="四張出兵卡"></div>
+  </section>
+  <section id="result" class="screen result" aria-labelledby="resultTitle" hidden><button class="home-button" data-home>← 回主選單</button><div class="result-panel"><span id="resultMark" class="result-mark" aria-hidden="true">勝</span><span id="resultChapter" class="eyebrow"></span><h2 id="resultTitle"></h2><p id="resultText"></p><button id="resultNext" class="gold-button">下一段故事 →</button><button class="quiet-button" data-home>回主選單</button></div></section>
+ </main>
+ <dialog id="duelDialog" class="duel-dialog" aria-labelledby="duelTitle"><span class="eyebrow">武將交鋒 · 自動單挑</span><h2 id="duelTitle"></h2><div class="duel-portraits"><img id="duelHero" alt=""><span>交鋒</span><img id="duelEnemy" alt="敵將"></div><p>一聲斷喝，刀矛相交！</p><small>交鋒結束後，自動返回戰場</small></dialog>
+ <p id="storageNotice" class="storage-notice" role="status" hidden>此瀏覽器目前無法保存進度，關閉後可能需要重玩。</p>
+ <audio id="music" src="../assets/audio/bgm/01_main.ogg" preload="none" loop></audio>
+ <script type="module" src="app.mjs?v=progressive-4"></script>
+</body>
+</html>

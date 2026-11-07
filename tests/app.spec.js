@@ -275,7 +275,7 @@ test('campaign UI disables locked faction and labels completed current and locke
     };
   });
   expect(initial.attackDisabled).toBeFalsy();
-  expect(initial.attackText).toContain('選擇進攻季度');
+  expect(initial.attackText).toContain('以屍軍出征');
   expect(initial.levels[0]).toMatchObject({disabled:false,text:'選擇難度並開始'});
   expect(initial.levels[1].disabled).toBeTruthy();
   expect(initial.levels[1].className).toContain('locked');
@@ -311,7 +311,7 @@ test('new players get one clear easy first-battle path before advanced choices',
   await expect(page.locator('#plantStartBtn')).toHaveClass(/secondary/);
   await expect(page.locator('#zombieStartBtn')).toHaveClass(/secondary/);
   await expect(page.locator('.mode-banner.defend')).toBeHidden();
-  await expect(page.locator('.mode-banner.attack')).toBeHidden();
+  await expect(page.locator('.mode-banner.attack')).toBeVisible();
   await expect(page.locator('.home-utility.guide')).toBeVisible();
   await expect(page.locator('.home-utility.profile-entry')).toBeVisible();
   await expect(page.locator('.home-utility.shop-entry')).toBeVisible();
@@ -327,7 +327,8 @@ test('new players get one clear easy first-battle path before advanced choices',
   if(testInfo.project.name==='mobile'){
     await page.setViewportSize({width:844,height:390});
     await expect(startButton).toBeVisible();
-    await expect(startButton).toHaveCSS('position','fixed');
+    await expect(startButton).not.toHaveCSS('position','fixed');
+    await startButton.scrollIntoViewIfNeeded();
     expect(await startButton.evaluate(button => {
       const rect=button.getBoundingClientRect();
       return rect.top>=0&&rect.bottom<=innerHeight&&rect.left>=0&&rect.right<=innerWidth;

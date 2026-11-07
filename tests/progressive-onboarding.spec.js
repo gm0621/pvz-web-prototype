@@ -4,7 +4,7 @@ async function openFresh(page){
  await page.route('https://cdn.jsdelivr.net/**',route=>route.fulfill({contentType:'application/javascript',body:''}));
  await page.goto('/?progressive-onboarding=1');
  await expect(page.locator('#start')).toHaveClass(/active/);
- await page.locator('#zombieCampaignBtn').click();
+ if(await page.locator('#zombieCampaignBtn').isVisible())await page.locator('#zombieCampaignBtn').click();
 }
 
 async function openReturning(page){

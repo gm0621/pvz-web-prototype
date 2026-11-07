@@ -17,7 +17,7 @@ function refreshRomanceEntryIdentity(failed=romanceIdentityFailed){
  document.querySelectorAll('#levelGrid .level-start,#levelGrid .level-detail-start').forEach(button=>button.disabled=true);
 }
 function setHomeMode(view='hub'){
- const hub=view!=='zombies',home=$('start');if(!home)return;
+ const hub=view!=='zombies'&&!!$('romanceStartBtn'),home=$('start');if(!home)return;
  home.dataset.homeView=hub?'hub':'zombies';
  home.querySelector('.main-actions')?.setAttribute('aria-label',hub?'選擇遊戲模式':'大戰殭屍戰役');
  $('homeModeBackBtn')?.classList.toggle('hidden',hub);
@@ -48,6 +48,7 @@ function romanceStoryRead(level,scene,write=false){
 }
 function enterRomanceMode(){
  backToHome(false);chooseFaction('plants',ROMANCE_SEASON);
+ window.scrollTo(0,0);
  $('backFactionBtn').setAttribute('aria-label','回主選單');
  return true;
 }
@@ -63,6 +64,7 @@ function buildRomanceLevelCards(){
  renderCampaignProgressOverview();
 }
 function renderRomanceProgressOverview(){
+ $('backFactionBtn').textContent='← 回主選單';$('backFactionBtn').setAttribute('aria-label','回主選單');
  const progress=romanceProgress(),next=Math.min(6,progress.highestLevel+1),snapshot=campaignResumeSnapshot(),resume=snapshot?.season===ROMANCE_SEASON?snapshot:null;
  $('discardBattleLevelBtn')?.classList.toggle('hidden',!resume);
  $('levelScreen').classList.remove('newcomer-simple');$('levelGrid').hidden=false;

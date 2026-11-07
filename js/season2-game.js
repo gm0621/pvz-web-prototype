@@ -10,6 +10,7 @@ function buildSeason2LevelCards(){
  renderCampaignProgressOverview();
 }
 function applySeasonBattleTheme(){
+ if($('backBtn'))$('backBtn').textContent=state?.season===3?'⌂ 回主選單':'暫離戰場';
  $('game').classList.toggle('romance-battle',state?.season===3);$('levelScreen').classList.toggle('romance-select',currentSeason===3);
  $('game').classList.toggle('season2-battle',state?.season===2);
  $('levelScreen').classList.toggle('season2-select',currentSeason===2);
@@ -154,6 +155,7 @@ function processSeason2AttackEvents(){
  const leaderKey=SEASON2_UNIT_ORDER.plants[Math.min(11,state.level+1)];state.bossSpawned=true;addPlant(leaderKey,cell,row);const leader=state.plants[state.plants.length-1];leader.boss=true;leader.hp*=1.35;leader.maxHp=leader.hp;flash(leader,`${PLANT_TYPES[leaderKey].name}領軍`);log(`魏軍${PLANT_TYPES[leaderKey].name}進入戰線；觀察其技能，再調整攻城隊順序。`);
 }
 function setSeasonPickerVisible(visible){
+ $('backFactionBtn').textContent='← 上一頁';
  if(visible)resetLevelDetailsState();
  $('seasonPicker').classList.toggle('hidden',!visible);$('levelGrid').classList.toggle('hidden',visible);
  $('campaignProgressPanel')?.classList.toggle('hidden',visible);if(visible){$('levelSelectTip')?.classList.add('hidden');$('levelScreen')?.classList.remove('newcomer-simple')}
@@ -162,7 +164,7 @@ function setSeasonPickerVisible(visible){
 }
 function showSeasonPicker(faction,syncHistory=true){
  if(!['plants','zombies'].includes(faction))return;
- backToHome(false);if(currentSeason===3)currentSeason=1;currentFaction=faction;$('start').classList.remove('active');$('levelScreen').classList.add('active');$('levelScreen').classList.remove('season2-select');
+ backToHome(false);if(currentSeason===3)currentSeason=1;currentFaction=faction;$('start').classList.remove('active');$('levelScreen').classList.add('active');$('levelScreen').classList.remove('season2-select','romance-select');
  setSeasonPickerVisible(true);$('chosenFactionText').textContent=`${faction==='plants'?'守城方':'攻城方'}｜選擇第一季或第二季，各季進度分開保存。`;
  document.querySelectorAll('[data-season-choice]').forEach(button=>{
   const season=Number(button.dataset.seasonChoice),open=isCampaignFactionUnlocked(faction,season);

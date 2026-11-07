@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>三國萌將守城：屍潮來襲｜網頁遊戲</title>
+<title>大戰殭屍｜三國萌將守城</title>
 <link rel="icon" type="image/png" href="assets/brand/favicon.png">
 <link rel="apple-touch-icon" href="assets/brand/sanguo-zombie-icon.png">
 <meta name="theme-color" content="#0b0505">
@@ -12,7 +12,7 @@
 <link rel="stylesheet" href="css/wei-guide.css">
 <link rel="stylesheet" href="css/zombie-season2-guide.css">
 <link rel="stylesheet" href="css/season2-game.css">
-<link rel="stylesheet" href="css/romance.css?v=two-mode-home-1">
+<link rel="stylesheet" href="css/romance.css?v=standalone-hero-1">
 <link rel="stylesheet" href="css/season1-story.css">
 <link rel="stylesheet" href="css/relocation-sword.css">
 <link rel="stylesheet" href="css/defense-waves.css">
@@ -25,7 +25,7 @@
 <link rel="stylesheet" href="css/battle-ornate.css?v=1">
 </head>
 <body>
-<section id="start" data-home-view="hub" class="screen active hero menu-scene"><div class="menu-overlay"></div>
+<section id="start" data-home-view="zombies" class="screen active hero menu-scene"><div class="menu-overlay"></div>
   <button class="menu-account-corner" id="accountCornerBtn">登入 / 註冊</button>
   <div class="menu-audio-controls" aria-label="音訊控制">
     <button class="secondary audio-btn on" id="menuMusicBtn">音樂 ON</button>
@@ -33,26 +33,24 @@
   </div>
   <button class="primary mobile-new-player-start hidden" id="mobileNewPlayerStartBtn" data-new-player-start>▶ 開始第一關</button>
   <div class="menu-title-block clean redesigned-title">
-    <h1 class="game-logo logo-art"><span class="hub-title">三國萌將<span>選擇你的冒險</span></span><img class="main-logo-img" src="assets/brand/sanguo-zombie-title-logo-transparent.webp" alt="三國萌將守城：屍潮來襲"></h1>
+    <h1 class="game-logo logo-art"><span class="zombie-subtitle">大戰殭屍</span><img class="main-logo-img" src="assets/brand/sanguo-zombie-title-logo-transparent.webp" alt="三國萌將守城：屍潮來襲"></h1>
     <div class="menu-news" role="status" aria-label="玩家進度"><span class="menu-status-label">目前進度</span><div class="progress-stats" id="menuProgressStats">訪客將軍｜Lv.1｜守城 0/10</div><a class="season-overview-link" id="season2PreviewLink" href="season2.html">第二季關卡總覽 →</a></div>
   </div>
-  <button type="button" class="floating-back hidden" id="homeModeBackBtn">← 選擇玩法</button>
   <section class="main-actions clean" aria-label="主要玩法">
-    <article class="mode-banner zombie-campaign-entry"><small>原創戰役・守城與進攻</small><strong>大戰殭屍</strong><p>率領三國萌將抵擋屍潮，挑戰兩季戰役。</p><button class="primary" id="zombieCampaignBtn">進入殭屍戰役</button></article>
+    <div class="faction-choice-heading"><h2>選擇出戰陣營</h2><p>守護城池，或率領屍軍攻城</p></div>
     <article class="mode-banner resume-entry hidden" id="resumeBattleCard"><small>未完成戰局已暫停保存</small><strong>繼續遊戲</strong><div class="resume-entry-actions"><button class="primary" id="resumeBattleBtn">▶ 回到戰場</button><button class="secondary" id="discardBattleBtn">放棄這局</button></div></article>
     <article class="mode-banner new-player-entry hidden" id="newPlayerStartCard">
-      <div class="new-player-copy"><small>第一次玩？不用先選季度或難度</small><strong>開始第一關</strong><span>第一季・三國方・簡單難度</span></div>
+      <div class="new-player-copy"><small>三國萌將陣營・守護城池</small><strong>萌將守城</strong><span>新手從第一季簡單難度開始，有逐步教學</span></div>
       <ol class="new-player-steps" aria-label="第一場四個步驟">
         <li class="new-player-step"><b>1</b><span>軍糧會自動增加</span></li>
         <li class="new-player-step"><b>2</b><span>選角色，再點格子部署</span></li>
         <li class="new-player-step"><b>3</b><span>擋住僵屍</span></li>
         <li class="new-player-step"><b>4</b><span>撐過所有波次</span></li>
       </ol>
-      <button class="primary" id="newPlayerStartBtn" data-new-player-start>▶ 開始第一關</button>
+      <button class="primary" id="newPlayerStartBtn" data-new-player-start>以萌將出戰 ▶</button>
     </article>
-    <article class="mode-banner defend" data-faction="plants"><small>三國守方防守</small><strong>守城戰</strong><button class="primary" id="plantStartBtn">開始守城</button></article>
-    <article class="mode-banner attack" data-faction="zombies"><small>僵屍方突破防線</small><strong>進攻戰</strong><button class="primary" id="zombieStartBtn">開始進攻</button></article>
-    <article class="mode-banner romance-entry"><small>三國演義劇情・桃園結義篇</small><strong>英雄演義</strong><p>從桃園結義出發，體驗劇情、行軍與武將單挑。</p><button class="primary" id="romanceStartBtn">進入演義故事</button></article>
+    <article class="mode-banner defend" data-faction="plants"><small>三國萌將陣營・守護城池</small><strong>萌將守城</strong><p>部署三國英雄，守住五路防線。</p><button class="primary" id="plantStartBtn">以萌將出戰 ▶</button></article>
+    <article class="mode-banner attack" data-faction="zombies"><small>殭屍軍團陣營・突破城防</small><strong>屍軍攻城</strong><p>指揮殭屍軍團，突破防線攻下城池。</p><button class="primary" id="zombieStartBtn">以屍軍出征 ▶</button></article>
   </section>
   <nav class="home-utilities" aria-label="遊戲工具">
     <article class="home-utility guide"><small>角色、消耗、技能</small><strong>能力圖鑑</strong><button class="secondary" id="charactersBtn">查看圖鑑</button></article>
@@ -87,7 +85,7 @@
 <script src="js/stage-rules-data.js?v=romance-1"></script>
 <script src="js/challenges-data.js"></script>
 <script src="js/challenges-ui.js"></script>
-<script src="js/season2-game.js?v=romance-1"></script>
+<script src="js/season2-game.js?v=clear-home-return-1"></script>
 <script src="js/cloud.js?v=romance-1"></script>
 <script src="js/account.js?v=manual-resume-1"></script>
 <script src="js/shop.js"></script>
@@ -101,8 +99,8 @@
 <script src="js/synergies-data.js"></script>
 <script src="js/battle-tutorial.js?v=progressive-lessons-5"></script>
 <script src="js/gameplay-systems.js?v=progressive-lessons-5"></script>
-<script src="js/romance-game.js?v=manual-resume-1"></script>
-<script src="js/app.js?v=manual-resume-1"></script>
+<script src="js/romance-game.js?v=standalone-manual-1"></script>
+<script src="js/app.js?v=standalone-manual-1"></script>
 <script src="js/fullscreen-layout.js?v=tablet-1"></script>
 <script src="js/guide-v2-data.js?v=shield-hop-bba16d"></script>
 <script src="js/guide-v2-a30b268.js?v=unlock-dialog-1"></script>

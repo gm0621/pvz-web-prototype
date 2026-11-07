@@ -12,17 +12,17 @@
 ## 專案基本形狀
 
 - 純前端 HTML/CSS/JavaScript，沒有前端編譯步驟。`index.html` 的傳統 script 共用全域函式，載入順序有意義。
-- 主畫面只有兩個主要玩法入口：「大戰殭屍」及「英雄演義」。圖鑑、玩家資料、商城為共用工具。
-- `season === 1/2` 是原殭屍戰役；`season === 3` 是英雄演義，不能將它當作第三季殭屍戰役。
-- `js/app.js` 是主要戰鬥及導覽；`js/data.js`、`js/season2-data.js` 為原戰役資料；`js/romance-data.js`、`js/romance-game.js` 為演義內容與擴充。
-- `js/stage-rules-data.js` 決定關卡勝負，`js/defense-waves.js` 管波次，`js/season1-story.js` 為共用劇情介面，`js/cloud.js` 負責雲端對戰。
-- 沿用既有戰鬥與關卡系統；新增模式優先擴充資料與任務規則，不複製整套引擎。
+- 同一儲存庫包含兩個獨立遊戲：`/` 大戰殭屍，`/hero/` 英雄演義；不建立共用選單，未來入口平台直接連結各自網址。
+- 原遊戲保留傳統 script 架構、第一／二季、帳號及商城；不要改載入順序或覆寫玩家資料。
+- 英雄演義使用 `hero/index.html`、`game.css`、`app.mjs`、`story.mjs`、`engine.mjs`，不載入原遊戲引擎、登入或商城。
+- 新玩法維持三路、四張兵卡、自動補糧、自動戰鬥、短單挑及六關故事。武將各限一位，退場整備 12 秒；弓兵可重複。招式及盾兵依第 2～6 關逐步加入，不一次全給。避免重新引入養成、裝備、多重難度與複雜選單。
+- `js/romance-*.js` 是舊版共用模式的相容程式，仍被原引擎引用；已移除其首頁入口，新增劇情請改 `hero/story.mjs`，不要擴充舊版。
 
 ## 重要約束
 
 - 暫停、劇情和單挑期間不可推進戰鬥時間、冷卻、波次或重發資源。
 - 勝負、顯示目標、存檔及還原必須使用同一份戰局資料；不要只換文字而不改實際規則。
-- 保留第一、二季解鎖、雲端經濟、訪客相容性及既有存檔。英雄演義目前是本機進度，按帳號／訪客隔離，不可誤呼叫原季度的獎勵 RPC。
+- 保留第一、二季解鎖、雲端經濟、訪客相容性及既有存檔。英雄演義僅用獨立的本機 `heroLegendProgress_v1`，不呼叫原季度 RPC，也不遷移舊版演義存檔。
 - 英雄演義目前不發金幣或角色 XP。「桃園同心」是章節完成紀念，不是裝備。後續雲端或獎勵擴充須完成前後端契約後才啟用。
 - 改動 Supabase、登入、獎勵或商城時，讀相關 migration 與測試；不要將 service role key、個人 token 或真實使用者資料放進儲存庫。
 - 修改前端檔案時同步檢查 `index.html` 的資源版本參數，避免正式站混用新舊腳本。
@@ -39,7 +39,8 @@ node tests/support/static-server.js
 預覽：`http://127.0.0.1:4174/`。執行 Playwright 前先停掉手動預覽服務，正式測試設定會自行啟動同一埠。
 
 ```sh
-npm test -- tests/two-mode-home.spec.js tests/romance.spec.js --workers=1
+npm run test:hero:engine
+npm test -- tests/hero-standalone.spec.js --workers=1
 ```
 
 依改動範圍補跑相關測試，見開發指南；文件修改只需檢查連結與差異，不必重跑戰鬥測試。不要把強制結算測試宣稱為自然通關或平衡驗證。
