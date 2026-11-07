@@ -1,0 +1,12 @@
+// Original pentatonic arrangement: plucked strings, low drum and sustained reed tones.
+let context,musicBus,sfxBus,timer=null,step=0,enabled=false,sfx=true,revision=0;
+const melody=[62,69,74,72,69,65,62,60,62,65,69,72,74,77,74,69,65,69,72,69,65,62,60,57,60,62,65,69,65,62,60,62];
+function init(){if(!context){context=new AudioContext();musicBus=context.createGain();sfxBus=context.createGain();musicBus.gain.value=0;musicBus.connect(context.destination);sfxBus.gain.value=.2;sfxBus.connect(context.destination)}return context}
+function tone(bus,freq,duration,volume,type='sine',slide=0){const c=init(),o=c.createOscillator(),g=c.createGain();o.type=type;o.frequency.setValueAtTime(freq,c.currentTime);if(slide)o.frequency.exponentialRampToValueAtTime(slide,c.currentTime+duration);g.gain.setValueAtTime(volume,c.currentTime);g.gain.exponentialRampToValueAtTime(.0001,c.currentTime+duration);o.connect(g);g.connect(bus);o.start();o.stop(c.currentTime+duration);o.onended=()=>{o.disconnect();g.disconnect()}}
+function tick(){if(!enabled||document.hidden)return;const hz=440*2**((melody[step%melody.length]-69)/12);tone(musicBus,hz,1.4,.12,'triangle');tone(musicBus,hz*2,.35,.025);if(step%4===0)tone(musicBus,90,.45,.22,'sine',35);if(step%8===0)tone(musicBus,146.83,2.5,.04,'triangle');step++}
+export async function setMusic(on){init();const request=++revision;enabled=on;musicBus.disconnect();if(timer){clearInterval(timer);timer=null}musicBus.gain.cancelScheduledValues(context.currentTime);musicBus.gain.setValueAtTime(0,context.currentTime);if(!on)return false;try{await context.resume();if(enabled&&request===revision){musicBus.connect(context.destination);musicBus.gain.setValueAtTime(.55,context.currentTime);tick();timer=setInterval(tick,430)}return enabled}catch{if(request===revision)enabled=false;return enabled}}
+export function musicOn(){return enabled}
+export function setSfx(on){sfx=on;if(sfxBus)sfxBus.gain.value=on?.2:0}
+export function unlockAudio(){init();context.resume().catch(()=>{})}
+export function hitSound(kind='slash'){if(!sfx||document.hidden)return;init();if(context.state!=='running')return;const metal=kind==='block',heavy=kind==='finish';tone(sfxBus,metal?1400:heavy?140:600,heavy?.65:.18,heavy?.7:.35,metal?'triangle':'sawtooth',metal?600:45);if(metal)tone(sfxBus,2150,.3,.2);}
+document.addEventListener('visibilitychange',()=>{if(!context)return;if(document.hidden)context.suspend().catch(()=>{});else if(enabled||sfx)context.resume().catch(()=>{})});

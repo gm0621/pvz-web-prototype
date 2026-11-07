@@ -7,7 +7,8 @@ export const HEROES={
 export const ENEMY_ART='../assets/characters/ambush-scout.webp';
 export const BOSS_ART='../assets/characters/shield-general.webp';
 export const DENG_MAO_ART='./assets/deng-mao-bandit.png';
-export function enemyArt(name){return name==='鄧茂'?DENG_MAO_ART:BOSS_ART}
+export const CHENG_YUANZHI_ART='./assets/cheng-yuanzhi-commander.png';
+export function enemyArt(name){return name==='鄧茂'?DENG_MAO_ART:name==='程遠志'?CHENG_YUANZHI_ART:BOSS_ART}
 export const STAGES=[
  {name:'義軍初成',place:'涿縣・桃園',enemyCount:8,interval:4.1,bossName:'演武教頭',bossHp:145,
   scene:"./assets/scenes/peach-garden.jpg",
@@ -25,6 +26,7 @@ export const STAGES=[
   ending:[["張飛", "鄧茂已敗！看他們還敢不敢小看咱們義軍！"], ["劉備", "先照料傷者，莫追得太遠。我們要的是平定亂事，不是逞一時之勇。"], ["關羽", "大哥說得是。程遠志正在重整人馬，這場仗尚未結束。"], ["張飛", "那就再來！二哥，你握刀的手可已經等不及了？"]],
   victory:'鄧茂落敗，張飛初顯勇猛。敵軍主將程遠志卻已整軍，準備親自迎戰。',note:'張飛接近鄧茂時，會自動展開短暫單挑。'},
  {name:'關羽初揚名',place:'大興山・敵軍本陣',enemyCount:13,interval:3.3,bossName:'程遠志',bossHp:270,duelHero:'guanyu',
+  bossIntro:'程遠志：「折我先鋒，還敢直闖本陣？黃巾眾軍，隨我壓上！」\n關羽：「關雲長在此。你我陣前決勝，休再驅兵送命！」',
   scene:"./assets/scenes/enemy-camp.jpg",
   opening:[["張飛", "程遠志出來了！那副模樣，倒像比鄧茂還不服氣！"], ["關羽", "三弟，方才一戰辛苦。這一回，交給二哥。"], ["劉備", "雲長，敵軍雖亂，兩側仍有兵卒。切莫被他們分斷了隊形。"], ["關羽", "關某明白。只要兄弟在身旁，便沒有退縮的道理。"], ["張飛", "大哥，俺守住側路！總不能讓二哥比武時，背後還有人搗亂！"], ["劉備", "好。弓手壓住前陣，翼德護住兩側，我照應後隊。"], ["關羽", "程遠志！你的先鋒已敗，何苦再讓兵卒枉送性命？"], ["張飛", "二哥，他提刀過來了！"], ["關羽", "來得好。且看關某青龍一斬，掃開前陣！"]],
   ending:[["張飛", "好刀法！二哥，這一下可真叫人痛快！"], ["關羽", "敵將雖敗，潰散的兵卒仍須妥善處置，不可傷及百姓。"], ["劉備", "涿郡暫時解圍，大家終於能喘口氣了。只是青州又送來求援急信。"], ["張飛", "那還等什麼？既然說好救困扶危，咱們便再走一程！"]],

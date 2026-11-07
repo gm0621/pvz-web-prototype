@@ -1,0 +1,2 @@
+Built-in image_gen; transparent_background=true. Reference hero/assets/zhangfei.png is style only.
+undefined

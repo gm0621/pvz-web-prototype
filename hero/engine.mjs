@@ -1,16 +1,16 @@
-import {HEROES,STAGES,UNLOCKS,FEATURES} from './story.mjs?v=bandit-duel-1';
+import {HEROES,STAGES,UNLOCKS,FEATURES} from './story.mjs?v=duel-audio-1';
 
 export const SWING={duration:.58,impact:.24,frameTime:.08,frames:6};
-export const DUEL_DURATION=6.2;
+export const DUEL_DURATION=15;
 export const DUEL_BEATS=[
  {at:0,text:'一騎當千',side:'ready'},
- {at:.7,text:'先聲奪人',side:'hero',damage:.12},
- {at:1.6,text:'敵將反擊',side:'enemy'},
- {at:2.35,text:'鏘！擋下了',side:'block'},
- {at:3.1,text:'破綻！連擊',side:'hero',damage:.18},
- {at:4,text:'蓄勢・決勝一擊',side:'charge'},
- {at:4.85,text:'一擊斬將',side:'finish',damage:1},
- {at:5.5,text:'敵將討取',side:'victory'}
+ {at:3,text:'先聲奪人',side:'hero',damage:.12},
+ {at:4.8,text:'敵將反擊',side:'enemy'},
+ {at:6.2,text:'鏘！擋下了',side:'block'},
+ {at:8,text:'破綻！連擊',side:'hero',damage:.18},
+ {at:10,text:'蓄勢・決勝一擊',side:'charge'},
+ {at:11.8,text:'一擊斬將',side:'finish',damage:1},
+ {at:13,text:'敵將討取',side:'victory'}
 ];
 export function duelBeat(d){return DUEL_BEATS.reduce((last,beat)=>d.elapsed>=beat.at?beat:last,DUEL_BEATS[0])}
 export function attackFrame(unit,time){const elapsed=time-(unit.swingStartedAt??-100);if(elapsed<0||elapsed>=SWING.duration)return 0;const frame=Math.min(5,Math.floor(elapsed/SWING.frameTime));return unit.key==='zhangfei'&&frame===4?3:frame}
@@ -63,7 +63,7 @@ export function deploy(b,key,lane){
  b.allies.push({id:b.nextId++,key,lane,x:.1,hp:d.hp,maxHp:d.hp,lastAttack:-10,lastHeal:b.time,lastSkill:b.time,flash:0,action:'marching'});
  b.notice=`${d.name}出陣！`;b.noticeUntil=b.time+1.8;return true;
 }
-function effect(b,type,lane,from,to=from,details={}){const duration=type==='heal'?.65:type==='breach'?.7:type==='defeat'?.55:.4;const bossName=b.enemies.find(e=>e.boss&&e.lane===lane)?.name;b.effects.push({id:b.nextId++,type,lane,from,to,remaining:duration,duration,bossName,...details})}
+function effect(b,type,lane,from,to=from,details={}){const duration=['roar','cleave','oath','heal'].includes(type)?1:type==='breach'?.7:type==='defeat'?.55:.4;const bossName=b.enemies.find(e=>e.boss&&e.lane===lane)?.name;b.effects.push({id:b.nextId++,type,lane,from,to,remaining:duration,duration,bossName,...details})}
 function spawn(b){
  const stage=STAGES[b.level-1],boss=b.spawned>=stage.enemyCount;
  const lane=boss?1:([1,0,2][b.spawned%3]);
@@ -136,7 +136,7 @@ export function stepBattle(b,seconds){
   if(u.key==='guanyu'&&b.level>=UNLOCKS.cleave&&nearby.length&&b.time-(u.lastSkill||0)>=7){
    u.lastSkill=b.time;if(!u.pendingStrike)u.swingStartedAt=b.time;u.pendingCleave={ids:nearby.map(e=>e.id),impactAt:u.pendingStrike?.impactAt??b.time+SWING.impact};
   }
-  if(d.heal&&b.level>=UNLOCKS.healing&&b.time-u.lastHeal>=3){u.lastHeal=b.time;for(const ally of b.allies)if(ally.hp>0&&ally.lane===u.lane){if(ally.hp<ally.maxHp)effect(b,'heal',ally.lane,ally.x);ally.hp=Math.min(ally.maxHp,ally.hp+d.heal)}}
+  if(d.heal&&b.level>=UNLOCKS.healing&&b.time-u.lastHeal>=3){u.lastHeal=b.time;for(const ally of b.allies)if(ally.hp>0&&ally.lane===u.lane){if(ally.hp<ally.maxHp){effect(b,'heal',ally.lane,ally.x);b.skillNotice={key:'liubei',text:'劉備・仁德回春',until:b.time+1.8};}ally.hp=Math.min(ally.maxHp,ally.hp+d.heal)}}
  }
  for(const e of b.enemies){
   if(e.hp<=0)continue;e.action='guarding';e.flash=Math.max(0,e.flash-dt);if(b.time<(e.stunnedUntil||0)){e.action='stunned';continue}
