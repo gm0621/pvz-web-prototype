@@ -1,5 +1,5 @@
-import {HEROES,STAGES,ENEMY_ART,BOSS_ART,FEATURES,heroDescription} from './story.mjs?v=attack-frames-5';
-import {SAVE_KEY,normalizeProgress,createBattle,deploy,canDeploy,stepBattle,attackFrame,SWING} from './engine.mjs?v=attack-frames-5';
+import {HEROES,STAGES,ENEMY_ART,BOSS_ART,FEATURES,heroDescription} from './story.mjs?v=field-orders-1';
+import {commandHero,moveHero,BOSS_SKILLS,SAVE_KEY,normalizeProgress,createBattle,deploy,canDeploy,stepBattle,attackFrame,SWING} from './engine.mjs?v=field-orders-1';
 
 const $=id=>document.getElementById(id);
 let progress,screen='home',battle=null,selected=null,storyLevel=1,lineIndex=0,storyPhase='opening',lastFrame=0,resultShown=false,duelShown=false;
@@ -10,7 +10,7 @@ function updateHome(){
  const unfinished=battle&&!battle.over;
  $('startBtn').innerHTML=`${unfinished?'繼續戰鬥':progress.completed===6?'重溫第一章':progress.completed?'繼續故事':'開始故事'} <span>→</span>`;
  $('homeProgress').textContent=unfinished?`停在 1-${battle.level} · ${STAGES[battle.level-1].name}`:progress.completed===6?'桃園同心 · 第一章已完成':`已完成 ${progress.completed} / 6 關 · 下一站：${STAGES[progress.completed].name}`;
- $('chapterDots').replaceChildren(...STAGES.map((stage,i)=>{const dot=document.createElement('span');dot.classList.toggle('complete',i<progress.completed);dot.setAttribute('aria-label',`${stage.name}${i<progress.completed?'，已完成':''}`);return dot}));
+ $('chapterDots').replaceChildren(...STAGES.map((stage,i)=>{const dot=document.createElement('button');dot.type='button';dot.textContent=String(i+1);dot.disabled=i>progress.completed;dot.onclick=()=>startStory(i+1);dot.classList.toggle('complete',i<progress.completed);dot.setAttribute('aria-label',`${stage.name}${i<progress.completed?'，已完成':''}`);return dot}));
 }
 function goHome(){
  if(battle&&!battle.over)battle.paused=true;
@@ -37,12 +37,16 @@ function renderStory(){
  $('storyScene').dataset.speaker=key;
 }
 function beginBattle(level){battle=createBattle(level);selected=null;resultShown=false;duelShown=false;show('battle');$('battleChapter').textContent=`第一章 · 1-${level}`;$('battleTitle').textContent=STAGES[level-1].name;$('featureBadge').textContent=FEATURES[level-1].name;$('field').style.backgroundImage=`linear-gradient(#d4dfb655,#b9cda588),url("${STAGES[level-1].scene}")`;renderBattle();$('cards').querySelector('button')?.focus({preventScroll:true})}
-function syncPause(){if(!battle)return;$('field').classList.toggle('is-paused',battle.paused||!!battle.duel);$('pauseOverlay').hidden=!battle.paused;$('pauseBtn').textContent=battle.paused?'▶ 繼續':'Ⅱ 暫停';$('pauseBtn').setAttribute('aria-pressed',String(battle.paused))}
+function syncPause(){if(!battle)return;$('field').classList.toggle('is-paused',battle.paused||!!battle.duel||!!battle.introPending);$('pauseOverlay').hidden=!battle.paused;$('pauseBtn').textContent=battle.paused?'▶ 繼續':'Ⅱ 暫停';$('pauseBtn').setAttribute('aria-pressed',String(battle.paused))}
 function setPause(value){if(!battle||battle.over)return;battle.paused=value;syncPause()}
 function buildControls(){
+ const controls=document.createElement('div');controls.id='orders';controls.className='orders';controls.setAttribute('aria-label','武將調動');
+ const label=document.createElement('span');label.id='orderStatus';controls.append(label);
+ for(const [order,title] of [['up','↑ 上移'],['back','← 後退'],['hold','駐守'],['forward','前進 →'],['down','↓ 下移'],['auto','自動前進']]){const button=document.createElement('button');button.type='button';button.dataset.order=order;button.textContent=title;button.onclick=()=>{commandHero(battle,selected,order);renderBattle()};controls.append(button)}
+ $('cards').before(controls);
  $('lanes').replaceChildren(...['上路','中路','下路'].map((label,lane)=>{const b=document.createElement('button');b.type='button';b.className='lane';b.dataset.lane=lane;b.setAttribute('aria-label',`${label}，點擊出兵`);b.innerHTML=`<span class="lane-label">${label}</span><span class="deploy-zone-label">出兵區</span><span class="lane-direction" aria-hidden="true">→　→　→</span><span class="enemy-zone-label" aria-hidden="true">敵軍 ←</span>`;b.onclick=()=>{
   if(!selected){battle.notice='先選下方一張兵卡，再點路線。';battle.noticeUntil=battle.time+3;renderBattle();return}
-  if(deploy(battle,selected,lane))selected=null;renderBattle();
+  if((selected!=='archer'&&battle.allies.some(u=>u.key===selected)?moveHero:deploy)(battle,selected,lane))selected=null;renderBattle();
  };return b}));
  $('cards').replaceChildren(...Object.entries(HEROES).map(([key,d])=>{const b=document.createElement('button');b.type='button';b.className='card';b.dataset.hero=key;b.setAttribute('aria-label',`${d.name}，${d.cost} 軍糧，${d.description}`);b.innerHTML=`<img src="${d.asset}" alt=""><div><strong>${d.short}</strong><span class="cost">🌾 ${d.cost}</span><span class="card-status"></span><small class="ability-description">${d.description}</small></div><span class="cooldown" aria-hidden="true"><i></i></span>`;b.onclick=()=>{if(!battle||battle.over||battle.paused||battle.duel)return;selected=selected===key?null:key;renderBattle()};return b}));
 }
@@ -56,6 +60,7 @@ function renderUnits(){
  for(const [list,enemy] of [[battle.allies,false],[battle.enemies,true]])for(const u of list){
   const id=String(u.id);ids.add(id);let el=existing.get(id);if(!el){el=unitNode(u,enemy);root.append(el)}
   const framed=!enemy&&u.key!=='archer',attacking=framed?battle.time-(u.swingStartedAt??-100)<SWING.duration:battle.time-u.lastAttack<.32;
+  el.dataset.lane=String(u.lane);el.dataset.bossName=u.boss?u.name:'';
   el.className=`unit ${enemy?'enemy':'ally'}${framed?' has-attack-frames':''}${u.boss?' boss':''}${u.shielded?' shielded':''} ${u.action||'guarding'}${attacking?(u.key==='archer'?' shooting':' striking'):''}${u.flash>0&&!attacking?' hit':''}`;
   if(framed){const frame=attackFrame(u,battle.time),sprite=el.querySelector('.attack-sprite');sprite.dataset.frame=frame;sprite.style.backgroundPosition=`${(frame%3)*50}% ${Math.floor(frame/3)*100}%`;el.classList.toggle('impact',battle.time<(u.impactUntil||0))}
   el.style.left=`${u.x*100}%`;el.style.top=`${(u.lane+.5)/3*100}%`;el.querySelector('.unit-name').textContent=(enemy?u.name:HEROES[u.key].name)+(u.action==='holding'?' · 駐守':'');el.querySelector('.health i').style.width=`${Math.max(0,u.hp/u.maxHp*100)}%`;
@@ -73,20 +78,24 @@ function renderEffects(){
 }
 function renderBattle(){
  if(!battle)return;
+ const controlled=selected!=='archer'&&battle.allies.find(u=>u.key===selected&&u.hp>0);
+ $('orderStatus').textContent=controlled?`${HEROES[selected].short} · ${{forward:'前進中',back:'後退中',hold:'駐守'}[controlled.order]||'自動前進'} · 換路${Math.max(0,Math.ceil((controlled.moveReadyAt||0)-battle.time))}秒`:'選擇已出戰武將，可調整位置';
+ for(const button of $('orders').querySelectorAll('button')){const order=button.dataset.order;button.disabled=!controlled||battle.paused||battle.over||!!battle.duel||!!battle.introPending||((order==='up'||order==='down')&&(battle.time<(controlled.moveReadyAt||0)||(order==='up'?controlled.lane===0:controlled.lane===2)));}
+ if(battle.introPending&&!$('bossIntro').open){const stage=STAGES[battle.level-1];$('bossIntroTitle').textContent=`${stage.bossName}出陣`; $('bossIntroText').textContent=battle.level===3?'鄧茂：「黃巾先鋒鄧茂在此！誰敢擋我大軍？」\n張飛：「燕人張翼德在此！待俺前來會你！」':`${stage.bossName}：「想過此地，先接我一招！」\n劉備：「眾將留意，照應三路！」`; $('bossIntroTip').textContent=`${BOSS_SKILLS[battle.level-1]}：蓄力後重擊同路近處友軍。點已出戰武將的兵卡，再點另一路可免費調動（冷卻 6 秒）。`;$('bossIntro').showModal();}
  $('food').textContent=Math.floor(battle.food);$('lives').textContent='♥ '.repeat(Math.max(0,battle.lives)).trim()||'防線失守';$('lives').setAttribute('aria-label',`剩餘 ${Math.max(0,battle.lives)} 次防線`);
  $('waveText').textContent=battle.bossSpawned?'敵將已出陣':`敵軍 ${battle.spawned} / ${STAGES[battle.level-1].enemyCount}`;
  const notice=battle.time<battle.noticeUntil?battle.notice:FEATURES[battle.level-1].text;
  if($('battleNotice').textContent!==notice)$('battleNotice').textContent=notice;
- $('selectionHint').textContent=selected?`已選${HEROES[selected].short} · 點上、中或下路出兵`:'選兵卡，再點路線 · 抵達前線後自動駐守';
+ $('selectionHint').textContent=selected?`已選${HEROES[selected].short} · 點上、中或下路出兵／換路`:'選兵卡，再點路線 · 抵達前線後自動駐守';
  for(const card of $('cards').children){
   const key=card.dataset.hero,d=HEROES[key],remaining=Math.max(0,(battle.cooldowns[key]||0)-battle.time),active=key!=='archer'&&battle.allies.some(u=>u.hp>0&&u.key===key),description=heroDescription(key,battle.level);
   card.classList.toggle('selected',selected===key);card.classList.toggle('unavailable',active||battle.food<d.cost||remaining>0);card.classList.toggle('in-field',active);card.setAttribute('aria-pressed',String(selected===key));
-  card.disabled=active||remaining>0||battle.paused||!!battle.duel||battle.over;
-  card.querySelector('.card-status').textContent=active?'出戰中':remaining>0?`整備 ${Math.ceil(remaining)} 秒`:battle.food<d.cost?'等待軍糧':key==='archer'?'可增援':'可出戰';
+  card.disabled=(!active&&remaining>0)||battle.paused||!!battle.duel||battle.over;
+  card.querySelector('.card-status').textContent=active?'出戰中 · 點選換路':remaining>0?`整備 ${Math.ceil(remaining)} 秒`:battle.food<d.cost?'等待軍糧':key==='archer'?'可增援':'可出戰';
   card.querySelector('.ability-description').textContent=description;card.setAttribute('aria-label',`${d.name}，${d.cost} 軍糧，${description}，${card.querySelector('.card-status').textContent}`);
   card.querySelector('.cooldown i').style.width=`${active?100:Math.max(0,100-remaining/(key==='archer'?d.cooldown:12)*100)}%`;
  }
- for(const lane of $('lanes').children){const ready=selected&&!canDeploy(battle,selected,Number(lane.dataset.lane));lane.classList.toggle('ready',!!ready);lane.disabled=battle.paused||!!battle.duel||battle.over}
+ for(const lane of $('lanes').children){const index=Number(lane.dataset.lane),unit=selected!=='archer'&&battle.allies.find(u=>u.key===selected),ready=unit?unit.lane!==index&&battle.time>=(unit.moveReadyAt||0)&&battle.allies.filter(u=>u.lane===index&&u.hp>0).length<3:selected&&!canDeploy(battle,selected,index);lane.classList.toggle('ready',!!ready);lane.disabled=battle.paused||!!battle.duel||!!battle.introPending||battle.over}
  renderUnits();renderEffects();syncPause();const skill=battle.skillNotice&&battle.time<battle.skillNotice.until?battle.skillNotice:null;$('skillBanner').hidden=!skill;if(skill){$('skillBanner').textContent=skill.text;$('skillBanner').dataset.hero=skill.key}
  if(battle.duel&&!duelShown){const d=battle.duel;$('duelTitle').textContent=`${HEROES[d.heroKey].short} 對 ${d.bossName}`;$('duelHero').src=HEROES[d.heroKey].asset;$('duelHero').alt=HEROES[d.heroKey].name;$('duelEnemy').src=BOSS_ART;$('duelDialog').showModal();duelShown=true}
  if(!battle.duel&&duelShown){$('duelDialog').close();duelShown=false}
@@ -116,4 +125,7 @@ $('duelDialog').addEventListener('cancel',event=>event.preventDefault());
 document.addEventListener('visibilitychange',()=>{if(document.hidden&&battle&&!battle.over)setPause(true)});
 $('musicBtn').onclick=async()=>{const music=$('music'),on=music.paused;try{if(on){music.volume=.25;await music.play()}else music.pause();$('musicBtn').textContent=`♫ 音樂：${on?'開':'關'}`;$('musicBtn').setAttribute('aria-pressed',String(on))}catch{$('musicBtn').textContent='♫ 再點一次播放'}};
 for(const key of ['liubei','guanyu','zhangfei']){const preload=new Image();preload.src=`./assets/attacks/${key}.png`}
+$('bossIntroContinue').onclick=()=>{battle.introPending=false;$('bossIntro').close();renderBattle()};
+$('bossIntro').addEventListener('cancel',e=>e.preventDefault());
+$('replayLevel').onclick=()=>startStory(battle.level);
 buildControls();updateHome();requestAnimationFrame(frame);

@@ -1,6 +1,15 @@
 const {test}=require('node:test');
 const assert=require('node:assert/strict');
 const engine=import('../../hero/engine.mjs');
+test('manual orders move gradually, hold position, freeze and resume automatic advance',async()=>{
+ const {createBattle,deploy,commandHero,stepBattle}=await engine,b=createBattle(1,1);b.nextSpawn=Infinity;deploy(b,'zhangfei',1);const u=b.allies[0];
+ commandHero(b,'zhangfei','forward');stepBattle(b,.1);assert.ok(u.x>.1&&u.x<.26);
+ for(let i=0;i<200;i++)stepBattle(b,.1);assert.equal(u.order,'hold');assert.ok(Math.abs(u.x-.26)<.001);
+ commandHero(b,'zhangfei','back');const x=u.x;b.paused=true;stepBattle(b,.1);assert.equal(u.x,x);assert.equal(commandHero(b,'zhangfei','auto'),false);b.paused=false;stepBattle(b,.1);assert.ok(u.x<x);
+ commandHero(b,'zhangfei','hold');const held=u.x;stepBattle(b,.1);assert.equal(u.x,held);
+ commandHero(b,'zhangfei','auto');stepBattle(b,.1);assert.ok(u.x>held);
+ commandHero(b,'zhangfei','up');assert.equal(u.lane,0);assert.equal(commandHero(b,'zhangfei','up'),false);
+});
 
 test('progress is a separate, bounded six-stage record',async()=>{
  const {normalizeProgress,SAVE_KEY}=await engine;
@@ -29,7 +38,7 @@ test('pause freezes battle, and auto duel freezes combat and supply without any 
 });
 test('three undefended breaches lose naturally',async()=>{
  const {createBattle,stepBattle}=await engine,b=createBattle(1,1);
- for(let i=0;i<2000&&!b.over;i++)stepBattle(b,.1);
+ for(let i=0;i<2000&&!b.over;i++){if(b.introPending)b.introPending=false;stepBattle(b,.1)}
  assert.equal(b.over,true);assert.equal(b.won,false);assert.equal(b.lives,0);
 });
 for(let level=1;level<=6;level++)test(`chapter ${level} can be won with legal deployments and unmodified battle stats`,async()=>{
@@ -37,6 +46,7 @@ for(let level=1;level<=6;level++)test(`chapter ${level} can be won with legal de
  for(const seed of [1,42,2026]){
   const b=createBattle(level,seed);
   for(let i=0;i<3000&&!b.over;i++){
+   if(b.introPending)b.introPending=false; // Player acknowledges the arrival dialogue.
    for(const lane of [1,0,2]){
     const units=b.allies.filter(u=>u.lane===lane),keys=units.map(u=>u.key);
     const hero={0:'liubei',1:'zhangfei',2:'guanyu'}[lane];
@@ -46,6 +56,20 @@ for(let level=1;level<=6;level++)test(`chapter ${level} can be won with legal de
    stepBattle(b,.1);
   }
   assert.equal(b.won,true,`level ${level}, seed ${seed}, lives ${b.lives}, time ${b.time}`);
+ }
+});
+test('redeployment is free, bounded, cooldown protected and frozen during arrival',async()=>{
+ const {createBattle,deploy,moveHero,stepBattle}=await engine,b=createBattle(3,1);
+ deploy(b,'zhangfei',1);const food=b.food,u=b.allies[0];u.pendingStrike={targetId:99};
+ assert.equal(moveHero(b,'zhangfei',2),true);assert.equal(u.lane,2);assert.equal(b.food,food);assert.equal(u.pendingStrike,null);
+ assert.equal(moveHero(b,'zhangfei',0),false);b.time+=6;assert.equal(moveHero(b,'zhangfei',0),true);
+ b.introPending=true;const snapshot=JSON.stringify(b);stepBattle(b,.1);assert.equal(JSON.stringify(b),snapshot);assert.equal(moveHero(b,'zhangfei',2),false);
+});
+test('enemy skill telegraphs before damage and can be dodged by changing lanes',async()=>{
+ const {createBattle,deploy,moveHero,stepBattle}=await engine;
+ for(const dodge of [false,true]){const b=createBattle(3,1);b.nextSpawn=Infinity;b.duelSeen=true;deploy(b,'zhangfei',1);const u=b.allies[0];u.lastAttack=100;u.lastSkill=100;
+ b.enemies.push({...testEnemy(90,.23),boss:true,name:'鄧茂'});stepBattle(b,.1);assert.ok(b.enemies[0].castAt);const hp=u.hp;
+ if(dodge)moveHero(b,'zhangfei',2);for(let i=0;i<19;i++)stepBattle(b,.1);assert.equal(u.hp,dodge?hp:hp-25);
  }
 });
 

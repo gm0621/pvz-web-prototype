@@ -6,8 +6,8 @@ test('hero game has its own small home and loads no zombie, account or shop syst
  const requests=[],errors=[];page.on('request',r=>requests.push(r.url()));page.on('pageerror',e=>errors.push(e.message));
  await open(page);await expect(page).toHaveTitle('英雄演義｜桃園同心');
  await expect(page.locator('#home')).toContainText('桃園結義');
- await expect(page.locator('#home button')).toHaveCount(1);
- await expect(page.locator('#chapterDots span')).toHaveCount(6);
+ await expect(page.locator('#home button')).toHaveCount(7);
+ await expect(page.locator('#chapterDots button')).toHaveCount(6);
  expect(requests.some(url=>/supabase|js\/app.js|js\/cloud.js|js\/shop.js|js\/romance-game.js/.test(url))).toBe(false);
  expect(await page.evaluate(()=>typeof currentUser)).toBe('undefined');
  expect(errors).toEqual([]);
@@ -44,6 +44,7 @@ test('a full first chapter battle can be won through real UI deployments and sav
  test.setTimeout(90000);await page.clock.install();await battle(page);
  const costs={archer:50,zhangfei:110,liubei:90,guanyu:100};
  for(let second=0;second<170;second++){
+  if(await page.locator('#bossIntro').isVisible())await page.locator('#bossIntroContinue').click();
   if(await page.locator('#result').isVisible())break;
   for(const lane of [1,0,2]){
    const kinds=await page.locator(`.ally[data-lane="${lane}"]`).evaluateAll(nodes=>nodes.map(n=>n.dataset.kind));
@@ -86,7 +87,7 @@ test('units keep their animation nodes and show real attack effects on clearly m
 
 test('hero cards explain uniqueness and progressively introduce the chapter abilities',async({page})=>{
  await battle(page);await expect(page.locator('#featureBadge')).toContainText('三路布陣');await expect(page.locator('[data-hero="liubei"] .ability-description')).toContainText('第2關');
- await page.locator('[data-hero="liubei"]').click();await page.locator('.lane[data-lane="0"]').click();await expect(page.locator('[data-hero="liubei"]')).toBeDisabled();await expect(page.locator('[data-hero="liubei"] .card-status')).toHaveText('出戰中');await expect(page.locator('.ally[data-kind="liubei"]')).toHaveCount(1);
+ await page.locator('[data-hero="liubei"]').click();await page.locator('.lane[data-lane="0"]').click();await expect(page.locator('[data-hero="liubei"]')).toBeEnabled();await expect(page.locator('[data-hero="liubei"] .card-status')).toHaveText('出戰中 · 點選換路');await expect(page.locator('.ally[data-kind="liubei"]')).toHaveCount(1);
  for(const [level,name,key,ability] of [[2,'仁德','liubei','仁德'],[3,'燕人怒吼','zhangfei','怒吼'],[4,'青龍斬','guanyu','青龍斬'],[5,'黃巾盾兵','guanyu','青龍斬'],[6,'桃園同心','liubei','仁德']]){
   await page.evaluate(level=>localStorage.setItem('heroLegendProgress_v1',JSON.stringify({version:1,completed:level-1})),level);await page.reload();await page.locator('#startBtn').click();await page.locator('#storySkip').click();
   await expect(page.locator('#featureBadge')).toContainText(name);await expect(page.locator(`[data-hero="${key}"] .ability-description`)).toContainText(ability);
