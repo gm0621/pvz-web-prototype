@@ -11,6 +11,7 @@ const mime = {
   '.jpeg': 'image/jpeg',
   '.jpg': 'image/jpeg',
   '.js': 'application/javascript; charset=utf-8',
+  '.mjs': 'application/javascript; charset=utf-8',
   '.json': 'application/json; charset=utf-8',
   '.m4a': 'audio/mp4',
   '.mp3': 'audio/mpeg',
@@ -28,7 +29,7 @@ const server = http.createServer((request, response) => {
     response.writeHead(400).end('Bad request');
     return;
   }
-  if (pathname === '/') pathname = '/index.html';
+  if (pathname.endsWith('/')) pathname += 'index.html';
   const filename = path.resolve(root, `.${pathname}`);
   if (filename !== root && !filename.startsWith(`${root}${path.sep}`)) {
     response.writeHead(403).end('Forbidden');

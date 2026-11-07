@@ -67,22 +67,19 @@ test('both resume actions fit the menu on desktop and mobile',async({page},testI
  await page.screenshot({path:testInfo.outputPath('manual-resume-menu.png'),fullPage:true});
 });
 
-test('choosing romance does not redirect to a saved zombie campaign',async({page})=>{
- await savedBattle(page);
- const before=await page.evaluate(()=>localStorage.getItem(battleSaveStorageKey()));
- await page.locator('#homeModeBackBtn').click();await page.locator('#romanceStartBtn').click();
- await expect(page.locator('#campaignHeading')).toHaveText('第一章・桃園結義');
- await expect(page.locator('#continueCampaignBtn')).toHaveText('繼續故事 ▶');await expect(page.locator('#discardBattleLevelBtn')).toBeHidden();
- expect(await page.evaluate(()=>localStorage.getItem(battleSaveStorageKey()))).toBe(before);
+test('independent hero game does not resume or overwrite a saved zombie campaign',async({page})=>{
+ await savedBattle(page);const record=await page.evaluate(()=>({key:battleSaveStorageKey(),saved:localStorage.getItem(battleSaveStorageKey())}));
+ await page.goto('/hero/');await page.locator('#startBtn').click();await expect(page.locator('#storyTitle')).toHaveText('義軍初成');
+ expect(await page.evaluate(key=>localStorage.getItem(key),record.key)).toBe(record.saved);
 });
 
-test('romance battle resumes only on request and discard retains chapter completion',async({page})=>{
+test('legacy shared-story compatibility preserves manual resume and chapter completion',async({page})=>{
  await savedBattle(page);
  await page.evaluate(()=>{
   completeRomanceLevel(1);currentSeason=3;currentFaction='plants';selectedLevel=2;start('plants');clearInterval(timer);cancelBattleLesson();state.tutorial=null;state.time=6789;backToHome();
  });
  await page.reload();await expect(page.locator('#start')).toHaveClass(/active/);await expect(page.locator('#game')).not.toHaveClass(/active/);
- await page.locator('#romanceStartBtn').click();await expect(page.locator('#continueCampaignBtn')).toContainText('繼續未完成戰局');
+ await page.evaluate(()=>enterRomanceMode());await expect(page.locator('#continueCampaignBtn')).toContainText('繼續未完成戰局');
  await page.locator('#continueCampaignBtn').click();
  expect(await page.evaluate(()=>({season:state.season,level:state.level,time:state.time,paused:state.paused}))).toEqual({season:3,level:2,time:6789,paused:true});
  await page.locator('#gameFloatBackBtn').click();await page.locator('#discardBattleLevelBtn').click();await page.locator('#confirmDialogConfirm').click();

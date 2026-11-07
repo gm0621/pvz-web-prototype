@@ -36,15 +36,16 @@ npx playwright install chromium
 node tests/support/static-server.js
 ```
 
-開啟 `http://127.0.0.1:4174/`。前端沒有打包步驟，修改後重新整理即可。一般訪客試玩不需要自己的 Supabase 密鑰；登入與雲端操作則使用目前專案設定，測試應採既有 mock，避免動到真實帳號。
+開啟 `http://127.0.0.1:4174/`（殭屍）或 `http://127.0.0.1:4174/hero/`（獨立演義）。前端沒有打包步驟，修改後重新整理即可。一般訪客試玩不需要自己的 Supabase 密鑰；登入與雲端操作則使用目前專案設定，測試應採既有 mock，避免動到真實帳號。
 
 ## 測試
 
 先停止手動預覽，再執行下列命令。`playwright.config.js` 自己啟動 4174 埠服務，預設測桌機與手機，單 worker。
 
 ```sh
-# 雙入口、英雄演義與單挑
-npm test -- tests/two-mode-home.spec.js tests/romance.spec.js --workers=1
+# 獨立英雄演義、引擎與短單挑
+npm run test:hero:engine
+npm test -- tests/hero-standalone.spec.js --workers=1
 
 # 新手教學、導覽與原戰役進度
 npm test -- tests/progressive-onboarding.spec.js tests/season-navigation.spec.js tests/defense-progression.spec.js --workers=1
@@ -76,8 +77,10 @@ npm test -- --config=playwright.tablet.config.js --workers=1
 | `js/app.js` | 戰局建立／還原、戰鬥、畫面、導覽、結果結算 |
 | `js/data.js` | 第一季兵種、關卡與戰鬥資料 |
 | `js/season2-data.js`、`js/season2-game.js` | 第二季資料與特有行為、季度選擇 |
-| `js/romance-data.js` | 英雄演義六關、台詞、出場人物與部隊資料 |
-| `js/romance-game.js` | 雙模式首頁、演義進度、推進／攻營、單挑 |
+| `hero/story.mjs` | 獨立版六關、台詞、角色數值與圖片 |
+| `hero/engine.mjs` | 獨立三路戰鬥、補糧、部署、短單挑與勝負 |
+| `hero/app.mjs`、`hero/game.css` | 獨立畫面、操作、音樂及本機進度 |
+| `js/romance-*.js` | 舊版相容程式，沒有首頁入口 |
 | `js/stage-rules-data.js` | 關卡勝負規則與序列化任務資料 |
 | `js/defense-waves.js` | 有限波次、預警及波次還原 |
 | `js/season1-story.js` | 三條戰役共用劇情介面與閱讀流程 |
@@ -87,15 +90,15 @@ npm test -- --config=playwright.tablet.config.js --workers=1
 | `supabase/` | 資料表、權威經濟及功能 migration |
 | `tests/` | Playwright 與資料契約回歸 |
 
-這是傳統 script 架構，模組透過共用全域函式合作。搬動載入順序、引入 `type="module"` 或改為打包框架前，要先盤點相依與現有測試。
+原殭屍遊戲是傳統 script 架構，模組透過共用全域函式合作。搬動載入順序、引入 `type="module"` 或改為打包框架前，要先盤點相依與現有測試。
 
 ## 保存與模式界線
 
 - 原戰役 `season 1/2` 使用既有玩家 profile、雲端進度與權威獎勵；勿改變原有驗證契約。
-- 英雄演義用 `season 3` 識別獨立戰役，不是殭屍第三季。通關／閱讀以 `sgzRomance_*_v1:<principal>` 保存，訪客及不同帳號分開。
-- 本機暫存戰局沿用 `sgZombieActiveBattle:<principal>`，同一身份只有一場暫存，開始新戰鬥會替換。
-- 演義目前沒有雲端進度或金幣／XP 獎勵。登入玩家也不可以把演義戰局送到第一／二季對戰 RPC。
-- 演義劇情與後續擴充見 [第一章設計](romance-chapter-one.md)；現有其他設計依任務從 `docs/` 選讀。
+- 獨立英雄演義只使用 `heroLegendProgress_v1`：版本及已完成關數 0–6，不按帳號分區，不與原 profile 共用。
+- 回主選單暫停並保留當頁戰局；重整後僅保留已完成關數，不保存進行中的單位、冷卻或單挑。
+- 原遊戲及舊共用演義存檔原封保留；不自動遷移，以免不同身份或規則互相覆寫。
+- 新版劇情與圖片規格見 [獨立版設計](hero-standalone.md)。舊 [第一章設計](romance-chapter-one.md) 僅為歷史規劃，非新版實作規格。
 
 ## 分支與發布
 
@@ -111,7 +114,7 @@ git status --short
 
 正式網址：<https://gm0621.github.io/pvz-web-prototype/>
 
-確認 Actions 發布成功後，再實際開站檢查兩個入口、相關腳本及一場遊戲，不以 PR 已合併代替驗證。
+確認 Actions 發布成功後，再實際開站檢查兩個獨立網址、相關腳本及一場遊戲，不以 PR 已合併代替驗證。
 
 ## 給下一個 Agent 的開場句
 

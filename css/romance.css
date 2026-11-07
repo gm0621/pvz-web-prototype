@@ -19,6 +19,10 @@
 #romanceDuelActions{display:flex;flex-wrap:wrap;gap:12px;justify-content:center}#romanceDuelActions button{min-height:48px;min-width:100px}
 .romance-camp-hud{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:7px 12px;border:1px solid #c4a26080;border-radius:9px;background:linear-gradient(90deg,#244735,#472c27);color:#fff0ce;font-size:13px}
 .romance-camp-hud[hidden]{display:none}.romance-camp-hud b{display:block;color:#ffdb7a}.romance-camp-hud>span:last-child{text-align:right}
+.romance-select #backFactionBtn{min-width:158px!important;min-height:52px!important;height:52px!important;max-height:52px!important;font-size:17px!important;z-index:60;box-shadow:0 0 0 4px #ffd65a33,0 8px 24px #0009!important}
+.romance-select .campaign-content{padding-top:84px}
+.romance-select .campaign-title{margin-left:0}
+.romance-battle #backBtn{border:2px solid #ffe395!important;background:linear-gradient(135deg,#facc15,#f59e0b)!important;color:#251600!important;font-weight:950;min-height:44px}
 /* Two top-level adventures; the original campaign options live one step in. */
 #start[data-home-view="hub"] .main-actions.clean>.mode-banner{display:none!important}
 #start.menu-scene[data-home-view="hub"] .main-actions.clean>.zombie-campaign-entry,
@@ -40,7 +44,30 @@
 .home-utility small,.home-utility strong{display:none}
 .home-utility button{min-height:42px;margin:0!important;font-size:13px}
 #homeModeBackBtn{z-index:3}
+.faction-choice-heading{display:none;color:#ffe5a5}.faction-choice-heading h2{font-size:26px;line-height:1.3;margin:0 0 5px}.faction-choice-heading p{font-size:14px;margin:0;color:#e5d1af}
+#start[data-home-view="zombies"] .faction-choice-heading{display:block}
+#start.menu-scene.new-player-home[data-home-view="zombies"] .main-actions.clean>.attack{display:block!important}
+#start[data-home-view="zombies"] .mode-banner.defend,
+#start[data-home-view="zombies"] .mode-banner.attack,
+#start[data-home-view="zombies"] .mode-banner.new-player-entry{clip-path:none;padding:22px;border-radius:18px}
+#start[data-home-view="zombies"] .mode-banner.defend strong,
+#start[data-home-view="zombies"] .mode-banner.attack strong{font-size:32px;line-height:1.3;margin:8px 0}
+#start[data-home-view="zombies"] .mode-banner.defend p,
+#start[data-home-view="zombies"] .mode-banner.attack p{font-size:14px;color:#f2e1c8;margin:0 0 16px;line-height:1.6}
+#start[data-home-view="zombies"] .mode-banner.defend button,
+#start[data-home-view="zombies"] .mode-banner.attack button{float:none;margin:0;width:100%;min-height:48px}
+#start[data-home-view="zombies"] #mobileNewPlayerStartBtn{display:none!important}
+#start[data-home-view="zombies"] .new-player-entry>#newPlayerStartBtn{display:block!important}
+#start[data-home-view="zombies"] #zombieStartBtn{background:linear-gradient(135deg,#ba492d,#7d211b)!important;color:#fff2d7!important;border:1px solid #ed9677!important}
+.zombie-subtitle{display:none}
 @media(max-width:900px){
+ #start[data-home-view="zombies"] .menu-title-block{margin:82px 24px 18px!important;padding-top:0}
+ #start[data-home-view="zombies"] .menu-account-corner{top:68px!important;left:auto;right:18px}
+ #start[data-home-view="zombies"] .menu-title-block:before,
+ #start[data-home-view="zombies"] .main-logo-img,
+ #start[data-home-view="zombies"] .new-player-steps{display:none!important}
+ #start[data-home-view="zombies"] .zombie-subtitle{display:block;font-size:34px;line-height:1.3;color:#ffe5a5;letter-spacing:.12em}
+ #start[data-home-view="zombies"] .main-actions.clean{margin:0 24px;width:auto;padding-bottom:0}
  #start[data-home-view="hub"] .main-actions.clean{margin:0 24px;width:auto;padding-bottom:0}
  #start[data-home-view="hub"] .menu-title-block{margin:84px 24px 24px}
  #start[data-home-view="hub"] .menu-account-corner{top:14px!important;left:24px;right:auto}
