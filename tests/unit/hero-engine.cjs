@@ -18,11 +18,11 @@ test('manual orders move gradually, hold position, freeze and resume automatic a
  commandHero(b,'zhangfei','up');assert.equal(u.lane,0);assert.equal(commandHero(b,'zhangfei','up'),false);
 });
 
-test('progress is a separate, bounded six-stage record',async()=>{
+test('progress is a separate, bounded ten-stage record',async()=>{
  const {normalizeProgress,SAVE_KEY}=await engine;
  assert.equal(SAVE_KEY,'heroLegendProgress_v1');
  for(const raw of [null,{},[],{completed:-9},{completed:'bad'}])assert.equal(normalizeProgress(raw).completed,0);
- assert.equal(normalizeProgress({completed:99}).completed,6);
+ assert.equal(normalizeProgress({completed:99}).completed,10);
  assert.equal(normalizeProgress({completed:3}).completed,3);
 });
 test('deployments pay once, respect cooldown and three-unit lane capacity',async()=>{
@@ -57,7 +57,7 @@ test('three undefended breaches lose naturally',async()=>{
  for(let i=0;i<2000&&!b.over;i++){if(b.introPending)b.introPending=false;stepBattle(b,.1)}
  assert.equal(b.over,true);assert.equal(b.won,false);assert.equal(b.lives,0);
 });
-for(let level=1;level<=6;level++)test(`chapter ${level} can be won with legal deployments and unmodified battle stats`,async()=>{
+for(let level=1;level<=10;level++)test(`chapter ${level} can be won with legal deployments and unmodified battle stats`,async()=>{
  const {createBattle,deploy,stepBattle}=await engine;
  for(const seed of [1,42,2026]){
   const b=createBattle(level,seed);
@@ -140,4 +140,27 @@ test('drawn melee poses wind up before damage, land once at impact, and freeze o
 });
 test('a withdrawn attacker cannot inflict its queued melee strike',async()=>{
  const {createBattle,deploy,stepBattle}=await engine,b=createBattle(1,1);b.nextSpawn=Infinity;deploy(b,'liubei',1);const e=testEnemy(90,.17);b.enemies.push(e);stepBattle(b,.01);b.allies[0].hp=0;stepBattle(b,.1);stepBattle(b,.1);stepBattle(b,.1);assert.equal(e.hp,200);assert.equal(b.allies.length,0);
+});
+
+test('Liu Bei duels Shi Kui only after the tower shield is weakened',async()=>{
+ const {createBattle,deploy,stepBattle}=await engine,b=createBattle(5,1);b.nextSpawn=Infinity;b.bossSpawned=true;deploy(b,'liubei',1);
+ const boss={...testEnemy(90,.17),hp:290,maxHp:290,boss:true,name:'石魁',shielded:true};b.enemies.push(boss);stepBattle(b,.1);assert.equal(b.duel,null);
+ boss.hp=180;stepBattle(b,.1);assert.equal(b.duel.heroKey,'liubei');assert.equal(b.duel.bossName,'石魁');const frozen=b.time;
+ for(let i=0;i<150;i++)stepBattle(b,.1);assert.equal(b.time,frozen);assert.equal(boss.hp,0);
+});
+test('late bosses telegraph two lanes on rage and the remaining lane is safe',async()=>{
+ const {createBattle,deploy,commandHero,stepBattle}=await engine;
+ for(const level of [6,10]){const b=createBattle(level,1);b.nextSpawn=Infinity;b.bossSpawned=true;b.oathUsed=true;b.food=300;
+ for(const [key,lane] of [['liubei',0],['guanyu',1],['zhangfei',2]]){deploy(b,key,lane);const u=b.allies.at(-1);u.lastAttack=100;u.lastSkill=100;u.lastHeal=100;commandHero(b,key,'hold')}
+ const boss={...testEnemy(90,.2),hp:150,maxHp:340,boss:true,name:level===6?'雷烈':'張角'};b.enemies.push(boss);stepBattle(b,.1);assert.equal(boss.enraged,true);assert.deepEqual(boss.castLanes,[1,2]);
+ const before=b.allies.map(u=>u.hp);b.paused=true;stepBattle(b,.1);assert.deepEqual(b.allies.map(u=>u.hp),before);b.paused=false;
+ for(let i=0;i<26;i++)stepBattle(b,.1);assert.equal(b.allies[0].hp,before[0]);assert.ok(b.allies[1].hp<before[1]);assert.ok(b.allies[2].hp<before[2]);
+ }
+});
+test('old first-chapter completion unlocks the second chapter without resetting progress',async()=>{
+ const {normalizeProgress,createBattle}=await engine;assert.equal(normalizeProgress({version:1,completed:6}).completed,6);assert.equal(createBattle(7).level,7);assert.equal(createBattle(10).level,10);assert.throws(()=>createBattle(11));
+ const {STAGES,FEATURES}=await import('../../hero/story.mjs');assert.equal(STAGES.length,10);assert.equal(FEATURES.length,10);assert.equal(STAGES[4].duelHero,'liubei');assert.equal(STAGES[9].bossName,'張角');assert.equal(STAGES[9].duelHero,undefined);
+});
+test('Zhang Jiao withdraws instead of using a death or duel finisher',async()=>{
+ const {createBattle,stepBattle}=await engine,b=createBattle(10,1);b.nextSpawn=Infinity;b.bossSpawned=true;b.enemies.push({...testEnemy(90,.5),boss:true,name:'張角',hp:0});stepBattle(b,.1);assert.equal(b.bossRetreated,true);assert.equal(b.duel,null);assert.ok(b.effects.some(e=>e.type==='retreat'));assert.equal(b.effects.some(e=>e.type==='defeat'),false);
 });

@@ -6,9 +6,9 @@ test('completed stages can be replayed and a deployed hero can change lanes',asy
  const card=page.locator('[data-hero="zhangfei"]');await card.click();await page.locator('.lane[data-lane="1"]').click();
  await expect(card).toBeEnabled();await card.click();await page.locator('.lane[data-lane="2"]').click();
  await expect(page.locator('.ally[data-kind="zhangfei"]')).toHaveAttribute('data-lane','2');
- await page.locator('.ally[data-kind="zhangfei"]').click();await page.locator('[data-order="hold"]').click();await expect(page.locator('#orderStatus')).toContainText('駐守');
- await page.locator('[data-order="forward"]').click();await expect(page.locator('#orderStatus')).toContainText('前進中');
- await page.locator('[data-order="back"]').click();await expect(page.locator('#orderStatus')).toContainText('後退中');
+ await page.locator('.ally[data-kind="zhangfei"]').click();await page.locator('button[data-order="hold"]').click();await expect(page.locator('#orderStatus')).toContainText('駐守');
+ await page.locator('button[data-order="forward"]').click();await expect(page.locator('#orderStatus')).toContainText('前進中');
+ await page.locator('button[data-order="back"]').click();await expect(page.locator('#orderStatus')).toContainText('後退中');
  await page.screenshot({path:testInfo.outputPath('focused-battle.png')});
  expect(await page.locator('#cards').evaluate(el=>el.getBoundingClientRect().bottom<=innerHeight)).toBe(true);
  expect(await page.evaluate(()=>document.body.classList.contains('battle-focus'))).toBe(true);

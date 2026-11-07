@@ -6,8 +6,8 @@ test('hero game has its own small home and loads no zombie, account or shop syst
  const requests=[],errors=[];page.on('request',r=>requests.push(r.url()));page.on('pageerror',e=>errors.push(e.message));
  await open(page);await expect(page).toHaveTitle('英雄演義｜桃園同心');
  await expect(page.locator('#home')).toContainText('桃園結義');
- await expect(page.locator('#home button')).toHaveCount(7);
- await expect(page.locator('#chapterDots button')).toHaveCount(6);
+ await expect(page.locator('#home button')).toHaveCount(11);
+ await expect(page.locator('#chapterDots button')).toHaveCount(10);
  expect(requests.some(url=>/supabase|js\/app.js|js\/cloud.js|js\/shop.js|js\/romance-game.js/.test(url))).toBe(false);
  expect(await page.evaluate(()=>typeof currentUser)).toBe('undefined');
  expect(errors).toEqual([]);
@@ -29,8 +29,8 @@ test('home and pause freeze battle and continue resumes the same units',async({p
 });
 test('own progress survives reload and leaves original zombie and legacy story records untouched',async({page})=>{
  await page.addInitScript(()=>{localStorage.setItem('sgZombieProfile','{"gold":12345}');localStorage.setItem('sgzRomance_progress_v1:guest%3Aold','{"highestLevel":4}');localStorage.setItem('heroLegendProgress_v1','{"version":1,"completed":2}')});
- await open(page);await expect(page.locator('#homeProgress')).toContainText('2 / 6');await page.locator('#startBtn').click();await expect(page.locator('#storyTitle')).toHaveText('大興山迎敵');
- await page.reload();await expect(page.locator('#homeProgress')).toContainText('2 / 6');
+ await open(page);await expect(page.locator('#homeProgress')).toContainText('2 / 10');await page.locator('#startBtn').click();await expect(page.locator('#storyTitle')).toHaveText('大興山迎敵');
+ await page.reload();await expect(page.locator('#homeProgress')).toContainText('2 / 10');
  expect(await page.evaluate(()=>localStorage.getItem('sgZombieProfile'))).toBe('{"gold":12345}');
  expect(await page.evaluate(()=>localStorage.getItem('sgzRomance_progress_v1:guest%3Aold'))).toBe('{"highestLevel":4}');
 });
