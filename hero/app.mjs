@@ -1,5 +1,5 @@
-import {HEROES,STAGES,ENEMY_ART,BOSS_ART,FEATURES,heroDescription} from './story.mjs?v=progressive-4';
-import {SAVE_KEY,normalizeProgress,createBattle,deploy,canDeploy,stepBattle} from './engine.mjs?v=progressive-4';
+import {HEROES,STAGES,ENEMY_ART,BOSS_ART,FEATURES,heroDescription} from './story.mjs?v=attack-frames-5';
+import {SAVE_KEY,normalizeProgress,createBattle,deploy,canDeploy,stepBattle,attackFrame,SWING} from './engine.mjs?v=attack-frames-5';
 
 const $=id=>document.getElementById(id);
 let progress,screen='home',battle=null,selected=null,storyLevel=1,lineIndex=0,storyPhase='opening',lastFrame=0,resultShown=false,duelShown=false;
@@ -48,15 +48,16 @@ function buildControls(){
 }
 function unitNode(u,enemy){
  const d=enemy?null:HEROES[u.key],el=document.createElement('div');el.dataset.id=String(u.id);el.dataset.lane=String(u.lane);el.dataset.kind=enemy?'enemy':u.key;
- const asset=enemy?(u.boss||u.shielded?BOSS_ART:ENEMY_ART):d.asset,name=enemy?u.name:d.name;
- el.innerHTML=`<span class="unit-shadow"></span><div class="unit-figure"><img class="sprite-upper" src="${asset}" alt=""><img class="sprite-leg leg-left" src="${asset}" alt=""><img class="sprite-leg leg-right" src="${asset}" alt=""></div><div class="health"><i></i></div><span class="unit-name">${name}</span>`;return el;
+ const sheet=!enemy&&u.key!=='archer';const asset=enemy?(u.boss||u.shielded?BOSS_ART:ENEMY_ART):d.asset,name=enemy?u.name:d.name;
+ el.innerHTML=`<span class="unit-shadow"></span><div class="unit-figure${sheet?' frame-figure':''}">${sheet?`<span class="attack-sprite" style="background-image:url('./assets/attacks/${u.key}.png')"></span>`:`<img class="sprite-upper" src="${asset}" alt=""><img class="sprite-leg leg-left" src="${asset}" alt=""><img class="sprite-leg leg-right" src="${asset}" alt="">`}</div><div class="health"><i></i></div><span class="unit-name">${name}</span>`;return el;
 }
 function renderUnits(){
  const root=$('units'),existing=new Map([...root.children].map(el=>[el.dataset.id,el])),ids=new Set();
  for(const [list,enemy] of [[battle.allies,false],[battle.enemies,true]])for(const u of list){
   const id=String(u.id);ids.add(id);let el=existing.get(id);if(!el){el=unitNode(u,enemy);root.append(el)}
-  const attacking=battle.time-u.lastAttack<.32;
-  el.className=`unit ${enemy?'enemy':'ally'}${u.boss?' boss':''}${u.shielded?' shielded':''} ${u.action||'guarding'}${attacking?(u.key==='archer'?' shooting':' striking'):''}${u.flash>0&&!attacking?' hit':''}`;
+  const framed=!enemy&&u.key!=='archer',attacking=framed?battle.time-(u.swingStartedAt??-100)<SWING.duration:battle.time-u.lastAttack<.32;
+  el.className=`unit ${enemy?'enemy':'ally'}${framed?' has-attack-frames':''}${u.boss?' boss':''}${u.shielded?' shielded':''} ${u.action||'guarding'}${attacking?(u.key==='archer'?' shooting':' striking'):''}${u.flash>0&&!attacking?' hit':''}`;
+  if(framed){const frame=attackFrame(u,battle.time),sprite=el.querySelector('.attack-sprite');sprite.dataset.frame=frame;sprite.style.backgroundPosition=`${(frame%3)*50}% ${Math.floor(frame/3)*100}%`;el.classList.toggle('impact',battle.time<(u.impactUntil||0))}
   el.style.left=`${u.x*100}%`;el.style.top=`${(u.lane+.5)/3*100}%`;el.querySelector('.unit-name').textContent=(enemy?u.name:HEROES[u.key].name)+(u.action==='holding'?' · 駐守':'');el.querySelector('.health i').style.width=`${Math.max(0,u.hp/u.maxHp*100)}%`;
  }
  for(const [id,el] of existing)if(!ids.has(id))el.remove();
@@ -114,4 +115,5 @@ $('pauseBtn').onclick=()=>setPause(!battle.paused);$('resumeBtn').onclick=()=>se
 $('duelDialog').addEventListener('cancel',event=>event.preventDefault());
 document.addEventListener('visibilitychange',()=>{if(document.hidden&&battle&&!battle.over)setPause(true)});
 $('musicBtn').onclick=async()=>{const music=$('music'),on=music.paused;try{if(on){music.volume=.25;await music.play()}else music.pause();$('musicBtn').textContent=`♫ 音樂：${on?'開':'關'}`;$('musicBtn').setAttribute('aria-pressed',String(on))}catch{$('musicBtn').textContent='♫ 再點一次播放'}};
+for(const key of ['liubei','guanyu','zhangfei']){const preload=new Image();preload.src=`./assets/attacks/${key}.png`}
 buildControls();updateHome();requestAnimationFrame(frame);

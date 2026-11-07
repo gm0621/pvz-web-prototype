@@ -74,7 +74,7 @@ function testEnemy(id,x,lane=1){return {id,lane,x,hp:200,maxHp:200,boss:false,na
 test('Zhang Fei roar and Guan Yu cleave appear only in their teaching stages',async()=>{
  const {createBattle,deploy,stepBattle}=await engine;
  for(const [key,level,type] of [['zhangfei',3,'roar'],['guanyu',4,'cleave']])for(const available of [false,true]){
-  const b=createBattle(available?level:level-1,1);b.nextSpawn=Infinity;deploy(b,key,1);b.time=9;b.enemies.push(testEnemy(90,.28),testEnemy(91,.3));stepBattle(b,.1);
+  const b=createBattle(available?level:level-1,1);b.nextSpawn=Infinity;deploy(b,key,1);b.time=9;b.enemies.push(testEnemy(90,.28),testEnemy(91,.3));for(let i=0;i<4;i++)stepBattle(b,.1);
   assert.equal(b.effects.some(e=>e.type===type),available);
   if(available&&key==='zhangfei')assert.ok(b.enemies.every(e=>e.stunnedUntil>b.time&&e.x>.3));
   if(available&&key==='guanyu')assert.ok(b.enemies.every(e=>e.hp===155));
@@ -82,10 +82,22 @@ test('Zhang Fei roar and Guan Yu cleave appear only in their teaching stages',as
 });
 test('shield infantry reduce arrows but do not reduce melee strikes',async()=>{
  const {createBattle,deploy,stepBattle}=await engine;
- for(const [key,x,damage] of [['archer',.35,6.5],['guanyu',.17,32]]){const b=createBattle(5,1);b.nextSpawn=Infinity;deploy(b,key,1);b.time=10;b.allies[0].lastSkill=10;const foe=testEnemy(90,x);foe.shielded=true;b.enemies.push(foe);stepBattle(b,.1);assert.equal(foe.hp,200-damage)}
+ for(const [key,x,damage] of [['archer',.35,6.5],['guanyu',.17,32]]){const b=createBattle(5,1);b.nextSpawn=Infinity;deploy(b,key,1);b.time=10;b.allies[0].lastSkill=10;const foe=testEnemy(90,x);foe.shielded=true;b.enemies.push(foe);for(let i=0;i<4;i++)stepBattle(b,.1);assert.equal(foe.hp,200-damage)}
 });
 test('Peach Garden team effect requires all three living heroes and fires once in stage six',async()=>{
  const {createBattle,deploy,stepBattle}=await engine,b=createBattle(6,1);b.nextSpawn=Infinity;b.food=300;deploy(b,'liubei',0);deploy(b,'guanyu',1);stepBattle(b,.1);assert.equal(b.oathUsed,false);
  deploy(b,'zhangfei',2);for(const u of b.allies)u.hp=50;stepBattle(b,.1);assert.equal(b.oathUsed,true);assert.ok(b.allies.every(u=>u.hp===105));assert.ok(b.effects.some(e=>e.type==='oath'));
  for(const u of b.allies)u.hp=50;stepBattle(b,.1);assert.ok(b.allies.every(u=>u.hp===50));
+});
+
+test('drawn melee poses wind up before damage, land once at impact, and freeze on pause',async()=>{
+ const {createBattle,deploy,stepBattle,attackFrame}=await engine,b=createBattle(1,1);b.nextSpawn=Infinity;deploy(b,'guanyu',1);const u=b.allies[0],e=testEnemy(90,.17);b.enemies.push(e);
+ stepBattle(b,.01);assert.equal(e.hp,200);assert.equal(attackFrame(u,b.time),0);assert.ok(u.pendingStrike);
+ stepBattle(b,.1);assert.equal(e.hp,200);assert.equal(attackFrame(u,b.time),1);
+ b.paused=true;const snapshot=JSON.stringify(b);stepBattle(b,.1);assert.equal(JSON.stringify(b),snapshot);b.paused=false;
+ stepBattle(b,.1);assert.equal(e.hp,200);stepBattle(b,.05);assert.equal(e.hp,168);assert.equal(attackFrame(u,b.time),3);assert.ok(b.effects.some(f=>f.type==='slash'));
+ stepBattle(b,.1);assert.equal(e.hp,168);assert.equal(u.pendingStrike,null);
+});
+test('a withdrawn attacker cannot inflict its queued melee strike',async()=>{
+ const {createBattle,deploy,stepBattle}=await engine,b=createBattle(1,1);b.nextSpawn=Infinity;deploy(b,'liubei',1);const e=testEnemy(90,.17);b.enemies.push(e);stepBattle(b,.01);b.allies[0].hp=0;stepBattle(b,.1);stepBattle(b,.1);stepBattle(b,.1);assert.equal(e.hp,200);assert.equal(b.allies.length,0);
 });

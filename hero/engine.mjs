@@ -1,5 +1,7 @@
-import {HEROES,STAGES,UNLOCKS,FEATURES} from './story.mjs?v=progressive-4';
+import {HEROES,STAGES,UNLOCKS,FEATURES} from './story.mjs?v=attack-frames-5';
 
+export const SWING={duration:.58,impact:.24,frameTime:.08,frames:6};
+export function attackFrame(unit,time){const elapsed=time-(unit.swingStartedAt??-100);if(elapsed<0||elapsed>=SWING.duration)return 0;const frame=Math.min(5,Math.floor(elapsed/SWING.frameTime));return unit.key==='zhangfei'&&frame===4?3:frame}
 export const SAVE_KEY='heroLegendProgress_v1';
 export function normalizeProgress(raw){
  const completed=Number(raw?.completed);
@@ -51,23 +53,36 @@ export function stepBattle(b,seconds){
  if(!b.bossSpawned&&b.time>=b.nextSpawn)spawn(b);
  for(const u of b.allies){
   if(u.hp<=0)continue;const d=HEROES[u.key];u.action='guarding';u.flash=Math.max(0,u.flash-dt);
+  if(u.pendingCleave&&b.time+1e-8>=u.pendingCleave.impactAt){
+   for(const victim of b.enemies)if(victim.hp>0&&victim.lane===u.lane&&u.pendingCleave.ids.includes(victim.id)&&Math.abs(victim.x-u.x)<=.32){victim.hp-=45;victim.flash=.3}
+   effect(b,'cleave',u.lane,u.x,Math.min(.96,u.x+.15));u.impactUntil=b.time+.07;b.skillNotice={key:u.key,text:'關羽・青龍斬',until:b.time+1.5};u.pendingCleave=null;
+  }
+  if(u.pendingStrike&&b.time+1e-8>=u.pendingStrike.impactAt){
+   const strike=u.pendingStrike,victim=b.enemies.find(e=>e.id===strike.targetId&&e.hp>0&&e.lane===u.lane);
+   if(victim&&Math.abs(victim.x-u.x)<=d.range+.09){victim.hp-=strike.damage;victim.flash=.2;effect(b,'slash',u.lane,u.x,victim.x);u.impactUntil=b.time+.07}
+   u.pendingStrike=null;
+  }
   const target=b.enemies.filter(e=>e.hp>0&&e.lane===u.lane&&e.x>=u.x-.015).sort((a,c)=>a.x-c.x)[0];
   if(target&&target.x-u.x<=d.range){
    if(target.boss&&!b.duelSeen&&stage.duelHero===u.key&&target.x-u.x<=.14){
     b.duelSeen=true;b.duel={heroId:u.id,bossId:target.id,heroKey:u.key,bossName:target.name,remaining:2.2};return;
    }
-   if(b.time-u.lastAttack>=d.rate){u.lastAttack=b.time;u.flash=.32;effect(b,u.key==='archer'?'arrow':'slash',u.lane,u.x,target.x);target.hp-=d.damage*(b.time<(b.oathBuffUntil||0)?1.2:1)*(target.shielded&&u.key==='archer'?.5:1);target.flash=.2}
+   if(b.time-u.lastAttack>=d.rate&&!u.pendingCleave&&b.time-(u.swingStartedAt??-100)>=SWING.duration){
+    u.lastAttack=b.time;const damage=d.damage*(b.time<(b.oathBuffUntil||0)?1.2:1)*(target.shielded&&u.key==='archer'?.5:1);
+    if(u.key==='archer'){u.flash=.32;effect(b,'arrow',u.lane,u.x,target.x);target.hp-=damage;target.flash=.2}
+    else {u.swingStartedAt=b.time;u.pendingStrike={targetId:target.id,impactAt:b.time+SWING.impact,damage}}
+   }
   }else{
-   u.action='marching';const priority={archer:0,liubei:1,guanyu:2,zhangfei:3};
+   u.action=b.time-(u.swingStartedAt??-100)<SWING.duration?'guarding':'marching';const priority={archer:0,liubei:1,guanyu:2,zhangfei:3};
    const ahead=b.allies.filter(a=>a.hp>0&&a.id!==u.id&&a.lane===u.lane&&a.x>u.x+.001&&priority[a.key]>=priority[u.key]).sort((a,c)=>a.x-c.x)[0];
-   const limit=ahead?Math.max(u.x,ahead.x-.065):.84;u.x=Math.min(.84,limit,u.x+d.speed*dt);if(u.x>=.839)u.action='holding';
+   const limit=ahead?Math.max(u.x,ahead.x-.065):.84;if(u.action==='marching')u.x=Math.min(.84,limit,u.x+d.speed*dt);if(u.x>=.839)u.action='holding';
   }
   const nearby=b.enemies.filter(e=>e.hp>0&&e.lane===u.lane&&e.x>=u.x-.02&&e.x-u.x<=.23);
   if(u.key==='zhangfei'&&b.level>=UNLOCKS.roar&&nearby.length&&b.time-(u.lastSkill||0)>=8){
    u.lastSkill=b.time;for(const e of nearby){e.hp-=16;e.stunnedUntil=b.time+1.1;if(!e.boss)e.x=Math.min(.95,e.x+.065)}effect(b,'roar',u.lane,u.x);b.skillNotice={key:u.key,text:'張飛・燕人怒吼',until:b.time+1.5};
   }
   if(u.key==='guanyu'&&b.level>=UNLOCKS.cleave&&nearby.length&&b.time-(u.lastSkill||0)>=7){
-   u.lastSkill=b.time;for(const e of nearby){e.hp-=45;e.flash=.3}effect(b,'cleave',u.lane,u.x,Math.min(.96,u.x+.15));b.skillNotice={key:u.key,text:'關羽・青龍斬',until:b.time+1.5};
+   u.lastSkill=b.time;if(!u.pendingStrike)u.swingStartedAt=b.time;u.pendingCleave={ids:nearby.map(e=>e.id),impactAt:u.pendingStrike?.impactAt??b.time+SWING.impact};
   }
   if(d.heal&&b.level>=UNLOCKS.healing&&b.time-u.lastHeal>=3){u.lastHeal=b.time;for(const ally of b.allies)if(ally.hp>0&&ally.lane===u.lane){if(ally.hp<ally.maxHp)effect(b,'heal',ally.lane,ally.x);ally.hp=Math.min(ally.maxHp,ally.hp+d.heal)}}
  }
