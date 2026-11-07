@@ -220,15 +220,17 @@ test('season and faction navigation restore focus to the semantic opener',async(
  await expect(page.locator('[data-season-choice="1"]')).toBeFocused();
 });
 
-test('cross-route resume names the saved route and ignores incompatible snapshots',async({page})=>{
+test('choosing another route keeps its recommendation instead of replacing it with a saved battle',async({page})=>{
  await open(page);
  await page.evaluate(()=>{
   playerProfile=normalizeProfile({season2Progress:{zombies:{highestLevel:3,completedLevels:{1:1,2:1,3:1}}}});
   currentSeason=2;selectedLevel=4;start('zombies');clearInterval(timer);state.time=61000;persistBattleState();
   chooseFaction('plants',1);
  });
- await expect(page.locator('#campaignProgressTitle')).toContainText('第二季・僵屍進攻');
- await expect(page.locator('#campaignProgressTitle')).toContainText('第 4 關');
+ await expect(page.locator('#campaignProgressTitle')).not.toContainText('第二季・僵屍進攻');
+ await expect(page.locator('#continueCampaignBtn')).not.toContainText('未完成戰局');
+ await expect(page.locator('#discardBattleLevelBtn')).toBeHidden();
+ expect(await page.evaluate(()=>campaignResumeSnapshot().level)).toBe(4);
  await page.evaluate(()=>{
   const snapshot=JSON.parse(localStorage.getItem(battleSaveStorageKey()));
   snapshot.version=-1;

@@ -63,7 +63,8 @@ function buildRomanceLevelCards(){
  renderCampaignProgressOverview();
 }
 function renderRomanceProgressOverview(){
- const progress=romanceProgress(),next=Math.min(6,progress.highestLevel+1),resume=campaignResumeSnapshot();
+ const progress=romanceProgress(),next=Math.min(6,progress.highestLevel+1),snapshot=campaignResumeSnapshot(),resume=snapshot?.season===ROMANCE_SEASON?snapshot:null;
+ $('discardBattleLevelBtn')?.classList.toggle('hidden',!resume);
  $('levelScreen').classList.remove('newcomer-simple');$('levelGrid').hidden=false;
  $('campaignHeading').textContent='第一章・桃園結義';$('chosenFactionText').textContent='英雄演義｜六場戰鬥，從桃園起誓到青州解圍';
  $('campaignProgressPanel').classList.remove('hidden');$('campaignProgressPanel').querySelector('.campaign-progress-meter').hidden=false;

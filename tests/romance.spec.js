@@ -90,6 +90,7 @@ test('declining duel is harmless; duel and clash resume after refresh',async({pa
  await offerDuel(page,3);await page.getByRole('button',{name:'接受單挑',exact:true}).click();
  await page.getByRole('button',{name:'格擋',exact:true}).click();
  await page.reload();await page.waitForFunction(()=>authIdentityResolved);
+ await expect(page.locator('#start')).toHaveClass(/active/);await page.locator('#romanceStartBtn').click();await page.locator('#continueCampaignBtn').click();
  await expect(page.locator('#romanceDuelDialog')).toBeVisible();
  expect(await page.evaluate(()=>({round:state.romanceDuel.round,season:state.season,paused:state.paused,rule:activeStageRule().id}))).toEqual({round:1,season:3,paused:true,rule:'romance-clash'});
 });

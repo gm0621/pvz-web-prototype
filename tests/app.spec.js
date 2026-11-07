@@ -1398,10 +1398,10 @@ test('battle home button returns to the main menu and offers the cached battle',
   await page.locator('#backBtn').click();
   await expect(page.locator('#start')).toHaveClass(/active/);
   await expect(page.locator('#profile')).not.toHaveClass(/active/);
-  await expect(page.locator('#resumeBattleBtn')).toBeVisible();
+  await openZombieHome(page);await expect(page.locator('#resumeBattleBtn')).toBeVisible();
   expect(await page.evaluate(()=>JSON.parse(localStorage.getItem(battleSaveStorageKey())).state.time)).toBe(14500);
 
-  await page.locator('#resumeBattleBtn').click();
+  await openZombieHome(page);await page.locator('#resumeBattleBtn').click();
   await expect(page.locator('#game')).toHaveClass(/active/);
   expect(await page.evaluate(()=>({time:state.time,resource:state.resource,paused:state.paused}))).toEqual({time:14500,resource:246,paused:true});
 });
@@ -1464,7 +1464,9 @@ test('unambiguous ownerless guest battle migrates once and drops its cloud match
     localStorage.setItem(BATTLE_SAVE_KEY,JSON.stringify(snapshot));localStorage.removeItem(scoped);state=null;document.querySelector('#game').classList.remove('active');
   });
   await page.reload();
-  await page.waitForFunction(()=>authIdentityResolved===true&&document.querySelector('#game').classList.contains('active'));
+  await page.waitForFunction(()=>authIdentityResolved===true);
+  await expect(page.locator('#start')).toHaveClass(/active/);
+  await openZombieHome(page);await page.locator('#resumeBattleBtn').click();
   const migrated=await page.evaluate(()=>({time:state?.time,cloudMatchId,legacy:localStorage.getItem(BATTLE_SAVE_KEY),scoped:!!localStorage.getItem(battleSaveStorageKey()),owner:JSON.parse(localStorage.getItem(battleSaveStorageKey())).ownerPrincipal,deviceId:localStorage.getItem(DEVICE_KEY)}));
   expect(migrated).toEqual({time:42424,cloudMatchId:null,legacy:null,scoped:true,owner:`guest:${migrated.deviceId}`,deviceId:migrated.deviceId});
 });
@@ -1502,6 +1504,7 @@ test('mobile resume menu uses normal page scrolling without a nested clipped act
   test.skip(testInfo.project.name!=='mobile');
   await openApp(page);
   await page.evaluate(()=>{selectedLevel=1;start('plants');clearInterval(timer);backToHome()});
+  await openZombieHome(page);
   const layout=await page.evaluate(()=>{
     const actions=document.querySelector('.main-actions.clean');
     return {clientHeight:actions.clientHeight,scrollHeight:actions.scrollHeight,documentWidth:document.documentElement.scrollWidth,viewportWidth:innerWidth};
@@ -1526,6 +1529,9 @@ test('unfinished battle cache does not expire merely because the player was away
   });
 
   await page.reload();
+  await expect(page.locator('#start')).toHaveClass(/active/);
+  await expect(page.locator('#game')).not.toHaveClass(/active/);
+  await openZombieHome(page);await page.locator('#resumeBattleBtn').click();
   await expect(page.locator('#game')).toHaveClass(/active/);
   expect(await page.evaluate(()=>({time:state.time,resource:state.resource,paused:state.paused}))).toEqual({time:32100,resource:199,paused:true});
 });
@@ -1579,6 +1585,9 @@ test('manual pause and background restore preserve the unfinished battle without
   expect(beforeReload).toEqual({manualSavedTime:12350,paused:true,timeAfterTick:12350});
 
   await page.reload();
+  await expect(page.locator('#start')).toHaveClass(/active/);
+  await expect(page.locator('#game')).not.toHaveClass(/active/);
+  await openZombieHome(page);await page.locator('#resumeBattleBtn').click();
   await expect(page.locator('#game')).toHaveClass(/active/);
   await expect(page.locator('#pauseOverlay')).toHaveClass(/show/);
   const restored = await page.evaluate(() => {

@@ -14,9 +14,9 @@ test('season-two rewards survive reload and unlock only same-route stage two',as
  await expect(page.locator('#storyDialog')).toBeVisible();await page.locator('#storySkip').click();
  await expect(page.locator('#cards [data-key^="s2"]')).toHaveCount(0);expect(await page.evaluate(()=>state.season)).toBe(1);
 });
-test('refresh restores the correct second-season battle and talent state, paused',async({page})=>{
+test('manual resume after refresh restores the correct second-season battle and talent state, paused',async({page})=>{
  await open(page);await page.evaluate(()=>{chooseFaction('zombies',2);startLevel('zombies',1);clearInterval(timer);const z=addZombie('s2Coffin',6,2);z.shieldHp=33;state.time=17000;pauseAndSaveBattle();});
- await page.reload();await expect(page.locator('#game')).toHaveClass(/active/);
+ await page.reload();await expect(page.locator('#start')).toHaveClass(/active/);await expect(page.locator('#game')).not.toHaveClass(/active/);await openZombieHome(page);await page.locator('#resumeBattleBtn').click();await expect(page.locator('#game')).toHaveClass(/active/);
  expect(await page.evaluate(()=>({season:state.season,name:state.levelConfig.shortName,paused:state.paused,shield:state.zombies.find(z=>z.type==='s2Coffin').shieldHp,time:state.time}))).toEqual({season:2,name:'霜土前哨',paused:true,shield:33,time:17000});
  await expect(page.locator('#cards .name')).toHaveText(['鼠牙群屍','腐釘弩屍']);await expect(page.locator('#game')).toHaveClass(/season2-battle/);
 });
