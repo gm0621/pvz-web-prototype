@@ -1,0 +1,50 @@
+.mode-banner.romance-entry{border-color:#d79a99;background:linear-gradient(125deg,#402335ee,#25392dee)}
+.mode-banner.romance-entry strong{font-size:clamp(23px,3.4vw,34px);color:#ffe4bd}
+.romance-card-scene{min-height:140px;display:flex;flex-direction:column;align-items:center;justify-content:center;background:radial-gradient(ellipse at top,#765155,#243e32 80%);gap:12px;color:#fff0d9}
+.romance-card-scene>span{font-size:52px}.romance-card-scene small{font-size:14px;letter-spacing:.1em}
+.romance-adaptation{color:#dfc6a3;font-size:14px}.romance-level .level-ribbon{background:linear-gradient(120deg,#62414a,#344d36)}
+.romance-level .level-ribbon{display:flex;flex-direction:column;align-items:flex-start;gap:5px;min-height:82px;padding:12px 18px}
+.romance-level .level-ribbon span{font-size:14px;line-height:1.4}.romance-level .level-ribbon strong{font-size:26px;line-height:1.3;word-break:keep-all}
+.romance-battle .zombie[class*="type-r"] .char-img{filter:sepia(.75) saturate(1.6) hue-rotate(350deg);transform:scaleX(-1)}
+.romance-battle .zombie[class*="type-r"] .label{color:#ffdfa1}
+#levelScreen.romance-select .campaign-progress-track{flex-wrap:wrap}
+#storyStage.romance-story{background:radial-gradient(ellipse at 30% 0%,#ac7181,#5b4454 40%,#203d32 90%)!important}
+#storyStage.romance-story::after{content:'桃園同心';position:absolute;right:20px;top:25px;color:#f9d4ba55;writing-mode:vertical-rl;font-size:32px;letter-spacing:.25em;pointer-events:none}
+.romance-duel-dialog{width:min(600px,calc(100vw - 24px));max-height:calc(100dvh - 32px);overflow:auto;border:2px solid #d6ac68;border-radius:20px;background:#251e25;color:#fff0d3;padding:0;box-shadow:0 20px 80px #0009}
+.romance-duel-dialog::backdrop{background:#08080be0}.romance-duel-card{padding:28px;text-align:center}
+.romance-duel-card small{color:#dcb775;letter-spacing:.3em}.romance-duel-card h2{font-size:clamp(23px,5vw,34px);margin:10px 0}
+#romanceDuelPortraits{display:flex;align-items:center;justify-content:center;gap:20px}
+#romanceDuelPortraits img{width:32%;height:150px;object-fit:contain}.romance-enemy-portrait{filter:sepia(.75) saturate(1.6)}
+#romanceDuelStatus{font-size:20px;color:#ffd477}#romanceDuelHint{line-height:1.8;min-height:64px}
+#romanceDuelActions{display:flex;flex-wrap:wrap;gap:12px;justify-content:center}#romanceDuelActions button{min-height:48px;min-width:100px}
+.romance-camp-hud{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:7px 12px;border:1px solid #c4a26080;border-radius:9px;background:linear-gradient(90deg,#244735,#472c27);color:#fff0ce;font-size:13px}
+.romance-camp-hud[hidden]{display:none}.romance-camp-hud b{display:block;color:#ffdb7a}.romance-camp-hud>span:last-child{text-align:right}
+/* Two top-level adventures; the original campaign options live one step in. */
+#start[data-home-view="hub"] .main-actions.clean>.mode-banner{display:none!important}
+#start.menu-scene[data-home-view="hub"] .main-actions.clean>.zombie-campaign-entry,
+#start.menu-scene[data-home-view="hub"] .main-actions.clean>.romance-entry{display:block!important;padding:24px;clip-path:none;min-height:210px;width:100%;box-sizing:border-box}
+#start[data-home-view="hub"] .main-actions.clean{gap:18px;align-content:center;padding-bottom:0}
+#start[data-home-view="hub"] .main-actions.clean strong{font-size:36px;line-height:1.3;margin:7px 0;letter-spacing:.06em}
+#start[data-home-view="hub"] .main-actions.clean p{color:#f0dfc6;font-size:14px;line-height:1.6;margin:0 0 18px}
+#start[data-home-view="hub"] .main-actions.clean button{float:none;margin:0;width:100%;min-height:48px}
+#start[data-home-view="hub"] .zombie-campaign-entry{background:linear-gradient(125deg,#5b431bea,#183a25ef);border-color:#d6b768}
+#start[data-home-view="zombies"] .zombie-campaign-entry,
+#start[data-home-view="zombies"] .romance-entry,
+#start[data-home-view="hub"] #mobileNewPlayerStartBtn{display:none!important}
+.hub-title{display:none}
+#start[data-home-view="hub"] .main-logo-img{display:none}
+#start[data-home-view="hub"] .hub-title{display:block;font-size:clamp(48px,6vw,76px);line-height:1.2;color:#ffe6ae;text-shadow:0 4px 0 #4f2a10,0 12px 30px #000;letter-spacing:.1em}
+#start[data-home-view="hub"] .hub-title>span{display:block;font-size:18px;line-height:2.5;letter-spacing:.3em;color:#f3d2a5}
+#start[data-home-view="hub"] .redesigned-title:before{content:'兩種戰役 · 同一個三國世界'}
+.home-utilities{position:absolute;right:40px;bottom:24px;display:flex;gap:10px;z-index:2}
+.home-utility small,.home-utility strong{display:none}
+.home-utility button{min-height:42px;margin:0!important;font-size:13px}
+#homeModeBackBtn{z-index:3}
+@media(max-width:900px){
+ #start[data-home-view="hub"] .main-actions.clean{margin:0 24px;width:auto;padding-bottom:0}
+ #start[data-home-view="hub"] .menu-title-block{margin:84px 24px 24px}
+ #start[data-home-view="hub"] .menu-account-corner{top:14px!important;left:24px;right:auto}
+ #start[data-home-view="hub"] .hub-title{font-size:48px}
+ .home-utilities{position:relative;right:auto;bottom:auto;margin:20px 24px 28px;justify-content:center;flex-wrap:wrap}
+ #start[data-home-view="zombies"] .home-utilities{margin-bottom:100px}
+}

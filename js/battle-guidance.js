@@ -16,6 +16,7 @@ function deploymentCellReason(r,c){
  if(tutorialTarget&&(r!==tutorialTarget.r||c!==tutorialTarget.c))return `教學請放在第 ${tutorialTarget.r+1} 路第 ${tutorialTarget.c+1} 欄`;
  const blockedLane=stageRuleBlockedLane(state?.gameplay?.stageRule?.data);if(r===blockedLane)return `第 ${r+1} 路正遭烽火封鎖`;
  if(state.faction==='plants'){
+  if(state.season===3&&state.levelConfig.romanceBattle==='clash'&&c>2)return '遭遇戰只能在左側第 1～3 欄部署，再向前推進';
   if(c>6)return '守軍只能放左側第 1～7 欄';
   if(state.plants.some(p=>p.r===r&&p.c===c))return '這格已有守方角色';
  }else if(c<7)return '殭屍只能從右側第 8、9 欄出兵';
@@ -41,7 +42,7 @@ function updateDeploymentGuide(){
    cell.setAttribute('aria-label',`第 ${r+1} 路，第 ${c+1} 欄${active?`：${reason||blocked||'可放置'}`:''}`);
   });
  }
- const side=state.faction==='plants'?'左側第 1～7 欄空格':'右側第 8、9 欄';
+ const side=state.season===3&&state.levelConfig.romanceBattle==='clash'?'左側第 1～3 欄出兵區':state.faction==='plants'?'左側第 1～7 欄空格':'右側第 8、9 欄';
  const tutorialDeploy=key&&battleTutorialInteractionAllowed('deploy',key);
  setBattleText('deploymentHint',state.over?'戰鬥已結束':state.paused&&!tutorialDeploy?'已暫停，繼續後才能出兵':state.actionMode?'操作模式中；選角色可返回出兵':key?(reason||`✓ 綠框可放｜${side}｜再點角色取消`):`選角色查看可放位置｜${side}`);
 }

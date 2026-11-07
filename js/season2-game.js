@@ -10,6 +10,7 @@ function buildSeason2LevelCards(){
  renderCampaignProgressOverview();
 }
 function applySeasonBattleTheme(){
+ $('game').classList.toggle('romance-battle',state?.season===3);$('levelScreen').classList.toggle('romance-select',currentSeason===3);
  $('game').classList.toggle('season2-battle',state?.season===2);
  $('levelScreen').classList.toggle('season2-select',currentSeason===2);
 }
@@ -161,7 +162,7 @@ function setSeasonPickerVisible(visible){
 }
 function showSeasonPicker(faction,syncHistory=true){
  if(!['plants','zombies'].includes(faction))return;
- backToHome(false);currentFaction=faction;$('start').classList.remove('active');$('levelScreen').classList.add('active');$('levelScreen').classList.remove('season2-select');
+ backToHome(false);if(currentSeason===3)currentSeason=1;currentFaction=faction;$('start').classList.remove('active');$('levelScreen').classList.add('active');$('levelScreen').classList.remove('season2-select');
  setSeasonPickerVisible(true);$('chosenFactionText').textContent=`${faction==='plants'?'守城方':'攻城方'}｜選擇第一季或第二季，各季進度分開保存。`;
  document.querySelectorAll('[data-season-choice]').forEach(button=>{
   const season=Number(button.dataset.seasonChoice),open=isCampaignFactionUnlocked(faction,season);

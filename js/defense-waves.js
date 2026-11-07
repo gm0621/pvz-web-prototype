@@ -42,7 +42,7 @@ function updateDefenseWaves(){
  let opts=affordableAI(ZOMBIE_TYPES,state.aiResource).filter(([k])=>lv.zombieWeights.includes(k)&&!(state.season===2&&state.level===2&&k==='s2Coffin'&&state.lastSpawnedZombie==='s2Coffin'));
  // Same finite-quota cheap-unit fallback as ordinary AI; never manufacture an
  // unaffordable elite or bypass its cooldown to force a burst.
- const cheap=state.season===2?'s2Rat':'normal',basic=ZOMBIE_TYPES[cheap];
+ const cheap=lv.basicEnemy||(state.season===2?'s2Rat':'normal'),basic=ZOMBIE_TYPES[cheap];
  if(!opts.length&&lv.zombieWeights.includes(cheap)&&state.time-(state.lastAI[cheap]??-999999)>=basic.cooldown){
   changeBattleResource('zombies',Math.max(0,basic.cost-state.aiResource),'wave-fallback');opts=[[cheap,basic]];
  }
@@ -82,6 +82,7 @@ function updateDefenseWaveHUD(){
  else if(state.enemiesSpawned>=lv.enemyCount){text=`最後一波已出陣｜${Math.max(0,Math.ceil((state.nextAI-state.time)/1000))} 秒後頭目登場`;phase='warning'}
  else if(state.time<d.restUntil){text=`本波已出陣，補陣空檔 ${Math.ceil((d.restUntil-state.time)/1000)} 秒｜已完成 ${d.index}/${d.plan.length} 波`}
  else{text=`零散試探｜大波進攻 ${d.index}/${d.plan.length}`}
+ if(state.season===3)text=text.replaceAll('大魔王','敵將').replaceAll('屍潮','敵軍');
  const label=`${text} · 敵軍 ${state.enemiesSpawned}/${lv.enemyCount}`+(d.story&&wave&&!wave.rallied?` · 本波 ${wave.count} 名`:'');
  if(!el.querySelector('#waveSummary')){
   el.innerHTML='<div id="waveSummary"></div><div id="waveBrief" hidden></div><div id="waveStory" hidden><img id="waveStoryPortrait" alt=""><span id="waveStoryText"></span><button id="waveStorySkip" type="button" aria-label="略過這段戰場對話">略過</button></div>';

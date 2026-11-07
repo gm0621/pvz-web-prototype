@@ -1,9 +1,10 @@
+const {openZombieHome}=require('./support/home-navigation');
 const {test,expect}=require('@playwright/test');
 async function startLevelCard(page,selector){if(await page.locator('#levelScreen').evaluate(node=>node.classList.contains('newcomer-simple')))await page.locator('#continueCampaignBtn').click();else{await page.locator(selector).click();await page.locator('.level-card-details:not([hidden]) .level-detail-start').click()}}
 async function open(page){await page.route('https://cdn.jsdelivr.net/**',r=>r.fulfill({contentType:'application/javascript',body:''}));await page.goto('/');await page.evaluate(()=>{playerProfile=normalizeProfile({campaignProgress:{zombies:{highestLevel:1,completedLevels:{1:1}}}});backToHome();updateProgressUI();for(const f of ['plants','zombies'])markStoryRead(f,1,'opening',2)})}
 test('second season first defense starts with its own two soldiers and no stage-two bypass',async({page})=>{
  await open(page);
- await page.locator('#plantStartBtn').click();
+ await openZombieHome(page);await page.locator('#plantStartBtn').click();
  await page.locator('[data-season-choice="2"]').click();
  await expect(page.locator('#chosenFactionText')).toContainText('第二季');
  await expect(page.locator('#levelGrid button[data-jump-level="1"]')).toBeEnabled();
@@ -62,7 +63,7 @@ test('Wei shield soldier never attacks, repeatedly hops forward, and keeps high 
 });
 
 test('second-season attack uses Wei enemies, bone marks, pack damage and a breakable coffin shield',async({page})=>{
- await open(page);await page.locator('#zombieStartBtn').click();await page.locator('[data-season-choice="2"]').click();await startLevelCard(page,'[data-jump-level="1"]');
+ await open(page);await openZombieHome(page);await page.locator('#zombieStartBtn').click();await page.locator('[data-season-choice="2"]').click();await startLevelCard(page,'[data-jump-level="1"]');
  await expect(page.locator('#cards .name')).toHaveText(['鼠牙群屍','腐釘弩屍']);
  expect(await page.evaluate(()=>state.plants.every(p=>p.type.startsWith('s2')))).toBe(true);
  const result=await page.evaluate(()=>{

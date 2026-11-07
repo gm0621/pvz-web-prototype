@@ -1,3 +1,4 @@
+const {openZombieHome}=require('./support/home-navigation');
 const {test,expect}=require('@playwright/test');
 
 async function open(page){
@@ -209,11 +210,11 @@ test('first visit tip appears once and mobile sticky continue appears only after
 test('season and faction navigation restore focus to the semantic opener',async({page})=>{
  await open(page);
  await seedReturningPlayer(page);
- await page.locator('#plantStartBtn').click();
+ await openZombieHome(page);await page.locator('#plantStartBtn').click();
  await expect(page.locator('[data-season-choice="1"]')).toBeFocused();
  await page.locator('#backFactionBtn').click();
- await expect(page.locator('#plantStartBtn')).toBeFocused();
- await page.locator('#plantStartBtn').click();
+ await expect(page.locator('#zombieCampaignBtn')).toBeFocused();
+ await openZombieHome(page);await page.locator('#plantStartBtn').click();
  await page.locator('[data-season-choice="1"]').click();
  await page.locator('#backFactionBtn').click();
  await expect(page.locator('[data-season-choice="1"]')).toBeFocused();
