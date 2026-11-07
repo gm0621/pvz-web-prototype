@@ -1,3 +1,4 @@
+import {CHAPTER_BACKGROUNDS,STAGE_LEADS} from './prologue.mjs?v=chapter-intro-1';
 import {setMusic,setMusicScene,musicTheme,musicOn,setSfx,unlockAudio,hitSound} from './audio.mjs?v=yellow-boss-2';
 import {renderDuel} from './duel-view.mjs?v=yellow-boss-2';
 import {chapterInfo,enemyArt,HEROES,STAGES,ENEMY_ART,SHIELD_ART,FEATURES,heroDescription} from './story.mjs?v=yellow-boss-2';
@@ -28,7 +29,15 @@ function goHome(){
 }
 function startStory(level,phase='opening'){
  setMusicScene(level);storyLevel=level;storyPhase=phase;lineIndex=0;battle=null;selected=null;show('story');
- const stage=STAGES[level-1];$('sceneBackdrop').src=stage.scene;$('sceneBackdrop').alt=stage.place+'，'+stage.name+'的故事場景';renderStory();$('storyNext').focus({preventScroll:true});
+ const stage=STAGES[level-1];$('sceneBackdrop').src=stage.scene;$('sceneBackdrop').alt=stage.place+'，'+stage.name+'的故事場景';renderStory();setPrologue(phase==='opening');
+}
+function setPrologue(visible){
+ const info=chapterInfo(storyLevel),background=CHAPTER_BACKGROUNDS[info.chapter];
+ $('storyPrologue').hidden=!visible;$('storyScene').classList.toggle('has-prologue',visible);
+ $('storyScene').querySelector('.scene-cast').hidden=visible;$('storyScene').querySelector('.scene-dialogue').hidden=visible;
+ $('prologueEra').textContent=background.era;$('prologueHistory').textContent=background.history;$('prologueStory').textContent=background.story;$('prologueLead').textContent=STAGE_LEADS[storyLevel-1];
+ $('prologueNote').textContent=storyLevel===5||storyLevel===6?'石魁、雷烈及相關單挑為遊戲原創；主線依演義改編。':'本作取材《三國演義》，並非完整史實重演；對話與部分遭遇為遊戲補寫。';
+ (visible?$('prologueContinue'):$('storyNext')).focus({preventScroll:true});
 }
 function storyLines(){const stage=STAGES[storyLevel-1];return storyPhase==='ending'?stage.ending:stage.opening}
 function finishStory(){if(storyPhase==='opening')beginBattle(storyLevel);else if(storyLevel<STAGES.length)startStory(storyLevel+1);else goHome()}
@@ -135,6 +144,7 @@ function frame(now){
 }
 $('startBtn').onclick=()=>{if(battle&&!battle.over){show('battle');setPause(false);renderBattle()}else startStory(progress.completed<STAGES.length?progress.completed+1:1)};
 $('storyNext').onclick=()=>{if(lineIndex<storyLines().length-1){lineIndex++;renderStory()}else finishStory()};
+$('prologueContinue').onclick=()=>setPrologue(false);
 $('storyPrevious').onclick=()=>{if(lineIndex>0){lineIndex--;renderStory()}};
 $('storySkip').onclick=finishStory;
 $('resultNext').onclick=()=>{if(!battle.won)beginBattle(battle.level);else startStory(battle.level,'ending')};
