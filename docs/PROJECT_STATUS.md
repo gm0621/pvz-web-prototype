@@ -10,6 +10,7 @@
 - 已整合 `81aaae4` 的雙模式首頁、英雄演義與非阻塞登入回呼，沒有改回舊版登入實作。
 - 新增 `tests/manual-resume.spec.js`，並將原有自動還原案例改為玩家點擊續玩後驗證。最終定向檢查 60 項通過、2 項依裝置略過，涵蓋暫停／重整、帳號隔離、跨季度導覽、第二季與單挑續接。另已檢查雙入口、演義流程與登入等待，40 項通過；其中兩個舊單挑自動還原斷言已改為手動並在最終批次通過。
 - 測試環境：macOS、Node.js 22.16.0、鎖定版 Playwright 1.62.1、其 Chromium；採不提交的本機設定使用獨立預覽埠，未修改專案預設或提交個人路徑。這些是流程驗證，不是自然戰鬥平衡驗證。
+- 發布歷程：修正提交 `4f60d0f` 的首輪 [Pages 工作](https://github.com/gm0621/pvz-web-prototype/actions/runs/42346954019) 建置成功，但停在 `syncing_files` 約十分鐘後逾時；已要求重跑失敗工作。本次另以交接紀錄更新觸發完整發布，正式站結果仍須核對 Actions 與實際載入內容，不能只看提交成功。
 - 分支：`fix/manual-battle-resume`。重現重點：執行 `tests/manual-resume.spec.js`、`tests/two-mode-home.spec.js`、`tests/romance-entry-loading.spec.js`，並選跑 `app`、`level-select-progress`、`season-navigation`、`season2-save`、`romance` 中的續玩案例。發布結果以最新 GitHub Actions 與正式站為準。
 
 ## 最近修正：演義入口在登入確認期間沒有反應
