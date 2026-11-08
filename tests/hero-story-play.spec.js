@@ -27,5 +27,6 @@ for(const level of [7,8,9,10])test(`chapter ${level} has unique counter poses an
  },level);
  await expect(page.locator('#duelEnemyLine')).toContainText(result.name);await expect(page.locator('#duelEnemySprite')).toHaveAttribute('data-frame','2');expect(result.ratio).toBe(3);expect(result.clear).toBeGreaterThan(.1);
  await page.screenshot({path:info.outputPath(`boss-${level}.png`)});
- if(level===10){await page.evaluate(()=>{const {b,v}=window.fixture;b.duel.elapsed=13.2;v.renderDuel(b)});await expect(page.locator('#duelCaption')).toContainText('退走');await expect(page.locator('#duelOutcomeNote')).not.toContainText('斬殺')}
+ if(level===10){await page.evaluate(()=>{const {b,v}=window.fixture;b.duel.elapsed=17.3;v.renderDuel(b)});await expect(page.locator('#duelCaption')).toContainText('退走');await expect(page.locator('#duelOutcomeNote')).not.toContainText('斬殺')}
 });
+

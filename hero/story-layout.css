@@ -1,0 +1,28 @@
+/* Dialogue follows the cast in normal flow: large text and short screens may
+   extend the page, but must never cover an actor. Keep the prologue separate. */
+.story-scene:not(.has-prologue){
+ display:flex;flex-direction:column;gap:28px;
+ height:auto;min-height:0;max-height:none;padding:24px 22px 22px;
+}
+.story-scene:not(.has-prologue) .scene-heading{
+ position:relative;inset:auto;flex:none;
+}
+.story-scene:not(.has-prologue) .scene-cast{
+ position:relative;inset:auto;flex:none;width:100%;
+ height:clamp(210px,32dvh,370px);margin:0;
+}
+.story-scene:not(.has-prologue) .scene-cast img{
+ width:33.333%;min-width:0;height:100%;max-height:100%;
+ transform:scale(.91);transform-origin:bottom;
+}
+.story-scene:not(.has-prologue) .scene-cast img.speaking{transform:scale(1)}
+.story-scene:not(.has-prologue) .scene-dialogue{
+ position:relative;inset:auto;flex:none;width:100%;min-height:0;
+}
+.story-scene:not(.has-prologue) .scene-dialogue>p{min-height:0;overflow-wrap:anywhere}
+.story-scene:not(.has-prologue) .story-actions{clear:both}
+@media(max-width:700px){
+ .story-scene:not(.has-prologue){padding:18px 12px 16px;gap:26px}
+ .story-scene:not(.has-prologue) .scene-cast{height:clamp(190px,30dvh,280px)}
+ .story-scene:not(.has-prologue) .scene-cast img{width:48%}
+}

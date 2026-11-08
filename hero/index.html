@@ -6,25 +6,38 @@
  <title>英雄演義｜桃園同心</title>
  <link rel="icon" href="../assets/brand/favicon.png">
  <link rel="preload" as="image" href="./assets/scenes/peach-garden.jpg">
- <link rel="stylesheet" href="game.css?v=novel-camp-1">
+ <link rel="stylesheet" href="game.css?v=battle-refresh-1">
 <style>.orders{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}.orders span{flex-basis:100%;font-size:13px}.orders button{min-height:44px;min-width:64px;padding:8px 12px;border:1px solid #9aab88;border-radius:8px;background:#faf0d5;color:#244332}.orders button:disabled{opacity:.45}.unit.retreating .unit-figure{animation:unit-march .42s ease-in-out infinite}</style>
-<link rel="stylesheet" href="duel.css?v=novel-camp-1">
-<link rel="stylesheet" href="novel-camp.css?v=dialogue-contrast-1">
+<link rel="stylesheet" href="duel.css?v=duel-cinema-1">
+<link rel="stylesheet" href="novel-camp.css?v=camp-return-1">
  <link rel="stylesheet" href="chapter-camp.css?v=chapter-camp-2">
  <link rel="stylesheet" href="duel-entrance.css?v=duel-entrance-1">
  <link rel="stylesheet" href="troop-controls.css?v=troop-control-1">
  <link rel="stylesheet" href="settlement.css?v=settlement-1">
  <link rel="stylesheet" href="weather-battle.css?v=storm-battle-1">
+ <link rel="stylesheet" href="story-layout.css?v=story-layout-1">
+ <link rel="stylesheet" href="home-menu.css?v=home-menu-1">
+ <link rel="stylesheet" href="duel-cinematic.css?v=duel-cinema-1">
+ <link rel="stylesheet" href="battle-speed.css?v=battle-speed-1">
+ <link rel="stylesheet" href="enemy-archer.css?v=enemy-archer-1">
+ <link rel="stylesheet" href="campaign-map.css?v=campaign-map-1">
+<link rel="stylesheet" href="./team-duel.css?v=team-duel-1">
 </head>
 <body>
- <audio id="menuBgm" loop preload="metadata" hidden>
+ <audio id="menuBgm" data-music-mode="home" loop preload="metadata" hidden>
   <source src="./assets/audio/taoyuan-feast-menu.m4a?v=menu-bgm-1" type="audio/mp4">
   <source src="./assets/audio/taoyuan-feast-menu.wav?v=menu-bgm-1" type="audio/wav">
  </audio>
+ <audio data-music-mode="story" loop preload="metadata" hidden><source src="./assets/audio/scenes/story-reading.m4a?v=scene-audio-2" type="audio/mp4"></audio>
+ <audio data-music-mode="prepare" loop preload="metadata" hidden><source src="./assets/audio/scenes/prepare.m4a?v=scene-audio-2" type="audio/mp4"></audio>
+ <audio data-music-mode="battle" loop preload="metadata" hidden><source src="./assets/audio/scenes/battle-light.m4a?v=battle-light-1" type="audio/mp4"></audio>
+ <audio data-music-mode="duel" loop preload="metadata" hidden><source src="./assets/audio/scenes/duel.m4a?v=scene-audio-2" type="audio/mp4"></audio>
+ <audio data-music-mode="camp" loop preload="metadata" hidden><source src="./assets/audio/scenes/camp.m4a?v=scene-audio-2" type="audio/mp4"></audio>
+ <audio data-music-mode="victory" loop preload="metadata" hidden><source src="./assets/audio/scenes/victory.m4a?v=scene-audio-2" type="audio/mp4"></audio>
  <header class="site-bar"><span class="wordmark">英雄演義 <small>桃園同心</small></span><button id="musicBtn" class="quiet-button" aria-pressed="false">♫ 音樂：關</button><button id="soundTest" class="quiet-button">試聽音效</button></header><p id="audioNotice" role="status" class="audio-notice"></p>
  <main>
   <section id="home" class="screen home active" aria-labelledby="homeTitle">
-   <div class="home-copy"><span class="eyebrow">一段誓言，一場英雄之旅</span><h1 id="homeTitle">英雄<span>演義</span></h1><p class="home-lead">從一片桃園，走進三國。</p><p class="home-description">與劉備、關羽、張飛並肩出征。<br>選一名英雄，守好三條路。</p><div class="chapter-label">第一章 · 桃園結義　／　第二章 · 烽火與義氣</div><button id="startBtn" class="gold-button">開始故事 <span>→</span></button><p id="homeProgress" class="subtle"></p><details id="chapterPicker" class="chapter-book"><summary>展開章回目錄 <span>選關・重溫故事</span></summary><nav id="chapterTabs" aria-label="選擇章節"></nav><div id="chapterDots" aria-label="關卡列表"></div></details></div>
+   <div class="home-copy"><span class="eyebrow">一段誓言，一場英雄之旅</span><h1 id="homeTitle">英雄<span>演義</span></h1><p class="home-lead">從一片桃園，走進三國。</p><p class="home-description">與劉備、關羽、張飛並肩出征。<br>選一名英雄，守好三條路。</p><div class="chapter-label">第一章 · 桃園結義　／　第二章 · 烽火與義氣</div><button id="startBtn" class="gold-button">開始故事 <span>→</span></button><p id="homeProgress" class="subtle"></p><details id="chapterPicker" class="chapter-book"><summary><div><strong>選擇章回</strong><span>展開關卡目錄 · 選關與重溫故事</span></div></summary><nav id="chapterTabs" aria-label="選擇章節"></nav><div id="chapterDots" aria-label="關卡列表"></div></details></div>
    <div class="home-art" aria-label="劉備、關羽與張飛"><div class="peach-disc"></div><img class="hero-side hero-left" src="./assets/zhangfei.png" alt="張飛"><img class="hero-side hero-right" src="./assets/guanyu.webp" alt="關羽"><img class="hero-center" src="./assets/liubei.png" alt="劉備"><div class="oath-seal">桃園<br>同心</div><span class="art-caption">同心協力 · 救困扶危</span></div>
    <p class="home-foot">三路布陣 <i>·</i> 四張兵卡 <i>·</i> 自動交鋒</p>
   </section>
@@ -55,14 +68,15 @@
    <p id="storyAdaptation" class="story-footnote">劇情依《三國演義》改編 · 點「下一句」繼續</p>
   </section>
   <section id="battle" class="screen battle" aria-labelledby="battleTitle" hidden>
-   <div class="battle-top"><button class="home-button" data-home>← 回主選單</button><div><span id="battleChapter" class="eyebrow"></span><h2 id="battleTitle"></h2><span id="featureBadge" class="feature-badge"></span></div><button id="pauseBtn" class="quiet-button" aria-pressed="false">Ⅱ 暫停</button></div>
+   <div class="battle-top"><button class="home-button" data-home>← 回主選單</button><div><span id="battleChapter" class="eyebrow"></span><h2 id="battleTitle"></h2><span id="featureBadge" class="feature-badge"></span></div><label class="battle-speed" title="一般戰鬥速度；單挑維持原速">速度 <select id="battleSpeed" aria-label="戰鬥速度（單挑維持原速）"><option value="1">1×</option><option value="1.5">1.5×</option><option value="2">2×</option></select></label><button id="pauseBtn" class="quiet-button" aria-pressed="false">Ⅱ 暫停</button></div>
+   <button id="battleMapButton" class="battle-map-button" aria-haspopup="dialog" aria-controls="campaignMapDialog"><span id="battleMapThumb"></span><span class="battle-map-copy"><strong id="battleMapPlace"></strong><small id="battleMapStage"></small></span><span class="battle-map-open">戰役地圖 ↗</span></button>
    <div class="battle-stats"><span>🌾 軍糧 <strong id="food">220</strong><small>自動補給</small></span><span id="waveText"></span><span id="lives" aria-label="剩餘防線">♥ ♥ ♥</span></div>
    <div id="bossHud" class="boss-hud" hidden><strong id="bossHudName"></strong><span id="bossHudState"></span><div class="boss-hud-track"><i id="bossHudHp"></i></div></div>
    <p id="battleNotice" class="battle-notice" role="status" aria-live="polite">點選兵卡，再點一路出兵。</p>
    <aside id="firstGuide" class="first-guide" aria-label="第一關小教學" hidden><div aria-live="polite"><strong id="guideTitle"></strong><p id="guideText"></p></div><button id="guideDismiss" class="quiet-button">略過教學</button></aside>
    <div id="supplies" class="supplies"><button data-supply="herb" class="quiet-button"></button><button data-supply="grain" class="quiet-button"></button></div>
    <div id="field" class="field"><div class="field-decor" aria-hidden="true"><span>義<br>軍</span><span>黃<br>巾</span></div><div id="attackRange" class="attack-range" aria-hidden="true" hidden><span>攻擊距離</span></div><div id="lanes" class="lanes"></div><div id="units" class="units"></div><div id="effects" class="battle-effects" aria-hidden="true"></div><div id="skillBanner" class="skill-banner" role="status" hidden></div><div id="pauseOverlay" class="field-pause" hidden><strong>戰局暫停中</strong><button id="resumeBtn" class="gold-button">繼續戰鬥</button></div></div>
-   <div class="deploy-caption"><span id="selectionHint">先選一張兵卡，再點戰場路線</span><small>每路最多三名友軍</small></div><div id="cards" class="cards" aria-label="四張出兵卡"></div>
+   <div class="deploy-caption"><span id="selectionHint">先選一張兵卡，再點戰場路線</span><small>每路最多三名友軍 · 主將突破即敗戰</small></div><div id="cards" class="cards" aria-label="四張出兵卡"></div>
   </section>
   <section id="camp" class="screen camp" aria-labelledby="campTitle" hidden>
    <div class="camp-toolbar"><button class="home-button" data-home>← 回主選單</button><span>軍資 <strong id="campCoins">0</strong></span></div>
@@ -76,16 +90,17 @@
     </div><p class="camp-hint">點人物說話，點軍議桌或兩側商人整備。</p>
    </div>
    <section id="campTalk" class="camp-talk" hidden aria-label="營中對話"><img id="campTalkPortrait" alt=""><div><strong id="campTalkName"></strong><p id="campTalkText" aria-live="polite"></p><button id="campTalkNext" class="quiet-button">接著聽 →</button></div></section>
-   <section id="campShop" class="camp-shop" hidden><h3 id="shopTitle" tabindex="-1"></h3><p id="campMessage" role="status"></p><div id="shopGoods" class="shop-goods"></div></section>
+   <section id="campShop" class="camp-shop" hidden><div class="camp-panel-heading"><h3 id="shopTitle" tabindex="-1"></h3><button id="campShopBack" class="quiet-button">← 返回營地</button></div><p id="campMessage" role="status"></p><div id="shopGoods" class="shop-goods"></div></section>
    <section id="campRoster" class="camp-roster" hidden><h3 tabindex="-1">出征前，點一點行囊</h3><p id="campInventory"></p><div id="campHeroes"></div></section>
    <footer class="camp-departure"><div><small>下一步</small><strong>整備好了，就繼續冒險！</strong></div><button id="campContinue" class="gold-button">繼續故事 →</button></footer>
   </section>
   <section id="result" class="screen result" aria-labelledby="resultTitle" hidden><button class="home-button" data-home>← 回主選單</button><div class="result-panel"><span id="resultMark" class="result-mark" aria-hidden="true">勝</span><span id="resultChapter" class="eyebrow"></span><h2 id="resultTitle" tabindex="-1"></h2><div class="result-company" aria-hidden="true"><img src="assets/guanyu.webp" alt=""><img src="assets/liubei.png" alt=""><img src="assets/zhangfei.png" alt=""></div><p id="resultText"></p><div class="victory-ribbon" aria-hidden="true">捷 報 傳 回 ・ 凱 旋 歸 營</div><section class="reward-ledger" aria-label="本場軍資結算"><div class="reward-particles" aria-hidden="true"><i style="--i:0"></i><i style="--i:1"></i><i style="--i:2"></i><i style="--i:3"></i><i style="--i:4"></i><i style="--i:5"></i><i style="--i:6"></i><i style="--i:7"></i><i style="--i:8"></i><i style="--i:9"></i><i style="--i:10"></i><i style="--i:11"></i></div><div class="reward-coins" aria-hidden="true"><i style="--i:0"></i><i style="--i:1"></i><i style="--i:2"></i><i style="--i:3"></i><i style="--i:4"></i><i style="--i:5"></i></div><span class="reward-label">本次獲得軍資</span><strong id="resultEarned">+0</strong><p id="resultRewardReason"></p><div class="reward-balance"><span>目前持有</span><strong><span id="resultBalance">0</span> 軍資</strong></div><small id="resultSaved">軍資已存入行囊，可在營地使用</small></section><p class="result-next-step">戰報看完了？回營歇一歇，再聽三兄弟的故事。</p><div class="result-actions"><button id="resultNext" class="gold-button">前往戰後營地 →</button><button id="replayLevel" class="quiet-button">再玩本關</button><button class="quiet-button" data-home>回主選單</button></div></div></section>
  </main>
  <dialog id="bossIntro" class="duel-dialog" aria-labelledby="bossIntroTitle"><span class="eyebrow">敵將登場</span><img id="bossIntroArt" class="boss-intro-art" alt=""><h2 id="bossIntroTitle"></h2><p id="bossIntroText" style="white-space:pre-line"></p><p id="bossIntroTip"></p><button id="bossIntroContinue" class="gold-button">迎戰！</button></dialog>
- <dialog id="duelDialog" class="duel-dialog" aria-labelledby="duelTitle"><span class="eyebrow">武將交鋒 · 自動單挑</span><h2 id="duelTitle"></h2><div id="duelCombat"><div class="duel-enemy-talk"><img id="duelEnemyFace" alt=""><p id="duelEnemyLine"></p></div><div class="duel-portraits"><img id="duelHero" alt=""><span>交鋒</span><img id="duelEnemy" alt="敵將"></div><div class="duel-health" aria-label="敵將生命"><i id="duelHp"></i></div><p id="duelCallout" role="status"></p><p id="duelCaption"></p><div class="duel-hero-talk"><img id="duelHeroFace" alt=""><p id="duelDialogue" aria-live="polite"></p></div><small id="duelOutcomeNote">終結一擊斬殺敵將・其餘敵兵仍需清除</small></div><div id="duelVersus" hidden aria-label="雙將對峙開場"><div class="versus-rays" aria-hidden="true"></div><div class="versus-side versus-ally"><img id="versusHero" alt=""><div class="versus-name"><small id="versusHeroTitle"></small><strong id="versusHeroName"></strong><span id="versusHeroWeapon"></span></div></div><div class="versus-side versus-foe"><img id="versusEnemy" alt=""><div class="versus-name"><small id="versusEnemyTitle"></small><strong id="versusEnemyName"></strong><span id="versusEnemyWeapon"></span></div></div><div class="versus-cut" aria-hidden="true"></div><div class="versus-ring" aria-hidden="true"></div><strong class="versus-seal" aria-hidden="true">對決</strong><div class="versus-sparks" aria-hidden="true"></div><p id="versusCallout"></p><div class="versus-progress" aria-hidden="true"><i></i></div></div><div class="duel-controls"><button id="duelEnter" class="quiet-button" hidden>略過開場 →</button><button id="duelPause" class="quiet-button">暫停單挑</button></div></dialog>
+ <dialog id="duelDialog" class="duel-dialog" aria-labelledby="duelTitle"><span class="eyebrow">武將交鋒 · 自動單挑</span><h2 id="duelTitle"></h2><div id="duelCombat"><div class="duel-enemy-talk"><img id="duelEnemyFace" alt=""><p id="duelEnemyLine"></p></div><div class="duel-portraits"><img id="duelHero" alt=""><span>交鋒</span><img id="duelEnemy" alt="敵將"></div><div class="duel-vitals"><div><strong id="duelHeroHpText"></strong><div id="duelHeroHealth" class="duel-health ally-health" role="progressbar" aria-valuemin="0"><i id="duelHeroHp"></i></div></div><div><strong id="duelEnemyHpText"></strong><div id="duelEnemyHealth" class="duel-health" role="progressbar" aria-valuemin="0"><i id="duelHp"></i></div></div></div><p id="duelStyle" class="duel-style"></p><p id="duelCallout" role="status"></p><p id="duelCaption"></p><div class="duel-hero-talk"><img id="duelHeroFace" alt=""><p id="duelDialogue" aria-live="polite"></p></div><small id="duelOutcomeNote">終結一擊斬殺敵將・其餘敵兵仍需清除</small></div><div id="duelVersus" hidden aria-label="雙將對峙開場"><div class="versus-rays" aria-hidden="true"></div><div class="versus-side versus-ally"><img id="versusHero" alt=""><div class="versus-name"><small id="versusHeroTitle"></small><strong id="versusHeroName"></strong><span id="versusHeroWeapon"></span></div></div><div class="versus-side versus-foe"><img id="versusEnemy" alt=""><div class="versus-name"><small id="versusEnemyTitle"></small><strong id="versusEnemyName"></strong><span id="versusEnemyWeapon"></span></div></div><div class="versus-cut" aria-hidden="true"></div><div class="versus-ring" aria-hidden="true"></div><strong class="versus-seal" aria-hidden="true">對決</strong><div class="versus-sparks" aria-hidden="true"></div><p id="versusCallout"></p><div class="versus-progress" aria-hidden="true"><i></i></div></div><div class="duel-controls"><button id="duelEnter" class="quiet-button" hidden>略過開場 →</button><button id="duelPause" class="quiet-button">暫停單挑</button></div></dialog>
  <p id="storageNotice" class="storage-notice" role="status" hidden>此瀏覽器目前無法保存進度，關閉後可能需要重玩。</p>
 
- <script type="module" src="app.mjs?v=storm-battle-2"></script>
+ <dialog id="campaignMapDialog" aria-labelledby="campaignMapTitle"><header><div><small>東漢末年・黃巾戰事</small><h2 id="campaignMapTitle">三國行軍圖</h2></div><button id="campaignMapClose" class="quiet-button">返回戰場 ✕</button></header><div id="campaignMapCanvas"></div><div class="map-legend"><span>⚑ 目前位置</span><span>● 本關前的行軍地點</span><span>○ 後續地點</span></div><div class="map-location"><h3 id="campaignMapLocation"></h3><span id="campaignMapModern"></span></div><p id="campaignMapDetail"></p><p class="map-route-caption">劇情行軍路線：<span id="campaignMapRoute"></span></p><details><summary>查看十關戰役位置</summary><ol id="campaignMapStages"></ol></details><p class="map-note">本篇戰區方位示意，非精確疆界或實際行軍路徑；山道、山口及驛道按演義與遊戲劇情標示。此時尚未形成魏、蜀、吳三國鼎立。</p></dialog>
+ <script type="module" src="app.mjs?v=team-duel-1"></script>
 </body>
 </html>

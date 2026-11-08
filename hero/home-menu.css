@@ -1,0 +1,38 @@
+/* Prominent, touch-friendly entry points without changing saved progress. */
+.home #startBtn{
+ display:flex;align-items:center;justify-content:space-between;gap:24px;
+ width:100%;max-width:490px;min-height:68px;padding:17px 24px;
+ font-size:23px;font-weight:800;border:1px solid #b38332;border-radius:15px;
+ background:linear-gradient(135deg,#ffe4a0,#e6b754);color:#253c2b;
+ box-shadow:0 5px 0 #99732e,0 12px 24px #624b2820;
+}
+.home #startBtn span{font-size:30px}
+.home #homeProgress{max-width:490px;padding:8px 2px;font-size:13px;color:#334c3b}
+.home .chapter-book{
+ max-width:490px;margin:18px 0 26px;border:1px solid #8f9e7e;
+ border-radius:15px;background:#fffaf0f5;box-shadow:0 7px 18px #29433315;
+ overflow:hidden;text-align:left;
+}
+.home .chapter-book summary{
+ display:grid;grid-template-columns:44px 1fr 24px;align-items:center;gap:12px;
+ min-height:86px;padding:16px 18px;list-style:none;color:#244b3c;
+}
+.home .chapter-book summary::-webkit-details-marker{display:none}
+.home .chapter-book summary:before{content:'卷';display:grid;place-items:center;width:42px;height:46px;border-radius:9px;background:#e5ead8;border:1px solid #bec9aa;font:700 24px Georgia,serif}
+.home .chapter-book summary:after{content:'＋';font-size:24px}
+.home .chapter-book[open] summary:after{content:'−'}
+.home .chapter-book summary strong{display:block;font-size:20px;letter-spacing:.08em}
+.home .chapter-book summary span{float:none;display:block;font-size:12px;font-weight:400;color:#52654c;margin-top:5px;padding:0}
+.home .chapter-book nav{padding:4px 12px 12px;flex-wrap:wrap;overflow:visible}
+.home .chapter-book nav button{flex:1 1 170px;white-space:normal;border-radius:9px;min-height:48px}
+.home #chapterDots{padding:0 12px 12px;max-height:360px}
+.home #chapterDots button{min-height:66px;border-radius:10px}
+.home #chapterDots button:not(:disabled):not(.complete){border:2px solid #9c752b;background:#fff0c9}
+.home #startBtn:focus-visible,.home summary:focus-visible,.home .chapter-book button:focus-visible{outline:3px solid #215d80;outline-offset:3px}
+@media(hover:hover){.home #startBtn:hover{background:linear-gradient(135deg,#ffedb8,#f0c56c)}.home .chapter-book summary:hover{background:#f1f0df}}
+@media(max-width:700px){
+ .home #startBtn{max-width:100%;min-height:62px;font-size:21px;margin-inline:auto}
+ .home .chapter-book{max-width:100%;margin:16px 0 20px}
+ .home #homeProgress{max-width:none;font-size:12px}
+ .home .chapter-book summary{min-height:80px;padding:14px}
+}

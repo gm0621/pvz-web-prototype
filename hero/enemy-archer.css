@@ -1,0 +1,8 @@
+/* Reuse the bow silhouette with Yellow Turban colors; enemy facing is inherited. */
+.unit.ranged-enemy .unit-figure img,.combat-effect.ranged-exit img{filter:hue-rotate(-55deg) saturate(1.25) sepia(.2) drop-shadow(0 3px 2px #44301455)}
+.unit.ranged-enemy .unit-name{background:#765019;color:#fff1ae;border:1px solid #dca94b}
+.unit.ranged-enemy.aiming .unit-name:after{content:' · 瞄準';color:#fff}
+.unit.ranged-enemy.aiming .unit-shadow{background:#e7a33a99;box-shadow:0 0 8px #ffce66}
+.combat-effect.enemy-arrow{width:30px;height:3px;background:linear-gradient(90deg,#ffcb71,#c5803f55);box-shadow:0 0 4px #ffbc66}
+.combat-effect.enemy-arrow:after{content:'';position:absolute;left:-6px;top:-4px;border-right:9px solid #ffd591;border-top:5px solid transparent;border-bottom:5px solid transparent}
+@media(max-width:700px){.combat-effect.enemy-arrow{width:23px}}
