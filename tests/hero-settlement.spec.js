@@ -17,3 +17,11 @@ test('full lane explains the limit and moving someone out permits a transfer',as
 test('reduced-motion settlement stays readable and can continue immediately',async({page})=>{
  await page.emulateMedia({reducedMotion:'reduce'});await quickWin(page);await page.goto('/hero/');await page.locator('#startBtn').click();await fight(page);await expect(page.locator('#resultEarned')).toHaveText('+80');expect(await page.locator('#resultMark').evaluate(e=>getComputedStyle(e).animationName)).toBe('none');await page.locator('#resultNext').click();await expect(page.locator('#campCoins')).toHaveText('80');
 });
+
+
+test('failed persistence shows temporary progress and a later successful save clears the warning',async({page})=>{
+ await page.addInitScript(()=>{const original=Storage.prototype.setItem;window.allowHeroSave=false;Storage.prototype.setItem=function(key,value){if(key==='heroLegendProgress_v1'&&!window.allowHeroSave)throw new DOMException('Full','QuotaExceededError');return original.call(this,key,value)}});
+ await quickWin(page);await page.goto('/hero/');await page.locator('#startBtn').click();await fight(page);
+ await expect(page.locator('#storageNotice')).toBeVisible();await expect(page.locator('#resultSaved')).toContainText('尚未保存');await expect(page.locator('#resultEarned')).toHaveText('+80');expect(await page.evaluate(()=>localStorage.getItem('heroLegendProgress_v1'))).toBeNull();
+ await page.evaluate(()=>window.allowHeroSave=true);await page.locator('#replayLevel').click();await fight(page);await expect(page.locator('#storageNotice')).toBeHidden();await expect(page.locator('#resultSaved')).not.toContainText('尚未保存');await expect(page.locator('#resultEarned')).toHaveText('+0');expect(await page.evaluate(()=>JSON.parse(localStorage.getItem('heroLegendProgress_v1')).coins)).toBe(80);
+});

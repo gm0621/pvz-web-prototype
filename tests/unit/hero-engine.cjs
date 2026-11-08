@@ -276,3 +276,35 @@ test('wind and rain telegraph, freeze on pause and can be dodged by changing lan
  for(let i=0;i<26;i++)stepBattle(b,.1);assert.equal(u.hp,hp-(dodge?0:name==='張梁'?12:8));assert.ok(b.effects.some(e=>e.type===(name==='張梁'?'wind':'rain')));if(!dodge)assert.ok(name==='張梁'?u.x<.1:u.slowUntil>b.time);
  }
 });
+
+test('main commander breach loses even with two lives, without granting rewards',async()=>{
+ const {createBattle,stepBattle,normalizeProgress}=await engine;
+ const b=createBattle(1);b.bossSpawned=true;b.enemies=[{id:90,lane:0,x:.024,hp:100,maxHp:100,boss:true,name:'黃巾前哨',lastAttack:0,speed:.02}];
+ stepBattle(b,.1);assert.equal(b.lives,2);assert.equal(b.over,true);assert.equal(b.won,false);assert.equal(b.lossReason,'commander-breach');
+ const p=normalizeProgress();if(b.won)(await import('../../hero/campaign.mjs')).rewardVictory(p,1);assert.equal(p.completed,0);assert.equal(p.coins,0);
+});
+test('ordinary and support breaches keep the existing three-life rule',async()=>{
+ const {createBattle,stepBattle}=await engine;
+ for(const support of [false,true]){const b=createBattle(8);b.nextSpawn=Infinity;b.enemies=[{id:90,lane:0,x:.024,hp:100,maxHp:100,boss:support,support,name:support?'張梁':'黃巾刀賊',lastAttack:0,speed:.02}];stepBattle(b,.1);assert.equal(b.lives,2);assert.equal(b.over,false);assert.equal(b.lossReason,undefined);}
+});
+test('a defeated commander still wins after an earlier ordinary breach',async()=>{
+ const {createBattle,stepBattle}=await engine,b=createBattle(1);b.bossSpawned=true;b.lives=2;b.enemies=[{id:90,lane:1,x:.4,hp:0,maxHp:100,boss:true,name:'黃巾前哨'}];stepBattle(b,.1);assert.equal(b.won,true);
+});
+test('seven duel matchups have distinct ordered choreography',async()=>{
+ const {duelBeats}=await engine,{STAGES}=await import('../../hero/story.mjs');const sequences=STAGES.filter(s=>s.duelHero).map(s=>duelBeats({bossName:s.bossName,outcome:s.duelOutcome}));
+ assert.equal(sequences.length,7);assert.equal(new Set(sequences.map(beats=>JSON.stringify(beats.map(b=>[b.at,b.side,b.damage])))).size,7);
+ for(const beats of sequences){assert.ok(beats.every((b,i)=>!i||b.at>beats[i-1].at));assert.equal(beats.filter(b=>b.side==='finish').length,1);assert.ok(Math.abs(beats.filter(b=>b.side!=='finish').reduce((sum,b)=>sum+(b.damage||0),0)-.3)<1e-8);}
+});
+for(const level of [3,4,5,7,8,9,10])test(`duel ${level} counters hit once at impact, freeze and preserve the intended outcome`,async()=>{
+ const {createBattle,deploy,stepBattle,skipDuelEntrance,duelBeats}=await engine,{STAGES}=await import('../../hero/story.mjs');const stage=STAGES[level-1],b=createBattle(level);b.nextSpawn=Infinity;deploy(b,stage.duelHero,1);const hero=b.allies[0];hero.hp=hero.maxHp*.8;
+ const boss={id:90,lane:1,x:.17,hp:30,maxHp:stage.bossHp,boss:true,name:stage.bossName};b.enemies=[boss];b.bossSpawned=true;stepBattle(b,.1);assert.ok(b.duel);skipDuelEntrance(b);
+ const counter=duelBeats(b.duel).find(x=>x.heroDamage),hp=hero.hp,time=b.time,food=b.food;
+ while(b.duel.elapsed+.1<counter.at+.6-1e-8)stepBattle(b,.1);
+ assert.equal(hero.hp,hp);b.paused=true;for(let i=0;i<50;i++)stepBattle(b,.1);assert.equal(hero.hp,hp);assert.equal(b.time,time);assert.equal(b.food,food);b.paused=false;
+ stepBattle(b,.1);assert.ok(Math.abs(hero.hp-(hp-hero.maxHp*.03))<1e-8);
+ for(let i=0;i<3;i++)stepBattle(b,.1);assert.ok(Math.abs(hero.hp-(hp-hero.maxHp*.03))<1e-8);
+ while(b.duel)stepBattle(b,.1);assert.ok(Math.abs(hero.hp-(hp-hero.maxHp*.06))<1e-8);assert.equal(boss.hp,0);stepBattle(b,.1);assert.equal(b.won,true);assert.equal(!!b.bossRetreated,level===10);
+});
+test('scripted duel counters never kill a hero entering with one HP',async()=>{
+ const {createBattle,deploy,stepBattle,skipDuelEntrance}=await engine,b=createBattle(5);b.nextSpawn=Infinity;deploy(b,'liubei',1);b.allies[0].hp=1;b.enemies=[{id:90,lane:1,x:.17,hp:30,maxHp:290,boss:true,name:'石魁'}];stepBattle(b,.1);skipDuelEntrance(b);while(b.duel)stepBattle(b,.1);assert.equal(b.allies[0].hp,1);
+});
