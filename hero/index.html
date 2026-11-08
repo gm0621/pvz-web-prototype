@@ -6,7 +6,7 @@
  <title>英雄演義｜桃園同心</title>
  <link rel="icon" href="../assets/brand/favicon.png">
  <link rel="preload" as="image" href="./assets/scenes/peach-garden.jpg">
- <link rel="stylesheet" href="game.css?v=novel-camp-1">
+ <link rel="stylesheet" href="game.css?v=battle-refresh-1">
 <style>.orders{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}.orders span{flex-basis:100%;font-size:13px}.orders button{min-height:44px;min-width:64px;padding:8px 12px;border:1px solid #9aab88;border-radius:8px;background:#faf0d5;color:#244332}.orders button:disabled{opacity:.45}.unit.retreating .unit-figure{animation:unit-march .42s ease-in-out infinite}</style>
 <link rel="stylesheet" href="duel.css?v=novel-camp-1">
 <link rel="stylesheet" href="novel-camp.css?v=camp-return-1">
@@ -23,7 +23,7 @@
  </audio>
  <audio data-music-mode="story" loop preload="metadata" hidden><source src="./assets/audio/scenes/story-reading.m4a?v=scene-audio-2" type="audio/mp4"></audio>
  <audio data-music-mode="prepare" loop preload="metadata" hidden><source src="./assets/audio/scenes/prepare.m4a?v=scene-audio-2" type="audio/mp4"></audio>
- <audio data-music-mode="battle" loop preload="metadata" hidden><source src="./assets/audio/scenes/battle-lively.m4a?v=scene-audio-2" type="audio/mp4"></audio>
+ <audio data-music-mode="battle" loop preload="metadata" hidden><source src="./assets/audio/scenes/battle-light.m4a?v=battle-light-1" type="audio/mp4"></audio>
  <audio data-music-mode="duel" loop preload="metadata" hidden><source src="./assets/audio/scenes/duel.m4a?v=scene-audio-2" type="audio/mp4"></audio>
  <audio data-music-mode="camp" loop preload="metadata" hidden><source src="./assets/audio/scenes/camp.m4a?v=scene-audio-2" type="audio/mp4"></audio>
  <audio data-music-mode="victory" loop preload="metadata" hidden><source src="./assets/audio/scenes/victory.m4a?v=scene-audio-2" type="audio/mp4"></audio>
@@ -92,6 +92,6 @@
  <dialog id="duelDialog" class="duel-dialog" aria-labelledby="duelTitle"><span class="eyebrow">武將交鋒 · 自動單挑</span><h2 id="duelTitle"></h2><div id="duelCombat"><div class="duel-enemy-talk"><img id="duelEnemyFace" alt=""><p id="duelEnemyLine"></p></div><div class="duel-portraits"><img id="duelHero" alt=""><span>交鋒</span><img id="duelEnemy" alt="敵將"></div><div class="duel-health" aria-label="敵將生命"><i id="duelHp"></i></div><p id="duelCallout" role="status"></p><p id="duelCaption"></p><div class="duel-hero-talk"><img id="duelHeroFace" alt=""><p id="duelDialogue" aria-live="polite"></p></div><small id="duelOutcomeNote">終結一擊斬殺敵將・其餘敵兵仍需清除</small></div><div id="duelVersus" hidden aria-label="雙將對峙開場"><div class="versus-rays" aria-hidden="true"></div><div class="versus-side versus-ally"><img id="versusHero" alt=""><div class="versus-name"><small id="versusHeroTitle"></small><strong id="versusHeroName"></strong><span id="versusHeroWeapon"></span></div></div><div class="versus-side versus-foe"><img id="versusEnemy" alt=""><div class="versus-name"><small id="versusEnemyTitle"></small><strong id="versusEnemyName"></strong><span id="versusEnemyWeapon"></span></div></div><div class="versus-cut" aria-hidden="true"></div><div class="versus-ring" aria-hidden="true"></div><strong class="versus-seal" aria-hidden="true">對決</strong><div class="versus-sparks" aria-hidden="true"></div><p id="versusCallout"></p><div class="versus-progress" aria-hidden="true"><i></i></div></div><div class="duel-controls"><button id="duelEnter" class="quiet-button" hidden>略過開場 →</button><button id="duelPause" class="quiet-button">暫停單挑</button></div></dialog>
  <p id="storageNotice" class="storage-notice" role="status" hidden>此瀏覽器目前無法保存進度，關閉後可能需要重玩。</p>
 
- <script type="module" src="app.mjs?v=camp-return-1"></script>
+ <script type="module" src="app.mjs?v=battle-refresh-1"></script>
 </body>
 </html>

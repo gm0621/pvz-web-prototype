@@ -11,7 +11,6 @@ test('duel renders attack frames, counter, block and a lethal finisher on mobile
   await expect(page.locator('#duelDialog')).toHaveAttribute('data-beat',beat);
  }
  await expect(page.locator('#duelCallout')).toHaveText('敵將討取');await expect(page.locator('#duelHp')).toHaveAttribute('style',/width: 0%/);
- await expect.poll(()=>page.evaluate(async()=>{const a=await import('/hero/audio.mjs?v=scene-audio-2');return a.audioStatus().voice})).toBe('zhangfei-victory');
  await page.evaluate(()=>{const {b,v}=window.fixture;b.duel.elapsed=5.4;v.renderDuel(b)});
  await expect(page.locator('#duelEnemySprite')).toHaveAttribute('data-frame','2');await expect(page.locator('#duelSprite')).toHaveAttribute('data-dodging','true');
  await page.screenshot({path:testInfo.outputPath('counter-dodge.png')});

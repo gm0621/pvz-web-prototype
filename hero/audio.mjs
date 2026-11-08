@@ -1,18 +1,16 @@
 // Recorded scene themes use one music bus; the per-stage synth remains the fallback when media playback is unavailable.
-let context,musicBus,sfxBus,timer=null,step=0,enabled=false,sfx=true,revision=0,scene=0,recordedMode='home',lastVoice=null;
-const recordedTracks=new Map(),recordedSources=[],voiceBuffers=new Map();
+let context,musicBus,sfxBus,timer=null,step=0,enabled=false,sfx=true,revision=0,scene=0,recordedMode='home';
+const recordedTracks=new Map(),recordedSources=[];
 export const RECORDED_THEMES={
  home:{name:'桃園歡宴',instrument:'笛、琵琶與揚琴'},
  story:{name:'桃園說書',instrument:'輕笛與撥弦'},
  prepare:{name:'整軍出發',instrument:'琵琶與輕鼓'},
- battle:{name:'義軍疾行',instrument:'快笛與戰鼓'},
+ battle:{name:'晴野行軍',instrument:'明亮笛聲、琵琶與輕鼓'},
  duel:{name:'陣前爭鋒',instrument:'急鼓、號角與快撥弦'},
  camp:{name:'軍帳小聚',instrument:'木魚與撥弦'},
  victory:{name:'凱歌同樂',instrument:'揚琴與節慶鼓'}
 };
 export const MENU_THEME=RECORDED_THEMES.home;
-const VOICE_URLS={};
-for(const hero of ['liubei','guanyu','zhangfei'])for(const kind of ['shout','victory'])VOICE_URLS[`${hero}-${kind}`]=`./assets/audio/voices/${hero}-${kind}.m4a?v=scene-audio-2`;
 export const THEMES=[
  {name:'桃園出陣',instrument:'撥弦、戰鼓與號角',root:62,beat:250,drum:8,notes:[0,4,7,9,12,9,7,null,4,7,4,2,0,null,2,4]},
  {name:'山道交鋒',instrument:'撥弦、戰鼓與號角',root:69,beat:240,drum:4,notes:[7,9,12,null,9,7,4,2,4,null,7,4,2,0,null,0]},
@@ -27,7 +25,7 @@ export const THEMES=[
 ];
 const hz=n=>440*2**((n-69)/12);
 export function musicTheme(){return RECORDED_THEMES[recordedMode]||THEMES[scene]}
-export function audioStatus(){return {state:context?.state||'locked',music:enabled,sfx,theme:musicTheme().name,source:recordedMode?`${recordedMode}-recording`:'stage-synth',voice:lastVoice}}
+export function audioStatus(){return {state:context?.state||'locked',music:enabled,sfx,theme:musicTheme().name,source:recordedMode?`${recordedMode}-recording`:'stage-synth'}}
 export function setMusicMode(mode,level=scene+1){const next=Math.max(0,Math.min(THEMES.length-1,Math.trunc(Number(level)||1)-1)),nextMode=RECORDED_THEMES[mode]?mode:null,changed=nextMode!==recordedMode||next!==scene;recordedMode=nextMode;scene=next;if(!changed)return;step=0;if(enabled)void setMusic(true)}
 export function setMusicScene(level){setMusicMode(null,level)}
 export function setMusicHome(){setMusicMode('home',1)}
@@ -52,10 +50,7 @@ function tick(){
 export async function setMusic(on){init();const request=++revision;enabled=on;for(const track of recordedTracks.values())track.pause();musicBus.disconnect();if(timer){clearInterval(timer);timer=null}musicBus.gain.cancelScheduledValues(context.currentTime);musicBus.gain.setValueAtTime(0,context.currentTime);if(!on)return false;try{await context.resume();if(!enabled||request!==revision)return false;musicBus.connect(context.destination);musicBus.gain.setValueAtTime(recordedMode==='home' ? .42 : recordedMode ? .36 : .32,context.currentTime);const track=recordedTracks.get(recordedMode);if(track){let recorded=true;try{await track.play()}catch{recorded=false}if(!enabled||request!==revision){if(!enabled)track.pause();return false}if(!recorded){tick();timer=setInterval(tick,THEMES[scene].beat)}}else{tick();timer=setInterval(tick,musicTheme().beat)}return enabled}catch{if(request===revision)enabled=false;return enabled}}
 export function musicOn(){return enabled}
 export function setSfx(on){sfx=on;if(sfxBus)sfxBus.gain.value=on?.7:0}
-async function loadVoice(hero,kind){const key=`${hero}-${kind}`,url=VOICE_URLS[key];if(!url)throw new Error('unknown voice');if(!voiceBuffers.has(key))voiceBuffers.set(key,fetch(url).then(response=>{if(!response.ok)throw new Error('voice load failed');return response.arrayBuffer()}).then(data=>init().decodeAudioData(data)));return voiceBuffers.get(key)}
-export function preloadHeroVoices(){for(const key of Object.keys(VOICE_URLS)){const [hero,kind]=key.split('-');void loadVoice(hero,kind).catch(()=>{})}}
-export async function heroVoice(hero,kind='shout'){const key=`${hero}-${kind}`;if(!sfx||document.hidden||!VOICE_URLS[key])return false;if(init().state!=='running'&&!await unlockAudio())return false;try{const buffer=await loadVoice(hero,kind);if(!sfx||document.hidden)return false;const source=context.createBufferSource(),gain=context.createGain();source.buffer=buffer;gain.gain.value=hero==='zhangfei' ? .95 : hero==='guanyu' ? .84 : .8;source.connect(gain);gain.connect(sfxBus);source.start();lastVoice=key;source.onended=()=>{source.disconnect();gain.disconnect()};return true}catch{return false}}
-export async function unlockAudio(){try{await init().resume();preloadHeroVoices();return context.state==='running'}catch{return false}}
+export async function unlockAudio(){try{await init().resume();return context.state==='running'}catch{return false}}
 export async function hitSound(kind='slash'){
  if(!sfx||document.hidden)return false;
  // Retry browser audio unlocking instead of silently discarding the first strike.

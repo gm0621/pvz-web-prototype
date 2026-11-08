@@ -249,6 +249,16 @@ test('early enemy troops can counterattack held melee heroes before dying',async
  }
 });
 
+test('later stages add visible cross-lane raiders without advancing the normal wave counter twice',async()=>{
+ const {createBattle,stepBattle}=await engine,{STAGES}=await import('../../hero/story.mjs');
+ for(const level of [3,6,10]){
+  const stage=STAGES[level-1],threshold=Math.max(3,Math.ceil(stage.enemyCount*.35)),b=createBattle(level,42);
+  b.spawned=threshold-1;b.nextSpawn=0;stepBattle(b,.1);
+  const normal=b.enemies.find(e=>!e.elite&&!e.boss),raider=b.enemies.find(e=>e.elite);
+  assert.ok(raider,`level ${level} spawns a raider`);assert.equal(raider.name,'黃巾疾行兵');assert.notEqual(raider.lane,normal.lane);assert.ok(raider.speed>normal.speed);assert.equal(b.spawned,threshold);assert.match(b.notice,/突襲.*換路補位/);assert.match(b.skillNotice.text,/突襲.*疾行兵/);
+ }
+});
+
 test('all three brothers can deploy together or converge into one lane',async()=>{
  const {createBattle,deploy,moveHero,laneCount}=await engine;
  for(const regroup of [false,true]){const b=createBattle(1);for(const [i,key] of ['liubei','guanyu','zhangfei'].entries()){b.food=300;assert.equal(deploy(b,key,regroup?i:1),true)}

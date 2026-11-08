@@ -94,6 +94,15 @@ function spawn(b){
  const heavy=!boss&&b.level>=UNLOCKS.shields&&b.spawned%4===3;
  const hp=boss?stage.bossHp:Math.round(48+Math.min(6,b.level)*6+(heavy?35:0));
  b.enemies.push({id:b.nextId++,lane,x:.94,hp,maxHp:hp,boss,name:boss?stage.bossName:heavy?'黃巾盾賊':'黃巾刀賊',shielded:heavy||(boss&&b.level===5),stunnedUntil:0,damage:boss?17+Math.min(6,b.level):7+Math.min(6,b.level),rate:boss?1.6:1.5,speed:boss?.019:.027+random(b)*.004,lastAttack:b.time,flash:0,action:'marching'});
+ if(!boss&&b.level>=3){
+  const number=b.spawned+1,ambushes=[Math.max(3,Math.ceil(stage.enemyCount*.35)),Math.max(6,Math.ceil(stage.enemyCount*.7))];
+  if(ambushes.includes(number)){
+   const raidLane=(lane+(number%2?1:2))%3,raidHp=Math.round(35+Math.min(10,b.level)*3);
+   b.enemies.push({id:b.nextId++,lane:raidLane,x:.97,hp:raidHp,maxHp:raidHp,boss:false,elite:true,name:'黃巾疾行兵',shielded:false,stunnedUntil:0,damage:8+Math.min(6,b.level),rate:1.25,speed:.042+random(b)*.003,lastAttack:b.time,flash:0,action:'marching'});
+   b.notice=`黃巾突襲！疾行兵從${['上','中','下'][raidLane]}路逼近，快換路補位！`;b.noticeUntil=b.time+4;
+   b.skillNotice={key:'enemy',text:`黃巾突襲・${['上','中','下'][raidLane]}路疾行兵！`,until:b.time+2.5};
+  }
+ }
  if(b.level===8&&!boss)for(const general of Object.values(WEATHER_GENERALS))if(b.spawned===general.spawnAt){b.enemies.push({id:b.nextId++,lane:general.lane,x:.94,hp:general.hp,maxHp:general.hp,boss:true,support:true,name:general.name,damage:10,rate:1.8,speed:.022,lastAttack:b.time,flash:0,stunnedUntil:0});b.skillNotice={key:'enemy',text:`${general.title}・${general.name}出陣！${general.skillName}`,until:b.time+4};}
  if(boss){b.bossSpawned=true;b.introPending=true;}else b.spawned++;
  b.nextSpawn=b.time+stage.interval;
