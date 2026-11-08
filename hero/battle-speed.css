@@ -1,0 +1,4 @@
+.battle-speed{display:flex;align-items:center;gap:6px;font-size:13px;color:#254335;white-space:nowrap;margin-left:auto}
+.battle-speed select{min-height:44px;min-width:82px;border:1px solid #9b884e;border-radius:9px;padding:8px 10px;background:#fff4d5;color:#254335;font-family:inherit;font-size:15px;font-weight:700;cursor:pointer}
+.battle-speed select:focus-visible{outline:3px solid #215d80;outline-offset:2px}
+@media(max-width:700px){body.battle-focus .battle-top{flex-wrap:wrap;gap:7px}.battle-speed{font-size:12px}.battle-speed select{min-width:76px;padding:8px}}

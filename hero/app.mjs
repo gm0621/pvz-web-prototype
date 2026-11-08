@@ -1,3 +1,4 @@
+import {advanceBattleFrame,normalizeBattleSpeed} from './battle-speed.mjs?v=battle-speed-1';
 import {mountNovel} from './novel.mjs?v=novel-camp-1';
 import {mountCamp} from './camp-view.mjs?v=camp-return-1';
 import {rewardVictory,useSupply} from './campaign.mjs?v=novel-camp-1';
@@ -7,11 +8,11 @@ import {CHAPTER_BACKGROUNDS,STAGE_LEADS} from './prologue.mjs?v=novel-camp-1';
 import {setMusic,setMusicMode,setMusicHome,musicTheme,musicOn,setSfx,unlockAudio,hitSound} from './audio.mjs?v=scene-audio-3';
 import {renderDuel} from './duel-view.mjs?v=duel-cinema-1';
 import {chapterInfo,enemyArt,HEROES,STAGES,ENEMY_ART,SHIELD_ART,FEATURES,heroDescription} from './story.mjs?v=storm-battle-1';
-import {bossProfile,LANE_CAPACITY,laneCount,ENEMY_SWING,enemyAttackFrame,skipDuelEntrance,positionHero,commandHero,moveHero,BOSS_SKILLS,SAVE_KEY,normalizeProgress,createBattle,deploy,canDeploy,stepBattle,attackFrame,SWING} from './engine.mjs?v=duel-cinema-1';
+import {bossProfile,LANE_CAPACITY,laneCount,ENEMY_SWING,enemyAttackFrame,skipDuelEntrance,positionHero,commandHero,moveHero,BOSS_SKILLS,SAVE_KEY,normalizeProgress,createBattle,deploy,canDeploy,attackFrame,SWING} from './engine.mjs?v=duel-cinema-1';
 
 const $=id=>document.getElementById(id);
 const GENERAL_ATTACK_SHEETS={'張梁':'zhang-liang.png','張寶':'zhang-bao.png'};
-let firstGuide=null;
+let firstGuide=null,battleSpeed=1;
 let progress,screen='home',battle=null,selected=null,selectedUnitId=null,storyLevel=1,lineIndex=0,storyPhase='opening',lastFrame=0,resultShown=false,duelShown=false;
 try{progress=normalizeProgress(JSON.parse(localStorage.getItem(SAVE_KEY)||'{}'))}catch{progress=normalizeProgress()}
 function saveProgress(){try{localStorage.setItem(SAVE_KEY,JSON.stringify(progress));$('storageNotice').hidden=true;return true}catch{$('storageNotice').hidden=false;return false}}
@@ -173,7 +174,7 @@ function showResult(){
 function openCamp(level,won){setMusicMode('camp',level);syncMusicButton();show('camp');mountCamp({progress,level,won,heroes:HEROES,stage:STAGES[level-1],onSave:saveProgress,onContinue:()=>won?startStory(level,'ending'):beginBattle(level)});$('campTitle').tabIndex=-1;$('campTitle').focus({preventScroll:true})}
 function frame(now){
  const dt=Math.min(.1,Math.max(0,(now-lastFrame)/1000));lastFrame=now;
- if(screen==='battle'&&battle&&!battle.over){stepBattle(battle,dt*(battle.duel?.805:.7));renderBattle()}
+ if(screen==='battle'&&battle&&!battle.over){advanceBattleFrame(battle,dt,battleSpeed);renderBattle()}
  requestAnimationFrame(frame);
 }
 $('startBtn').onclick=()=>{if(battle&&!battle.over){setMusicMode('battle',battle.level);syncMusicButton();show('battle');setPause(false);renderBattle()}else startStory(progress.completed<STAGES.length?progress.completed+1:1)};
@@ -185,6 +186,7 @@ $('resultNext').onclick=()=>openCamp(battle.level,battle.won);
 
 for(const button of $('supplies').children)button.onclick=()=>{if(useSupply(battle,progress,button.dataset.supply)){saveProgress();hitSound('heal');renderBattle()}};
 for(const button of document.querySelectorAll('[data-home]'))button.onclick=goHome;
+$('battleSpeed').onchange=()=>{battleSpeed=normalizeBattleSpeed($('battleSpeed').value);$('battleSpeed').value=String(battleSpeed)};
 $('pauseBtn').onclick=()=>setPause(!battle.paused);$('resumeBtn').onclick=()=>setPause(false);
 $('duelDialog').addEventListener('cancel',event=>event.preventDefault());
 document.addEventListener('visibilitychange',()=>{if(document.hidden&&battle&&!battle.over)setPause(true)});
