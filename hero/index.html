@@ -15,6 +15,8 @@
  <link rel="stylesheet" href="troop-controls.css?v=troop-control-1">
  <link rel="stylesheet" href="settlement.css?v=settlement-1">
  <link rel="stylesheet" href="weather-battle.css?v=storm-battle-1">
+ <link rel="stylesheet" href="story-layout.css?v=story-layout-1">
+ <link rel="stylesheet" href="home-menu.css?v=home-menu-1">
 </head>
 <body>
  <audio id="menuBgm" data-music-mode="home" loop preload="metadata" hidden>
@@ -30,7 +32,7 @@
  <header class="site-bar"><span class="wordmark">英雄演義 <small>桃園同心</small></span><button id="musicBtn" class="quiet-button" aria-pressed="false">♫ 音樂：關</button><button id="soundTest" class="quiet-button">試聽音效</button></header><p id="audioNotice" role="status" class="audio-notice"></p>
  <main>
   <section id="home" class="screen home active" aria-labelledby="homeTitle">
-   <div class="home-copy"><span class="eyebrow">一段誓言，一場英雄之旅</span><h1 id="homeTitle">英雄<span>演義</span></h1><p class="home-lead">從一片桃園，走進三國。</p><p class="home-description">與劉備、關羽、張飛並肩出征。<br>選一名英雄，守好三條路。</p><div class="chapter-label">第一章 · 桃園結義　／　第二章 · 烽火與義氣</div><button id="startBtn" class="gold-button">開始故事 <span>→</span></button><p id="homeProgress" class="subtle"></p><details id="chapterPicker" class="chapter-book"><summary>展開章回目錄 <span>選關・重溫故事</span></summary><nav id="chapterTabs" aria-label="選擇章節"></nav><div id="chapterDots" aria-label="關卡列表"></div></details></div>
+   <div class="home-copy"><span class="eyebrow">一段誓言，一場英雄之旅</span><h1 id="homeTitle">英雄<span>演義</span></h1><p class="home-lead">從一片桃園，走進三國。</p><p class="home-description">與劉備、關羽、張飛並肩出征。<br>選一名英雄，守好三條路。</p><div class="chapter-label">第一章 · 桃園結義　／　第二章 · 烽火與義氣</div><button id="startBtn" class="gold-button">開始故事 <span>→</span></button><p id="homeProgress" class="subtle"></p><details id="chapterPicker" class="chapter-book"><summary><div><strong>選擇章回</strong><span>展開關卡目錄 · 選關與重溫故事</span></div></summary><nav id="chapterTabs" aria-label="選擇章節"></nav><div id="chapterDots" aria-label="關卡列表"></div></details></div>
    <div class="home-art" aria-label="劉備、關羽與張飛"><div class="peach-disc"></div><img class="hero-side hero-left" src="./assets/zhangfei.png" alt="張飛"><img class="hero-side hero-right" src="./assets/guanyu.webp" alt="關羽"><img class="hero-center" src="./assets/liubei.png" alt="劉備"><div class="oath-seal">桃園<br>同心</div><span class="art-caption">同心協力 · 救困扶危</span></div>
    <p class="home-foot">三路布陣 <i>·</i> 四張兵卡 <i>·</i> 自動交鋒</p>
   </section>
