@@ -347,3 +347,31 @@ for(const level of [3,4,5,7,8,9,10])test(`finisher ${level} keeps HP through win
  assert.ok(boss.hp>0);stepBattle(b,.05);assert.equal(boss.hp,0);assert.equal(duelPose(b.duel).defeat,0);
  while(b.duel)stepBattle(b,.1);
 });
+
+for(const fps of [10,30,60])test(`battle speed scales the common simulation clock at ${fps} FPS`,async()=>{
+ const {createBattle}=await engine;const {advanceBattleFrame}=await import('../../hero/battle-speed.mjs');
+ for(const speed of [1,1.5,2]){
+  const b=createBattle(1);b.nextSpawn=Infinity;b.food=0;
+  for(let i=0;i<fps;i++)advanceBattleFrame(b,1/fps,speed);
+  assert.ok(Math.abs(b.time-.7*speed)<1e-8);assert.ok(Math.abs(b.food-12*.7*speed)<1e-8);
+ }
+});
+test('speed changes take effect immediately, never unpause, and do not advance boss introductions',async()=>{
+ const {createBattle}=await engine;const {advanceBattleFrame,normalizeBattleSpeed}=await import('../../hero/battle-speed.mjs');
+ const b=createBattle(1);b.nextSpawn=Infinity;advanceBattleFrame(b,.1,1);advanceBattleFrame(b,.1,2);assert.ok(Math.abs(b.time-.21)<1e-8);
+ for(const flag of ['paused','introPending']){b[flag]=true;const frozen=JSON.stringify(b);advanceBattleFrame(b,.1,2);assert.equal(JSON.stringify(b),frozen);b[flag]=false}
+ for(const bad of [0,3,NaN,Infinity,'bad'])assert.equal(normalizeBattleSpeed(bad),1);
+});
+test('duels and their entrance keep the original pace at all selected speeds',async()=>{
+ const {createBattle,deploy,stepBattle,skipDuelEntrance}=await engine;const {advanceBattleFrame}=await import('../../hero/battle-speed.mjs');
+ for(const speed of [1,1.5,2]){
+  const b=createBattle(3);b.nextSpawn=Infinity;deploy(b,'zhangfei',1);b.enemies=[{...testEnemy(90,.17),boss:true,name:'鄧茂'}];stepBattle(b,.1);
+  const time=b.time,food=b.food;advanceBattleFrame(b,.1,speed);assert.ok(Math.abs(b.duel.entranceElapsed-.0805)<1e-8);
+  skipDuelEntrance(b);advanceBattleFrame(b,.1,speed);assert.ok(Math.abs(b.duel.elapsed-.0805)<1e-8);assert.equal(b.time,time);assert.equal(b.food,food);
+ }
+});
+test('2x frame crossing into a duel uses normal speed for the rest of that frame',async()=>{
+ const {createBattle,deploy}=await engine;const {advanceBattleFrame}=await import('../../hero/battle-speed.mjs');
+ const b=createBattle(3);b.nextSpawn=Infinity;deploy(b,'zhangfei',1);b.enemies=[{...testEnemy(90,.17),boss:true,name:'鄧茂'}];
+ advanceBattleFrame(b,.1,2);assert.ok(b.duel);assert.ok(Math.abs(b.duel.entranceElapsed-(.1-.1/1.4)*.805)<1e-8);
+});

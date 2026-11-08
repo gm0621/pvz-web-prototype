@@ -18,6 +18,7 @@
  <link rel="stylesheet" href="story-layout.css?v=story-layout-1">
  <link rel="stylesheet" href="home-menu.css?v=home-menu-1">
  <link rel="stylesheet" href="duel-cinematic.css?v=duel-cinema-1">
+ <link rel="stylesheet" href="battle-speed.css?v=battle-speed-1">
 </head>
 <body>
  <audio id="menuBgm" data-music-mode="home" loop preload="metadata" hidden>
@@ -64,7 +65,7 @@
    <p id="storyAdaptation" class="story-footnote">劇情依《三國演義》改編 · 點「下一句」繼續</p>
   </section>
   <section id="battle" class="screen battle" aria-labelledby="battleTitle" hidden>
-   <div class="battle-top"><button class="home-button" data-home>← 回主選單</button><div><span id="battleChapter" class="eyebrow"></span><h2 id="battleTitle"></h2><span id="featureBadge" class="feature-badge"></span></div><button id="pauseBtn" class="quiet-button" aria-pressed="false">Ⅱ 暫停</button></div>
+   <div class="battle-top"><button class="home-button" data-home>← 回主選單</button><div><span id="battleChapter" class="eyebrow"></span><h2 id="battleTitle"></h2><span id="featureBadge" class="feature-badge"></span></div><label class="battle-speed" title="一般戰鬥速度；單挑維持原速">速度 <select id="battleSpeed" aria-label="戰鬥速度（單挑維持原速）"><option value="1">1×</option><option value="1.5">1.5×</option><option value="2">2×</option></select></label><button id="pauseBtn" class="quiet-button" aria-pressed="false">Ⅱ 暫停</button></div>
    <div class="battle-stats"><span>🌾 軍糧 <strong id="food">220</strong><small>自動補給</small></span><span id="waveText"></span><span id="lives" aria-label="剩餘防線">♥ ♥ ♥</span></div>
    <div id="bossHud" class="boss-hud" hidden><strong id="bossHudName"></strong><span id="bossHudState"></span><div class="boss-hud-track"><i id="bossHudHp"></i></div></div>
    <p id="battleNotice" class="battle-notice" role="status" aria-live="polite">點選兵卡，再點一路出兵。</p>
@@ -95,6 +96,6 @@
  <dialog id="duelDialog" class="duel-dialog" aria-labelledby="duelTitle"><span class="eyebrow">武將交鋒 · 自動單挑</span><h2 id="duelTitle"></h2><div id="duelCombat"><div class="duel-enemy-talk"><img id="duelEnemyFace" alt=""><p id="duelEnemyLine"></p></div><div class="duel-portraits"><img id="duelHero" alt=""><span>交鋒</span><img id="duelEnemy" alt="敵將"></div><div class="duel-vitals"><div><strong id="duelHeroHpText"></strong><div id="duelHeroHealth" class="duel-health ally-health" role="progressbar" aria-valuemin="0"><i id="duelHeroHp"></i></div></div><div><strong id="duelEnemyHpText"></strong><div id="duelEnemyHealth" class="duel-health" role="progressbar" aria-valuemin="0"><i id="duelHp"></i></div></div></div><p id="duelStyle" class="duel-style"></p><p id="duelCallout" role="status"></p><p id="duelCaption"></p><div class="duel-hero-talk"><img id="duelHeroFace" alt=""><p id="duelDialogue" aria-live="polite"></p></div><small id="duelOutcomeNote">終結一擊斬殺敵將・其餘敵兵仍需清除</small></div><div id="duelVersus" hidden aria-label="雙將對峙開場"><div class="versus-rays" aria-hidden="true"></div><div class="versus-side versus-ally"><img id="versusHero" alt=""><div class="versus-name"><small id="versusHeroTitle"></small><strong id="versusHeroName"></strong><span id="versusHeroWeapon"></span></div></div><div class="versus-side versus-foe"><img id="versusEnemy" alt=""><div class="versus-name"><small id="versusEnemyTitle"></small><strong id="versusEnemyName"></strong><span id="versusEnemyWeapon"></span></div></div><div class="versus-cut" aria-hidden="true"></div><div class="versus-ring" aria-hidden="true"></div><strong class="versus-seal" aria-hidden="true">對決</strong><div class="versus-sparks" aria-hidden="true"></div><p id="versusCallout"></p><div class="versus-progress" aria-hidden="true"><i></i></div></div><div class="duel-controls"><button id="duelEnter" class="quiet-button" hidden>略過開場 →</button><button id="duelPause" class="quiet-button">暫停單挑</button></div></dialog>
  <p id="storageNotice" class="storage-notice" role="status" hidden>此瀏覽器目前無法保存進度，關閉後可能需要重玩。</p>
 
- <script type="module" src="app.mjs?v=duel-cinema-1"></script>
+ <script type="module" src="app.mjs?v=battle-speed-1"></script>
 </body>
 </html>
