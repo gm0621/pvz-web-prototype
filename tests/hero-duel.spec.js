@@ -19,7 +19,7 @@ test('duel renders attack frames, counter, block and a lethal finisher on mobile
 
 test('Liu Bei has his own duel dialogue, enemy mace poses and finishing move',async({page},info)=>{
  await page.goto('/hero/');await page.evaluate(async()=>{const e=await import('/hero/engine.mjs?v=yellow-boss-2'),v=await import('/hero/duel-view.mjs?v=yellow-boss-2');const b=e.createBattle(5,1);b.nextSpawn=Infinity;e.deploy(b,'liubei',1);b.enemies.push({id:90,lane:1,x:.17,hp:180,maxHp:290,boss:true,name:'石魁'});e.stepBattle(b,.1);window.fixture={b,e,v};document.getElementById('duelTitle').textContent='劉備 對 石魁';document.getElementById('duelHero').alt='劉備';document.getElementById('duelDialog').showModal();v.renderDuel(b)});
- await expect(page.locator('#duelDialogue')).toContainText('石魁');
+ await expect(page.locator('#duelEnemyLine')).toContainText('石魁');
  await page.evaluate(()=>{const {b,e,v}=window.fixture;while(b.duel.elapsed<5.4)e.stepBattle(b,.05);v.renderDuel(b)});await expect(page.locator('#duelEnemySprite')).toHaveAttribute('style',/shi-kui/);await expect(page.locator('#duelCaption')).toContainText('重錘');await page.screenshot({path:info.outputPath('liubei-duel.png')});
  await page.evaluate(()=>{const {b,e,v}=window.fixture;while(b.duel.elapsed<12)e.stepBattle(b,.05);v.renderDuel(b)});await expect(page.locator('#duelCallout')).toHaveText('雙劍破陣！');await expect(page.locator('#duelDialogue')).toContainText('劉備');
 });

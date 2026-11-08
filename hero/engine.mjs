@@ -1,13 +1,17 @@
-import {HEROES,STAGES,UNLOCKS,FEATURES} from './story.mjs?v=hold-guide-1';
+import {campaignState,weaponBonus} from './campaign.mjs?v=novel-camp-1';
+import {heroSkill} from './skills.mjs?v=novel-camp-1';
+import {HEROES,STAGES,UNLOCKS,FEATURES} from './story.mjs?v=novel-camp-1';
 
 export const SWING={duration:.58,impact:.24,frameTime:.08,frames:6};
 export const DUEL_DURATION=15;
 export const DUEL_BEATS=[
  {at:0,text:'一騎當千',side:'ready'},
+ {at:1.5,text:'報上名來',side:'reply'},
  {at:3,text:'先聲奪人',side:'hero',damage:.12},
  {at:4.8,text:'敵將反擊',side:'enemy'},
  {at:6.2,text:'鏘！擋下了',side:'block'},
  {at:8,text:'破綻！連擊',side:'hero',damage:.18},
+ {at:9.1,text:'回馬再戰',side:'enemy'},
  {at:10,text:'蓄勢・決勝一擊',side:'charge'},
  {at:11.8,text:'一擊斬將',side:'finish',damage:1},
  {at:13,text:'敵將討取',side:'victory'}
@@ -51,11 +55,12 @@ export function moveHero(b,key,lane){
 }
 export function normalizeProgress(raw){
  const completed=Number(raw?.completed);
- return {version:1,completed:Number.isInteger(completed)?Math.max(0,Math.min(STAGES.length,completed)):0};
+ const count=Number.isInteger(completed)?Math.max(0,Math.min(STAGES.length,completed)):0;
+ return {version:1,completed:count,...campaignState(raw,count)};
 }
-export function createBattle(level,seed=Date.now()){
+export function createBattle(level,seed=Date.now(),weapons={}){
  if(!Number.isInteger(level)||!STAGES[level-1])throw new Error('關卡不存在');
- return {level,seed:seed>>>0,time:0,food:220,lives:3,spawned:0,nextSpawn:6,bossSpawned:false,allies:[],enemies:[],effects:[],hazards:[],oathUsed:false,skillNotice:null,cooldowns:{},nextId:1,paused:false,over:false,won:false,duel:null,duelSeen:false,notice:FEATURES[level-1].text,noticeUntil:8};
+ return {level,weapons:{...weapons},seed:seed>>>0,time:0,food:220,lives:3,spawned:0,nextSpawn:6,bossSpawned:false,allies:[],enemies:[],effects:[],hazards:[],oathUsed:false,skillNotice:null,cooldowns:{},nextId:1,paused:false,over:false,won:false,duel:null,duelSeen:false,notice:FEATURES[level-1].text,noticeUntil:8};
 }
 function random(b){b.seed=(Math.imul(b.seed,1664525)+1013904223)>>>0;return b.seed/4294967296}
 export function canDeploy(b,key,lane){
@@ -116,40 +121,40 @@ export function stepBattle(b,seconds){
    continue;
   }
   if(u.pendingCleave&&b.time+1e-8>=u.pendingCleave.impactAt){
-   for(const victim of b.enemies)if(victim.hp>0&&victim.lane===u.lane&&u.pendingCleave.ids.includes(victim.id)&&Math.abs(victim.x-u.x)<=.32){victim.hp-=45;victim.flash=.3}
+   for(const victim of b.enemies)if(victim.hp>0&&victim.lane===u.lane&&u.pendingCleave.ids.includes(victim.id)&&Math.abs(victim.x-u.x)<=.32){victim.hp-=heroSkill('guanyu','cleave').power;victim.flash=.3}
    effect(b,'cleave',u.lane,u.x,Math.min(.96,u.x+.15));u.impactUntil=b.time+.07;b.skillNotice={key:u.key,text:'關羽・青龍斬',until:b.time+1.5};u.pendingCleave=null;
   }
   if(u.pendingStrike&&b.time+1e-8>=u.pendingStrike.impactAt){
    const strike=u.pendingStrike,victim=b.enemies.find(e=>e.id===strike.targetId&&e.hp>0&&e.lane===u.lane);
-   if(victim&&Math.abs(victim.x-u.x)<=d.range+.09){victim.hp-=strike.damage;victim.flash=.2;effect(b,'slash',u.lane,u.x,victim.x);u.impactUntil=b.time+.07}
+   if(victim&&Math.abs(victim.x-u.x)<=d.range+.09){victim.hp-=strike.damage;victim.flash=.2;effect(b,'slash',u.lane,u.x,victim.x,{weapon:u.key});u.impactUntil=b.time+.07}
    u.pendingStrike=null;
   }
   const target=b.enemies.filter(e=>e.hp>0&&e.lane===u.lane&&e.x>=u.x-.015).sort((a,c)=>a.x-c.x)[0];
   if(target&&target.x-u.x<=d.range){
-   if(target.boss&&!b.duelSeen&&stage.duelHero===u.key&&(!stage.duelHpRatio||target.hp/target.maxHp<=stage.duelHpRatio)&&target.x-u.x<=.14){
+   if(target.boss&&!b.duelSeen&&stage.duelHero===u.key&&(!stage.duelHpRatio||target.hp/target.maxHp<=stage.duelHpRatio)&&target.x-u.x<=Math.max(.14,d.range)){
     b.duelSeen=true;b.duel={heroId:u.id,bossId:target.id,heroKey:u.key,bossName:target.name,outcome:stage.duelOutcome||'defeat',remaining:DUEL_DURATION,elapsed:0,nextBeat:0,startHp:target.hp};return;
    }
    if(b.time-u.lastAttack>=d.rate&&!u.pendingCleave&&b.time-(u.swingStartedAt??-100)>=SWING.duration){
-    u.lastAttack=b.time;const damage=d.damage*(b.time<(b.oathBuffUntil||0)?1.2:1)*(target.shielded&&u.key==='archer'?.5:1);
+    u.lastAttack=b.time;const damage=(d.damage+weaponBonus(u.key,b.weapons?.[u.key]))*(b.time<(b.oathBuffUntil||0)?1.2:1)*(target.shielded&&u.key==='archer'?.5:1);
     if(u.key==='archer'){u.flash=.32;effect(b,'arrow',u.lane,u.x,target.x);target.hp-=damage;target.flash=.2}
     else {u.swingStartedAt=b.time;u.pendingStrike={targetId:target.id,impactAt:b.time+SWING.impact,damage}}
    }
   }else{
-   u.action=b.time-(u.swingStartedAt??-100)<SWING.duration?'guarding':'marching';const priority={archer:0,liubei:1,guanyu:2,zhangfei:3};
-   const ahead=b.allies.filter(a=>a.hp>0&&a.id!==u.id&&a.lane===u.lane&&a.x>u.x+.001&&priority[a.key]>=priority[u.key]).sort((a,c)=>a.x-c.x)[0];
-   const limit=ahead?Math.max(u.x,ahead.x-.065):.84;
+   u.action=b.time-(u.swingStartedAt??-100)<SWING.duration?'guarding':'marching';
+   // Friendly units use visual subpositions and can pass each other; only enemies block advance.
+   const limit=target?Math.max(u.x,target.x-d.range*.9):.84;
    if(u.order==='hold')u.action='holding';
    else if(u.action==='marching'){u.x=Math.min(u.order==='forward'?u.targetX:.84,limit,u.x+d.speed*dt*(u.order==='forward'?1.2:1));if(u.order==='forward'&&u.x>=u.targetX-.0001){u.order='hold';u.action='holding'}}
    if(u.x>=.839)u.action='holding';
   }
   const nearby=b.enemies.filter(e=>e.hp>0&&e.lane===u.lane&&e.x>=u.x-.02&&e.x-u.x<=.23);
-  if(u.key==='zhangfei'&&b.level>=UNLOCKS.roar&&nearby.length&&b.time-(u.lastSkill||0)>=8){
-   u.lastSkill=b.time;for(const e of nearby){e.hp-=16;e.stunnedUntil=b.time+1.1;if(!e.boss)e.x=Math.min(.95,e.x+.065)}effect(b,'roar',u.lane,u.x);b.skillNotice={key:u.key,text:'張飛・燕人怒吼',until:b.time+1.5};
+  if(u.key==='zhangfei'&&b.level>=heroSkill('zhangfei','roar').level&&nearby.length&&b.time-(u.lastSkill||0)>=heroSkill('zhangfei','roar').cooldown){
+   u.lastSkill=b.time;for(const e of nearby){e.hp-=heroSkill('zhangfei','roar').power;e.stunnedUntil=b.time+1.1;if(!e.boss)e.x=Math.min(.95,e.x+.065)}effect(b,'roar',u.lane,u.x);b.skillNotice={key:u.key,text:'張飛・燕人怒吼',until:b.time+1.5};
   }
-  if(u.key==='guanyu'&&b.level>=UNLOCKS.cleave&&nearby.length&&b.time-(u.lastSkill||0)>=7){
+  if(u.key==='guanyu'&&b.level>=heroSkill('guanyu','cleave').level&&nearby.length&&b.time-(u.lastSkill||0)>=heroSkill('guanyu','cleave').cooldown){
    u.lastSkill=b.time;if(!u.pendingStrike)u.swingStartedAt=b.time;u.pendingCleave={ids:nearby.map(e=>e.id),impactAt:u.pendingStrike?.impactAt??b.time+SWING.impact};
   }
-  if(d.heal&&b.level>=UNLOCKS.healing&&b.time-u.lastHeal>=3){u.lastHeal=b.time;for(const ally of b.allies)if(ally.hp>0&&ally.lane===u.lane){if(ally.hp<ally.maxHp){effect(b,'heal',ally.lane,ally.x);b.skillNotice={key:'liubei',text:'劉備・仁德回春',until:b.time+1.8};}ally.hp=Math.min(ally.maxHp,ally.hp+d.heal)}}
+  if(d.heal&&b.level>=heroSkill('liubei','heal').level&&b.time-u.lastHeal>=heroSkill('liubei','heal').cooldown){u.lastHeal=b.time;for(const ally of b.allies)if(ally.hp>0&&ally.lane===u.lane){if(ally.hp<ally.maxHp){effect(b,'heal',ally.lane,ally.x);b.skillNotice={key:'liubei',text:'劉備・仁德回春',until:b.time+1.8};}ally.hp=Math.min(ally.maxHp,ally.hp+heroSkill('liubei','heal').power)}}
  }
  for(const e of b.enemies){
   if(e.hp<=0)continue;e.action='guarding';e.flash=Math.max(0,e.flash-dt);if(b.time<(e.stunnedUntil||0)){e.action='stunned';continue}

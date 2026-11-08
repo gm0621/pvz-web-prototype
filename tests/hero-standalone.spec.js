@@ -6,7 +6,7 @@ test('hero game has its own small home and loads no zombie, account or shop syst
  const requests=[],errors=[];page.on('request',r=>requests.push(r.url()));page.on('pageerror',e=>errors.push(e.message));
  await open(page);await expect(page).toHaveTitle('英雄演義｜桃園同心');
  await expect(page.locator('#home')).toContainText('桃園結義');
- await expect(page.locator('#home button')).toHaveCount(11);
+ await expect(page.locator('#home button:visible')).toHaveCount(11);
  await expect(page.locator('#chapterDots button')).toHaveCount(10);
  expect(requests.some(url=>/supabase|js\/app.js|js\/cloud.js|js\/shop.js|js\/romance-game.js/.test(url))).toBe(false);
  expect(await page.evaluate(()=>typeof currentUser)).toBe('undefined');
@@ -57,7 +57,7 @@ test('a full first chapter battle can be won through real UI deployments and sav
  await expect(page.locator('#resultTitle')).toHaveText('此戰告捷');
  await expect(page.locator('body')).not.toHaveClass(/battle-focus/);await expect.poll(()=>page.evaluate(()=>!!document.fullscreenElement)).toBe(false);
  expect(await page.evaluate(()=>JSON.parse(localStorage.getItem('heroLegendProgress_v1')).completed)).toBe(1);
- await page.locator('#resultNext').click();await expect(page.locator('#storyTitle')).toHaveText('義軍初成');await expect(page.locator('#storyChapter')).toContainText('戰後');await page.locator('#storySkip').click();await expect(page.locator('#storyTitle')).toHaveText('糧道遇襲');
+ await page.locator('#resultNext').click();await page.locator('#campContinue').click();await expect(page.locator('#storyTitle')).toHaveText('義軍初成');await expect(page.locator('#storyChapter')).toContainText('戰後');await page.locator('#storySkip').click();await expect(page.locator('#storyTitle')).toHaveText('糧道遇襲');
 });
 
 test('story opens in a real scene with conversations, speaker emphasis and previous-line navigation',async({page})=>{

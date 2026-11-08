@@ -197,3 +197,20 @@ test('hook locks a target, interrupts its attack, and misses after a lane change
  const {createBattle,deploy,stepBattle,commandHero}=await engine;
  for(const key of ['liubei','guanyu','zhangfei','archer']){const b=createBattle(1);b.nextSpawn=Infinity;deploy(b,key,1);for(let i=0;i<100;i++)stepBattle(b,.1);assert.equal(b.allies[0].x,.1);assert.equal(b.allies[0].order,'hold');if(key!=='archer'){commandHero(b,key,'forward');stepBattle(b,.1);assert.ok(b.allies[0].x>.1)}}
  });
+
+test('weapon reach differs and a spear attacks from behind a friendly front line',async()=>{
+ const {createBattle,deploy,stepBattle}=await engine;const {HEROES}=await import('../../hero/story.mjs');assert.ok(HEROES.zhangfei.range>HEROES.guanyu.range&&HEROES.guanyu.range>HEROES.liubei.range);
+ const b=createBattle(1);b.nextSpawn=Infinity;b.food=300;deploy(b,'liubei',1);deploy(b,'zhangfei',1);b.allies[0].x=.4;b.allies[1].x=.29;const enemy={...testEnemy(90,.47),lastAttack:100};b.enemies.push(enemy);stepBattle(b,.1);assert.ok(b.allies.every(u=>u.pendingStrike));for(let i=0;i<3;i++)stepBattle(b,.1);assert.equal(enemy.hp,200-15-24);
+});
+test('a commanded short-range hero can pass a holding ally to reach the enemy',async()=>{
+ const {createBattle,deploy,commandHero,stepBattle}=await engine;const b=createBattle(1);b.nextSpawn=Infinity;b.food=300;deploy(b,'zhangfei',1);deploy(b,'liubei',1);b.allies[0].x=.35;const u=b.allies[1];u.x=.2;const enemy={...testEnemy(90,.5),hp:10000,maxHp:10000,lastAttack:100,speed:0};b.enemies.push(enemy);commandHero(b,'liubei','auto');for(let i=0;i<80;i++)stepBattle(b,.1);assert.ok(u.x>.35);assert.ok(u.lastAttack>0);assert.equal(b.allies[0].x,.35);
+});
+test('campaign migration, first-clear rewards, purchase caps and reloads preserve the economy',async()=>{
+ const {normalizeProgress}=await engine;const {purchase,rewardVictory}=await import('../../hero/campaign.mjs');let p=normalizeProgress({completed:2});assert.equal(p.coins,160);assert.equal(rewardVictory(p,2),0);assert.equal(rewardVictory(p,3),80);assert.equal(rewardVictory(p,3),0);assert.equal(p.coins,240);
+ assert.equal(purchase(p,'liubei'),'');assert.equal(p.coins,180);assert.equal(p.weapons.liubei,1);p=normalizeProgress(JSON.parse(JSON.stringify(p)));assert.equal(p.coins,180);assert.equal(p.weapons.liubei,1);assert.equal(purchase(p,'liubei'),'');assert.equal(purchase(p,'liubei'),'軍資不足，先去完成新的關卡吧。');assert.equal(p.weapons.liubei,2);
+ p.inventory.herb=9;const coins=p.coins;assert.ok(purchase(p,'herb'));assert.equal(p.coins,coins);assert.equal(normalizeProgress({completed:1,coins:-1,weapons:{zhangfei:99},inventory:{herb:Infinity}}).inventory.herb,0);
+});
+test('weapon upgrades change actual damage and supplies consume once only during active battle',async()=>{
+ const {createBattle,deploy,stepBattle,normalizeProgress}=await engine;const {purchase,useSupply}=await import('../../hero/campaign.mjs');const p=normalizeProgress({completed:2});purchase(p,'liubei');purchase(p,'herb');purchase(p,'grain');const b=createBattle(1,1,p.weapons);b.nextSpawn=Infinity;deploy(b,'liubei',1);const enemy={...testEnemy(90,.17),lastAttack:100};b.enemies.push(enemy);for(let i=0;i<4;i++)stepBattle(b,.1);assert.equal(enemy.hp,182);
+ b.allies[0].hp=50;b.paused=true;assert.equal(useSupply(b,p,'herb'),false);b.paused=false;assert.equal(useSupply(b,p,'herb'),true);assert.equal(b.allies[0].hp,110);assert.equal(useSupply(b,p,'herb'),false);b.duel={};assert.equal(useSupply(b,p,'grain'),false);b.duel=null;b.food=290;assert.equal(useSupply(b,p,'grain'),true);assert.equal(b.food,300);assert.equal(p.inventory.grain,0);
+});
