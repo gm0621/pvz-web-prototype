@@ -1,4 +1,4 @@
-import {DUEL_ENTRANCE_DURATION} from './engine.mjs?v=troop-control-1';
+import {DUEL_ENTRANCE_DURATION} from './engine.mjs?v=settlement-1';
 import {HEROES,STAGES,enemyArt} from './story.mjs?v=novel-camp-1';
 import {hitSound} from './audio.mjs?v=menu-bgm-1';
 const HERO_LABELS={liubei:['仁義之將','雌雄雙劍','為了身後的百姓，出戰！'],guanyu:['美髯公','青龍偃月刀','關雲長在此，請賜教！'],zhangfei:['燕人翼德','丈八蛇矛','燕人張翼德在此！']};

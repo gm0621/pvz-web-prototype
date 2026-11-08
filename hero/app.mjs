@@ -5,9 +5,9 @@ import {createFirstGuide} from './first-guide.mjs?v=novel-camp-1';
 import {mountStoryTask} from './story-play.mjs?v=story-play-1';
 import {CHAPTER_BACKGROUNDS,STAGE_LEADS} from './prologue.mjs?v=novel-camp-1';
 import {setMusic,setMusicScene,setMusicHome,musicTheme,musicOn,setSfx,unlockAudio,hitSound} from './audio.mjs?v=menu-bgm-1';
-import {renderDuel} from './duel-view.mjs?v=troop-control-1';
+import {renderDuel} from './duel-view.mjs?v=settlement-1';
 import {chapterInfo,enemyArt,HEROES,STAGES,ENEMY_ART,SHIELD_ART,FEATURES,heroDescription} from './story.mjs?v=novel-camp-1';
-import {ENEMY_SWING,enemyAttackFrame,skipDuelEntrance,positionHero,commandHero,moveHero,BOSS_SKILLS,SAVE_KEY,normalizeProgress,createBattle,deploy,canDeploy,stepBattle,attackFrame,SWING} from './engine.mjs?v=troop-control-1';
+import {LANE_CAPACITY,laneCount,ENEMY_SWING,enemyAttackFrame,skipDuelEntrance,positionHero,commandHero,moveHero,BOSS_SKILLS,SAVE_KEY,normalizeProgress,createBattle,deploy,canDeploy,stepBattle,attackFrame,SWING} from './engine.mjs?v=settlement-1';
 
 const $=id=>document.getElementById(id);
 let firstGuide=null;
@@ -81,8 +81,8 @@ function buildControls(){
  const marker=document.createElement('span');marker.id='moveTarget';marker.setAttribute('aria-hidden','true');$('field').append(marker);
  const label=document.createElement('span');label.id='orderStatus';controls.append(label);
  for(const [order,title] of [['up','↑ 上移'],['back','← 後退'],['hold','駐守'],['forward','前進 →'],['down','↓ 下移'],['auto','自動前進']]){const button=document.createElement('button');button.type='button';button.dataset.order=order;button.textContent=title;button.onclick=()=>{if(commandHero(battle,selectedUnit()?.id,order))firstGuide?.event(order==='hold'?'hold':order==='forward'?'move':'');renderBattle()};controls.append(button)}
- $('cards').before(controls);
- $('lanes').replaceChildren(...['上路','中路','下路'].map((label,lane)=>{const b=document.createElement('button');b.type='button';b.className='lane';b.dataset.lane=lane;b.setAttribute('aria-label',`${label}，點擊出兵`);b.innerHTML=`<span class="lane-label">${label}</span><span class="deploy-zone-label">出兵區</span><span class="lane-direction" aria-hidden="true">→　→　→</span><span class="enemy-zone-label" aria-hidden="true">敵軍 ←</span>`;b.onclick=event=>{
+ $('cards').before(controls);const feedback=document.createElement('p');feedback.id='commandFeedback';feedback.setAttribute('role','status');feedback.hidden=true;controls.after(feedback);
+ $('lanes').replaceChildren(...['上路','中路','下路'].map((label,lane)=>{const b=document.createElement('button');b.type='button';b.className='lane';b.dataset.lane=lane;b.setAttribute('aria-label',`${label}，點擊出兵`);b.innerHTML=`<span class="lane-label">${label}</span><span class="lane-capacity"></span><span class="deploy-zone-label">出兵區</span><span class="lane-direction" aria-hidden="true">→　→　→</span><span class="enemy-zone-label" aria-hidden="true">敵軍 ←</span>`;b.onclick=event=>{
   if(!selected){battle.notice='先選下方一張兵卡，再點路線。';battle.noticeUntil=battle.time+3;renderBattle();return}
   const active=selectedUnit();
   if(active){const rect=$('field').getBoundingClientRect();const unit=active;if(positionHero(battle,unit.id,lane,event.detail===0?unit.x:(event.clientX-rect.left)/rect.width)&&unit.order==='forward')firstGuide?.event('move')}else if(deploy(battle,selected,lane)){if(selected!=='archer')firstGuide?.event('deploy');selected=null;selectedUnitId=null;}renderBattle();
@@ -129,11 +129,12 @@ function renderBattle(){
  $('moveTarget').hidden=!controlled||!controlled.order; if(controlled){$('moveTarget').style.left=`${controlled.targetX*100}%`;$('moveTarget').style.top=`${(controlled.lane+.5)/3*100}%`}
  $('attackRange').hidden=!controlled;if(controlled){$('attackRange').style.left=`${controlled.x*100}%`;$('attackRange').style.width=`${HEROES[controlled.key].range*100}%`;$('attackRange').style.top=`${(controlled.lane+.5)/3*100}%`}
  $('orders').hidden=!controlled;$('orderStatus').textContent=controlled?`${HEROES[selected].short} · ${{forward:'前進中',back:'後退中',hold:'駐守'}[controlled.order]||'自動前進'} · 換路${Math.max(0,Math.ceil((controlled.moveReadyAt||0)-battle.time))}秒`:'選擇已出戰武將，可調整位置';
- for(const button of $('orders').querySelectorAll('button')){const order=button.dataset.order;button.disabled=!controlled||battle.paused||battle.over||!!battle.duel||!!battle.introPending||((order==='up'||order==='down')&&(battle.time<(controlled.moveReadyAt||0)||(order==='up'?controlled.lane===0:controlled.lane===2)));}
+ for(const button of $('orders').querySelectorAll('button')){const order=button.dataset.order;if(order==='up'||order==='down'){const target=controlled?controlled.lane+(order==='up'?-1:1):-1;const full=target>=0&&target<3&&laneCount(battle,target)>=LANE_CAPACITY;button.textContent=(order==='up'?'↑ ':'↓ ')+(full?'該路已滿':order==='up'?'上移':'下移');button.title=full?'先調走該路一名友軍，再移入':''}button.disabled=!controlled||battle.paused||battle.over||!!battle.duel||!!battle.introPending||((order==='up'||order==='down')&&(battle.time<(controlled.moveReadyAt||0)||(order==='up'?controlled.lane===0:controlled.lane===2)));}
  if(battle.introPending&&!$('bossIntro').open){const stage=STAGES[battle.level-1];$('bossIntroArt').src=enemyArt(stage.bossName);$('bossIntroArt').alt=stage.bossName;$('bossIntroTitle').textContent=`${stage.bossTitle||'敵軍大將'}・${stage.bossName}`; $('bossIntroText').textContent=stage.bossIntro||(battle.level===3?'鄧茂：「黃巾先鋒鄧茂在此！誰敢擋我大軍？」\n張飛：「燕人張翼德在此！待俺前來會你！」':`${stage.bossName}：「想過此地，先接我一招！」\n劉備：「眾將留意，照應三路！」`); $('bossIntroTip').textContent=stage.bossTip||`${BOSS_SKILLS[battle.level-1]}：蓄力後重擊同路近處友軍。點場上武將，再點戰場位置即可調動（換路冷卻 2 秒）。`;$('bossIntro').showModal();}
  $('food').textContent=Math.floor(battle.food);$('lives').textContent='♥ '.repeat(Math.max(0,battle.lives)).trim()||'防線失守';$('lives').setAttribute('aria-label',`剩餘 ${Math.max(0,battle.lives)} 次防線`);
  $('waveText').textContent=battle.bossSpawned?'敵將已出陣':`敵軍 ${battle.spawned} / ${STAGES[battle.level-1].enemyCount}`;
  const notice=battle.time<battle.noticeUntil?battle.notice:FEATURES[battle.level-1].text;
+ $('commandFeedback').hidden=!(battle.time<battle.noticeUntil&&/路已滿|調動整備中/.test(battle.notice));if(!$('commandFeedback').hidden)$('commandFeedback').textContent=battle.notice;
  if($('battleNotice').textContent!==notice)$('battleNotice').textContent=notice;
  $('selectionHint').textContent=selected==='archer'&&selectedUnitId===null?'已選弓兵增援 · 點一路部署新弓兵':selected?`已選${HEROES[selected].short} · ${({liubei:'雙劍近距離',guanyu:'大刀中距離',zhangfei:'長矛遠距離',archer:'弓箭遠程'})[selected]} · 點地移動／再點本人駐守`:'點場上武將或弓兵調動 · 再點本人駐守';
  for(const card of $('cards').children){
@@ -144,7 +145,7 @@ function renderBattle(){
   card.querySelector('.ability-description').textContent=description;card.setAttribute('aria-label',`${d.name}，${d.cost} 軍糧，${description}，${card.querySelector('.card-status').textContent}`);
   card.querySelector('.cooldown i').style.width=`${active?100:Math.max(0,100-remaining/(key==='archer'?d.cooldown:12)*100)}%`;
  }
- for(const lane of $('lanes').children){const index=Number(lane.dataset.lane),unit=selectedUnit(),ready=unit?unit.lane!==index&&battle.time>=(unit.moveReadyAt||0)&&battle.allies.filter(u=>u.lane===index&&u.hp>0).length<3:selected&&!canDeploy(battle,selected,index);lane.classList.toggle('ready',!!ready);lane.disabled=battle.paused||!!battle.duel||!!battle.introPending||battle.over}
+ for(const lane of $('lanes').children){const index=Number(lane.dataset.lane),unit=selectedUnit(),ready=unit?unit.lane!==index&&battle.time>=(unit.moveReadyAt||0)&&laneCount(battle,index)<LANE_CAPACITY:selected&&!canDeploy(battle,selected,index);const count=laneCount(battle,index),full=count>=LANE_CAPACITY;lane.querySelector('.lane-capacity').textContent=`${full?'已滿 ':''}${count}／${LANE_CAPACITY}`;lane.classList.toggle('full',full);lane.setAttribute('aria-label',`${['上','中','下'][index]}路，${count}／${LANE_CAPACITY} 名友軍${full?'，已滿；可調動本路單位，不能再增援或換入':''}`);lane.classList.toggle('ready',!!ready);lane.disabled=battle.paused||!!battle.duel||!!battle.introPending||battle.over}
  for(const button of $('supplies').children){const id=button.dataset.supply;button.textContent=`${id==='herb'?'藥包':'糧袋'} ×${progress.inventory[id]}`;button.disabled=!progress.inventory[id]||battle.paused||battle.over||!!battle.duel||!!battle.introPending}
  $('supplies').hidden=!progress.inventory.herb&&!progress.inventory.grain;
  renderUnits();renderEffects();syncPause();const skill=battle.skillNotice&&battle.time<battle.skillNotice.until?battle.skillNotice:null;$('skillBanner').hidden=!skill;if(skill){$('skillBanner').textContent=skill.text;$('skillBanner').dataset.hero=skill.key}
@@ -155,11 +156,15 @@ function renderBattle(){
 }
 function showResult(){
  resultShown=true;selected=null;selectedUnitId=null;const stage=STAGES[battle.level-1];
- let earned=0;if(battle.won){earned=rewardVictory(progress,battle.level);saveProgress()}
+ const balanceBefore=progress.coins;let earned=0;if(battle.won){earned=rewardVictory(progress,battle.level);saveProgress()}
  $('resultMark').textContent=battle.won?'勝':'再起';$('resultChapter').textContent=`第${chapterInfo(battle.level).chapter===1?'一':'二'}章 · ${chapterInfo(battle.level).number}`;
  $('resultTitle').textContent=battle.won?(battle.level===6?'桃園同心':battle.level===STAGES.length?'烽火與義氣':'此戰告捷'):'重整陣形，再來一次';
- $('resultText').textContent=battle.won?stage.victory+(earned?' 首次通關獲得 80 軍資，可到營地整備。':' 重溫完成！可回營地整備。'):'先讓弓兵照應三路，再用張飛頂住前線、關羽斬擊敵軍、劉備回復友軍。軍糧會持續補給，留意空著的路線。';
- $('resultNext').textContent='前往戰後營地 →';show('result');$('resultNext').focus({preventScroll:true});
+ $('resultText').textContent=battle.won?stage.victory:'先讓弓兵照應三路，再用張飛頂住前線、關羽斬擊敵軍、劉備回復友軍。軍糧會持續補給，留意空著的路線。';
+ $('result').dataset.outcome=battle.won?'victory':'defeat';$('result').dataset.reward=String(progress.coins>balanceBefore);if(battle.won)void hitSound('oath');
+ $('resultEarned').textContent=`+${progress.coins-balanceBefore}`;$('resultBalance').textContent=progress.coins.toLocaleString('en-US');
+ $('resultRewardReason').textContent=!battle.won?'這次未能守住防線，沒有獲得軍資；已有軍資不扣除。':!earned?'本關首次通關獎勵已領取，重玩不重複發放。':progress.coins-balanceBefore<earned?'首次通關！軍資已補至持有上限 99,999。':'首次通關獎勵・80 軍資';
+ $('resultSaved').textContent=battle.won&&earned?'軍資已存入行囊，可在營地使用':'保留目前軍資，可到營地整備';
+ $('resultNext').textContent='前往戰後營地 →';show('result');$('resultTitle').focus({preventScroll:true});
 }
 function openCamp(level,won){show('camp');mountCamp({progress,level,won,heroes:HEROES,stage:STAGES[level-1],onSave:saveProgress,onContinue:()=>won?startStory(level,'ending'):beginBattle(level)});$('campTitle').tabIndex=-1;$('campTitle').focus({preventScroll:true})}
 function frame(now){

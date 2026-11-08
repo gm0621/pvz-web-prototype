@@ -20,6 +20,8 @@ export const DUEL_BEATS=[
 ];
 export function duelBeat(d){const beat=DUEL_BEATS.reduce((last,beat)=>d.elapsed>=beat.at?beat:last,DUEL_BEATS[0]);return d.outcome==='retreat'&&['finish','victory'].includes(beat.side)?{...beat,text:beat.side==='finish'?'破陣退敵':'張角退走'}:beat}
 export function attackFrame(unit,time){const elapsed=time-(unit.swingStartedAt??-100);if(elapsed<0||elapsed>=SWING.duration)return 0;const frame=Math.min(5,Math.floor(elapsed/SWING.frameTime));return unit.key==='zhangfei'&&frame===4?3:frame}
+export const LANE_CAPACITY=3;
+export const laneCount=(b,lane)=>b.allies.filter(u=>u.hp>0&&u.lane===lane).length;
 export const ENEMY_SWING={duration:.66,impact:.24};
 export function enemyAttackFrame(unit,time){const age=time-(unit.swingStartedAt??-100);return age<0||age>=ENEMY_SWING.duration?2:age<ENEMY_SWING.impact?0:age<.44?1:2}
 function commandUnit(b,key){return b.allies.find(u=>u.hp>0&&(typeof key==='number'?u.id===key:key!=='archer'&&u.key===key))}
@@ -50,7 +52,7 @@ export function moveHero(b,key,lane){
  if(!b||b.over||b.paused||b.duel||b.introPending)return false;
  const u=commandUnit(b,key);
  if(!u||!Number.isInteger(lane)||lane<0||lane>2)return false;
- const reason=u.lane===lane?'已在這一路':b.time<(u.moveReadyAt||0)?'調動整備中，稍候再換路':b.allies.filter(a=>a.hp>0&&a.lane===lane).length>=3?'這一路已有三名友軍':'';
+ const reason=u.lane===lane?'已在這一路':b.time<(u.moveReadyAt||0)?'調動整備中，稍候再換路':laneCount(b,lane)>=LANE_CAPACITY?`${['上','中','下'][lane]}路已滿（3／3），先調走一名友軍，再換入這一路`:'';
  if(reason){b.notice=reason;b.noticeUntil=b.time+2;return false}
  u.lane=lane;u.moveReadyAt=b.time+2;u.pendingStrike=null;u.pendingCleave=null;u.swingStartedAt=-100;
  const enemy=b.enemies.filter(e=>e.hp>0&&e.lane===lane).sort((a,c)=>a.x-c.x)[0];
@@ -74,7 +76,7 @@ export function canDeploy(b,key,lane){
  if(key!=='archer'&&b.allies.some(u=>u.key===key&&u.hp>0))return '這位武將已在場上';
  if(b.food<HEROES[key].cost)return '軍糧不足，稍等自動補給';
  if((b.cooldowns[key]||0)>b.time)return '這張兵卡正在準備';
- if(b.allies.filter(u=>u.hp>0&&u.lane===lane).length>=3)return '這一路已有三名友軍，試試其他路';
+ if(laneCount(b,lane)>=LANE_CAPACITY)return `${['上','中','下'][lane]}路已滿（3／3），請選其他路，或先調走一名友軍`;
  return '';
 }
 export function deploy(b,key,lane){
