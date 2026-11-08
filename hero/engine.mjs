@@ -1,12 +1,12 @@
-import {duelBeats} from './duel-patterns.mjs?v=duel-variety-1';
-export {duelBeats} from './duel-patterns.mjs?v=duel-variety-1';
+import {duelBeats} from './duel-patterns.mjs?v=duel-cinema-1';
+export {duelBeats} from './duel-patterns.mjs?v=duel-cinema-1';
 import {WEATHER_GENERALS} from './weather-generals.mjs?v=storm-battle-1';
 import {campaignState,weaponBonus} from './campaign.mjs?v=novel-camp-1';
 import {heroSkill} from './skills.mjs?v=novel-camp-1';
 import {HEROES,STAGES,UNLOCKS,FEATURES} from './story.mjs?v=storm-battle-1';
 
 export const SWING={duration:.58,impact:.24,frameTime:.08,frames:6};
-export const DUEL_DURATION=15;
+export const DUEL_DURATION=19;
 export const DUEL_ENTRANCE_DURATION=3.2;
 export function skipDuelEntrance(b){if(!b?.duel||b.paused||b.over)return false;b.duel.entranceElapsed=DUEL_ENTRANCE_DURATION;return true}
 // Retained for callers that inspect the original Deng Mao sequence.

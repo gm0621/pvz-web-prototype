@@ -8,10 +8,23 @@ const patterns={
  '杜衡':{style:'swords',name:'鎖鉤反擊',beats:[[2.7,'enemy','鉤鐮探路',0,.03],[4,'block','左劍鎖鉤'],[5.1,'hero','右劍反挑',.15],[6.5,'enemy','回鉤追身',0,.03],[7.8,'block','交劍解鉤'],[9.2,'hero','側步雙斬',.15],[10.4,'charge','定心解鉤']]},
  '張角':{style:'spell',name:'避雷破符',beats:[[2.5,'enemy','符雷封路',0,.03],[3.9,'block','交劍護身'],[5.2,'hero','試探符眼',.08],[6.5,'enemy','雷陣再起',0,.03],[7.8,'hero','左劍破符',.1],[9.2,'hero','右劍開路',.12],[10.4,'charge','合劍破陣']]}
 };
+const finishers={
+ '鄧茂':{id:'spear-rush',name:'丈八蛇矛・雷霆穿陣',color:'#ffbf66',setup:'三連突刺，步步逼退',hits:[13.2,13.65,14.1],finish:15.1},
+ '程遠志':{id:'dragon-shadow',name:'青龍偃月・回身絕影斬',color:'#8dffba',setup:'拖刀誘敵，閃身繞背',hits:[13.6,14.4],finish:15.4},
+ '石魁':{id:'cross-break',name:'雌雄雙劍・十字破盾',color:'#b6edff',setup:'左劍鎖盾，右劍破隙',hits:[13.25,14.15],finish:15.25},
+ '韓旌':{id:'sky-cleave',name:'青龍騰空・斷旗落月',color:'#94ffc0',setup:'躍過槍鋒，凌空落刀',hits:[13.5,14.3],finish:15.5},
+ '焦魯':{id:'lion-roar',name:'燕人怒吼・震地破焰',color:'#ffb277',setup:'震退雙刃，踏地重刺',hits:[13.4,14.25],finish:15.3},
+ '杜衡':{id:'twin-dance',name:'仁義雙鋒・迴風連斬',color:'#b4eaff',setup:'解鉤換位，左右交擊',hits:[13.2,13.75,14.35],finish:15.5},
+ '張角':{id:'seal-break',name:'雙劍同心・破雷開天',color:'#dcc2ff',setup:'閃避雷柱，逐一破符',hits:[13.3,13.85,14.4],finish:15.6}
+};
 export function duelPattern(duel){return patterns[duel.bossName]||patterns['鄧茂']}
-export function duelBeats(duel){return [
+export function duelFinisher(duel){return finishers[duel.bossName]||finishers['鄧茂']}
+export function duelBeats(duel){const f=duelFinisher(duel);return [
  {at:0,text:'兩軍讓開',side:'ready'},{at:1.5,text:'報上名來',side:'reply'},
  ...duelPattern(duel).beats.map(([at,side,text,damage=0,heroDamage=0])=>({at,side,text,damage,heroDamage})),
- {at:11.8,text:duel.outcome==='retreat'?'破陣退敵':'決勝一擊',side:'finish',damage:1},
- {at:13,text:duel.outcome==='retreat'?'張角退走':'敵將討取',side:'victory'}
+ {at:11.5,text:f.name,side:'charge'},
+ {at:12.7,text:f.setup,side:'maneuver'},
+ ...f.hits.map((at,i)=>({at,text:`${f.name}・第${i+1}擊`,side:'combo',damage:.4/f.hits.length})),
+ {at:f.finish,text:f.name,side:'finish',damage:1},
+ {at:17.2,text:duel.outcome==='retreat'?'張角退走':'敵將討取',side:'victory'}
 ]}
