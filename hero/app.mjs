@@ -1,18 +1,19 @@
-import {mountBattleKeys} from './battle-keys.mjs?v=chapter-three-1';
-import {mountJourney} from './journey-view.mjs?v=chapter-three-1';
-import {renderMission} from './chapter-mission-view.mjs?v=chapter-three-1';
-import {mountCampaignMap} from './campaign-map.mjs?v=chapter-three-1';
-import {advanceBattleFrame,normalizeBattleSpeed} from './battle-speed.mjs?v=chapter-three-1';
-import {mountNovel} from './novel.mjs?v=chapter-three-1';
-import {mountCamp} from './camp-view.mjs?v=chapter-three-1';
-import {rewardVictory,useSupply} from './campaign.mjs?v=chapter-three-1';
-import {createFirstGuide} from './first-guide.mjs?v=chapter-three-1';
-import {mountStoryTask} from './story-play.mjs?v=chapter-three-1';
-import {CHAPTER_BACKGROUNDS,STAGE_LEADS} from './prologue.mjs?v=chapter-three-1';
-import {setMusic,setMusicMode,setMusicHome,musicTheme,musicOn,setSfx,unlockAudio,hitSound} from './audio.mjs?v=chapter-three-1';
-import {renderDuel} from './duel-view.mjs?v=chapter-three-1';
-import {chapterInfo,enemyArt,HEROES,STAGES,ENEMY_ART,SHIELD_ART,FEATURES,heroDescription} from './story.mjs?v=chapter-three-1';
-import {bossProfile,LANE_CAPACITY,laneCount,ENEMY_SWING,enemyAttackFrame,skipDuelEntrance,positionHero,commandHero,moveHero,BOSS_SKILLS,SAVE_KEY,normalizeProgress,createBattle,deploy,canDeploy,attackFrame,SWING} from './engine.mjs?v=chapter-three-1';
+import {renderBossCutin} from './boss-cutin.mjs?v=boss-cutin-1';
+import {mountBattleKeys} from './battle-keys.mjs?v=boss-cutin-1';
+import {mountJourney} from './journey-view.mjs?v=boss-cutin-1';
+import {renderMission} from './chapter-mission-view.mjs?v=boss-cutin-1';
+import {mountCampaignMap} from './campaign-map.mjs?v=boss-cutin-1';
+import {advanceBattleFrame,normalizeBattleSpeed} from './battle-speed.mjs?v=boss-cutin-1';
+import {mountNovel} from './novel.mjs?v=boss-cutin-1';
+import {mountCamp} from './camp-view.mjs?v=boss-cutin-1';
+import {rewardVictory,useSupply} from './campaign.mjs?v=boss-cutin-1';
+import {createFirstGuide} from './first-guide.mjs?v=boss-cutin-1';
+import {mountStoryTask} from './story-play.mjs?v=boss-cutin-1';
+import {CHAPTER_BACKGROUNDS,STAGE_LEADS} from './prologue.mjs?v=boss-cutin-1';
+import {setMusic,setMusicMode,setMusicHome,musicTheme,musicOn,setSfx,unlockAudio,hitSound} from './audio.mjs?v=boss-cutin-1';
+import {renderDuel} from './duel-view.mjs?v=boss-cutin-1';
+import {chapterInfo,enemyArt,HEROES,STAGES,ENEMY_ART,SHIELD_ART,FEATURES,heroDescription} from './story.mjs?v=boss-cutin-1';
+import {bossProfile,LANE_CAPACITY,laneCount,ENEMY_SWING,enemyAttackFrame,skipDuelEntrance,positionHero,commandHero,moveHero,BOSS_SKILLS,SAVE_KEY,normalizeProgress,createBattle,deploy,canDeploy,attackFrame,SWING} from './engine.mjs?v=boss-cutin-1';
 
 const $=id=>document.getElementById(id);
 const GENERAL_ATTACK_SHEETS={'張梁':'zhang-liang.png','張寶':'zhang-bao.png'};
@@ -125,7 +126,7 @@ function renderEffects(){
  for(const [id,el] of existing)if(!ids.has(id))el.remove();
 }
 function renderBattle(){
- if(!battle)return;renderMission(battle,renderBattle);campaignMap.update(battle);
+ if(!battle)return;renderBossCutin(battle);renderMission(battle,renderBattle);campaignMap.update(battle);
  const boss=battle.enemies.find(e=>e.boss&&e.hp>0&&e.castAt)||battle.enemies.find(e=>e.boss&&e.hp>0),stage=STAGES[battle.level-1];
  $('bossHud').hidden=!boss;
  if(boss){$('bossHudName').textContent=`${bossProfile(battle,boss).title}・${boss.name}`;$('bossHudHp').style.width=`${boss.hp/boss.maxHp*100}%`;$('bossHudState').textContent=boss.castAt?`${bossProfile(battle,boss).skillName}蓄力！${stage.skillType==='rally'?'敵兵即將加速':'換路閃避'}`:boss.support?`${bossProfile(battle,boss).skillName}・預警後換路閃避`:stage.skillType?`${bossProfile(battle,boss).skillName}・${boss.hp/boss.maxHp>stage.duelHpRatio?'先削弱主將':HEROES[stage.duelHero].short+'近身單挑'}`:boss.enraged?'狂攻・兩路重擊':battle.level===5?(boss.hp/boss.maxHp>.65?`先破盾：生命 ${Math.ceil(boss.hp/boss.maxHp*100)}% → 65% 以下，劉備才可單挑`:'盾勢已破！劉備同路近身 → 自動單挑'):'大將出陣';}

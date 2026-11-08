@@ -1,7 +1,7 @@
-import {campConversation} from './camp-talk.mjs?v=chapter-three-1';
-import {GOODS,purchase} from './campaign.mjs?v=chapter-three-1';
-import {CAMP_LINES} from './novel.mjs?v=chapter-three-1';
-import {HERO_SKILLS} from './skills.mjs?v=chapter-three-1';
+import {campConversation} from './camp-talk.mjs?v=boss-cutin-1';
+import {GOODS,purchase} from './campaign.mjs?v=boss-cutin-1';
+import {CAMP_LINES} from './novel.mjs?v=boss-cutin-1';
+import {HERO_SKILLS} from './skills.mjs?v=boss-cutin-1';
 export function mountCamp({progress,level,heroes,stage,onSave,onContinue,won=true}){
  const $=id=>document.getElementById(id);let shop='items';
  const panels=['campTalk','campShop','campRoster'];

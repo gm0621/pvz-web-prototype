@@ -2,7 +2,7 @@ const {test,expect}=require('@playwright/test');
 test('stage six renders three HP bars, pincer facing, paused FX, and can return to a solo duel',async({page},info)=>{
  await page.goto('/hero/');
  await page.evaluate(async()=>{
-  const e=await import('/hero/engine.mjs?v=chapter-three-1'),v=await import('/hero/duel-view.mjs?v=chapter-three-1'),b=e.createBattle(6);b.nextSpawn=Infinity;
+  const e=await import('/hero/engine.mjs?v=boss-cutin-1'),v=await import('/hero/duel-view.mjs?v=boss-cutin-1'),b=e.createBattle(6);b.nextSpawn=Infinity;
   e.deploy(b,'guanyu',1);e.deploy(b,'zhangfei',2);b.enemies=[{id:90,lane:1,x:.17,hp:340,maxHp:340,boss:true,name:'雷烈'}];e.stepBattle(b,.1);
   document.getElementById('duelTitle').textContent='關羽 ＋ 張飛 對 雷烈';document.getElementById('duelDialog').showModal();v.renderDuel(b);window.fixture={e,v,b};
  });

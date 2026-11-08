@@ -1,6 +1,6 @@
-import {THIRD_CHAPTER} from './chapter-three.mjs?v=chapter-three-1';
-import {WEATHER_GENERALS} from './weather-generals.mjs?v=chapter-three-1';
-import {SECOND_CHAPTER} from './chapter-two.mjs?v=chapter-three-1';
+import {THIRD_CHAPTER} from './chapter-three.mjs?v=boss-cutin-1';
+import {WEATHER_GENERALS} from './weather-generals.mjs?v=boss-cutin-1';
+import {SECOND_CHAPTER} from './chapter-two.mjs?v=boss-cutin-1';
 export const HEROES={
  archer:{name:'義軍弓兵',short:'弓兵',cost:50,hp:85,damage:13,rate:1.05,range:.29,speed:.045,cooldown:3,description:'遠程支援',asset:'../assets/characters/shu-archer.webp'},
  liubei:{name:'劉備',short:'劉備',cost:90,hp:155,damage:15,rate:1.15,range:.08,speed:.043,cooldown:5,heal:13,description:'回復同路友軍',asset:'./assets/liubei.png'},

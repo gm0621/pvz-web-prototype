@@ -96,6 +96,14 @@ export async function hitSound(kind='slash'){
  // Retry browser audio unlocking instead of silently discarding the first strike.
  if(init().state!=='running'&&!await unlockAudio())return false;
  if(!sfx||isBackground()||backgroundPaused)return false;
+ if(kind.startsWith('warning-')){
+  // A short gong + low drum separates the warning from the later impact.
+  const spell=/wind|rain|thunder/.test(kind),base=spell?330:220;
+  tone(sfxBus,95,.42,.65,'sine',38);noise(sfxBus,.16,.32,700);
+  for(const [ratio,volume] of [[1,.28],[1.47,.17],[2.13,.1]])tone(sfxBus,base*ratio,.62,volume,'sine',0,.008);
+  if(spell){noise(sfxBus,.45,.2,kind.endsWith('rain')?3200:1100);tone(sfxBus,440,.45,.12,'triangle',880)}else tone(sfxBus,180,.35,.14,'triangle',360);
+  return true;
+ }
  if(kind==='wind'){noise(sfxBus,1.1,.5,800);tone(sfxBus,260,.7,.16,'triangle',90);return true}
  if(kind==='rain'){noise(sfxBus,.9,.35,3500);for(const f of [750,1100,1450])tone(sfxBus,f,.25,.08);return true}
  if(kind==='thunder'){noise(sfxBus,.8,.75,200);tone(sfxBus,90,.9,.55,'sine',28);noise(sfxBus,.12,.45,3000);return true}

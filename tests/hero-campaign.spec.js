@@ -3,7 +3,7 @@ test('old chapter-one save continues into four new playable stages',async({page}
  await page.addInitScript(()=>localStorage.setItem('heroLegendProgress_v1',JSON.stringify({version:1,completed:6})));
  await page.goto('/hero/');await expect(page.locator('#chapterDots button')).toHaveCount(16);await expect(page.locator('#chapterDots button').nth(6)).toBeEnabled();await expect(page.locator('#chapterDots button').nth(7)).toBeDisabled();
  await page.locator('#startBtn').click();await expect(page.locator('#storyChapter')).toContainText('第二章');await expect(page.locator('#storyTitle')).toHaveText('廣宗拜師');await page.locator('#storySkip').click();await expect(page.locator('#field')).toBeVisible();
- const theme=await page.evaluate(async()=>{const a=await import('/hero/audio.mjs?v=chapter-three-1');return a.audioStatus().theme});expect(theme).toBe('晴野行軍');
+ const theme=await page.evaluate(async()=>{const a=await import('/hero/audio.mjs?v=boss-cutin-1');return a.audioStatus().theme});expect(theme).toBe('晴野行軍');
  await page.reload();await expect(page.locator('#homeProgress')).toContainText('6 / 16');
 });
 test('selected hero taps stop immediately, and point orders can resume movement',async({page})=>{
@@ -21,7 +21,7 @@ test('fifth boss arrival has a portrait, shield health bar and duel instructions
  expect(await page.locator('#cards').evaluate(e=>e.getBoundingClientRect().bottom<=innerHeight)).toBe(true);
 });
 test('all enemy portraits have transparent backgrounds and Yellow Turban assets',async({page})=>{
- await page.goto('/hero/');const data=await page.evaluate(async()=>{const s=await import('/hero/story.mjs?v=chapter-three-1');const paths=[s.ENEMY_ART,s.SHIELD_ART,...[...new Set(s.STAGES.map(v=>s.enemyArt(v.bossName)))]];return await Promise.all(paths.map(async path=>{const img=new Image();img.src=new URL(path,location.href);await img.decode();const canvas=document.createElement('canvas');canvas.width=img.width;canvas.height=img.height;const ctx=canvas.getContext('2d');ctx.drawImage(img,0,0);return {path,alpha:ctx.getImageData(0,0,1,1).data[3]}}))});
+ await page.goto('/hero/');const data=await page.evaluate(async()=>{const s=await import('/hero/story.mjs?v=boss-cutin-1');const paths=[s.ENEMY_ART,s.SHIELD_ART,...[...new Set(s.STAGES.map(v=>s.enemyArt(v.bossName)))]];return await Promise.all(paths.map(async path=>{const img=new Image();img.src=new URL(path,location.href);await img.decode();const canvas=document.createElement('canvas');canvas.width=img.width;canvas.height=img.height;const ctx=canvas.getContext('2d');ctx.drawImage(img,0,0);return {path,alpha:ctx.getImageData(0,0,1,1).data[3]}}))});
  expect(data.every(i=>i.alpha===0)).toBe(true);expect(data.every(i=>i.path.startsWith('./assets/'))).toBe(true);
 });
 test('chapter two ending preserves progress and continues into chapter three',async({page})=>{

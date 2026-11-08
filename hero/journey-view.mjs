@@ -1,4 +1,4 @@
-import {campaignMapSvg,stageLocation} from './campaign-map.mjs?v=chapter-three-1';
+import {campaignMapSvg,stageLocation} from './campaign-map.mjs?v=boss-cutin-1';
 let cancelJourney=()=>{};
 export function mountJourney(level,stage){
  cancelJourney();let root=document.getElementById('journeyIntro');
