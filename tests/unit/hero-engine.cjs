@@ -291,7 +291,7 @@ test('a defeated commander still wins after an earlier ordinary breach',async()=
  const {createBattle,stepBattle}=await engine,b=createBattle(1);b.bossSpawned=true;b.lives=2;b.enemies=[{id:90,lane:1,x:.4,hp:0,maxHp:100,boss:true,name:'黃巾前哨'}];stepBattle(b,.1);assert.equal(b.won,true);
 });
 test('seven duel matchups have distinct ordered choreography',async()=>{
- const {duelBeats}=await engine,{STAGES}=await import('../../hero/story.mjs');const sequences=STAGES.filter(s=>s.duelHero).map(s=>duelBeats({bossName:s.bossName,outcome:s.duelOutcome}));
+ const {duelBeats}=await engine,{STAGES}=await import('../../hero/story.mjs');const sequences=STAGES.filter(s=>s.duelHero&&!s.duelPartner).map(s=>duelBeats({bossName:s.bossName,outcome:s.duelOutcome}));
  assert.equal(sequences.length,7);assert.equal(new Set(sequences.map(beats=>JSON.stringify(beats.map(b=>[b.at,b.side,b.damage])))).size,7);
  for(const beats of sequences){assert.ok(beats.every((b,i)=>!i||b.at>beats[i-1].at));assert.equal(beats.filter(b=>b.side==='finish').length,1);assert.ok(Math.abs(beats.filter(b=>b.side!=='finish').reduce((sum,b)=>sum+(b.damage||0),0)-.7)<1e-8);}
 });
@@ -314,7 +314,7 @@ test('cinematic finishers have names, distinct movement and opposing facing dire
  const {duelFinisher}=await import('../../hero/duel-patterns.mjs');
  const {STAGES}=await import('../../hero/story.mjs');
  const traces=[];
- for(const s of STAGES.filter(s=>s.duelHero)){
+ for(const s of STAGES.filter(s=>s.duelHero&&!s.duelPartner)){
   const d={bossName:s.bossName,heroKey:s.duelHero,outcome:s.duelOutcome};
   assert.ok(duelFinisher(d).name.length>6);
   const trace=[];
@@ -399,4 +399,37 @@ test('stunning or defeating an aiming archer cancels unreleased arrows',async()=
 test('archers appear only from level four and replace a minority of regular enemies',async()=>{
  const {createBattle,stepBattle}=await engine;
  for(let level=1;level<=10;level++){const b=createBattle(level);let ranged=0;for(let n=0;n<6;n++){b.nextSpawn=b.time;b.enemies=[];stepBattle(b,.1);ranged+=b.enemies.filter(e=>e.ranged).length;}assert.equal(ranged,level>=4?1:0);}
+});
+
+async function teamFixture(partner=true){
+ const e=await engine,b=e.createBattle(6);b.nextSpawn=Infinity;b.bossSpawned=true;e.deploy(b,'guanyu',1);if(partner)e.deploy(b,'zhangfei',2);
+ b.enemies=[{id:90,lane:1,x:.17,hp:340,maxHp:340,boss:true,name:'雷烈'}];return {e,b,g:b.allies[0],z:b.allies[1],boss:b.enemies[0]};
+}
+test('stage six requires two living deployed heroes; partner can join from a different lane',async()=>{
+ for(const missing of ['absent','dead']){const {b,e,z}=await teamFixture(missing==='dead');if(z)z.hp=0;e.stepBattle(b,.1);assert.equal(b.duel,null);assert.equal(b.duelSeen,false)}
+ const {b,e,g,z}=await teamFixture();e.stepBattle(b,.1);assert.equal(b.duel.format,'two-v-one');assert.equal(b.duel.heroId,g.id);assert.equal(b.duel.partnerId,z.id);assert.notEqual(g.lane,z.lane);
+});
+test('team counters hit the intended hero once, preserve low HP, and pause freezes both fighters',async()=>{
+ for(const low of [false,true]){
+ const {b,e,g,z,boss}=await teamFixture();if(low)g.hp=z.hp=1;e.stepBattle(b,.1);e.skipDuelEntrance(b);const gh=g.hp,zh=z.hp,time=b.time,food=b.food;
+ while(b.duel.elapsed<4.3-1e-8)e.stepBattle(b,.1);assert.equal(g.hp,gh);assert.equal(z.hp,zh);
+ b.paused=true;const saved=JSON.stringify(b);for(let i=0;i<40;i++)e.stepBattle(b,.1);assert.equal(JSON.stringify(b),saved);b.paused=false;
+ e.stepBattle(b,.1);assert.ok(Math.abs(g.hp-Math.max(1,gh-g.maxHp*.03))<1e-6);assert.equal(z.hp,zh);
+ while(b.duel.elapsed<7.9-1e-8)e.stepBattle(b,.1);assert.equal(z.hp,zh);e.stepBattle(b,.1);assert.ok(Math.abs(z.hp-Math.max(1,zh-z.maxHp*.03))<1e-6);
+ while(b.duel)e.stepBattle(b,.1);assert.equal(b.time,time);assert.equal(b.food,food);assert.equal(boss.hp,0);assert.ok(Math.abs(g.hp-Math.max(1,gh-g.maxHp*.03))<1e-6);assert.ok(Math.abs(z.hp-Math.max(1,zh-z.maxHp*.03))<1e-6);
+ }
+});
+test('team finisher hits in steps, holds defeat, clears both pending attacks and resumes three lanes',async()=>{
+ const {b,e,g,z,boss}=await teamFixture();e.stepBattle(b,.1);e.skipDuelEntrance(b);const positions=b.allies.map(u=>[u.lane,u.x]);g.pendingStrike=z.pendingStrike={targetId:90,impactAt:0,damage:999};g.pendingCleave=z.pendingCleave={};
+ b.enemies.push({id:91,lane:0,x:.85,hp:100,maxHp:100,boss:false,speed:0,damage:0,lastAttack:0});
+ while(b.duel.elapsed<11.6-1e-8)e.stepBattle(b,.1);assert.ok(Math.abs(boss.hp-238)<1e-6);
+ for(const [at,hp] of [[13,170],[14,102],[15.5,0]]){while(b.duel.elapsed<at-1e-8)e.stepBattle(b,.1);assert.ok(Math.abs(boss.hp-hp)<1e-6)}
+ assert.ok(b.duel);while(b.duel)e.stepBattle(b,.1);assert.deepEqual(b.allies.map(u=>[u.lane,u.x]),positions);
+ for(const u of [g,z]){assert.equal(u.pendingStrike,null);assert.equal(u.pendingCleave,null)}
+ e.stepBattle(b,.1);assert.equal(b.over,false);assert.equal(b.enemies.length,1);assert.equal(b.enemies[0].id,91);assert.equal(b.duel,null);
+});
+test('team pincer turns both heroes and the boss toward their actual opponent, with deterministic paused poses',async()=>{
+ const {teamPose,TEAM_BEATS}=await import('../../hero/team-duel-beats.mjs');assert.ok(TEAM_BEATS.every((b,i)=>!i||b.at>TEAM_BEATS[i-1].at));
+ for(let t=0;t<19;t+=.05){const p=teamPose({elapsed:t});assert.deepEqual(teamPose({elapsed:t}),p);for(const key of ['guanyu','zhangfei']){assert.equal(p[key].facing,p[key].x<p.enemy.x?1:-1);assert.ok(p[key].x>=17&&p[key].x<=83)}assert.equal(teamPose({elapsed:t},true).shake,0)}
+ const p=teamPose({elapsed:9.7});assert.ok(p.guanyu.x>p.enemy.x);assert.ok(p.zhangfei.x<p.enemy.x);assert.equal(p.guanyu.facing,-1);assert.equal(p.enemy.facing,1);assert.equal(teamPose({elapsed:15.7}).enemy.fallen,false);assert.equal(teamPose({elapsed:16.2}).enemy.fallen,true);
 });

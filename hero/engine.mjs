@@ -1,9 +1,9 @@
-import {duelBeats} from './duel-patterns.mjs?v=duel-cinema-1';
-export {duelBeats} from './duel-patterns.mjs?v=duel-cinema-1';
+import {duelBeats} from './duel-patterns.mjs?v=team-duel-1';
+export {duelBeats} from './duel-patterns.mjs?v=team-duel-1';
 import {WEATHER_GENERALS} from './weather-generals.mjs?v=storm-battle-1';
 import {campaignState,weaponBonus} from './campaign.mjs?v=novel-camp-1';
 import {heroSkill} from './skills.mjs?v=novel-camp-1';
-import {HEROES,STAGES,UNLOCKS,FEATURES} from './story.mjs?v=storm-battle-1';
+import {HEROES,STAGES,UNLOCKS,FEATURES} from './story.mjs?v=team-duel-1';
 
 export const SWING={duration:.58,impact:.24,frameTime:.08,frames:6};
 export const DUEL_DURATION=19;
@@ -103,8 +103,8 @@ function spawn(b){
  if(boss){b.notice=`${stage.bossName}出陣！`;b.noticeUntil=b.time+4}
 }
 function resolveDuel(b){
- const duel=b.duel,hero=b.allies.find(u=>u.id===duel.heroId),boss=b.enemies.find(u=>u.id===duel.bossId);
- if(hero){hero.pendingStrike=null;hero.pendingCleave=null;hero.swingStartedAt=-100;hero.lastAttack=b.time;}
+ const duel=b.duel;
+ for(const fighter of b.allies.filter(u=>u.id===duel.heroId||u.id===duel.partnerId)){fighter.pendingStrike=null;fighter.pendingCleave=null;fighter.swingStartedAt=-100;fighter.lastAttack=b.time;}
  b.notice=`${duel.bossName}${duel.outcome==='retreat'?'已撤走':'已被斬殺'}！繼續照應三路。`;b.noticeUntil=b.time+3;b.duel=null;
 }
 export function stepBattle(b,seconds){
@@ -116,9 +116,9 @@ export function stepBattle(b,seconds){
   d.elapsed=Math.min(DUEL_DURATION,d.elapsed+dt);d.remaining=DUEL_DURATION-d.elapsed;
   const boss=b.enemies.find(e=>e.id===d.bossId),hero=b.allies.find(u=>u.id===d.heroId),beats=duelBeats(d);
   for(let i=d.nextBeat;i<beats.length&&d.elapsed+1e-8>=beats[i].at;i++){
-   const beat=beats[i];if(boss&&beat.damage)boss.hp=beat.side==='finish'?0:Math.max(1,boss.hp-d.startHp*beat.damage);if(hero&&beat.heroDamage)d.pendingCounter={at:beat.at+.6,damage:hero.maxHp*beat.heroDamage};d.nextBeat=i+1;
+   const beat=beats[i];if(boss&&beat.damage)boss.hp=beat.side==='finish'?0:Math.max(1,boss.hp-d.startHp*beat.damage);const receiver=beat.counterTarget==='partner'?b.allies.find(u=>u.id===d.partnerId):hero;if(receiver&&beat.heroDamage)d.pendingCounter={at:beat.at+.6,damage:receiver.maxHp*beat.heroDamage,targetId:receiver.id};d.nextBeat=i+1;
   }
-  if(d.pendingCounter&&d.elapsed+1e-8>=d.pendingCounter.at){if(hero)hero.hp=Math.max(1,hero.hp-d.pendingCounter.damage);d.pendingCounter=null;}
+  if(d.pendingCounter&&d.elapsed+1e-8>=d.pendingCounter.at){const receiver=b.allies.find(u=>u.id===d.pendingCounter.targetId);if(receiver)receiver.hp=Math.max(1,receiver.hp-d.pendingCounter.damage);d.pendingCounter=null;}
   if(d.remaining<=.00001)resolveDuel(b);return;
  }
  b.effects=b.effects.filter(e=>{e.remaining-=dt;return e.remaining>0});
@@ -162,8 +162,9 @@ export function stepBattle(b,seconds){
   if(target&&target.x-u.x<=d.range){
    if(b.level===5&&u.key==='liubei'&&target.boss&&target.hp/target.maxHp>.65&&!target.duelHintShown){target.duelHintShown=true;b.notice='先破盾才能單挑：把石魁生命打到 65% 以下，再由劉備同路近身。';b.noticeUntil=b.time+6;b.duelHint={text:b.notice,until:b.time+6};}
 
-   if(target.boss&&!target.support&&!b.duelSeen&&stage.duelHero===u.key&&(!stage.duelHpRatio||target.hp/target.maxHp<=stage.duelHpRatio)&&target.x-u.x<=Math.max(.14,d.range)){
-    b.duelHint=null;b.duelSeen=true;b.duel={heroId:u.id,bossId:target.id,heroKey:u.key,bossName:target.name,outcome:stage.duelOutcome||'defeat',remaining:DUEL_DURATION,elapsed:0,entranceElapsed:0,nextBeat:0,startHp:target.hp};return;
+   const partner=stage.duelPartner?b.allies.find(a=>a.key===stage.duelPartner&&a.hp>0):null;
+   if((!stage.duelPartner||partner)&&target.boss&&!target.support&&!b.duelSeen&&stage.duelHero===u.key&&(!stage.duelHpRatio||target.hp/target.maxHp<=stage.duelHpRatio)&&target.x-u.x<=Math.max(.14,d.range)){
+    b.duelHint=null;b.duelSeen=true;b.duel={...(partner?{format:'two-v-one',partnerId:partner.id,partnerKey:partner.key}:{}),heroId:u.id,bossId:target.id,heroKey:u.key,bossName:target.name,outcome:stage.duelOutcome||'defeat',remaining:DUEL_DURATION,elapsed:0,entranceElapsed:0,nextBeat:0,startHp:target.hp};return;
    }
    if(b.time-u.lastAttack>=d.rate&&!u.pendingCleave&&b.time-(u.swingStartedAt??-100)>=SWING.duration){
     u.lastAttack=b.time;const damage=(d.damage+weaponBonus(u.key,b.weapons?.[u.key]))*(b.time<(b.oathBuffUntil||0)?1.2:1)*(target.shielded&&u.key==='archer'?.5:1);

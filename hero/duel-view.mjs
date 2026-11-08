@@ -1,11 +1,15 @@
-import {renderDuelCinematic} from './duel-cinematic.mjs?v=duel-cinema-1';
-import {duelPattern} from './duel-patterns.mjs?v=duel-cinema-1';
-import {renderDuelEntrance} from './duel-entrance.mjs?v=enemy-archer-1';
-import {HEROES,enemyArt,STAGES} from './story.mjs?v=storm-battle-1';
+import {renderTeamDuel} from './team-duel-view.mjs?v=team-duel-1';
+import {renderDuelCinematic} from './duel-cinematic.mjs?v=team-duel-1';
+import {duelPattern} from './duel-patterns.mjs?v=team-duel-1';
+import {renderDuelEntrance} from './duel-entrance.mjs?v=team-duel-1';
+import {HEROES,enemyArt,STAGES} from './story.mjs?v=team-duel-1';
 import {hitSound} from './audio.mjs?v=background-audio-1';
-import {duelBeats,duelBeat} from './engine.mjs?v=enemy-archer-1';
+import {duelBeats,duelBeat} from './engine.mjs?v=team-duel-1';
 export function renderDuel(b){
  const d=b.duel,dialog=document.getElementById('duelDialog');if(!d)return;
+ dialog.dataset.team=String(d.format==='two-v-one');
+ const team=document.getElementById('teamDuel');if(team)team.hidden=d.format!=='two-v-one';
+ if(d.format==='two-v-one'){renderTeamDuel(b);return}
  if(renderDuelEntrance(b))return;
  const stage=STAGES[b.level-1]||{},custom=stage.bossName===d.bossName?stage:{},retreat=d.outcome==='retreat';
  document.getElementById('duelOutcomeNote').textContent=retreat?'破陣退敵・張角撤離戰場':'終結一擊擊敗敵將・其餘敵兵仍需清除';
