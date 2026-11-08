@@ -1,6 +1,6 @@
 import {renderDuelEntrance} from './duel-entrance.mjs?v=duel-entrance-1';
 import {HEROES,enemyArt,STAGES} from './story.mjs?v=novel-camp-1';
-import {hitSound} from './audio.mjs?v=yellow-boss-2';
+import {hitSound} from './audio.mjs?v=menu-bgm-1';
 import {DUEL_BEATS,duelBeat} from './engine.mjs?v=duel-entrance-1';
 export function renderDuel(b){
  const d=b.duel,dialog=document.getElementById('duelDialog');if(!d)return;

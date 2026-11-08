@@ -14,6 +14,10 @@
  <link rel="stylesheet" href="duel-entrance.css?v=duel-entrance-1">
 </head>
 <body>
+ <audio id="menuBgm" loop preload="metadata" hidden>
+  <source src="./assets/audio/taoyuan-feast-menu.m4a?v=menu-bgm-1" type="audio/mp4">
+  <source src="./assets/audio/taoyuan-feast-menu.wav?v=menu-bgm-1" type="audio/wav">
+ </audio>
  <header class="site-bar"><span class="wordmark">英雄演義 <small>桃園同心</small></span><button id="musicBtn" class="quiet-button" aria-pressed="false">♫ 音樂：關</button><button id="soundTest" class="quiet-button">試聽音效</button></header><p id="audioNotice" role="status" class="audio-notice"></p>
  <main>
   <section id="home" class="screen home active" aria-labelledby="homeTitle">
@@ -79,6 +83,6 @@
  <dialog id="duelDialog" class="duel-dialog" aria-labelledby="duelTitle"><span class="eyebrow">武將交鋒 · 自動單挑</span><h2 id="duelTitle"></h2><div id="duelCombat"><div class="duel-enemy-talk"><img id="duelEnemyFace" alt=""><p id="duelEnemyLine"></p></div><div class="duel-portraits"><img id="duelHero" alt=""><span>交鋒</span><img id="duelEnemy" alt="敵將"></div><div class="duel-health" aria-label="敵將生命"><i id="duelHp"></i></div><p id="duelCallout" role="status"></p><p id="duelCaption"></p><div class="duel-hero-talk"><img id="duelHeroFace" alt=""><p id="duelDialogue" aria-live="polite"></p></div><small id="duelOutcomeNote">終結一擊斬殺敵將・其餘敵兵仍需清除</small></div><div id="duelVersus" hidden aria-label="雙將對峙開場"><div class="versus-rays" aria-hidden="true"></div><div class="versus-side versus-ally"><img id="versusHero" alt=""><div class="versus-name"><small id="versusHeroTitle"></small><strong id="versusHeroName"></strong><span id="versusHeroWeapon"></span></div></div><div class="versus-side versus-foe"><img id="versusEnemy" alt=""><div class="versus-name"><small id="versusEnemyTitle"></small><strong id="versusEnemyName"></strong><span id="versusEnemyWeapon"></span></div></div><div class="versus-cut" aria-hidden="true"></div><div class="versus-ring" aria-hidden="true"></div><strong class="versus-seal" aria-hidden="true">對決</strong><div class="versus-sparks" aria-hidden="true"></div><p id="versusCallout"></p><div class="versus-progress" aria-hidden="true"><i></i></div></div><div class="duel-controls"><button id="duelEnter" class="quiet-button" hidden>略過開場 →</button><button id="duelPause" class="quiet-button">暫停單挑</button></div></dialog>
  <p id="storageNotice" class="storage-notice" role="status" hidden>此瀏覽器目前無法保存進度，關閉後可能需要重玩。</p>
 
- <script type="module" src="app.mjs?v=duel-entrance-1"></script>
+ <script type="module" src="app.mjs?v=menu-bgm-1"></script>
 </body>
 </html>

@@ -4,7 +4,7 @@ import {rewardVictory,useSupply} from './campaign.mjs?v=novel-camp-1';
 import {createFirstGuide} from './first-guide.mjs?v=novel-camp-1';
 import {mountStoryTask} from './story-play.mjs?v=story-play-1';
 import {CHAPTER_BACKGROUNDS,STAGE_LEADS} from './prologue.mjs?v=novel-camp-1';
-import {setMusic,setMusicScene,musicTheme,musicOn,setSfx,unlockAudio,hitSound} from './audio.mjs?v=yellow-boss-2';
+import {setMusic,setMusicScene,setMusicHome,musicTheme,musicOn,setSfx,unlockAudio,hitSound} from './audio.mjs?v=menu-bgm-1';
 import {renderDuel} from './duel-view.mjs?v=duel-entrance-1';
 import {chapterInfo,enemyArt,HEROES,STAGES,ENEMY_ART,SHIELD_ART,FEATURES,heroDescription} from './story.mjs?v=novel-camp-1';
 import {skipDuelEntrance,positionHero,commandHero,moveHero,BOSS_SKILLS,SAVE_KEY,normalizeProgress,createBattle,deploy,canDeploy,stepBattle,attackFrame,SWING} from './engine.mjs?v=duel-entrance-1';
@@ -14,6 +14,7 @@ let firstGuide=null;
 let progress,screen='home',battle=null,selected=null,storyLevel=1,lineIndex=0,storyPhase='opening',lastFrame=0,resultShown=false,duelShown=false;
 try{progress=normalizeProgress(JSON.parse(localStorage.getItem(SAVE_KEY)||'{}'))}catch{progress=normalizeProgress()}
 function saveProgress(){try{localStorage.setItem(SAVE_KEY,JSON.stringify(progress))}catch{$('storageNotice').hidden=false}}
+function syncMusicButton(on=musicOn()){$('musicBtn').textContent=on?`♫ ${musicTheme().name}`:'♫ 音樂：關';$('musicBtn').setAttribute('aria-pressed',String(on))}
 let ownsFullscreen=false,focusRevision=0;
 function focusBattle(active){
  document.body.classList.toggle('battle-focus',active);const revision=++focusRevision;
@@ -39,10 +40,11 @@ function updateHome(){
 function goHome(){
  if(battle&&!battle.over)battle.paused=true;
  if($('duelDialog').open)$('duelDialog').close();duelShown=false;
+ setMusicHome();syncMusicButton();
  show('home');updateHome();$('startBtn').focus({preventScroll:true});
 }
 function startStory(level,phase='opening'){
- setMusicScene(level);storyLevel=level;storyPhase=phase;lineIndex=0;battle=null;selected=null;show('story');
+ setMusicScene(level);syncMusicButton();storyLevel=level;storyPhase=phase;lineIndex=0;battle=null;selected=null;show('story');
  const stage=STAGES[level-1];$('sceneBackdrop').src=stage.scene;$('sceneBackdrop').alt=stage.place+'，'+stage.name+'的故事場景';renderStory();setPrologue(phase==='opening');
 }
 function setPrologue(visible){
@@ -163,7 +165,7 @@ function frame(now){
  if(screen==='battle'&&battle&&!battle.over){stepBattle(battle,dt*(battle.duel?.805:.7));renderBattle()}
  requestAnimationFrame(frame);
 }
-$('startBtn').onclick=()=>{if(battle&&!battle.over){show('battle');setPause(false);renderBattle()}else startStory(progress.completed<STAGES.length?progress.completed+1:1)};
+$('startBtn').onclick=()=>{if(battle&&!battle.over){setMusicScene(battle.level);syncMusicButton();show('battle');setPause(false);renderBattle()}else startStory(progress.completed<STAGES.length?progress.completed+1:1)};
 $('storyNext').onclick=()=>{if(lineIndex<storyLines().length-1){lineIndex++;renderStory()}else finishStory()};
 $('prologueContinue').onclick=()=>setPrologue(false);
 $('storyPrevious').onclick=()=>{if(lineIndex>0){lineIndex--;renderStory()}};
@@ -175,7 +177,7 @@ for(const button of document.querySelectorAll('[data-home]'))button.onclick=goHo
 $('pauseBtn').onclick=()=>setPause(!battle.paused);$('resumeBtn').onclick=()=>setPause(false);
 $('duelDialog').addEventListener('cancel',event=>event.preventDefault());
 document.addEventListener('visibilitychange',()=>{if(document.hidden&&battle&&!battle.over)setPause(true)});
-$('musicBtn').onclick=async()=>{const on=!musicOn();$('musicBtn').textContent=on?`♫ ${musicTheme().name}`:'♫ 音樂：關';$('musicBtn').setAttribute('aria-pressed',String(on));const playing=await setMusic(on);$('musicBtn').textContent=playing?`♫ ${musicTheme().name}`:'♫ 音樂：關';$('musicBtn').setAttribute('aria-pressed',String(playing))};
+$('musicBtn').onclick=async()=>{const on=!musicOn();syncMusicButton(await setMusic(on))};
 const sfxButton=document.createElement('button');sfxButton.className='quiet-button';sfxButton.textContent='音效：開';sfxButton.setAttribute('aria-pressed','true');let effectsEnabled=true;sfxButton.onclick=async()=>{effectsEnabled=!effectsEnabled;setSfx(effectsEnabled);sfxButton.textContent=effectsEnabled?'音效：開':'音效：關';sfxButton.setAttribute('aria-pressed',String(effectsEnabled));if(effectsEnabled){const ok=await hitSound('block');$('audioNotice').textContent=ok?'音效已開啟':'聲音尚未啟動，請點「試聽音效」重試';}};$('musicBtn').before(sfxButton);
 $('soundTest').onclick=async()=>{const ok=await hitSound('slash');$('audioNotice').textContent=!effectsEnabled?'請先開啟音效':ok?'已播放揮擊音效；若無聲，請檢查裝置音量／靜音設定':'瀏覽器未啟動音訊，請再點一次試聽';};
 document.addEventListener('pointerdown',unlockAudio);document.addEventListener('keydown',unlockAudio);
