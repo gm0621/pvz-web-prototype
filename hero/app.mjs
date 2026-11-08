@@ -4,7 +4,7 @@ import {rewardVictory,useSupply} from './campaign.mjs?v=novel-camp-1';
 import {createFirstGuide} from './first-guide.mjs?v=novel-camp-1';
 import {mountStoryTask} from './story-play.mjs?v=story-play-1';
 import {CHAPTER_BACKGROUNDS,STAGE_LEADS} from './prologue.mjs?v=novel-camp-1';
-import {setMusic,setMusicScene,setMusicHome,musicTheme,musicOn,setSfx,unlockAudio,hitSound} from './audio.mjs?v=storm-battle-1';
+import {setMusic,setMusicMode,setMusicHome,musicTheme,musicOn,setSfx,unlockAudio,hitSound,heroVoice} from './audio.mjs?v=scene-audio-2';
 import {renderDuel} from './duel-view.mjs?v=storm-battle-2';
 import {chapterInfo,enemyArt,HEROES,STAGES,ENEMY_ART,SHIELD_ART,FEATURES,heroDescription} from './story.mjs?v=storm-battle-1';
 import {bossProfile,LANE_CAPACITY,laneCount,ENEMY_SWING,enemyAttackFrame,skipDuelEntrance,positionHero,commandHero,moveHero,BOSS_SKILLS,SAVE_KEY,normalizeProgress,createBattle,deploy,canDeploy,stepBattle,attackFrame,SWING} from './engine.mjs?v=storm-battle-2';
@@ -44,7 +44,7 @@ function goHome(){
  show('home');updateHome();$('startBtn').focus({preventScroll:true});
 }
 function startStory(level,phase='opening'){
- setMusicScene(level);syncMusicButton();storyLevel=level;storyPhase=phase;lineIndex=0;battle=null;selected=null;selectedUnitId=null;show('story');
+ setMusicMode(phase==='ending'?'victory':'story',level);syncMusicButton();storyLevel=level;storyPhase=phase;lineIndex=0;battle=null;selected=null;selectedUnitId=null;show('story');
  const stage=STAGES[level-1];$('sceneBackdrop').src=stage.scene;$('sceneBackdrop').alt=stage.place+'，'+stage.name+'的故事場景';renderStory();setPrologue(phase==='opening');
 }
 function setPrologue(visible){
@@ -53,6 +53,7 @@ function setPrologue(visible){
  $('storyPrologue').hidden=!visible;$('storyScene').classList.toggle('has-prologue',visible);
  $('storyScene').querySelector('.scene-cast').hidden=visible;$('storyScene').querySelector('.scene-dialogue').hidden=visible;
  $('prologueEra').textContent=background.era;
+ if(!visible&&storyPhase==='opening'){setMusicMode('prepare',storyLevel);syncMusicButton()}
  (visible?$('prologueContinue'):$('storyNext')).focus({preventScroll:true});
 }
 function storyLines(){const stage=STAGES[storyLevel-1];return storyPhase==='ending'?stage.ending:stage.opening}
@@ -72,7 +73,7 @@ function renderStory(){
  for(const actor of document.querySelectorAll('[data-actor]')){actor.classList.toggle('listening',actor.dataset.actor===partnerKey);actor.classList.toggle('speaking',actor.dataset.actor===key);actor.setAttribute('aria-label',actor.alt+(actor.dataset.actor===key?'，正在說話':''))}
  $('storyScene').dataset.speaker=key;
 }
-function beginBattle(level){setMusicScene(level);battle=createBattle(level,Date.now(),progress.weapons);firstGuide=createFirstGuide(level);selected=null;selectedUnitId=null;resultShown=false;duelShown=false;show('battle');$('battleChapter').textContent=`第${chapterInfo(level).chapter===1?'一':'二'}章 · ${chapterInfo(level).number}`;$('battleTitle').textContent=STAGES[level-1].name;$('featureBadge').textContent=FEATURES[level-1].name;$('field').style.backgroundImage=`linear-gradient(#d4dfb655,#b9cda588),url("${STAGES[level-1].scene}")`;renderBattle();$('cards').querySelector('button')?.focus({preventScroll:true})}
+function beginBattle(level){setMusicMode('battle',level);syncMusicButton();battle=createBattle(level,Date.now(),progress.weapons);firstGuide=createFirstGuide(level);selected=null;selectedUnitId=null;resultShown=false;duelShown=false;show('battle');$('battleChapter').textContent=`第${chapterInfo(level).chapter===1?'一':'二'}章 · ${chapterInfo(level).number}`;$('battleTitle').textContent=STAGES[level-1].name;$('featureBadge').textContent=FEATURES[level-1].name;$('field').style.backgroundImage=`linear-gradient(#d4dfb655,#b9cda588),url("${STAGES[level-1].scene}")`;renderBattle();$('cards').querySelector('button')?.focus({preventScroll:true})}
 function selectedUnit(){return battle?.allies.find(u=>u.hp>0&&(selectedUnitId!==null?u.id===selectedUnitId:selected!=='archer'&&u.key===selected))}
 function syncPause(){if(!battle)return;$('field').classList.toggle('is-paused',battle.paused||!!battle.duel||!!battle.introPending);$('pauseOverlay').hidden=!battle.paused;$('pauseBtn').textContent=battle.paused?'▶ 繼續':'Ⅱ 暫停';$('pauseBtn').setAttribute('aria-pressed',String(battle.paused))}
 function setPause(value){if(!battle||battle.over)return;battle.paused=value;syncPause()}
@@ -85,13 +86,13 @@ function buildControls(){
  $('lanes').replaceChildren(...['上路','中路','下路'].map((label,lane)=>{const b=document.createElement('button');b.type='button';b.className='lane';b.dataset.lane=lane;b.setAttribute('aria-label',`${label}，點擊出兵`);b.innerHTML=`<span class="lane-label">${label}</span><span class="lane-capacity"></span><span class="deploy-zone-label">出兵區</span><span class="lane-direction" aria-hidden="true">→　→　→</span><span class="enemy-zone-label" aria-hidden="true">敵軍 ←</span>`;b.onclick=event=>{
   if(!selected){battle.notice='先選下方一張兵卡，再點路線。';battle.noticeUntil=battle.time+3;renderBattle();return}
   const active=selectedUnit();
-  if(active){const rect=$('field').getBoundingClientRect();const unit=active;if(positionHero(battle,unit.id,lane,event.detail===0?unit.x:(event.clientX-rect.left)/rect.width)&&unit.order==='forward')firstGuide?.event('move')}else if(deploy(battle,selected,lane)){if(selected!=='archer')firstGuide?.event('deploy');selected=null;selectedUnitId=null;}renderBattle();
+  if(active){const rect=$('field').getBoundingClientRect();const unit=active;if(positionHero(battle,unit.id,lane,event.detail===0?unit.x:(event.clientX-rect.left)/rect.width)&&unit.order==='forward')firstGuide?.event('move')}else {const deploying=selected;if(deploy(battle,deploying,lane)){if(deploying!=='archer'){firstGuide?.event('deploy');void heroVoice(deploying,'shout')}selected=null;selectedUnitId=null;}}renderBattle();
  };return b}));
  $('cards').replaceChildren(...Object.entries(HEROES).map(([key,d])=>{const b=document.createElement('button');b.type='button';b.className='card';b.dataset.hero=key;b.setAttribute('aria-label',`${d.name}，${d.cost} 軍糧，${d.description}`);b.innerHTML=`<img src="${d.asset}" alt=""><div><strong>${d.short}</strong><span class="cost">🌾 ${d.cost}</span><span class="card-status"></span><small class="ability-description">${d.description}</small></div><span class="cooldown" aria-hidden="true"><i></i></span>`;b.onclick=()=>{if(!battle||battle.over||battle.paused||battle.duel)return;selected=selected===key&&selectedUnitId===null?null:key;selectedUnitId=null;if(selected&&key!=='archer')firstGuide?.event(battle.allies.some(u=>u.key===key)?'select-unit':'select-card');renderBattle()};return b}));
 }
 function unitNode(u,enemy){
  const d=enemy?null:HEROES[u.key],el=document.createElement('div');el.dataset.id=String(u.id);el.dataset.lane=String(u.lane);el.dataset.kind=enemy?'enemy':u.key;
- if(!enemy){el.tabIndex=0;el.setAttribute('role','button');el.setAttribute('aria-label',`選取${d.name}，調動位置`);el.onclick=()=>{if(battle.paused||battle.duel||battle.introPending||battle.over)return;if(selected&&!selectedUnit()){if(deploy(battle,selected,u.lane)){firstGuide?.event('deploy');selected=null;selectedUnitId=null;}renderBattle();return;}if(selectedUnit()?.id===u.id){if(commandHero(battle,u.id,'hold'))firstGuide?.event('hold')}else {selected=u.key;selectedUnitId=u.id;firstGuide?.event('select-unit')}renderBattle()};el.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();el.click()}}}
+ if(!enemy){el.tabIndex=0;el.setAttribute('role','button');el.setAttribute('aria-label',`選取${d.name}，調動位置`);el.onclick=()=>{if(battle.paused||battle.duel||battle.introPending||battle.over)return;if(selected&&!selectedUnit()){const deploying=selected;if(deploy(battle,deploying,u.lane)){firstGuide?.event('deploy');if(deploying!=='archer')void heroVoice(deploying,'shout');selected=null;selectedUnitId=null;}renderBattle();return;}if(selectedUnit()?.id===u.id){if(commandHero(battle,u.id,'hold'))firstGuide?.event('hold')}else {selected=u.key;selectedUnitId=u.id;firstGuide?.event('select-unit')}renderBattle()};el.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();el.click()}}}
  const sheet=enemy?!u.boss:u.key!=='archer';const asset=enemy?(u.boss?enemyArt(u.name):u.shielded?SHIELD_ART:ENEMY_ART):d.asset,name=enemy?u.name:d.name;
  el.innerHTML=`<span class="unit-shadow"></span><div class="unit-figure${sheet?' frame-figure':''}">${sheet?`<span class="attack-sprite" style="background-image:url('./assets/attacks/${enemy?'yellow-turban-troops':u.key}.png')"></span>`:`<img class="sprite-upper" src="${asset}" alt=""><img class="sprite-leg leg-left" src="${asset}" alt=""><img class="sprite-leg leg-right" src="${asset}" alt="">`}</div><div class="health"><i></i></div><span class="unit-name">${name}</span>`;return el;
 }
@@ -151,13 +152,13 @@ function renderBattle(){
  for(const button of $('supplies').children){const id=button.dataset.supply;button.textContent=`${id==='herb'?'藥包':'糧袋'} ×${progress.inventory[id]}`;button.disabled=!progress.inventory[id]||battle.paused||battle.over||!!battle.duel||!!battle.introPending}
  $('supplies').hidden=!progress.inventory.herb&&!progress.inventory.grain;
  renderUnits();renderEffects();syncPause();const skill=battle.skillNotice&&battle.time<battle.skillNotice.until?battle.skillNotice:null;$('skillBanner').hidden=!skill;if(skill){$('skillBanner').textContent=skill.text;$('skillBanner').dataset.hero=skill.key}
- if(battle.duel&&!duelShown){const d=battle.duel;$('duelTitle').textContent=`${HEROES[d.heroKey].short} 對 ${d.bossName}`;$('duelHero').src=HEROES[d.heroKey].asset;$('duelHero').alt=HEROES[d.heroKey].name;$('duelEnemy').src=enemyArt(d.bossName);$('duelDialog').showModal();duelShown=true}
+ if(battle.duel&&!duelShown){const d=battle.duel;setMusicMode('duel',battle.level);syncMusicButton();$('duelTitle').textContent=`${HEROES[d.heroKey].short} 對 ${d.bossName}`;$('duelHero').src=HEROES[d.heroKey].asset;$('duelHero').alt=HEROES[d.heroKey].name;$('duelEnemy').src=enemyArt(d.bossName);$('duelDialog').showModal();duelShown=true}
  if(battle.duel)renderDuel(battle);
- if(!battle.duel&&duelShown){$('duelDialog').close();duelShown=false}
+ if(!battle.duel&&duelShown){$('duelDialog').close();duelShown=false;setMusicMode('battle',battle.level);syncMusicButton()}
  if(battle.over&&!resultShown)showResult();
 }
 function showResult(){
- resultShown=true;selected=null;selectedUnitId=null;const stage=STAGES[battle.level-1];
+ resultShown=true;selected=null;selectedUnitId=null;setMusicMode(battle.won?'victory':'prepare',battle.level);syncMusicButton();const stage=STAGES[battle.level-1];
  const balanceBefore=progress.coins;let earned=0;if(battle.won){earned=rewardVictory(progress,battle.level);saveProgress()}
  $('resultMark').textContent=battle.won?'勝':'再起';$('resultChapter').textContent=`第${chapterInfo(battle.level).chapter===1?'一':'二'}章 · ${chapterInfo(battle.level).number}`;
  $('resultTitle').textContent=battle.won?(battle.level===6?'桃園同心':battle.level===STAGES.length?'烽火與義氣':'此戰告捷'):'重整陣形，再來一次';
@@ -168,13 +169,13 @@ function showResult(){
  $('resultSaved').textContent=battle.won&&earned?'軍資已存入行囊，可在營地使用':'保留目前軍資，可到營地整備';
  $('resultNext').textContent='前往戰後營地 →';show('result');$('resultTitle').focus({preventScroll:true});
 }
-function openCamp(level,won){show('camp');mountCamp({progress,level,won,heroes:HEROES,stage:STAGES[level-1],onSave:saveProgress,onContinue:()=>won?startStory(level,'ending'):beginBattle(level)});$('campTitle').tabIndex=-1;$('campTitle').focus({preventScroll:true})}
+function openCamp(level,won){setMusicMode('camp',level);syncMusicButton();show('camp');mountCamp({progress,level,won,heroes:HEROES,stage:STAGES[level-1],onSave:saveProgress,onContinue:()=>won?startStory(level,'ending'):beginBattle(level)});$('campTitle').tabIndex=-1;$('campTitle').focus({preventScroll:true})}
 function frame(now){
  const dt=Math.min(.1,Math.max(0,(now-lastFrame)/1000));lastFrame=now;
  if(screen==='battle'&&battle&&!battle.over){stepBattle(battle,dt*(battle.duel?.805:.7));renderBattle()}
  requestAnimationFrame(frame);
 }
-$('startBtn').onclick=()=>{if(battle&&!battle.over){setMusicScene(battle.level);syncMusicButton();show('battle');setPause(false);renderBattle()}else startStory(progress.completed<STAGES.length?progress.completed+1:1)};
+$('startBtn').onclick=()=>{if(battle&&!battle.over){setMusicMode('battle',battle.level);syncMusicButton();show('battle');setPause(false);renderBattle()}else startStory(progress.completed<STAGES.length?progress.completed+1:1)};
 $('storyNext').onclick=()=>{if(lineIndex<storyLines().length-1){lineIndex++;renderStory()}else finishStory()};
 $('prologueContinue').onclick=()=>setPrologue(false);
 $('storyPrevious').onclick=()=>{if(lineIndex>0){lineIndex--;renderStory()}};
