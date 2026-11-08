@@ -40,7 +40,7 @@ test('pause freezes battle, and auto duel freezes combat and supply without any 
  b.paused=false;stepBattle(b,.1);assert.ok(b.duel);
  const time=b.time,food=b.food,hp=b.enemies[0].hp;
  stepBattle(b,.1);assert.equal(b.time,time);assert.equal(b.food,food);assert.equal(b.enemies[0].hp,hp);
- for(let i=0;i<200&&b.duel;i++)stepBattle(b,.1);
+ for(let i=0;i<250&&b.duel;i++)stepBattle(b,.1);
  assert.equal(b.duel,null);assert.equal(b.enemies[0].hp,0);assert.equal(b.duelSeen,true);
  assert.equal(b.time,time);assert.equal(b.food,food);
 });
@@ -50,7 +50,7 @@ test('duel exchanges hit once, finisher kills and surviving troops prevent prema
  stepBattle(b,.1);(await engine).skipDuelEntrance(b);const start=b.enemies[0].hp;
  for(let i=0;i<31;i++)stepBattle(b,.1);assert.equal(b.enemies[0].hp,start*.88);
  b.paused=true;const frozen=JSON.stringify(b);stepBattle(b,.1);assert.equal(JSON.stringify(b),frozen);b.paused=false;
- for(let i=0;i<125;i++)stepBattle(b,.1);assert.equal(b.duel,null);assert.equal(b.enemies.some(e=>e.id===90),false);assert.equal(b.over,false);
+ for(let i=0;i<165;i++)stepBattle(b,.1);assert.equal(b.duel,null);assert.equal(b.enemies.some(e=>e.id===90),false);assert.equal(b.over,false);
 });
 test('three undefended breaches lose naturally',async()=>{
  const {createBattle,stepBattle}=await engine,b=createBattle(1,1);
@@ -145,7 +145,7 @@ test('a withdrawn attacker cannot inflict its queued melee strike',async()=>{
 test('Liu Bei is told to break the shield before dueling Shi Kui',async()=>{
  const {createBattle,deploy,stepBattle}=await engine,b=createBattle(5,1);b.nextSpawn=Infinity;b.bossSpawned=true;deploy(b,'liubei',1);
  const boss={...testEnemy(90,.17),hp:290,maxHp:290,boss:true,name:'石魁',shielded:true};b.enemies.push(boss);stepBattle(b,.1);assert.equal(b.duel,null);assert.match(b.duelHint.text,/先破盾.*65%/);b.allies[0].lane=0;boss.hp=180;stepBattle(b,.1);assert.equal(b.duelHint,null);b.allies[0].lane=1;stepBattle(b,.1);assert.equal(b.duel.heroKey,'liubei');assert.equal(b.duel.bossName,'石魁');const frozen=b.time;(await engine).skipDuelEntrance(b);
- for(let i=0;i<150;i++)stepBattle(b,.1);assert.equal(b.time,frozen);assert.equal(boss.hp,0);
+ while(b.duel)stepBattle(b,.1);assert.equal(b.time,frozen);assert.equal(boss.hp,0);
 });
 test('late bosses telegraph two lanes on rage and the remaining lane is safe',async()=>{
  const {createBattle,deploy,commandHero,stepBattle}=await engine;
@@ -170,7 +170,7 @@ test('chapter-two duels use the nominated hero and freeze hazards, ending in ret
   const stage=STAGES[level-1],b=createBattle(level);b.nextSpawn=Infinity;b.bossSpawned=true;deploy(b,stage.duelHero,1);
   b.enemies.push({...testEnemy(90,.17),boss:true,name:stage.bossName,hp:40,maxHp:300});b.hazards.push({lane:1,nextTick:1,until:4});stepBattle(b,.1);assert.ok(b.duel);
   const t=b.time,hp=b.allies[0].hp;stepBattle(b,.1);assert.equal(b.time,t);assert.equal(b.allies[0].hp,hp);
-  b.duel.elapsed=13.2;if(level===10)assert.equal(duelBeat(b.duel).text,'張角退走');
+  b.duel.elapsed=17.3;if(level===10)assert.equal(duelBeat(b.duel).text,'張角退走');
  }
 });
 
@@ -293,7 +293,7 @@ test('a defeated commander still wins after an earlier ordinary breach',async()=
 test('seven duel matchups have distinct ordered choreography',async()=>{
  const {duelBeats}=await engine,{STAGES}=await import('../../hero/story.mjs');const sequences=STAGES.filter(s=>s.duelHero).map(s=>duelBeats({bossName:s.bossName,outcome:s.duelOutcome}));
  assert.equal(sequences.length,7);assert.equal(new Set(sequences.map(beats=>JSON.stringify(beats.map(b=>[b.at,b.side,b.damage])))).size,7);
- for(const beats of sequences){assert.ok(beats.every((b,i)=>!i||b.at>beats[i-1].at));assert.equal(beats.filter(b=>b.side==='finish').length,1);assert.ok(Math.abs(beats.filter(b=>b.side!=='finish').reduce((sum,b)=>sum+(b.damage||0),0)-.3)<1e-8);}
+ for(const beats of sequences){assert.ok(beats.every((b,i)=>!i||b.at>beats[i-1].at));assert.equal(beats.filter(b=>b.side==='finish').length,1);assert.ok(Math.abs(beats.filter(b=>b.side!=='finish').reduce((sum,b)=>sum+(b.damage||0),0)-.7)<1e-8);}
 });
 for(const level of [3,4,5,7,8,9,10])test(`duel ${level} counters hit once at impact, freeze and preserve the intended outcome`,async()=>{
  const {createBattle,deploy,stepBattle,skipDuelEntrance,duelBeats}=await engine,{STAGES}=await import('../../hero/story.mjs');const stage=STAGES[level-1],b=createBattle(level);b.nextSpawn=Infinity;deploy(b,stage.duelHero,1);const hero=b.allies[0];hero.hp=hero.maxHp*.8;
@@ -307,4 +307,43 @@ for(const level of [3,4,5,7,8,9,10])test(`duel ${level} counters hit once at imp
 });
 test('scripted duel counters never kill a hero entering with one HP',async()=>{
  const {createBattle,deploy,stepBattle,skipDuelEntrance}=await engine,b=createBattle(5);b.nextSpawn=Infinity;deploy(b,'liubei',1);b.allies[0].hp=1;b.enemies=[{id:90,lane:1,x:.17,hp:30,maxHp:290,boss:true,name:'石魁'}];stepBattle(b,.1);skipDuelEntrance(b);while(b.duel)stepBattle(b,.1);assert.equal(b.allies[0].hp,1);
+});
+
+test('cinematic finishers have names, distinct movement and opposing facing directions',async()=>{
+ const {duelPose}=await import('../../hero/duel-cinematic.mjs');
+ const {duelFinisher}=await import('../../hero/duel-patterns.mjs');
+ const {STAGES}=await import('../../hero/story.mjs');
+ const traces=[];
+ for(const s of STAGES.filter(s=>s.duelHero)){
+  const d={bossName:s.bossName,heroKey:s.duelHero,outcome:s.duelOutcome};
+  assert.ok(duelFinisher(d).name.length>6);
+  const trace=[];
+  for(let t=0;t<19;t+=.05){
+   d.elapsed=t;const p=duelPose(d);assert.equal(p.heroFacing,p.hero<p.enemy?1:-1);assert.equal(p.enemyFacing,-p.heroFacing);
+   assert.ok(p.hero>=15&&p.hero<=80);assert.ok(p.enemy>=30&&p.enemy<=85);
+   assert.deepEqual(duelPose(d),p);trace.push([p.hero,p.enemy,p.lift]);
+   const reduced=duelPose(d,true);assert.equal(reduced.shake,0);assert.equal(reduced.lift,0);
+  }
+  traces.push(JSON.stringify(trace));
+ }
+ assert.equal(new Set(traces).size,7);
+ const back=duelPose({bossName:'程遠志',heroKey:'guanyu',elapsed:13.7});assert.ok(back.hero>back.enemy);assert.equal(back.heroFacing,-1);assert.equal(back.enemyFacing,1);
+});
+for(const level of [3,4,5,7,8,9,10])test(`finisher ${level} keeps HP through windup, hits in steps and holds impact before exit`,async()=>{
+ const {createBattle,deploy,stepBattle,skipDuelEntrance}=await engine;
+ const {duelFinisher}=await import('../../hero/duel-patterns.mjs');
+ const {duelPose}=await import('../../hero/duel-cinematic.mjs');const {STAGES}=await import('../../hero/story.mjs');
+ const s=STAGES[level-1],b=createBattle(level);b.nextSpawn=Infinity;b.bossSpawned=true;deploy(b,s.duelHero,1);
+ const boss={id:90,lane:1,x:.17,hp:50,maxHp:300,boss:true,name:s.bossName};b.enemies=[boss];stepBattle(b,.1);skipDuelEntrance(b);
+ const f=duelFinisher(b.duel);
+ while(b.duel.elapsed<12.6)stepBattle(b,.05);
+ assert.ok(Math.abs(boss.hp-35)<1e-6);
+ for(const at of f.hits){
+  while(b.duel.elapsed+.05<at-1e-8)stepBattle(b,.05);
+  const hp=boss.hp;stepBattle(b,.05);assert.ok(boss.hp<hp);assert.ok(boss.hp>0);
+  b.paused=true;const frozen=JSON.stringify(b),pose=duelPose(b.duel);for(let i=0;i<10;i++)stepBattle(b,.1);assert.equal(JSON.stringify(b),frozen);assert.deepEqual(duelPose(b.duel),pose);b.paused=false;
+ }
+ while(b.duel.elapsed+.05<f.finish-1e-8)stepBattle(b,.05);
+ assert.ok(boss.hp>0);stepBattle(b,.05);assert.equal(boss.hp,0);assert.equal(duelPose(b.duel).defeat,0);
+ while(b.duel)stepBattle(b,.1);
 });
