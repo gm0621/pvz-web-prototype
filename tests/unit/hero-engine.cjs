@@ -375,3 +375,28 @@ test('2x frame crossing into a duel uses normal speed for the rest of that frame
  const b=createBattle(3);b.nextSpawn=Infinity;deploy(b,'zhangfei',1);b.enemies=[{...testEnemy(90,.17),boss:true,name:'鄧茂'}];
  advanceBattleFrame(b,.1,2);assert.ok(b.duel);assert.ok(Math.abs(b.duel.entranceElapsed-(.1-.1/1.4)*.805)<1e-8);
 });
+
+async function rangedFixture(){
+ const {createBattle,deploy}=await engine,b=createBattle(4);b.nextSpawn=Infinity;deploy(b,'liubei',1);
+ const hero=b.allies[0];hero.x=.3;hero.order='hold';hero.targetX=.3;
+ const archer={id:90,lane:1,x:.55,hp:60,maxHp:60,boss:false,ranged:true,name:'黃巾弓手',damage:8,rate:2.6,speed:.03,lastAttack:-10};b.enemies=[archer];
+ return {b,hero,archer};
+}
+test('enemy archer aims from distance then launches a leftward arrow before applying damage',async()=>{
+ const {stepBattle}=await engine,{b,hero,archer}=await rangedFixture(),hp=hero.hp;stepBattle(b,.1);assert.equal(archer.action,'aiming');assert.equal(archer.x,.55);assert.equal(hero.hp,hp);
+ for(let i=0;i<6;i++)stepBattle(b,.1);assert.equal(hero.hp,hp);assert.equal(b.projectiles.length,1);const arrow=b.effects.find(e=>e.type==='enemy-arrow');assert.ok(arrow.from>arrow.to);
+ for(let i=0;i<4;i++)stepBattle(b,.1);assert.equal(hero.hp,hp-8);
+});
+test('enemy arrows freeze on pause and can be dodged by changing lanes',async()=>{
+ const {stepBattle}=await engine,{b,hero}=await rangedFixture();for(let i=0;i<7;i++)stepBattle(b,.1);const hp=hero.hp;
+ b.paused=true;const frozen=JSON.stringify(b);for(let i=0;i<10;i++)stepBattle(b,.1);assert.equal(JSON.stringify(b),frozen);
+ b.paused=false;hero.lane=0;for(let i=0;i<5;i++)stepBattle(b,.1);assert.equal(hero.hp,hp);assert.equal(b.projectiles.length,0);
+});
+test('stunning or defeating an aiming archer cancels unreleased arrows',async()=>{
+ const {stepBattle}=await engine;
+ for(const kind of ['stun','defeat']){const {b,archer}=await rangedFixture();stepBattle(b,.1);if(kind==='stun')archer.stunnedUntil=b.time+2;else archer.hp=0;for(let i=0;i<10;i++)stepBattle(b,.1);assert.equal(b.projectiles.length,0);assert.ok(!b.effects.some(e=>e.type==='enemy-arrow'));}
+});
+test('archers appear only from level four and replace a minority of regular enemies',async()=>{
+ const {createBattle,stepBattle}=await engine;
+ for(let level=1;level<=10;level++){const b=createBattle(level);let ranged=0;for(let n=0;n<6;n++){b.nextSpawn=b.time;b.enemies=[];stepBattle(b,.1);ranged+=b.enemies.filter(e=>e.ranged).length;}assert.equal(ranged,level>=4?1:0);}
+});
