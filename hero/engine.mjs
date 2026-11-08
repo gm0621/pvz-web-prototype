@@ -4,6 +4,8 @@ import {HEROES,STAGES,UNLOCKS,FEATURES} from './story.mjs?v=novel-camp-1';
 
 export const SWING={duration:.58,impact:.24,frameTime:.08,frames:6};
 export const DUEL_DURATION=15;
+export const DUEL_ENTRANCE_DURATION=3.2;
+export function skipDuelEntrance(b){if(!b?.duel||b.paused||b.over)return false;b.duel.entranceElapsed=DUEL_ENTRANCE_DURATION;return true}
 export const DUEL_BEATS=[
  {at:0,text:'一騎當千',side:'ready'},
  {at:1.5,text:'報上名來',side:'reply'},
@@ -98,7 +100,9 @@ export function stepBattle(b,seconds){
  if(!b||b.over||b.paused||b.introPending)return;
  const dt=Math.min(.1,Math.max(0,Number(seconds)||0));if(!dt)return;
  if(b.duel){
-  const d=b.duel;d.elapsed=Math.min(DUEL_DURATION,d.elapsed+dt);d.remaining=DUEL_DURATION-d.elapsed;
+  const d=b.duel;
+  if(d.elapsed===0&&(d.entranceElapsed??DUEL_ENTRANCE_DURATION)<DUEL_ENTRANCE_DURATION){d.entranceElapsed=Math.min(DUEL_ENTRANCE_DURATION,d.entranceElapsed+dt);return}
+  d.elapsed=Math.min(DUEL_DURATION,d.elapsed+dt);d.remaining=DUEL_DURATION-d.elapsed;
   const boss=b.enemies.find(e=>e.id===d.bossId);
   for(let i=d.nextBeat;i<DUEL_BEATS.length&&d.elapsed+1e-8>=DUEL_BEATS[i].at;i++){
    const beat=DUEL_BEATS[i];if(boss&&beat.damage)boss.hp=beat.side==='finish'?0:Math.max(1,boss.hp-d.startHp*beat.damage);d.nextBeat=i+1;
@@ -132,7 +136,7 @@ export function stepBattle(b,seconds){
   const target=b.enemies.filter(e=>e.hp>0&&e.lane===u.lane&&e.x>=u.x-.015).sort((a,c)=>a.x-c.x)[0];
   if(target&&target.x-u.x<=d.range){
    if(target.boss&&!b.duelSeen&&stage.duelHero===u.key&&(!stage.duelHpRatio||target.hp/target.maxHp<=stage.duelHpRatio)&&target.x-u.x<=Math.max(.14,d.range)){
-    b.duelSeen=true;b.duel={heroId:u.id,bossId:target.id,heroKey:u.key,bossName:target.name,outcome:stage.duelOutcome||'defeat',remaining:DUEL_DURATION,elapsed:0,nextBeat:0,startHp:target.hp};return;
+    b.duelSeen=true;b.duel={heroId:u.id,bossId:target.id,heroKey:u.key,bossName:target.name,outcome:stage.duelOutcome||'defeat',remaining:DUEL_DURATION,elapsed:0,entranceElapsed:0,nextBeat:0,startHp:target.hp};return;
    }
    if(b.time-u.lastAttack>=d.rate&&!u.pendingCleave&&b.time-(u.swingStartedAt??-100)>=SWING.duration){
     u.lastAttack=b.time;const damage=(d.damage+weaponBonus(u.key,b.weapons?.[u.key]))*(b.time<(b.oathBuffUntil||0)?1.2:1)*(target.shielded&&u.key==='archer'?.5:1);

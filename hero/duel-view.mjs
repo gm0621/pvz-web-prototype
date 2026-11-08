@@ -1,8 +1,10 @@
+import {renderDuelEntrance} from './duel-entrance.mjs?v=duel-entrance-1';
 import {HEROES,enemyArt,STAGES} from './story.mjs?v=novel-camp-1';
 import {hitSound} from './audio.mjs?v=yellow-boss-2';
-import {DUEL_BEATS,duelBeat} from './engine.mjs?v=novel-camp-1';
+import {DUEL_BEATS,duelBeat} from './engine.mjs?v=duel-entrance-1';
 export function renderDuel(b){
  const d=b.duel,dialog=document.getElementById('duelDialog');if(!d)return;
+ if(renderDuelEntrance(b))return;
  const stage=STAGES[b.level-1]||{},custom=stage.bossName===d.bossName?stage:{},retreat=d.outcome==='retreat';
  document.getElementById('duelOutcomeNote').textContent=retreat?'破陣退敵・張角撤離戰場':'終結一擊擊敗敵將・其餘敵兵仍需清除';
  const beat=duelBeat(d),age=d.elapsed-beat.at,pulse=Math.max(0,1-age/.28),reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;

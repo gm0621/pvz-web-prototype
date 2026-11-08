@@ -40,14 +40,14 @@ test('pause freezes battle, and auto duel freezes combat and supply without any 
  b.paused=false;stepBattle(b,.1);assert.ok(b.duel);
  const time=b.time,food=b.food,hp=b.enemies[0].hp;
  stepBattle(b,.1);assert.equal(b.time,time);assert.equal(b.food,food);assert.equal(b.enemies[0].hp,hp);
- for(let i=0;i<160&&b.duel;i++)stepBattle(b,.1);
+ for(let i=0;i<200&&b.duel;i++)stepBattle(b,.1);
  assert.equal(b.duel,null);assert.equal(b.enemies[0].hp,0);assert.equal(b.duelSeen,true);
  assert.equal(b.time,time);assert.equal(b.food,food);
 });
 test('duel exchanges hit once, finisher kills and surviving troops prevent premature victory',async()=>{
  const {createBattle,deploy,stepBattle}=await engine,b=createBattle(3,1);b.nextSpawn=Infinity;b.bossSpawned=true;
  deploy(b,'zhangfei',1);b.enemies.push({...testEnemy(90,.17),boss:true,name:'鄧茂'},testEnemy(91,.9,2));
- stepBattle(b,.1);const start=b.enemies[0].hp;
+ stepBattle(b,.1);(await engine).skipDuelEntrance(b);const start=b.enemies[0].hp;
  for(let i=0;i<31;i++)stepBattle(b,.1);assert.equal(b.enemies[0].hp,start*.88);
  b.paused=true;const frozen=JSON.stringify(b);stepBattle(b,.1);assert.equal(JSON.stringify(b),frozen);b.paused=false;
  for(let i=0;i<125;i++)stepBattle(b,.1);assert.equal(b.duel,null);assert.equal(b.enemies.some(e=>e.id===90),false);assert.equal(b.over,false);
@@ -145,7 +145,7 @@ test('a withdrawn attacker cannot inflict its queued melee strike',async()=>{
 test('Liu Bei duels Shi Kui only after the tower shield is weakened',async()=>{
  const {createBattle,deploy,stepBattle}=await engine,b=createBattle(5,1);b.nextSpawn=Infinity;b.bossSpawned=true;deploy(b,'liubei',1);
  const boss={...testEnemy(90,.17),hp:290,maxHp:290,boss:true,name:'石魁',shielded:true};b.enemies.push(boss);stepBattle(b,.1);assert.equal(b.duel,null);
- boss.hp=180;stepBattle(b,.1);assert.equal(b.duel.heroKey,'liubei');assert.equal(b.duel.bossName,'石魁');const frozen=b.time;
+ boss.hp=180;stepBattle(b,.1);assert.equal(b.duel.heroKey,'liubei');assert.equal(b.duel.bossName,'石魁');const frozen=b.time;(await engine).skipDuelEntrance(b);
  for(let i=0;i<150;i++)stepBattle(b,.1);assert.equal(b.time,frozen);assert.equal(boss.hp,0);
 });
 test('late bosses telegraph two lanes on rage and the remaining lane is safe',async()=>{
@@ -213,4 +213,13 @@ test('campaign migration, first-clear rewards, purchase caps and reloads preserv
 test('weapon upgrades change actual damage and supplies consume once only during active battle',async()=>{
  const {createBattle,deploy,stepBattle,normalizeProgress}=await engine;const {purchase,useSupply}=await import('../../hero/campaign.mjs');const p=normalizeProgress({completed:2});purchase(p,'liubei');purchase(p,'herb');purchase(p,'grain');const b=createBattle(1,1,p.weapons);b.nextSpawn=Infinity;deploy(b,'liubei',1);const enemy={...testEnemy(90,.17),lastAttack:100};b.enemies.push(enemy);for(let i=0;i<4;i++)stepBattle(b,.1);assert.equal(enemy.hp,182);
  b.allies[0].hp=50;b.paused=true;assert.equal(useSupply(b,p,'herb'),false);b.paused=false;assert.equal(useSupply(b,p,'herb'),true);assert.equal(b.allies[0].hp,110);assert.equal(useSupply(b,p,'herb'),false);b.duel={};assert.equal(useSupply(b,p,'grain'),false);b.duel=null;b.food=290;assert.equal(useSupply(b,p,'grain'),true);assert.equal(b.food,300);assert.equal(p.inventory.grain,0);
+});
+
+test('versus entrance freezes combat, pauses exactly and skip never applies duel damage',async()=>{
+ const {createBattle,deploy,stepBattle,skipDuelEntrance,DUEL_ENTRANCE_DURATION}=await engine,b=createBattle(3,1);b.nextSpawn=Infinity;deploy(b,'zhangfei',1);b.enemies.push({...testEnemy(90,.17),boss:true,name:'鄧茂'});stepBattle(b,.1);
+ const time=b.time,food=b.food,hp=b.enemies[0].hp;
+ for(let i=0;i<20;i++)stepBattle(b,.1);
+ assert.equal(b.duel.elapsed,0);assert.equal(b.time,time);assert.equal(b.food,food);assert.equal(b.enemies[0].hp,hp);
+ b.paused=true;const frozen=JSON.stringify(b);stepBattle(b,.1);assert.equal(skipDuelEntrance(b),false);assert.equal(JSON.stringify(b),frozen);
+ b.paused=false;assert.equal(skipDuelEntrance(b),true);assert.equal(b.duel.entranceElapsed,DUEL_ENTRANCE_DURATION);assert.equal(b.duel.elapsed,0);assert.equal(b.enemies[0].hp,hp);stepBattle(b,.1);assert.ok(b.duel.elapsed>0);assert.equal(b.time,time);assert.equal(b.food,food);
 });

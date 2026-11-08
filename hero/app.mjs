@@ -5,9 +5,9 @@ import {createFirstGuide} from './first-guide.mjs?v=novel-camp-1';
 import {mountStoryTask} from './story-play.mjs?v=story-play-1';
 import {CHAPTER_BACKGROUNDS,STAGE_LEADS} from './prologue.mjs?v=novel-camp-1';
 import {setMusic,setMusicScene,musicTheme,musicOn,setSfx,unlockAudio,hitSound} from './audio.mjs?v=yellow-boss-2';
-import {renderDuel} from './duel-view.mjs?v=novel-camp-1';
+import {renderDuel} from './duel-view.mjs?v=duel-entrance-1';
 import {chapterInfo,enemyArt,HEROES,STAGES,ENEMY_ART,SHIELD_ART,FEATURES,heroDescription} from './story.mjs?v=novel-camp-1';
-import {positionHero,commandHero,moveHero,BOSS_SKILLS,SAVE_KEY,normalizeProgress,createBattle,deploy,canDeploy,stepBattle,attackFrame,SWING} from './engine.mjs?v=novel-camp-1';
+import {skipDuelEntrance,positionHero,commandHero,moveHero,BOSS_SKILLS,SAVE_KEY,normalizeProgress,createBattle,deploy,canDeploy,stepBattle,attackFrame,SWING} from './engine.mjs?v=duel-entrance-1';
 
 const $=id=>document.getElementById(id);
 let firstGuide=null;
@@ -183,5 +183,6 @@ for(const key of ['liubei','guanyu','zhangfei']){const preload=new Image();prelo
 $('bossIntroContinue').onclick=()=>{battle.introPending=false;$('bossIntro').close();renderBattle()};
 $('bossIntro').addEventListener('cancel',e=>e.preventDefault());
 $('replayLevel').onclick=()=>startStory(battle.level);
+$('duelEnter').onclick=()=>{if(skipDuelEntrance(battle))renderBattle()};
 $('duelPause').onclick=()=>{setPause(!battle.paused);renderBattle()};
 buildControls();updateHome();requestAnimationFrame(frame);
