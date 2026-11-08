@@ -1,5 +1,5 @@
 import {mountNovel} from './novel.mjs?v=novel-camp-1';
-import {mountCamp} from './camp-view.mjs?v=novel-camp-1';
+import {mountCamp} from './camp-view.mjs?v=chapter-camp-2';
 import {rewardVictory,useSupply} from './campaign.mjs?v=novel-camp-1';
 import {createFirstGuide} from './first-guide.mjs?v=novel-camp-1';
 import {mountStoryTask} from './story-play.mjs?v=story-play-1';
@@ -26,8 +26,15 @@ function updateHome(){
  const unfinished=battle&&!battle.over;
  $('startBtn').innerHTML=`${unfinished?'繼續戰鬥':progress.completed===STAGES.length?'重溫故事':progress.completed?'繼續故事':'開始故事'} <span>→</span>`;
  $('homeProgress').textContent=unfinished?`停在 ${chapterInfo(battle.level).chapter}-${chapterInfo(battle.level).number} · ${STAGES[battle.level-1].name}`:progress.completed===STAGES.length?'第二章完成 · 烽火與義氣':`已完成 ${progress.completed} / ${STAGES.length} 關 · 下一站：${STAGES[progress.completed].name}`;
- $('visitCamp').hidden=progress.completed===0;$('visitCamp').disabled=!!unfinished;
- $('chapterDots').replaceChildren(...STAGES.map((stage,i)=>{const dot=document.createElement('button');dot.type='button';dot.textContent=`${chapterInfo(i+1).chapter}-${chapterInfo(i+1).number}`;dot.disabled=i>progress.completed;dot.onclick=()=>startStory(i+1);dot.classList.toggle('complete',i<progress.completed);dot.setAttribute('aria-label',`${stage.name}${i<progress.completed?'，已完成':''}`);return dot}));
+ const currentChapter=chapterInfo(Math.min(progress.completed+1,STAGES.length)).chapter;
+ const chapters=[...new Set(STAGES.map((_,i)=>chapterInfo(i+1).chapter))];
+ function selectChapter(chapter){
+  for(const button of $('chapterTabs').children)button.setAttribute('aria-pressed',String(Number(button.dataset.chapter)===chapter));
+  for(const button of $('chapterDots').children)button.hidden=Number(button.dataset.chapter)!==chapter;
+ }
+ $('chapterTabs').replaceChildren(...chapters.map(chapter=>{const button=document.createElement('button');button.type='button';button.dataset.chapter=chapter;const level=STAGES.findIndex((_,i)=>chapterInfo(i+1).chapter===chapter)+1;button.textContent=`第 ${chapter} 章 · ${chapterInfo(level).title}`;button.onclick=()=>selectChapter(chapter);return button}));
+ $('chapterDots').replaceChildren(...STAGES.map((stage,i)=>{const button=document.createElement('button');button.type='button';const info=chapterInfo(i+1);button.dataset.chapter=info.chapter;button.dataset.level=i+1;button.disabled=i>progress.completed;button.classList.toggle('complete',i<progress.completed);const number=document.createElement('span'),name=document.createElement('strong'),status=document.createElement('small');number.textContent=String(info.number).padStart(2,'0');name.textContent=stage.name;status.textContent=i<progress.completed?'✓ 已完成・重溫':i===progress.completed?'下一站 →':'尚未解鎖';button.append(number,name,status);button.onclick=()=>startStory(i+1);return button}));
+ selectChapter(currentChapter);
 }
 function goHome(){
  if(battle&&!battle.over)battle.paused=true;
@@ -162,7 +169,7 @@ $('prologueContinue').onclick=()=>setPrologue(false);
 $('storyPrevious').onclick=()=>{if(lineIndex>0){lineIndex--;renderStory()}};
 $('storySkip').onclick=finishStory;
 $('resultNext').onclick=()=>openCamp(battle.level,battle.won);
-$('visitCamp').onclick=()=>openCamp(Math.max(1,progress.completed),true);
+
 for(const button of $('supplies').children)button.onclick=()=>{if(useSupply(battle,progress,button.dataset.supply)){saveProgress();hitSound('heal');renderBattle()}};
 for(const button of document.querySelectorAll('[data-home]'))button.onclick=goHome;
 $('pauseBtn').onclick=()=>setPause(!battle.paused);$('resumeBtn').onclick=()=>setPause(false);

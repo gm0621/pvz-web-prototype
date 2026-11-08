@@ -12,7 +12,7 @@ test('every chapter task has a distinct scenario and classification',async({page
  await page.addInitScript(()=>localStorage.setItem('heroLegendProgress_v1',JSON.stringify({version:1,completed:10})));
  await page.goto('/hero/');
  for(let i=0;i<10;i++){
-  await page.locator('#chapterDots button').nth(i).click();await page.locator('#novelQuiz').click();await expect(page.locator('#taskChoices button')).toHaveCount(3);await expect(page.locator('#taskKind')).toHaveText(/歷史記載|演義故事|遊戲想像/);
+  await page.locator('#chapterPicker').evaluate(e=>e.open=true);await page.locator(`#chapterTabs button[data-chapter="${i<6?1:2}"]`).click();await page.locator('#chapterDots button').nth(i).click();await page.locator('#novelQuiz').click();await expect(page.locator('#taskChoices button')).toHaveCount(3);await expect(page.locator('#taskKind')).toHaveText(/歷史記載|演義故事|遊戲想像/);
   expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
   await page.locator('#story [data-home]').click();
  }

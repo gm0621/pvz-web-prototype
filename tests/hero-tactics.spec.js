@@ -1,7 +1,7 @@
 const {test,expect}=require('@playwright/test');
 test('completed stages can be replayed and a deployed hero can change lanes',async({page},testInfo)=>{
  await page.addInitScript(()=>localStorage.setItem('heroLegendProgress_v1',JSON.stringify({version:1,completed:3})));
- await page.goto('/hero/');await page.locator('#chapterDots button').nth(2).click();
+ await page.goto('/hero/');await page.locator('#chapterPicker').evaluate(e=>e.open=true);await page.locator(`#chapterTabs button[data-chapter="${1}"]`).click();await page.locator('#chapterDots button').nth(2).click();
  await expect(page.locator('#storyTitle')).toHaveText('大興山迎敵');await page.locator('#storySkip').click();
  const card=page.locator('[data-hero="zhangfei"]');await card.click();await page.locator('.lane[data-lane="1"]').click();
  await expect(card).toBeEnabled();await card.click();await page.locator('.lane[data-lane="2"]').click();

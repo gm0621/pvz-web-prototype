@@ -10,14 +10,15 @@
 <style>.orders{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}.orders span{flex-basis:100%;font-size:13px}.orders button{min-height:44px;min-width:64px;padding:8px 12px;border:1px solid #9aab88;border-radius:8px;background:#faf0d5;color:#244332}.orders button:disabled{opacity:.45}.unit.retreating .unit-figure{animation:unit-march .42s ease-in-out infinite}</style>
 <link rel="stylesheet" href="duel.css?v=novel-camp-1">
 <link rel="stylesheet" href="novel-camp.css?v=dialogue-contrast-1">
+ <link rel="stylesheet" href="chapter-camp.css?v=chapter-camp-2">
 </head>
 <body>
  <header class="site-bar"><span class="wordmark">英雄演義 <small>桃園同心</small></span><button id="musicBtn" class="quiet-button" aria-pressed="false">♫ 音樂：關</button><button id="soundTest" class="quiet-button">試聽音效</button></header><p id="audioNotice" role="status" class="audio-notice"></p>
  <main>
   <section id="home" class="screen home active" aria-labelledby="homeTitle">
-   <div class="home-copy"><span class="eyebrow">一段誓言，一場英雄之旅</span><h1 id="homeTitle">英雄<span>演義</span></h1><p class="home-lead">從一片桃園，走進三國。</p><p class="home-description">與劉備、關羽、張飛並肩出征。<br>選一名英雄，守好三條路。</p><div class="chapter-label">第一章 · 桃園結義　／　第二章 · 烽火與義氣</div><button id="startBtn" class="gold-button">開始故事 <span>→</span></button><p id="homeProgress" class="subtle"></p><div id="chapterDots" class="chapter-dots" aria-label="章節進度"></div></div>
+   <div class="home-copy"><span class="eyebrow">一段誓言，一場英雄之旅</span><h1 id="homeTitle">英雄<span>演義</span></h1><p class="home-lead">從一片桃園，走進三國。</p><p class="home-description">與劉備、關羽、張飛並肩出征。<br>選一名英雄，守好三條路。</p><div class="chapter-label">第一章 · 桃園結義　／　第二章 · 烽火與義氣</div><button id="startBtn" class="gold-button">開始故事 <span>→</span></button><p id="homeProgress" class="subtle"></p><details id="chapterPicker" class="chapter-book"><summary>展開章回目錄 <span>選關・重溫故事</span></summary><nav id="chapterTabs" aria-label="選擇章節"></nav><div id="chapterDots" aria-label="關卡列表"></div></details></div>
    <div class="home-art" aria-label="劉備、關羽與張飛"><div class="peach-disc"></div><img class="hero-side hero-left" src="./assets/zhangfei.png" alt="張飛"><img class="hero-side hero-right" src="./assets/guanyu.webp" alt="關羽"><img class="hero-center" src="./assets/liubei.png" alt="劉備"><div class="oath-seal">桃園<br>同心</div><span class="art-caption">同心協力 · 救困扶危</span></div>
-   <button id="visitCamp" class="quiet-button" hidden>回營地逛商店</button><p class="home-foot">三路布陣 <i>·</i> 四張兵卡 <i>·</i> 自動交鋒</p>
+   <p class="home-foot">三路布陣 <i>·</i> 四張兵卡 <i>·</i> 自動交鋒</p>
   </section>
   <section id="story" class="screen story" aria-labelledby="storyTitle" hidden>
    <div class="story-toolbar"><button class="home-button" data-home>← 回主選單</button><span id="storyChapter" class="eyebrow"></span><button id="storySkip" class="quiet-button">直接開戰</button></div>
@@ -57,9 +58,18 @@
   </section>
   <section id="camp" class="screen camp" aria-labelledby="campTitle" hidden>
    <div class="camp-toolbar"><button class="home-button" data-home>← 回主選單</button><span>軍資 <strong id="campCoins">0</strong></span></div>
-   <div class="camp-scene"><span class="eyebrow">戰後驛站 · 人間煙火</span><h2 id="campTitle"></h2><p id="campNarration"></p><div class="camp-stalls"><button data-shop="items" class="stall herbs"><span class="stall-sign">藥</span><strong>道具商</strong><small>藥包・行糧</small></button><button data-shop="weapons" class="stall forge"><span class="stall-sign">鍛</span><strong>武器商</strong><small>磨劍・淬刀・修矛</small></button></div></div>
-   <section class="camp-shop"><h3 id="shopTitle"></h3><p id="campMessage" role="status"></p><div id="shopGoods" class="shop-goods"></div></section>
-   <details class="camp-roster"><summary>看看武將的兵器與絕招</summary><div id="campHeroes"></div></details>
+   <div class="camp-scene command-tent"><span class="eyebrow">戰後軍帳 · 歇馬話家常</span><h2 id="campTitle"></h2><p id="campNarration"></p>
+    <div class="tent-floor"><div class="tent-banner" aria-hidden="true">義</div><div class="tent-rug" aria-hidden="true"></div>
+     <button data-talk="guanyu" class="camp-person general-guan"><img src="assets/guanyu.webp" alt=""><strong>關羽</strong><small>聊聊這一戰</small></button>
+     <button id="campPrepare" class="command-table"><span aria-hidden="true">山 川 行 軍 圖</span><strong>整備軍隊</strong><small>兵器・行囊・絕招</small></button>
+     <button data-talk="zhangfei" class="camp-person general-zhang"><img src="assets/zhangfei.png" alt=""><strong>張飛</strong><small>聽聽三弟說什麼</small></button>
+     <button data-shop="items" class="tent-station supply-station"><span aria-hidden="true">藥</span><strong>道具商</strong><small>補充藥包與糧袋</small></button>
+     <button data-shop="weapons" class="tent-station weapon-station"><span aria-hidden="true">鍛</span><strong>武器商</strong><small>強化三將兵器</small></button>
+    </div><p class="camp-hint">點人物說話，點軍議桌或兩側商人整備。</p>
+   </div>
+   <section id="campTalk" class="camp-talk" hidden aria-label="營中對話"><img id="campTalkPortrait" alt=""><div><strong id="campTalkName"></strong><p id="campTalkText" aria-live="polite"></p><button id="campTalkNext" class="quiet-button">接著聽 →</button></div></section>
+   <section id="campShop" class="camp-shop" hidden><h3 id="shopTitle" tabindex="-1"></h3><p id="campMessage" role="status"></p><div id="shopGoods" class="shop-goods"></div></section>
+   <section id="campRoster" class="camp-roster" hidden><h3 tabindex="-1">出征前，點一點行囊</h3><p id="campInventory"></p><div id="campHeroes"></div></section>
    <button id="campContinue" class="gold-button">聽戰後故事 →</button>
   </section>
   <section id="result" class="screen result" aria-labelledby="resultTitle" hidden><button class="home-button" data-home>← 回主選單</button><div class="result-panel"><span id="resultMark" class="result-mark" aria-hidden="true">勝</span><span id="resultChapter" class="eyebrow"></span><h2 id="resultTitle"></h2><p id="resultText"></p><button id="replayLevel" class="quiet-button">再玩本關</button><button id="resultNext" class="gold-button">下一段故事 →</button><button class="quiet-button" data-home>回主選單</button></div></section>
@@ -68,6 +78,6 @@
  <dialog id="duelDialog" class="duel-dialog" aria-labelledby="duelTitle"><span class="eyebrow">武將交鋒 · 自動單挑</span><h2 id="duelTitle"></h2><div class="duel-enemy-talk"><img id="duelEnemyFace" alt=""><p id="duelEnemyLine"></p></div><div class="duel-portraits"><img id="duelHero" alt=""><span>交鋒</span><img id="duelEnemy" alt="敵將"></div><div class="duel-health" aria-label="敵將生命"><i id="duelHp"></i></div><p id="duelCallout" role="status"></p><p id="duelCaption"></p><div class="duel-hero-talk"><img id="duelHeroFace" alt=""><p id="duelDialogue" aria-live="polite"></p></div><small id="duelOutcomeNote">終結一擊斬殺敵將・其餘敵兵仍需清除</small><br><button id="duelPause" class="quiet-button">暫停單挑</button></dialog>
  <p id="storageNotice" class="storage-notice" role="status" hidden>此瀏覽器目前無法保存進度，關閉後可能需要重玩。</p>
 
- <script type="module" src="app.mjs?v=novel-camp-1"></script>
+ <script type="module" src="app.mjs?v=chapter-camp-2"></script>
 </body>
 </html>
