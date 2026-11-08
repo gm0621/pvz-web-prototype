@@ -1,5 +1,5 @@
 // Recorded scene themes use one music bus; the per-stage synth remains the fallback when media playback is unavailable.
-let context,musicBus,sfxBus,timer=null,step=0,enabled=false,sfx=true,revision=0,scene=0,recordedMode='home';
+let context,musicBus,sfxBus,timer=null,step=0,enabled=false,sfx=true,revision=0,scene=0,recordedMode='home',pageInactive=false,backgroundPaused=false;
 const recordedTracks=new Map(),recordedSources=[];
 export const RECORDED_THEMES={
  home:{name:'桃園歡宴',instrument:'笛、琵琶與揚琴'},
@@ -25,7 +25,7 @@ export const THEMES=[
 ];
 const hz=n=>440*2**((n-69)/12);
 export function musicTheme(){return RECORDED_THEMES[recordedMode]||THEMES[scene]}
-export function audioStatus(){return {state:context?.state||'locked',music:enabled,sfx,theme:musicTheme().name,source:recordedMode?`${recordedMode}-recording`:'stage-synth'}}
+export function audioStatus(){return {backgroundPaused,state:context?.state||'locked',music:enabled,sfx,theme:musicTheme().name,source:recordedMode?`${recordedMode}-recording`:'stage-synth'}}
 export function setMusicMode(mode,level=scene+1){const next=Math.max(0,Math.min(THEMES.length-1,Math.trunc(Number(level)||1)-1)),nextMode=RECORDED_THEMES[mode]?mode:null,changed=nextMode!==recordedMode||next!==scene;recordedMode=nextMode;scene=next;if(!changed)return;step=0;if(enabled)void setMusic(true)}
 export function setMusicScene(level){setMusicMode(null,level)}
 export function setMusicHome(){setMusicMode('home',1)}
@@ -34,7 +34,7 @@ function tone(bus,freq,duration,volume,type='sine',slide=0,attack=.006){const c=
 function noise(bus,duration,volume,freq=1800){const c=init(),buffer=c.createBuffer(1,Math.ceil(c.sampleRate*duration),c.sampleRate),data=buffer.getChannelData(0);for(let i=0;i<data.length;i++)data[i]=(Math.random()*2-1)*Math.min(1,i/200)*Math.exp(-6*i/data.length);const source=c.createBufferSource(),filter=c.createBiquadFilter(),gain=c.createGain();source.buffer=buffer;filter.type='bandpass';filter.frequency.value=freq;filter.Q.value=.6;gain.gain.value=volume;source.connect(filter);filter.connect(gain);gain.connect(bus);source.start();source.onended=()=>{source.disconnect();filter.disconnect();gain.disconnect()}}
 function pluck(freq,volume=.32){const c=init(),buffer=c.createBuffer(1,Math.ceil(c.sampleRate*2.2),c.sampleRate),data=buffer.getChannelData(0),period=Math.max(2,Math.round(c.sampleRate/freq));for(let i=0;i<data.length;i++)data[i]=i<period?(Math.random()*2-1)*volume:.496*(data[i-period]+data[i-period+1]);const source=c.createBufferSource();source.buffer=buffer;source.connect(musicBus);source.start();source.onended=()=>source.disconnect()}
 function tick(){
- if(!enabled||document.hidden)return;
+ if(!enabled||isBackground()||backgroundPaused)return;
  const theme=THEMES[recordedMode==='home'?0:scene],pulse=step%16,phrase=Math.floor(step/16)%4,note=theme.notes[pulse],root=hz(theme.root-12);
  // Eighth-note pulse: low marching ostinato, alternating drum hands and a bar-end fill.
  if(note!==null)pluck(hz(theme.root+note+(phrase===3?-12:0)),phrase%2?.28:.18);
@@ -47,15 +47,55 @@ function tick(){
  if(pulse===0){noise(musicBus,.65,.1,3800);tone(musicBus,root,.75,.07)}
  step++;
 }
-export async function setMusic(on){init();const request=++revision;enabled=on;for(const track of recordedTracks.values())track.pause();musicBus.disconnect();if(timer){clearInterval(timer);timer=null}musicBus.gain.cancelScheduledValues(context.currentTime);musicBus.gain.setValueAtTime(0,context.currentTime);if(!on)return false;try{await context.resume();if(!enabled||request!==revision)return false;musicBus.connect(context.destination);musicBus.gain.setValueAtTime(recordedMode==='home' ? .42 : recordedMode ? .36 : .32,context.currentTime);const track=recordedTracks.get(recordedMode);if(track){let recorded=true;try{await track.play()}catch{recorded=false}if(!enabled||request!==revision){if(!enabled)track.pause();return false}if(!recorded){tick();timer=setInterval(tick,THEMES[scene].beat)}}else{tick();timer=setInterval(tick,musicTheme().beat)}return enabled}catch{if(request===revision)enabled=false;return enabled}}
+function isBackground(){return document.hidden||pageInactive}
+function silencePlayback(){
+ for(const track of document.querySelectorAll('audio[data-music-mode]'))track.pause();
+ if(timer){clearInterval(timer);timer=null}
+ if(musicBus){musicBus.disconnect();musicBus.gain.cancelScheduledValues(context.currentTime);musicBus.gain.setValueAtTime(0,context.currentTime)}
+}
+function pauseBackgroundAudio(){
+ backgroundPaused=true;++revision;silencePlayback();if(sfxBus)sfxBus.gain.value=0;
+ if(context)void context.suspend().catch(()=>{});
+}
+export async function setMusic(on){
+ enabled=!!on;const request=++revision;silencePlayback();
+ if(!enabled)return false;
+ // Keep the preference, but never start media or fallback music in background.
+ if(isBackground()||backgroundPaused)return enabled;
+ try{
+  init();await context.resume();
+  if(isBackground()||backgroundPaused){pauseBackgroundAudio();return enabled}
+  if(!enabled||request!==revision)return enabled;
+  musicBus.connect(context.destination);sfxBus.gain.value=sfx?.7:0;
+  musicBus.gain.setValueAtTime(recordedMode==='home'?.42:recordedMode?.36:.32,context.currentTime);
+  const track=recordedTracks.get(recordedMode);
+  if(track){
+   let recorded=true;try{await track.play()}catch{recorded=false}
+   if(isBackground()||backgroundPaused){pauseBackgroundAudio();return enabled}
+   if(!enabled||request!==revision){if(!enabled||track!==recordedTracks.get(recordedMode))track.pause();return enabled}
+   if(!recorded){tick();timer=setInterval(tick,THEMES[scene].beat)}
+  }else{tick();timer=setInterval(tick,THEMES[scene].beat)}
+  return enabled;
+ }catch{if(request===revision&&!isBackground()&&!backgroundPaused)enabled=false;return enabled}
+}
 export function musicOn(){return enabled}
-export function setSfx(on){sfx=on;if(sfxBus)sfxBus.gain.value=on?.7:0}
-export async function unlockAudio(){try{await init().resume();return context.state==='running'}catch{return false}}
+export function setSfx(on){sfx=on;if(sfxBus)sfxBus.gain.value=on&&!isBackground()&&!backgroundPaused?.7:0}
+export async function unlockAudio(){
+ if(isBackground())return false;
+ const request=revision;
+ try{
+  await init().resume();
+  if(isBackground()||request!==revision){if(isBackground())pauseBackgroundAudio();return false}
+  const restore=backgroundPaused;backgroundPaused=false;sfxBus.gain.value=sfx?.7:0;
+  if(restore&&enabled)await setMusic(true);
+  return !isBackground()&&!backgroundPaused&&context.state==='running';
+ }catch{return false}
+}
 export async function hitSound(kind='slash'){
- if(!sfx||document.hidden)return false;
+ if(!sfx||isBackground()||backgroundPaused)return false;
  // Retry browser audio unlocking instead of silently discarding the first strike.
  if(init().state!=='running'&&!await unlockAudio())return false;
- if(!sfx||document.hidden)return false;
+ if(!sfx||isBackground()||backgroundPaused)return false;
  if(kind==='wind'){noise(sfxBus,1.1,.5,800);tone(sfxBus,260,.7,.16,'triangle',90);return true}
  if(kind==='rain'){noise(sfxBus,.9,.35,3500);for(const f of [750,1100,1450])tone(sfxBus,f,.25,.08);return true}
  if(kind==='thunder'){noise(sfxBus,.8,.75,200);tone(sfxBus,90,.9,.55,'sine',28);noise(sfxBus,.12,.45,3000);return true}
@@ -67,4 +107,9 @@ export async function hitSound(kind='slash'){
  if(kind==='finish'||kind==='cleave'){noise(sfxBus,.45,.9,1500);tone(sfxBus,1500,.35,.4,'triangle',120);tone(sfxBus,110,.7,.7,'sine',35);return true}
  noise(sfxBus,.22,.75,kind==='enemy-slash'||kind==='enemy'?1200:2400);tone(sfxBus,900,.2,.34,'triangle',180);tone(sfxBus,150,.18,.3,'sine',60);return true;
 }
-document.addEventListener('visibilitychange',()=>{if(!context)return;if(document.hidden)context.suspend().catch(()=>{});else if(enabled||sfx)void unlockAudio()});
+// iOS backgrounding/navigation can emit pagehide separately from visibilitychange.
+// Foregrounding alone stays silent; the existing pointer/key unlock path resumes.
+document.addEventListener('visibilitychange',()=>{if(document.hidden)pauseBackgroundAudio()});
+window.addEventListener('pagehide',()=>{pageInactive=true;pauseBackgroundAudio()});
+window.addEventListener('pageshow',()=>{pageInactive=false});
+document.addEventListener('freeze',pauseBackgroundAudio);

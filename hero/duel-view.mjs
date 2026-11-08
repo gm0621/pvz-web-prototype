@@ -1,8 +1,8 @@
 import {renderDuelCinematic} from './duel-cinematic.mjs?v=duel-cinema-1';
 import {duelPattern} from './duel-patterns.mjs?v=duel-cinema-1';
-import {renderDuelEntrance} from './duel-entrance.mjs?v=duel-cinema-1';
+import {renderDuelEntrance} from './duel-entrance.mjs?v=background-audio-1';
 import {HEROES,enemyArt,STAGES} from './story.mjs?v=storm-battle-1';
-import {hitSound} from './audio.mjs?v=scene-audio-3';
+import {hitSound} from './audio.mjs?v=background-audio-1';
 import {duelBeats,duelBeat} from './engine.mjs?v=duel-cinema-1';
 export function renderDuel(b){
  const d=b.duel,dialog=document.getElementById('duelDialog');if(!d)return;
