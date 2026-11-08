@@ -1,5 +1,5 @@
 import {mountNovel} from './novel.mjs?v=novel-camp-1';
-import {mountCamp} from './camp-view.mjs?v=melee-reach-1';
+import {mountCamp} from './camp-view.mjs?v=camp-return-1';
 import {rewardVictory,useSupply} from './campaign.mjs?v=novel-camp-1';
 import {createFirstGuide} from './first-guide.mjs?v=novel-camp-1';
 import {mountStoryTask} from './story-play.mjs?v=story-play-1';
