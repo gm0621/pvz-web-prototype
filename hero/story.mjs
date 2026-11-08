@@ -1,4 +1,5 @@
-import {SECOND_CHAPTER} from './chapter-two.mjs?v=chapter-bosses-1';
+import {WEATHER_GENERALS} from './weather-generals.mjs?v=storm-battle-1';
+import {SECOND_CHAPTER} from './chapter-two.mjs?v=storm-battle-1';
 export const HEROES={
  archer:{name:'義軍弓兵',short:'弓兵',cost:50,hp:85,damage:13,rate:1.05,range:.29,speed:.045,cooldown:3,description:'遠程支援',asset:'../assets/characters/shu-archer.webp'},
  liubei:{name:'劉備',short:'劉備',cost:90,hp:155,damage:15,rate:1.15,range:.08,speed:.043,cooldown:5,heal:13,description:'回復同路友軍',asset:'./assets/liubei.png'},
@@ -10,7 +11,7 @@ export const SHIELD_ART='./assets/yellow-turban-shield.png';
 export const BOSS_ART='./assets/deng-mao-bandit.png';
 export const DENG_MAO_ART='./assets/deng-mao-bandit.png';
 export const CHENG_YUANZHI_ART='./assets/cheng-yuanzhi-commander.png';
-export function enemyArt(name){const chapterBoss=SECOND_CHAPTER.find(s=>s.bossName===name);if(chapterBoss)return chapterBoss.bossArt;return name==='張角'?'./assets/zhang-jiao.png':name==='石魁'?'./assets/shi-kui.png':name==='雷烈'?'./assets/lei-lie.png':name==='鄧茂'?DENG_MAO_ART:name==='程遠志'?CHENG_YUANZHI_ART:BOSS_ART}
+export function enemyArt(name){if(WEATHER_GENERALS[name])return WEATHER_GENERALS[name].asset;const chapterBoss=SECOND_CHAPTER.find(s=>s.bossName===name);if(chapterBoss)return chapterBoss.bossArt;return name==='張角'?'./assets/zhang-jiao.png':name==='石魁'?'./assets/shi-kui.png':name==='雷烈'?'./assets/lei-lie.png':name==='鄧茂'?DENG_MAO_ART:name==='程遠志'?CHENG_YUANZHI_ART:BOSS_ART}
 export const STAGES=[
  {name:'義軍初成',place:'涿縣・桃園',enemyCount:8,interval:4.1,bossName:'黃巾前哨',bossHp:145,
   scene:"./assets/scenes/peach-garden.jpg",
@@ -34,7 +35,7 @@ export const STAGES=[
   ending:[["張飛", "好刀！程遠志倒了，賊陣也跟著散了！"], ["關羽", "首惡已除，棄械者莫殺。收住刀矛，不可因勝忘義。"], ["劉備", "引軍回報劉焉太守，點清傷亡，也讓鄉親知道涿郡暫且平安。"], ["張飛", "太守犒軍，俺本想與二哥痛飲，怎麼又有急使入帳？"], ["劉備", "是青州太守龔景求援。城池被黃巾圍困，已到了危急之時。"], ["關羽", "涿郡雖解圍，青州百姓仍在等救兵。大哥可是已決定了？"], ["劉備", "備願往救。劉焉太守命鄒靖帶五千兵與我們同行，即刻整軍。"]],
   victory:'程遠志敗，涿郡之危暫解。三兄弟初立戰功，卻又收到青州的求援急信。',note:'關羽接近程遠志時，會自動展開短暫單挑。'},
  {name:'青州告急',place:'青州・城外山道',enemyCount:15,interval:3.1,bossName:'石魁',bossHp:290,duelHero:'liubei',duelHpRatio:.65,bossTitle:'鐵壁頭目',
-  bossIntro:'石魁：「青州的路，由我這面鐵壁封死！」\n劉備：「城中百姓待援。讓開道路，莫再逼我拔劍！」',bossTip:'巨盾擋箭；盾擊會逼退近戰。生命降至 65% 後盾勢瓦解，讓劉備近身即可單挑。',
+  bossIntro:'石魁：「青州的路，由我這面鐵壁封死！」\n劉備：「城中百姓待援。讓開道路，莫再逼我拔劍！」',bossTip:'巨盾擋箭；盾擊會逼退近戰。單挑條件：先把石魁生命打到 65% 以下，破掉盾勢；再讓劉備同路近身，即可自動單挑。',
   scene:"./assets/scenes/qingzhou-road.jpg",
   opening:[["劉備", "龔景的求援書說，青州城外黃巾勢盛，城池旦夕可破。鄒靖將軍率兵與我們同來，不能耽擱。"], ["關羽", "城牆就在前方，敵軍卻分兵堵住各路。他們要趁援軍立足未穩，把我們逐路截斷。"], ["張飛", "俺看見一面大盾，連弓箭都被擋下！那賊將躲在盾後，好不張狂！"], ["劉備", "他叫石魁，是守山道的黃巾頭目。先照應三路，不可全擠在盾前。"], ["關羽", "盾能擋箭，卻不能同時擋住左右。近戰牽住他，弓手壓住後隊。"], ["張飛", "大哥，待俺砸開那面盾！"], ["劉備", "翼德守住側路。他以盾護身，舉錘時必有空隙，待盾勢一亂，我親自迎他。"], ["關羽", "大哥平日多照料傷者，敵將便以為你只有仁心，卻忘了你腰間還有雙劍。"], ["劉備", "若能不戰，自是最好。若有人攔著救民的路，劉備也不會避劍。"], ["張飛", "俺和二哥替你守住身後！"], ["劉備", "諸軍聽令，先破盾勢，再開道路。莫戀戰，城中百姓還在等我們。"]],
   ending:[["張飛", "大哥的雙劍破開巨盾，石魁再也攔不住路了！"], ["劉備", "收住追兵，先將傷者送回後隊。殺敗一將，還不等於解了全城之圍。"], ["關羽", "敵軍主力又圍上來了。我們雖打開山道，人數終究不及，硬攻只會愈陷愈深。"], ["劉備", "傳令有序退軍，至三十里外下寨。今日先保住隊伍，明日再尋取勝之法。"], ["張飛", "好不容易殺到城外，竟還要退？俺心裡實在不甘！"], ["劉備", "賊眾我寡，必須用奇兵。山口左右可以伏兵，我與鄒靖引敵，二位待鳴金再出。"], ["關羽", "正面示弱，兩翼合圍。大哥是要把今日的退路，變成明日的勝地。"], ["張飛", "俺明白了！這回退，是為了把他們引進來！"]],

@@ -3,7 +3,7 @@ test('old chapter-one save continues into four new playable stages',async({page}
  await page.addInitScript(()=>localStorage.setItem('heroLegendProgress_v1',JSON.stringify({version:1,completed:6})));
  await page.goto('/hero/');await expect(page.locator('#chapterDots button')).toHaveCount(10);await expect(page.locator('#chapterDots button').nth(6)).toBeEnabled();await expect(page.locator('#chapterDots button').nth(7)).toBeDisabled();
  await page.locator('#startBtn').click();await expect(page.locator('#storyChapter')).toContainText('第二章');await expect(page.locator('#storyTitle')).toHaveText('廣宗拜師');await page.locator('#storySkip').click();await expect(page.locator('#field')).toBeVisible();
- const theme=await page.evaluate(async()=>{const a=await import('/hero/audio.mjs?v=menu-bgm-1');return a.audioStatus().theme});expect(theme).toBe('廣宗師門');
+ const theme=await page.evaluate(async()=>{const a=await import('/hero/audio.mjs?v=storm-battle-1');return a.audioStatus().theme});expect(theme).toBe('廣宗進軍');
  await page.reload();await expect(page.locator('#homeProgress')).toContainText('6 / 10');
 });
 test('selected hero taps stop immediately, and point orders can resume movement',async({page})=>{

@@ -142,10 +142,9 @@ test('a withdrawn attacker cannot inflict its queued melee strike',async()=>{
  const {createBattle,deploy,stepBattle}=await engine,b=createBattle(1,1);b.nextSpawn=Infinity;deploy(b,'liubei',1);const e=testEnemy(90,.17);b.enemies.push(e);stepBattle(b,.01);b.allies[0].hp=0;stepBattle(b,.1);stepBattle(b,.1);stepBattle(b,.1);assert.equal(e.hp,200);assert.equal(b.allies.length,0);
 });
 
-test('Liu Bei duels Shi Kui only after the tower shield is weakened',async()=>{
+test('Liu Bei is told to break the shield before dueling Shi Kui',async()=>{
  const {createBattle,deploy,stepBattle}=await engine,b=createBattle(5,1);b.nextSpawn=Infinity;b.bossSpawned=true;deploy(b,'liubei',1);
- const boss={...testEnemy(90,.17),hp:290,maxHp:290,boss:true,name:'石魁',shielded:true};b.enemies.push(boss);stepBattle(b,.1);assert.equal(b.duel,null);
- boss.hp=180;stepBattle(b,.1);assert.equal(b.duel.heroKey,'liubei');assert.equal(b.duel.bossName,'石魁');const frozen=b.time;(await engine).skipDuelEntrance(b);
+ const boss={...testEnemy(90,.17),hp:290,maxHp:290,boss:true,name:'石魁',shielded:true};b.enemies.push(boss);stepBattle(b,.1);assert.equal(b.duel,null);assert.match(b.duelHint.text,/先破盾.*65%/);boss.hp=180;stepBattle(b,.1);assert.equal(b.duel.heroKey,'liubei');assert.equal(b.duel.bossName,'石魁');const frozen=b.time;(await engine).skipDuelEntrance(b);
  for(let i=0;i<150;i++)stepBattle(b,.1);assert.equal(b.time,frozen);assert.equal(boss.hp,0);
 });
 test('late bosses telegraph two lanes on rage and the remaining lane is safe',async()=>{
@@ -247,5 +246,23 @@ test('early enemy troops can counterattack held melee heroes before dying',async
   for(let i=0;i<900&&enemy.hp>0;i++)stepBattle(b,.05);
   assert.ok(enemy.hp<=0,`${key} level ${level} defeats the approaching troop`);
   assert.ok(hero.hp>0&&hero.hp<hero.maxHp,`${key} level ${level} seed ${seed} must exchange blows`);
+ }
+});
+
+test('all three brothers can deploy together or converge into one lane',async()=>{
+ const {createBattle,deploy,moveHero,laneCount}=await engine;
+ for(const regroup of [false,true]){const b=createBattle(1);for(const [i,key] of ['liubei','guanyu','zhangfei'].entries()){b.food=300;assert.equal(deploy(b,key,regroup?i:1),true)}
+ if(regroup){assert.equal(moveHero(b,'liubei',1),true);assert.equal(moveHero(b,'zhangfei',1),true)}assert.equal(laneCount(b,1),3);assert.deepEqual(b.allies.map(u=>u.key),['liubei','guanyu','zhangfei']);}
+});
+test('Zhang Liang and Zhang Bao actually spawn at Changshe and retreat without stealing the main duel',async()=>{
+ const {createBattle,deploy,stepBattle}=await engine;
+ for(const [name,count] of [['張梁',5],['張寶',11]]){const b=createBattle(8);b.spawned=count;b.nextSpawn=0;stepBattle(b,.1);const general=b.enemies.find(e=>e.name===name);assert.ok(general?.support);assert.equal(b.bossSpawned,false);b.nextSpawn=Infinity;b.food=300;deploy(b,'zhangfei',general.lane);general.x=.17;general.hp=1;stepBattle(b,.1);assert.equal(b.duel,null);general.hp=0;stepBattle(b,.1);assert.ok(b.effects.some(e=>e.type==='retreat'&&e.bossName===name));assert.equal(b.over,false)}
+});
+test('wind and rain telegraph, freeze on pause and can be dodged by changing lanes',async()=>{
+ const {createBattle,deploy,stepBattle,moveHero}=await engine;
+ for(const name of ['張梁','張寶'])for(const dodge of [false,true]){const b=createBattle(8);b.nextSpawn=Infinity;deploy(b,'archer',1);const u=b.allies[0],hp=u.hp;
+ const e={...testEnemy(90,.3),boss:true,support:true,name,hp:500,maxHp:500,lastAttack:100};b.enemies.push(e);stepBattle(b,.1);assert.ok(e.castAt>b.time);assert.equal(u.hp,hp);
+ b.paused=true;const frozen=JSON.stringify(b);stepBattle(b,1);assert.equal(JSON.stringify(b),frozen);b.paused=false;if(dodge)moveHero(b,u.id,0);
+ for(let i=0;i<26;i++)stepBattle(b,.1);assert.equal(u.hp,hp-(dodge?0:name==='張梁'?12:8));assert.ok(b.effects.some(e=>e.type===(name==='張梁'?'wind':'rain')));if(!dodge)assert.ok(name==='張梁'?u.x<.1:u.slowUntil>b.time);
  }
 });

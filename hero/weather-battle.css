@@ -1,0 +1,15 @@
+/* Every motion follows battle-time progress, including pause and duel freezes. */
+.combat-effect.wind,.combat-effect.rain,.combat-effect.thunder{pointer-events:none;width:100%;height:30%;left:50%!important;display:grid;place-items:center;border:0;border-radius:0;font:900 38px serif;color:#f5ffed;text-shadow:0 2px 10px #102d3b;transform:translate(-50%,-50%);overflow:hidden}
+.combat-effect.wind{background:linear-gradient(90deg,#36695500,#79d3a455,#e8ffe966,#36695500)}
+.combat-effect.wind:before{content:'';position:absolute;width:75%;height:70%;border:5px double #c6ffd9;border-radius:50%;box-shadow:0 12px 0 -7px #e8fff4,0 -13px 0 -8px #b9fbd2;transform:translateX(calc(60% - var(--effect-progress)*130%)) skew(-25deg) rotate(calc(var(--effect-progress)*35deg))}
+.combat-effect.rain{background-color:#164f7555;background-image:repeating-linear-gradient(110deg,transparent 0 19px,#b6e9ffb0 20px 22px,transparent 23px 40px);background-size:80px 140px;background-position:0 calc(var(--effect-progress)*280px);box-shadow:inset 0 -10px 20px #7cdaff80}
+.combat-effect.rain:after{content:'';position:absolute;bottom:5%;width:65%;height:18%;border:3px double #b9eeff;border-radius:50%;transform:scale(calc(.4 + var(--effect-progress)))}
+.combat-effect.thunder{background:radial-gradient(ellipse at center,#b8a0ff70,transparent 65%);font-size:90px;color:#fff8ca;text-shadow:0 0 12px white,0 0 30px #9169ff}
+.combat-effect.thunder:before{content:'';position:absolute;inset:0 12%;background:linear-gradient(90deg,transparent,#fef8cb,transparent);clip-path:polygon(24% 0,39% 0,32% 39%,47% 36%,24% 100%,29% 53%,18% 59%,24% 0,70% 0,84% 0,74% 42%,90% 35%,61% 100%,70% 54%,60% 57%,70% 0);filter:drop-shadow(0 0 8px white);transform:scaleY(calc(.6 + var(--effect-progress)*.6))}
+.combat-effect.thunder:after{content:'☯';position:absolute;bottom:0;width:130px;height:40px;display:grid;place-items:center;border:4px double #e8ceff;border-radius:50%;font-size:24px;box-shadow:0 0 20px #9661ff;transform:scale(calc(.5 + var(--effect-progress)))}
+.unit.casting[data-skill=wind]:after,.unit.casting[data-skill=rain]:after,.unit.casting[data-skill=thunder]:after{content:'符';position:absolute;inset:0;border:3px double #e6c875;border-radius:50%;display:grid;place-items:center;color:#fff4c9;background:#6551a344;box-shadow:0 0 20px #ead09d;transform:scale(calc(.65 + var(--cast-progress)*.65));pointer-events:none}
+@media(prefers-reduced-motion:reduce){.combat-effect.wind:before,.combat-effect.rain:after,.combat-effect.thunder:before,.combat-effect.thunder:after,.unit.casting:after{transform:none!important}.combat-effect.rain{background-position:0 0}}
+
+.unit.rain-slowed .unit-shadow{box-shadow:0 0 12px #72d9ff;background:#4eb6e788}.unit.rain-slowed .unit-name:after{content:' · 雨緩';color:#b4efff}
+
+.unit.enemy[data-boss-name=張梁],.unit.enemy[data-boss-name=張寶]{--facing:1}

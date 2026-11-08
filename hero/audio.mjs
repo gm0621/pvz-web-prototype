@@ -1,17 +1,17 @@
-// Original arrangements: the menu uses a recorded theme; each stage keeps its own synthesized arrangement.
+// Original arrangements: the menu uses a recorded theme; each battle uses layered war drums, bass ostinato and pentatonic calls.
 let context,musicBus,sfxBus,menuTrack,menuSource,timer=null,step=0,enabled=false,sfx=true,revision=0,scene=0,menuMode=true;
 export const MENU_THEME={name:'桃園歡宴',instrument:'笛、琵琶與揚琴'};
 export const THEMES=[
- {name:'桃園春風',instrument:'琴',root:62,beat:680,drum:8,notes:[0,4,7,9,12,9,7,null,4,7,4,2,0,null,2,4]},
- {name:'山徑笛行',instrument:'笛',root:69,beat:460,drum:4,notes:[7,9,12,null,9,7,4,2,4,null,7,4,2,0,null,0]},
- {name:'大興戰鼓',instrument:'戰鼓與號角',root:50,beat:370,drum:2,notes:[0,null,0,7,null,7,4,null,0,0,null,12,9,null,7,0]},
- {name:'青龍長吟',instrument:'弓弦',root:55,beat:720,drum:8,notes:[7,12,14,12,9,7,4,null,7,9,12,16,14,12,7,null]},
- {name:'險道破盾',instrument:'低琴與木鼓',root:48,beat:530,drum:3,notes:[0,null,7,0,null,2,4,null,0,12,null,9,7,4,null,2]},
- {name:'黃天決戰',instrument:'號角與大鼓',root:57,beat:410,drum:2,notes:[0,7,12,12,null,9,7,4,0,0,7,12,14,16,14,12]},
- {name:'廣宗師門',instrument:'笛與低鼓',root:60,beat:640,drum:6,notes:[0,2,4,7,null,9,7,4,2,null,0,7,4,2,null,0]},
- {name:'長社餘燼',instrument:'急鼓與號角',root:52,beat:330,drum:2,notes:[0,0,null,7,4,null,9,7,0,null,12,7,4,2,0,null]},
- {name:'囚車遠影',instrument:'低弓弦',root:50,beat:820,drum:8,notes:[12,null,9,7,4,null,2,0,2,null,4,7,4,2,0,null]},
- {name:'天公戰陣',instrument:'重鼓與號角',root:55,beat:390,drum:2,notes:[0,7,0,12,7,null,9,7,0,4,7,14,12,9,7,0]}
+ {name:'桃園出陣',instrument:'撥弦、戰鼓與號角',root:62,beat:250,drum:8,notes:[0,4,7,9,12,9,7,null,4,7,4,2,0,null,2,4]},
+ {name:'山道交鋒',instrument:'撥弦、戰鼓與號角',root:69,beat:240,drum:4,notes:[7,9,12,null,9,7,4,2,4,null,7,4,2,0,null,0]},
+ {name:'大興戰鼓',instrument:'撥弦、戰鼓與號角',root:50,beat:220,drum:2,notes:[0,null,0,7,null,7,4,null,0,0,null,12,9,null,7,0]},
+ {name:'青龍破陣',instrument:'撥弦、戰鼓與號角',root:55,beat:245,drum:8,notes:[7,12,14,12,9,7,4,null,7,9,12,16,14,12,7,null]},
+ {name:'險道破盾',instrument:'撥弦、戰鼓與號角',root:48,beat:260,drum:3,notes:[0,null,7,0,null,2,4,null,0,12,null,9,7,4,null,2]},
+ {name:'青州合圍',instrument:'撥弦、戰鼓與號角',root:57,beat:225,drum:2,notes:[0,7,12,12,null,9,7,4,0,0,7,12,14,16,14,12]},
+ {name:'廣宗進軍',instrument:'撥弦、戰鼓與號角',root:60,beat:250,drum:6,notes:[0,2,4,7,null,9,7,4,2,null,0,7,4,2,null,0]},
+ {name:'長社風雨',instrument:'撥弦、戰鼓與號角',root:52,beat:215,drum:2,notes:[0,0,null,7,4,null,9,7,0,null,12,7,4,2,0,null]},
+ {name:'驛道突圍',instrument:'撥弦、戰鼓與號角',root:50,beat:235,drum:8,notes:[12,null,9,7,4,null,2,0,2,null,4,7,4,2,0,null]},
+ {name:'天公雷陣',instrument:'撥弦、戰鼓與號角',root:55,beat:210,drum:2,notes:[0,7,0,12,7,null,9,7,0,4,7,14,12,9,7,0]}
 ];
 const hz=n=>440*2**((n-69)/12);
 export function musicTheme(){return menuMode?MENU_THEME:THEMES[scene]}
@@ -24,18 +24,16 @@ function noise(bus,duration,volume,freq=1800){const c=init(),buffer=c.createBuff
 function pluck(freq,volume=.32){const c=init(),buffer=c.createBuffer(1,Math.ceil(c.sampleRate*2.2),c.sampleRate),data=buffer.getChannelData(0),period=Math.max(2,Math.round(c.sampleRate/freq));for(let i=0;i<data.length;i++)data[i]=i<period?(Math.random()*2-1)*volume:.496*(data[i-period]+data[i-period+1]);const source=c.createBufferSource();source.buffer=buffer;source.connect(musicBus);source.start();source.onended=()=>source.disconnect()}
 function tick(){
  if(!enabled||document.hidden)return;
- const activeScene=menuMode?0:scene,theme=THEMES[activeScene],note=theme.notes[step%theme.notes.length],f=hz(theme.root+(note||0));
- if(note!==null){
-  if(activeScene===0||activeScene===4)pluck(f,activeScene===4?.5:.35);
-  if(activeScene===1||activeScene===6){tone(musicBus,f,.65,.17,'sine',0,.06);tone(musicBus,f*2,.5,.035,'sine',0,.06)}
-  if(activeScene===2||activeScene===7){tone(musicBus,f,.28,.13,'triangle');tone(musicBus,f/2,.4,.09)}
-  if(activeScene===3||activeScene===8){tone(musicBus,f,1.1,.12,'triangle',f*1.005,.16);tone(musicBus,f*2,.9,.025,'sine',0,.15)}
-  if(activeScene===5||activeScene===9){tone(musicBus,f,.5,.14,'sawtooth',0,.04);tone(musicBus,f*1.5,.5,.06,'triangle',0,.04)}
- }
- if(step%theme.drum===0){tone(musicBus,[2,5,7,9].includes(activeScene)?95:125,.45,[2,5,7,9].includes(activeScene)?.4:.12,'sine',38);if([2,5,7,9].includes(activeScene))noise(musicBus,.12,.2,700)}
- if(activeScene===1&&step%4===2)tone(musicBus,850,.08,.15,'triangle');
- if(activeScene===4&&step%3===1)tone(musicBus,430,.12,.22,'triangle',250);
- if(step%8===0)tone(musicBus,hz(theme.root-12),2.5,.07);
+ const theme=THEMES[menuMode?0:scene],pulse=step%16,phrase=Math.floor(step/16)%4,note=theme.notes[pulse],root=hz(theme.root-12);
+ // Eighth-note pulse: low marching ostinato, alternating drum hands and a bar-end fill.
+ if(note!==null)pluck(hz(theme.root+note+(phrase===3?-12:0)),phrase%2?.28:.18);
+ tone(musicBus,root*([0,4,8,12].includes(pulse)?1:1.5),.19,.085,'triangle');
+ if(pulse%2===0){tone(musicBus,pulse%8===0?105:145,.36,pulse%8===0?.48:.27,'sine',42);noise(musicBus,.09,.14,680)}
+ if(pulse%4===2){noise(musicBus,.12,.15,1500);tone(musicBus,220,.1,.1,'triangle',100)}
+ if(pulse>=13&&phrase%2===1){tone(musicBus,165+25*(pulse%2),.12,.16,'sine',65);noise(musicBus,.06,.08,900)}
+ // Short horn answers leave space for weapon sounds; each stage has its own melody.
+ if(note!==null&&pulse%4===0&&phrase%2===0){tone(musicBus,hz(theme.root+note),.42,.09,'triangle',0,.035);tone(musicBus,hz(theme.root+note-12),.4,.045,'sawtooth',0,.04)}
+ if(pulse===0){noise(musicBus,.65,.1,3800);tone(musicBus,root,.75,.07)}
  step++;
 }
 export async function setMusic(on){init();const request=++revision;enabled=on;menuTrack?.pause();musicBus.disconnect();if(timer){clearInterval(timer);timer=null}musicBus.gain.cancelScheduledValues(context.currentTime);musicBus.gain.setValueAtTime(0,context.currentTime);if(!on)return false;try{await context.resume();if(!enabled||request!==revision)return false;musicBus.connect(context.destination);musicBus.gain.setValueAtTime(menuMode ? .42 : .32,context.currentTime);if(menuMode&&menuTrack){let recorded=true;try{await menuTrack.play()}catch{recorded=false}if(!enabled||request!==revision){if(!enabled)menuTrack.pause();return false}if(!recorded){tick();timer=setInterval(tick,THEMES[0].beat)}}else{tick();timer=setInterval(tick,musicTheme().beat)}return enabled}catch{if(request===revision)enabled=false;return enabled}}
@@ -47,6 +45,9 @@ export async function hitSound(kind='slash'){
  // Retry browser audio unlocking instead of silently discarding the first strike.
  if(init().state!=='running'&&!await unlockAudio())return false;
  if(!sfx||document.hidden)return false;
+ if(kind==='wind'){noise(sfxBus,1.1,.5,800);tone(sfxBus,260,.7,.16,'triangle',90);return true}
+ if(kind==='rain'){noise(sfxBus,.9,.35,3500);for(const f of [750,1100,1450])tone(sfxBus,f,.25,.08);return true}
+ if(kind==='thunder'){noise(sfxBus,.8,.75,200);tone(sfxBus,90,.9,.55,'sine',28);noise(sfxBus,.12,.45,3000);return true}
  if(kind==='heal'){for(const f of [523,659,784])tone(sfxBus,f,.9,.13);return true}
  if(kind==='oath'){for(const f of [196,294,392,587])tone(sfxBus,f,1.3,.16);noise(sfxBus,.7,.35,1200);tone(sfxBus,110,.7,.6,'sine',35);return true}
  if(kind==='roar'||kind==='boss'){noise(sfxBus,.65,.8,kind==='boss'?350:600);tone(sfxBus,150,.65,.55,'sawtooth',45);tone(sfxBus,80,.8,.6);return true}

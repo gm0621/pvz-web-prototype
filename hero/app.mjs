@@ -4,10 +4,10 @@ import {rewardVictory,useSupply} from './campaign.mjs?v=novel-camp-1';
 import {createFirstGuide} from './first-guide.mjs?v=novel-camp-1';
 import {mountStoryTask} from './story-play.mjs?v=story-play-1';
 import {CHAPTER_BACKGROUNDS,STAGE_LEADS} from './prologue.mjs?v=novel-camp-1';
-import {setMusic,setMusicScene,setMusicHome,musicTheme,musicOn,setSfx,unlockAudio,hitSound} from './audio.mjs?v=menu-bgm-1';
-import {renderDuel} from './duel-view.mjs?v=melee-reach-1';
-import {chapterInfo,enemyArt,HEROES,STAGES,ENEMY_ART,SHIELD_ART,FEATURES,heroDescription} from './story.mjs?v=melee-reach-1';
-import {LANE_CAPACITY,laneCount,ENEMY_SWING,enemyAttackFrame,skipDuelEntrance,positionHero,commandHero,moveHero,BOSS_SKILLS,SAVE_KEY,normalizeProgress,createBattle,deploy,canDeploy,stepBattle,attackFrame,SWING} from './engine.mjs?v=melee-reach-1';
+import {setMusic,setMusicScene,setMusicHome,musicTheme,musicOn,setSfx,unlockAudio,hitSound} from './audio.mjs?v=storm-battle-1';
+import {renderDuel} from './duel-view.mjs?v=storm-battle-1';
+import {chapterInfo,enemyArt,HEROES,STAGES,ENEMY_ART,SHIELD_ART,FEATURES,heroDescription} from './story.mjs?v=storm-battle-1';
+import {bossProfile,LANE_CAPACITY,laneCount,ENEMY_SWING,enemyAttackFrame,skipDuelEntrance,positionHero,commandHero,moveHero,BOSS_SKILLS,SAVE_KEY,normalizeProgress,createBattle,deploy,canDeploy,stepBattle,attackFrame,SWING} from './engine.mjs?v=storm-battle-1';
 
 const $=id=>document.getElementById(id);
 let firstGuide=null;
@@ -91,7 +91,7 @@ function buildControls(){
 }
 function unitNode(u,enemy){
  const d=enemy?null:HEROES[u.key],el=document.createElement('div');el.dataset.id=String(u.id);el.dataset.lane=String(u.lane);el.dataset.kind=enemy?'enemy':u.key;
- if(!enemy){el.tabIndex=0;el.setAttribute('role','button');el.setAttribute('aria-label',`選取${d.name}，調動位置`);el.onclick=()=>{if(battle.paused||battle.duel||battle.introPending||battle.over)return;if(selectedUnit()?.id===u.id){if(commandHero(battle,u.id,'hold'))firstGuide?.event('hold')}else {selected=u.key;selectedUnitId=u.id;firstGuide?.event('select-unit')}renderBattle()};el.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();el.click()}}}
+ if(!enemy){el.tabIndex=0;el.setAttribute('role','button');el.setAttribute('aria-label',`選取${d.name}，調動位置`);el.onclick=()=>{if(battle.paused||battle.duel||battle.introPending||battle.over)return;if(selected&&!selectedUnit()){if(deploy(battle,selected,u.lane)){firstGuide?.event('deploy');selected=null;selectedUnitId=null;}renderBattle();return;}if(selectedUnit()?.id===u.id){if(commandHero(battle,u.id,'hold'))firstGuide?.event('hold')}else {selected=u.key;selectedUnitId=u.id;firstGuide?.event('select-unit')}renderBattle()};el.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();el.click()}}}
  const sheet=enemy?!u.boss:u.key!=='archer';const asset=enemy?(u.boss?enemyArt(u.name):u.shielded?SHIELD_ART:ENEMY_ART):d.asset,name=enemy?u.name:d.name;
  el.innerHTML=`<span class="unit-shadow"></span><div class="unit-figure${sheet?' frame-figure':''}">${sheet?`<span class="attack-sprite" style="background-image:url('./assets/attacks/${enemy?'yellow-turban-troops':u.key}.png')"></span>`:`<img class="sprite-upper" src="${asset}" alt=""><img class="sprite-leg leg-left" src="${asset}" alt=""><img class="sprite-leg leg-right" src="${asset}" alt="">`}</div><div class="health"><i></i></div><span class="unit-name">${name}</span>`;return el;
 }
@@ -100,8 +100,8 @@ function renderUnits(){
  for(const [list,enemy] of [[battle.allies,false],[battle.enemies,true]])for(const u of list){
   const id=String(u.id);ids.add(id);let el=existing.get(id);if(!el){el=unitNode(u,enemy);root.append(el)}
   const framed=enemy?!u.boss:u.key!=='archer',attacking=framed?battle.time-(u.swingStartedAt??-100)<(enemy?ENEMY_SWING.duration:SWING.duration):battle.time-u.lastAttack<.32;
-  el.setAttribute('aria-pressed',String(!enemy&&selectedUnit()?.id===u.id));el.dataset.order=u.order||'auto';el.dataset.lane=String(u.lane);el.dataset.bossName=u.boss?u.name:'';
-  el.className=`unit ${enemy?'enemy':'ally'}${framed?' has-attack-frames':''}${u.boss?' boss':''}${battle.time<(u.rallyUntil||0)?' rallied':''}${u.shielded?' shielded':''} ${u.action||'guarding'}${attacking?(u.key==='archer'?' shooting':' striking'):''}${u.flash>0&&!attacking?' hit':''}`;
+  el.setAttribute('aria-pressed',String(!enemy&&selectedUnit()?.id===u.id));el.dataset.order=u.order||'auto';el.dataset.lane=String(u.lane);el.dataset.bossName=u.boss?u.name:'';el.dataset.skill=u.boss?bossProfile(battle,u).skillType||'':'';el.style.setProperty('--cast-progress',String(u.castAt?Math.max(0,1-(u.castAt-battle.time)/2.5):0));
+  el.className=`unit ${enemy?'enemy':'ally'}${framed?' has-attack-frames':''}${u.boss?' boss':''}${battle.time<(u.rallyUntil||0)?' rallied':''}${u.shielded?' shielded':''}${battle.time<(u.slowUntil||0)?' rain-slowed':''} ${u.action||'guarding'}${attacking?(u.key==='archer'?' shooting':' striking'):''}${u.flash>0&&!attacking?' hit':''}`;
   if(framed){const frame=enemy?enemyAttackFrame(u,battle.time):attackFrame(u,battle.time),sprite=el.querySelector('.attack-sprite');sprite.dataset.frame=frame;sprite.style.backgroundPosition=`${(frame%3)*50}% ${enemy?(u.shielded?100:0):Math.floor(frame/3)*100}%`;el.classList.toggle('impact',battle.time<(u.impactUntil||0))}
   el.style.left=u.boss?`clamp(50px, ${u.x*100}%, calc(100% - 50px))`:`${u.x*100}%`;const row=list.filter(a=>a.lane===u.lane&&a.hp>0).sort((a,b)=>a.id-b.id),offset=!enemy&&row.length>1?(row.indexOf(u)-(row.length-1)/2)*18:0;el.style.top=`calc(${(u.lane+.5)/3*100}% + ${offset}px)`;el.querySelector('.unit-name').textContent=(enemy?u.name:HEROES[u.key].name)+(u.action==='holding'?' · 駐守':'');el.querySelector('.health i').style.width=`${Math.max(0,u.hp/u.maxHp*100)}%`;
  }
@@ -109,7 +109,7 @@ function renderUnits(){
 }
 function renderEffects(){
  const sounded=new Set();const root=$('effects'),existing=new Map([...root.children].map(el=>[el.dataset.id,el])),ids=new Set();
- for(const e of battle.effects){const id=String(e.id);ids.add(id);let el=existing.get(id);if(!el){if(['slash','enemy-slash','arrow','cleave','heal','oath','roar','boss','block','rally','fire','hook','thunder'].includes(e.type)&&!sounded.has(e.type)){hitSound(({rally:'roar',fire:'boss',hook:'cleave',thunder:'finish'})[e.type]||e.type);sounded.add(e.type)}el=document.createElement('span');el.dataset.id=id;el.className=`combat-effect ${e.type}`;if(e.type==='defeat'||e.type==='breach'||e.type==='retreat'){const img=document.createElement('img');img.src=e.key?HEROES[e.key].asset:e.boss?enemyArt(e.bossName):e.shielded?SHIELD_ART:ENEMY_ART;img.alt='';el.append(img);el.classList.toggle('enemy-exit',!!e.enemy)}else el.textContent=e.type==='heal'||e.type==='oath'?'+':e.type==='roar'?'震':e.type==='cleave'?'斬':e.type==='arrow'?'➶':({rally:'旗',fire:'♨',hook:'⛓',thunder:'ϟ'})[e.type]||'';root.append(el)}
+ for(const e of battle.effects){const id=String(e.id);ids.add(id);let el=existing.get(id);if(!el){if(['slash','enemy-slash','arrow','cleave','heal','oath','roar','boss','block','rally','fire','hook','thunder','wind','rain'].includes(e.type)&&!sounded.has(e.type)){hitSound(({rally:'roar',fire:'boss',hook:'cleave',thunder:'thunder'})[e.type]||e.type);sounded.add(e.type)}el=document.createElement('span');el.dataset.id=id;el.className=`combat-effect ${e.type}`;if(e.type==='defeat'||e.type==='breach'||e.type==='retreat'){const img=document.createElement('img');img.src=e.key?HEROES[e.key].asset:e.boss?enemyArt(e.bossName):e.shielded?SHIELD_ART:ENEMY_ART;img.alt='';el.append(img);el.classList.toggle('enemy-exit',!!e.enemy)}else el.textContent=e.type==='heal'||e.type==='oath'?'+':e.type==='roar'?'震':e.type==='cleave'?'斬':e.type==='arrow'?'➶':({rally:'旗',fire:'♨',hook:'⛓',thunder:'ϟ',wind:'風',rain:'雨'})[e.type]||'';root.append(el)}
  const progress=1-e.remaining/e.duration,x=['arrow','breach','retreat'].includes(e.type)?e.from+(e.to-e.from)*progress:e.to;
  el.style.left=`${x*100}%`;el.style.top=`${(e.lane+.5)/3*100}%`;el.style.opacity=String(e.type==='arrow'?1:['defeat','breach','retreat'].includes(e.type)?1-progress:Math.sin(Math.PI*progress));
  if(e.type==='slash'&&e.weapon==='zhangfei'){el.classList.add('spear-thrust');el.style.width=`${Math.max(.03,e.to-e.from)*100}%`}
@@ -119,10 +119,11 @@ function renderEffects(){
 }
 function renderBattle(){
  if(!battle)return;
- const boss=battle.enemies.find(e=>e.boss&&e.hp>0),stage=STAGES[battle.level-1];
+ const boss=battle.enemies.find(e=>e.boss&&e.hp>0&&e.castAt)||battle.enemies.find(e=>e.boss&&e.hp>0),stage=STAGES[battle.level-1];
  $('bossHud').hidden=!boss;
- if(boss){$('bossHudName').textContent=`${stage.bossTitle||'敵軍大將'}・${boss.name}`;$('bossHudHp').style.width=`${boss.hp/boss.maxHp*100}%`;$('bossHudState').textContent=boss.castAt?`${BOSS_SKILLS[battle.level-1]}蓄力！${stage.skillType==='rally'?'敵兵即將加速':'換路閃避'}`:stage.skillType?`${BOSS_SKILLS[battle.level-1]}・${boss.hp/boss.maxHp>stage.duelHpRatio?'先削弱主將':HEROES[stage.duelHero].short+'近身單挑'}`:boss.enraged?'狂攻・兩路重擊':battle.level===5?(boss.hp/boss.maxHp>.65?'巨盾護身・先削弱再由劉備單挑':'盾勢已破・劉備近身單挑'):'大將出陣';}
- for(const lane of $('lanes').children)lane.classList.toggle('danger',!!boss?.castAt&&(boss.castLanes||[boss.lane]).includes(Number(lane.dataset.lane)));
+ if(boss){$('bossHudName').textContent=`${bossProfile(battle,boss).title}・${boss.name}`;$('bossHudHp').style.width=`${boss.hp/boss.maxHp*100}%`;$('bossHudState').textContent=boss.castAt?`${bossProfile(battle,boss).skillName}蓄力！${stage.skillType==='rally'?'敵兵即將加速':'換路閃避'}`:boss.support?`${bossProfile(battle,boss).skillName}・預警後換路閃避`:stage.skillType?`${BOSS_SKILLS[battle.level-1]}・${boss.hp/boss.maxHp>stage.duelHpRatio?'先削弱主將':HEROES[stage.duelHero].short+'近身單挑'}`:boss.enraged?'狂攻・兩路重擊':battle.level===5?(boss.hp/boss.maxHp>.65?`先破盾：生命 ${Math.ceil(boss.hp/boss.maxHp*100)}% → 65% 以下，劉備才可單挑`:'盾勢已破！劉備同路近身 → 自動單挑'):'大將出陣';}
+ if(boss&&battle.level===5&&boss.castAt)$('bossHudState').textContent+=boss.hp/boss.maxHp>.65?' · 先破盾至 65% 以下':' · 劉備可近身單挑';
+ for(const lane of $('lanes').children)lane.classList.toggle('danger',battle.enemies.some(e=>e.hp>0&&e.castAt&&(e.castLanes||[e.lane]).includes(Number(lane.dataset.lane))));
  if(musicOn())$('musicBtn').textContent=`♫ ${musicTheme().name}`;
  if(selectedUnitId!==null&&!selectedUnit()){selected=null;selectedUnitId=null}
  const controlled=selectedUnit();
@@ -134,7 +135,8 @@ function renderBattle(){
  $('food').textContent=Math.floor(battle.food);$('lives').textContent='♥ '.repeat(Math.max(0,battle.lives)).trim()||'防線失守';$('lives').setAttribute('aria-label',`剩餘 ${Math.max(0,battle.lives)} 次防線`);
  $('waveText').textContent=battle.bossSpawned?'敵將已出陣':`敵軍 ${battle.spawned} / ${STAGES[battle.level-1].enemyCount}`;
  const notice=battle.time<battle.noticeUntil?battle.notice:FEATURES[battle.level-1].text;
- $('commandFeedback').hidden=!(battle.time<battle.noticeUntil&&/路已滿|調動整備中/.test(battle.notice));if(!$('commandFeedback').hidden)$('commandFeedback').textContent=battle.notice;
+ const commandMessage=battle.duelHint&&battle.time<battle.duelHint.until?battle.duelHint.text:battle.time<battle.noticeUntil?battle.notice:'';
+ $('commandFeedback').hidden=!/路已滿|調動整備中|軍糧不足|先破盾/.test(commandMessage);if(!$('commandFeedback').hidden)$('commandFeedback').textContent=commandMessage;
  if($('battleNotice').textContent!==notice)$('battleNotice').textContent=notice;
  $('selectionHint').textContent=selected==='archer'&&selectedUnitId===null?'已選弓兵增援 · 點一路部署新弓兵':selected?`已選${HEROES[selected].short} · ${({liubei:'雙劍近距離',guanyu:'大刀近戰',zhangfei:'長矛稍長',archer:'弓箭遠程'})[selected]} · 點地移動／再點本人駐守`:'點場上武將或弓兵調動 · 再點本人駐守';
  for(const card of $('cards').children){
