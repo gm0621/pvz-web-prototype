@@ -1,6 +1,6 @@
 import {campaignState,weaponBonus} from './campaign.mjs?v=novel-camp-1';
 import {heroSkill} from './skills.mjs?v=novel-camp-1';
-import {HEROES,STAGES,UNLOCKS,FEATURES} from './story.mjs?v=novel-camp-1';
+import {HEROES,STAGES,UNLOCKS,FEATURES} from './story.mjs?v=melee-reach-1';
 
 export const SWING={duration:.58,impact:.24,frameTime:.08,frames:6};
 export const DUEL_DURATION=15;

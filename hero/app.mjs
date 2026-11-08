@@ -1,13 +1,13 @@
 import {mountNovel} from './novel.mjs?v=novel-camp-1';
-import {mountCamp} from './camp-view.mjs?v=troop-control-1';
+import {mountCamp} from './camp-view.mjs?v=melee-reach-1';
 import {rewardVictory,useSupply} from './campaign.mjs?v=novel-camp-1';
 import {createFirstGuide} from './first-guide.mjs?v=novel-camp-1';
 import {mountStoryTask} from './story-play.mjs?v=story-play-1';
 import {CHAPTER_BACKGROUNDS,STAGE_LEADS} from './prologue.mjs?v=novel-camp-1';
 import {setMusic,setMusicScene,setMusicHome,musicTheme,musicOn,setSfx,unlockAudio,hitSound} from './audio.mjs?v=menu-bgm-1';
-import {renderDuel} from './duel-view.mjs?v=settlement-1';
-import {chapterInfo,enemyArt,HEROES,STAGES,ENEMY_ART,SHIELD_ART,FEATURES,heroDescription} from './story.mjs?v=novel-camp-1';
-import {LANE_CAPACITY,laneCount,ENEMY_SWING,enemyAttackFrame,skipDuelEntrance,positionHero,commandHero,moveHero,BOSS_SKILLS,SAVE_KEY,normalizeProgress,createBattle,deploy,canDeploy,stepBattle,attackFrame,SWING} from './engine.mjs?v=settlement-1';
+import {renderDuel} from './duel-view.mjs?v=melee-reach-1';
+import {chapterInfo,enemyArt,HEROES,STAGES,ENEMY_ART,SHIELD_ART,FEATURES,heroDescription} from './story.mjs?v=melee-reach-1';
+import {LANE_CAPACITY,laneCount,ENEMY_SWING,enemyAttackFrame,skipDuelEntrance,positionHero,commandHero,moveHero,BOSS_SKILLS,SAVE_KEY,normalizeProgress,createBattle,deploy,canDeploy,stepBattle,attackFrame,SWING} from './engine.mjs?v=melee-reach-1';
 
 const $=id=>document.getElementById(id);
 let firstGuide=null;
@@ -136,9 +136,9 @@ function renderBattle(){
  const notice=battle.time<battle.noticeUntil?battle.notice:FEATURES[battle.level-1].text;
  $('commandFeedback').hidden=!(battle.time<battle.noticeUntil&&/路已滿|調動整備中/.test(battle.notice));if(!$('commandFeedback').hidden)$('commandFeedback').textContent=battle.notice;
  if($('battleNotice').textContent!==notice)$('battleNotice').textContent=notice;
- $('selectionHint').textContent=selected==='archer'&&selectedUnitId===null?'已選弓兵增援 · 點一路部署新弓兵':selected?`已選${HEROES[selected].short} · ${({liubei:'雙劍近距離',guanyu:'大刀中距離',zhangfei:'長矛遠距離',archer:'弓箭遠程'})[selected]} · 點地移動／再點本人駐守`:'點場上武將或弓兵調動 · 再點本人駐守';
+ $('selectionHint').textContent=selected==='archer'&&selectedUnitId===null?'已選弓兵增援 · 點一路部署新弓兵':selected?`已選${HEROES[selected].short} · ${({liubei:'雙劍近距離',guanyu:'大刀近戰',zhangfei:'長矛稍長',archer:'弓箭遠程'})[selected]} · 點地移動／再點本人駐守`:'點場上武將或弓兵調動 · 再點本人駐守';
  for(const card of $('cards').children){
-  const key=card.dataset.hero,d=HEROES[key],remaining=Math.max(0,(battle.cooldowns[key]||0)-battle.time),active=key!=='archer'&&battle.allies.some(u=>u.hp>0&&u.key===key),description=heroDescription(key,battle.level)+' · '+({liubei:'雙劍近距離',guanyu:'大刀中距離',zhangfei:'長矛遠距離',archer:'弓箭遠程'})[key];
+  const key=card.dataset.hero,d=HEROES[key],remaining=Math.max(0,(battle.cooldowns[key]||0)-battle.time),active=key!=='archer'&&battle.allies.some(u=>u.hp>0&&u.key===key),description=heroDescription(key,battle.level)+' · '+({liubei:'雙劍近距離',guanyu:'大刀近戰',zhangfei:'長矛稍長',archer:'弓箭遠程'})[key];
   card.classList.toggle('selected',selected===key&&(key!=='archer'||selectedUnitId===null));card.classList.toggle('unavailable',active||battle.food<d.cost||remaining>0);card.classList.toggle('in-field',active);card.setAttribute('aria-pressed',String(selected===key&&(key!=='archer'||selectedUnitId===null)));
   card.disabled=(!active&&remaining>0)||battle.paused||!!battle.duel||battle.over;
   card.querySelector('.card-status').textContent=active?'出戰中 · 點選換路':remaining>0?`整備 ${Math.ceil(remaining)} 秒`:battle.food<d.cost?'等待軍糧':key==='archer'?'可增援':'可出戰';

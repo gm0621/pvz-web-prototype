@@ -200,7 +200,7 @@ test('hook locks a target, interrupts its attack, and misses after a lane change
 
 test('weapon reach differs and a spear attacks from behind a friendly front line',async()=>{
  const {createBattle,deploy,stepBattle}=await engine;const {HEROES}=await import('../../hero/story.mjs');assert.ok(HEROES.zhangfei.range>HEROES.guanyu.range&&HEROES.guanyu.range>HEROES.liubei.range);
- const b=createBattle(1);b.nextSpawn=Infinity;b.food=300;deploy(b,'liubei',1);deploy(b,'zhangfei',1);b.allies[0].x=.4;b.allies[1].x=.29;const enemy={...testEnemy(90,.47),lastAttack:100};b.enemies.push(enemy);stepBattle(b,.1);assert.ok(b.allies.every(u=>u.pendingStrike));for(let i=0;i<3;i++)stepBattle(b,.1);assert.equal(enemy.hp,200-15-24);
+ const b=createBattle(1);b.nextSpawn=Infinity;b.food=300;deploy(b,'liubei',1);deploy(b,'zhangfei',1);b.allies[0].x=.4;b.allies[1].x=.37;const enemy={...testEnemy(90,.47),lastAttack:100};b.enemies.push(enemy);stepBattle(b,.1);assert.ok(b.allies.every(u=>u.pendingStrike));for(let i=0;i<3;i++)stepBattle(b,.1);assert.equal(enemy.hp,200-15-24);
 });
 test('a commanded short-range hero can pass a holding ally to reach the enemy',async()=>{
  const {createBattle,deploy,commandHero,stepBattle}=await engine;const b=createBattle(1);b.nextSpawn=Infinity;b.food=300;deploy(b,'zhangfei',1);deploy(b,'liubei',1);b.allies[0].x=.35;const u=b.allies[1];u.x=.2;const enemy={...testEnemy(90,.5),hp:10000,maxHp:10000,lastAttack:100,speed:0};b.enemies.push(enemy);commandHero(b,'liubei','auto');for(let i=0;i<80;i++)stepBattle(b,.1);assert.ok(u.x>.35);assert.ok(u.lastAttack>0);assert.equal(b.allies[0].x,.35);
@@ -236,4 +236,16 @@ test('enemy troop sword winds up before damage and freezes on pause, with a dodg
 });
 test('an explicitly advancing archer repositions even with an enemy in bow range',async()=>{
  const {createBattle,deploy,stepBattle,commandHero}=await engine,b=createBattle(1);b.nextSpawn=Infinity;deploy(b,'archer',1);const u=b.allies[0];b.enemies.push({...testEnemy(90,.36),lastAttack:100,speed:0});commandHero(b,u.id,'forward');stepBattle(b,.1);assert.ok(u.x>.1);assert.equal(u.action,'marching');assert.equal(b.enemies[0].hp,200);
+});
+
+
+test('early enemy troops can counterattack held melee heroes before dying',async()=>{
+ const {createBattle,deploy,stepBattle}=await engine;
+ for(const key of ['guanyu','zhangfei'])for(const level of [1,2])for(const seed of [1,42,2026]){
+  const b=createBattle(level,seed);deploy(b,key,1);const hero=b.allies[0];
+  b.nextSpawn=0;stepBattle(b,.05);const enemy=b.enemies[0];b.nextSpawn=Infinity;
+  for(let i=0;i<900&&enemy.hp>0;i++)stepBattle(b,.05);
+  assert.ok(enemy.hp<=0,`${key} level ${level} defeats the approaching troop`);
+  assert.ok(hero.hp>0&&hero.hp<hero.maxHp,`${key} level ${level} seed ${seed} must exchange blows`);
+ }
 });
