@@ -1,3 +1,4 @@
+import {TEAM_BEATS} from './team-duel-beats.mjs?v=team-duel-1';
 // Matchup-specific choreography. Every beat uses the engine's paused duel clock.
 const patterns={
  '鄧茂':{style:'spear',name:'猛攻搶先',beats:[[3,'hero','蛇矛搶先',.12],[4.8,'enemy','橫刀反擊',0,.03],[6.2,'block','架矛震刀'],[8,'hero','連環突刺',.18],[9.1,'enemy','回身劈斬',0,.03],[10,'charge','挺矛決勝']]},
@@ -19,7 +20,7 @@ const finishers={
 };
 export function duelPattern(duel){return patterns[duel.bossName]||patterns['鄧茂']}
 export function duelFinisher(duel){return finishers[duel.bossName]||finishers['鄧茂']}
-export function duelBeats(duel){const f=duelFinisher(duel);return [
+export function duelBeats(duel){if(duel.bossName==='雷烈')return TEAM_BEATS;const f=duelFinisher(duel);return [
  {at:0,text:'兩軍讓開',side:'ready'},{at:1.5,text:'報上名來',side:'reply'},
  ...duelPattern(duel).beats.map(([at,side,text,damage=0,heroDamage=0])=>({at,side,text,damage,heroDamage})),
  {at:11.5,text:f.name,side:'charge'},

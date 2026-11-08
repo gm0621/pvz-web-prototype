@@ -1,0 +1,31 @@
+#duelDialog[data-team="true"]{width:min(760px,94vw);max-height:94dvh;overflow-y:auto;background:linear-gradient(145deg,#fff8df,#f5e9c5);color:#382b20}
+#duelDialog[data-team="true"] h2{font-size:clamp(19px,4.2vw,29px);margin:8px 0}
+#teamDuel[hidden]{display:none}
+#teamDuel{text-align:center;--team-hit:0;--team-counter:0}
+.team-rule{background:#493525;color:#ffe9a9;border-radius:20px;padding:8px 12px;font-size:clamp(12px,2.7vw,15px);margin:8px 0 14px}
+.team-vitals{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;text-align:left}
+.team-vitals strong{display:block;font-size:18px;margin-bottom:5px}.team-vitals small{font-variant-numeric:tabular-nums;font-size:12px}.team-vitals .duel-health{height:12px}.team-vitals [data-health="zhangfei"] i{background:linear-gradient(90deg,#bd661e,#f5bc4a)}
+.team-arena{position:relative;isolation:isolate;height:clamp(165px,28vw,270px);overflow:hidden;margin-top:12px;border-radius:16px;border:1px solid #b99854;background:linear-gradient(#071e2b99,#12332b11),url('./assets/scenes/ambush-valley.jpg') center 60%/cover}
+.team-arena:after{content:"";position:absolute;inset:0;pointer-events:none;box-shadow:inset 0 0 50px #142e2570;background:rgb(255 224 139 / calc(var(--team-hit)*.25));border:3px solid rgb(255 93 47 / calc(var(--team-counter)*.8));z-index:5}
+.team-fighter{position:absolute;bottom:4%;width:34%;aspect-ratio:1;background-size:300% 200%;background-repeat:no-repeat;transform-origin:50% 85%;z-index:2;filter:drop-shadow(0 9px 3px #1118)}
+.team-enemy{object-fit:contain;height:90%;width:36%;z-index:1}
+.team-seal{position:absolute;top:12px;left:0;right:0;color:#ffefb5;letter-spacing:.2em;font-weight:900;text-shadow:0 2px 6px #000;font-size:clamp(18px,4vw,30px);display:none}
+#teamDuel[data-entrance="true"] .team-seal{display:block}
+.team-trail{position:absolute;top:32%;width:44%;height:38%;border-radius:50%;z-index:3;pointer-events:none;opacity:0}
+.team-green{left:32%;border-top:8px solid #d1ffe9;box-shadow:0 -6px 16px #43ff9f,inset 0 10px 22px #43ff9f;transform:rotate(-30deg)}
+.team-gold{left:21%;border-bottom:8px solid #fff6c7;box-shadow:0 8px 20px #ffbc47;transform:rotate(24deg)}
+.team-ring{position:absolute;left:30%;top:20%;width:40%;aspect-ratio:1;border:6px solid #ffefba;border-radius:50%;box-shadow:0 0 30px #ffca51,inset 0 0 28px #fff3b5;opacity:var(--team-hit);z-index:4;transform:scale(calc(1 + var(--team-hit)*.35));pointer-events:none}
+.team-move{font-size:clamp(20px,4.4vw,30px);color:#6c3313;margin:12px 0 6px;line-height:1.25;min-height:1.3em}
+#teamDuel[data-move="charge"] .team-move,#teamDuel[data-move="finish"] .team-move{color:#994315;text-shadow:0 1px #ffdd74}
+.team-line{min-height:2.8em;line-height:1.5;margin:6px 0 8px;font-size:clamp(14px,3vw,17px)}
+#teamDuel>small{font-size:11px;color:#77634c}
+#duelDialog[data-team="true"] .duel-controls{position:sticky;bottom:0;background:#f5e9c5;z-index:6;padding:10px 0 0}
+@media(max-width:420px){.team-vitals{gap:7px}.team-vitals strong{font-size:16px}.team-rule{padding:7px}.team-arena{height:185px}}
+@media(prefers-reduced-motion:reduce){.team-trail,.team-ring{display:none}}
+
+#duelDialog[data-team="true"] .eyebrow{color:#816033}
+#duelDialog[data-team="true"] #duelPause,#duelDialog[data-team="true"] #duelEnter{color:#513a21;background:#fff7dc}
+.team-vitals .duel-health{margin:5px 0;background:#32231533}
+.team-vitals [data-health="guanyu"] i{background:linear-gradient(90deg,#24694e,#7ac99c)}
+#duelDialog[data-team="true"] small{color:#77634c}
+#duelDialog[data-team="true"]{transform:none}
