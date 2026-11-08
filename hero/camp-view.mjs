@@ -8,7 +8,7 @@ export function mountCamp({progress,level,heroes,stage,onSave,onContinue,won=tru
  function openPanel(id){for(const panel of panels)$(panel).hidden=panel!==id;for(const button of document.querySelectorAll('.tent-floor button'))button.setAttribute('aria-pressed','false')}
  openPanel(null);
  $('campTitle').textContent=won?`${stage.name} · 歇馬整備`:'重整行裝，再來一次';$('campNarration').textContent=won?CAMP_LINES[level-1]:'先回營歇一歇。三兄弟清點行囊，準備再試一次。';
- $('campContinue').textContent=won?'整備完畢，繼續故事 →':'重新出戰 →';$('campContinue').onclick=onContinue;
+ $('campContinue').textContent=won?'繼續故事 ➜':'重新出戰 →';$('campContinue').onclick=onContinue;
  $('campMessage').textContent='點一間攤位逛逛。購物可略過；兵器會自動裝備，道具可在戰鬥中使用。';
  function render(){
   $('campCoins').textContent=progress.coins;

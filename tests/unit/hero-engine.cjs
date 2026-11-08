@@ -223,3 +223,17 @@ test('versus entrance freezes combat, pauses exactly and skip never applies duel
  b.paused=true;const frozen=JSON.stringify(b);stepBattle(b,.1);assert.equal(skipDuelEntrance(b),false);assert.equal(JSON.stringify(b),frozen);
  b.paused=false;assert.equal(skipDuelEntrance(b),true);assert.equal(b.duel.entranceElapsed,DUEL_ENTRANCE_DURATION);assert.equal(b.duel.elapsed,0);assert.equal(b.enemies[0].hp,hp);stepBattle(b,.1);assert.ok(b.duel.elapsed>0);assert.equal(b.time,time);assert.equal(b.food,food);
 });
+test('individual archers move and hold by id without commanding or redeploying the other archer',async()=>{
+ const {createBattle,deploy,stepBattle,commandHero,positionHero}=await engine,b=createBattle(1);b.nextSpawn=Infinity;deploy(b,'archer',0);b.cooldowns.archer=0;deploy(b,'archer',1);const [a,c]=b.allies,food=b.food;
+ assert.equal(commandHero(b,'archer','forward'),false);assert.equal(commandHero(b,a.id,'forward'),true);for(let i=0;i<10;i++)stepBattle(b,.1);assert.ok(a.x>.1);assert.equal(c.x,.1);assert.equal(b.allies.length,2);
+ assert.equal(commandHero(b,a.id,'back'),true);const x=a.x;stepBattle(b,.1);assert.ok(a.x<x);commandHero(b,a.id,'hold');const held=a.x;stepBattle(b,.1);assert.equal(a.x,held);assert.equal(c.order,'hold');assert.ok(b.food>=food);
+ assert.equal(positionHero(b,a.id,2,.45),true);assert.equal(a.lane,2);assert.equal(c.lane,1);b.paused=true;assert.equal(commandHero(b,a.id,'forward'),false);b.paused=false;b.duel={};assert.equal(positionHero(b,a.id,0,.5),false);
+});
+test('enemy troop sword winds up before damage and freezes on pause, with a dodge cancelling the hit',async()=>{
+ const {createBattle,deploy,stepBattle,enemyAttackFrame,moveHero}=await engine;
+ for(const dodge of [false,true]){const b=createBattle(1);b.nextSpawn=Infinity;deploy(b,'archer',1);const u=b.allies[0];u.lastAttack=100;const e={...testEnemy(90,.17),damage:10,rate:2,lastAttack:-10};b.enemies.push(e);stepBattle(b,.1);const hp=u.hp;assert.equal(enemyAttackFrame(e,b.time),0);assert.equal(u.hp,hp);assert.ok(e.pendingStrike);
+ b.paused=true;const frozen=JSON.stringify(b);stepBattle(b,.1);assert.equal(JSON.stringify(b),frozen);b.paused=false;if(dodge)moveHero(b,u.id,0);for(let i=0;i<3;i++)stepBattle(b,.1);assert.equal(enemyAttackFrame(e,b.time),1);assert.equal(u.hp,hp-(dodge?0:10));for(let i=0;i<3;i++)stepBattle(b,.1);assert.equal(enemyAttackFrame(e,b.time),2);assert.equal(u.hp,hp-(dodge?0:10));}
+});
+test('an explicitly advancing archer repositions even with an enemy in bow range',async()=>{
+ const {createBattle,deploy,stepBattle,commandHero}=await engine,b=createBattle(1);b.nextSpawn=Infinity;deploy(b,'archer',1);const u=b.allies[0];b.enemies.push({...testEnemy(90,.36),lastAttack:100,speed:0});commandHero(b,u.id,'forward');stepBattle(b,.1);assert.ok(u.x>.1);assert.equal(u.action,'marching');assert.equal(b.enemies[0].hp,200);
+});
