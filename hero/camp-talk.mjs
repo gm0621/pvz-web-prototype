@@ -1,3 +1,4 @@
+import {THIRD_CHAPTER} from './chapter-three.mjs?v=chapter-three-1';
 // Original camp conversations, inspired by the story; not historical quotations.
 const GUAN=[
  ['方才那些鄉勇，握刀的手還在抖。','可他們沒有逃走。勇敢，是害怕時仍願意保護別人。'],
@@ -23,6 +24,8 @@ const ZHANG=[
  ['俺這口氣還沒消！盧公受了委屈，怎能不管？','關羽：我們一起想辦法。先照顧好自己，才有力氣幫他。'],
  ['救了人，還要受冷眼？俺想不明白。','劉備：想想那些平安回家的軍士。咱們做的事，沒有白費。']
 ];
+GUAN.push(...THIRD_CHAPTER.map(s=>[s.campLine,'劉備：'+s.ending.at(-1)[1]]));
+ZHANG.push(...THIRD_CHAPTER.map(s=>['俺記住了：'+s.quiz.reply,'關羽：勝了也要照看同伴。歇好了，我們再一起出發。']));
 export function campConversation(level,key,won){
  if(!won)return key==='guanyu'?['先別急，坐下歇一歇。方才哪條路最吃緊？','下一回先留些軍糧，讓三條路都有人照應。我陪你再試。']:['輸一陣算什麼！俺的矛還在，人也好好的。','先整理行囊，再看看敵人從哪裡來。這回咱們一起想辦法！'];
  return (key==='guanyu'?GUAN:ZHANG)[level-1]||['長路還在前頭，先歇一歇。','整備好行裝，我們再一同出發。'];

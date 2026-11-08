@@ -7,7 +7,7 @@ test('hero game has its own small home and loads no zombie, account or shop syst
  await open(page);await expect(page).toHaveTitle('英雄演義｜桃園同心');
  await expect(page.locator('#home')).toContainText('桃園結義');
  await expect(page.locator('#chapterPicker')).not.toHaveAttribute('open','');await expect(page.locator('#visitCamp')).toHaveCount(0);
- await expect(page.locator('#chapterDots button')).toHaveCount(10);
+ await expect(page.locator('#chapterDots button')).toHaveCount(16);
  expect(requests.some(url=>/supabase|js\/app.js|js\/cloud.js|js\/shop.js|js\/romance-game.js/.test(url))).toBe(false);
  expect(await page.evaluate(()=>typeof currentUser)).toBe('undefined');
  expect(errors).toEqual([]);
@@ -29,8 +29,8 @@ test('home and pause freeze battle and continue resumes the same units',async({p
 });
 test('own progress survives reload and leaves original zombie and legacy story records untouched',async({page})=>{
  await page.addInitScript(()=>{localStorage.setItem('sgZombieProfile','{"gold":12345}');localStorage.setItem('sgzRomance_progress_v1:guest%3Aold','{"highestLevel":4}');localStorage.setItem('heroLegendProgress_v1','{"version":1,"completed":2}')});
- await open(page);await expect(page.locator('#homeProgress')).toContainText('2 / 10');await page.locator('#startBtn').click();await expect(page.locator('#storyTitle')).toHaveText('大興山迎敵');
- await page.reload();await expect(page.locator('#homeProgress')).toContainText('2 / 10');
+ await open(page);await expect(page.locator('#homeProgress')).toContainText('2 / 16');await page.locator('#startBtn').click();await expect(page.locator('#storyTitle')).toHaveText('大興山迎敵');
+ await page.reload();await expect(page.locator('#homeProgress')).toContainText('2 / 16');
  expect(await page.evaluate(()=>localStorage.getItem('sgZombieProfile'))).toBe('{"gold":12345}');
  expect(await page.evaluate(()=>localStorage.getItem('sgzRomance_progress_v1:guest%3Aold'))).toBe('{"highestLevel":4}');
 });
@@ -68,8 +68,8 @@ test('story opens in a real scene with conversations, speaker emphasis and previ
  await page.locator('#storyNext').click();await expect(page.locator('#storySpeaker')).toHaveText('劉備');
  await expect(page.locator('[data-actor="liubei"]')).toHaveClass(/speaking/);
  await page.locator('#storyPrevious').click();await expect(page.locator('#storyLine')).toHaveText(first);
- const data=await page.evaluate(async()=>{const {STAGES}=await import('/hero/story.mjs');return STAGES.map(s=>({scene:s.scene,opening:s.opening.length,ending:s.ending.length,speakers:[...s.opening,...s.ending].map(l=>l[0])}))});
- expect(new Set(data.map(d=>d.scene)).size).toBe(6);for(const d of data){expect(d.opening).toBeGreaterThanOrEqual(7);expect(d.ending).toBeGreaterThanOrEqual(4);expect(d.speakers.every(s=>['劉備','關羽','張飛'].includes(s))).toBe(true)}
+ const data=await page.evaluate(async()=>{const {STAGES}=await import('/hero/story.mjs');return STAGES.map(s=>({chapter:s.chapter||1,scene:s.scene,opening:s.opening.length,ending:s.ending.length,speakers:[...s.opening,...s.ending].map(l=>l[0])}))});
+ expect(new Set(data.map(d=>d.scene)).size).toBe(6);for(const d of data){expect(d.opening).toBeGreaterThanOrEqual(d.chapter===3?4:7);expect(d.ending).toBeGreaterThanOrEqual(d.chapter===3?3:4);expect(d.speakers.every(s=>(d.chapter===3?['劉備','關羽','張飛','張梁','張寶','說書人','鄉民']:['劉備','關羽','張飛']).includes(s))).toBe(true)}
  expect(await page.locator('#sceneBackdrop').evaluate(img=>img.complete&&img.naturalWidth>0)).toBe(true);
  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
  for(const selector of ['#storyNext','#storyPrevious','#storySkip']){const r=await page.locator(selector).boundingBox();expect(r.height).toBeGreaterThanOrEqual(44)}

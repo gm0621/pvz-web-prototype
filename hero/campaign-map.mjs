@@ -18,14 +18,15 @@ export const STAGE_LOCATIONS=[
  {place:'road',detail:'從長社北返廣宗途中遇見囚車；驛道無確定坐標，以沿途示意。'},
  {place:'guang',detail:'回到廣宗附近，救援受困官軍；敗軍山口為劇情示意。'}
 ];
+for(const [i,name] of ['雨夜村道','迷霧林道','風雨祭壇','黃旗狹口','人公前陣','鄉民歸途'].entries()){const key='side'+i;MAP_PLACES[key]={name,modern:'第三章原創支線・位置示意',x:[390,430,475,495,450,400][i],y:[230,250,275,310,340,320][i]};STAGE_LOCATIONS.push({place:key,detail:name+'・第三章原創支線位置示意，非史實行軍路線。'})}
 export function stageLocation(level){if(!Number.isInteger(level)||!STAGE_LOCATIONS[level-1])throw new RangeError('未知戰役關卡');const s=STAGE_LOCATIONS[level-1];return {...MAP_PLACES[s.place],...s,level}}
 export function routeThrough(level){stageLocation(level);return STAGE_LOCATIONS.slice(0,level).map(s=>s.place).filter((key,i,arr)=>i===0||key!==arr[i-1])}
 export function campaignMapSvg(level,mini=false){
  const current=stageLocation(level),route=routeThrough(level),visited=new Set(route);
  const points=route.map(key=>`${MAP_PLACES[key].x},${MAP_PLACES[key].y}`).join(' ');
  const cities=Object.entries(MAP_PLACES).map(([key,p])=>{
-  const active=key===current.place;
-  return `<g class="map-city ${active?'current':visited.has(key)?'visited':'future'}"><circle cx="${p.x}" cy="${p.y}" r="${active?16:7}"/>${active?`<circle class="map-current-ring" cx="${p.x}" cy="${p.y}" r="24"/><path class="map-flag" d="M${p.x},${p.y-14}v-34l26,7 -26,9"/>`:''}${mini?'':`<text x="${p.x+27}" y="${p.y+7}">${p.name}</text>`}</g>`;
+  const active=key===current.place;if(key.startsWith('side')&&!visited.has(key)&&!active)return '';
+  return `<g class="map-city ${active?'current':visited.has(key)?'visited':'future'}"><circle cx="${p.x}" cy="${p.y}" r="${active?16:7}"/>${active?`<circle class="map-current-ring" cx="${p.x}" cy="${p.y}" r="24"/><path class="map-flag" d="M${p.x},${p.y-14}v-34l26,7 -26,9"/>`:''}${mini||key.startsWith('side')&&!active?'':`<text x="${p.x+27}" y="${p.y+7}">${p.name}</text>`}</g>`;
  }).join('');
  return `<svg viewBox="0 0 720 440" xmlns="http://www.w3.org/2000/svg" ${mini?'aria-hidden="true"':'role="img" aria-label="黃巾戰役方位示意圖，目前位於'+current.name+'"'}>
  <rect width="720" height="440" rx="18" fill="#eaddb9"/>

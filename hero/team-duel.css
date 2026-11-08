@@ -8,7 +8,7 @@
 .team-arena{position:relative;isolation:isolate;height:clamp(165px,28vw,270px);overflow:hidden;margin-top:12px;border-radius:16px;border:1px solid #b99854;background:linear-gradient(#071e2b99,#12332b11),url('./assets/scenes/ambush-valley.jpg') center 60%/cover}
 .team-arena:after{content:"";position:absolute;inset:0;pointer-events:none;box-shadow:inset 0 0 50px #142e2570;background:rgb(255 224 139 / calc(var(--team-hit)*.25));border:3px solid rgb(255 93 47 / calc(var(--team-counter)*.8));z-index:5}
 .team-fighter{position:absolute;bottom:4%;width:34%;aspect-ratio:1;background-size:300% 200%;background-repeat:no-repeat;transform-origin:50% 85%;z-index:2;filter:drop-shadow(0 9px 3px #1118)}
-.team-enemy{object-fit:contain;height:90%;width:36%;z-index:1}
+.team-enemy{height:auto;width:44%;aspect-ratio:1;background-size:300% 100%;z-index:1}
 .team-seal{position:absolute;top:12px;left:0;right:0;color:#ffefb5;letter-spacing:.2em;font-weight:900;text-shadow:0 2px 6px #000;font-size:clamp(18px,4vw,30px);display:none}
 #teamDuel[data-entrance="true"] .team-seal{display:block}
 .team-trail{position:absolute;top:32%;width:44%;height:38%;border-radius:50%;z-index:3;pointer-events:none;opacity:0}
@@ -29,3 +29,5 @@
 .team-vitals [data-health="guanyu"] i{background:linear-gradient(90deg,#24694e,#7ac99c)}
 #duelDialog[data-team="true"] small{color:#77634c}
 #duelDialog[data-team="true"]{transform:none}
+
+.team-axe-impact{position:absolute;top:28%;left:28%;width:35%;height:35%;border-top:8px solid #ffe4a3;border-radius:50%;box-shadow:0 -5px 18px #ff9845;transform:rotate(45deg);opacity:var(--team-counter);pointer-events:none;z-index:3}@media(prefers-reduced-motion:reduce){.team-axe-impact{display:none}}

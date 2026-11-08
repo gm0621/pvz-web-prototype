@@ -1,3 +1,4 @@
+import {THIRD_CHAPTER} from './chapter-three.mjs?v=chapter-three-1';
 // History and novel adaptation are deliberately separated in the introduction.
 export const CHAPTER_BACKGROUNDS={
  1:{era:'東漢末年・公元 184 年',history:'東漢朝局不安，民間生活困苦。張角聚眾起事，以黃巾為標誌，戰火迅速蔓延。朝廷派兵討伐，各地也招募義勇自保。',story:'《三國演義》從這場亂局寫起：劉備有志救民，卻缺兵少糧；張飛願出資，關羽前來投軍。三人相逢，將從桃園走向戰場。'},
@@ -15,3 +16,6 @@ export const STAGE_LEADS=[
  '帶著勝報北返，三兄弟在路上遇見一輛囚車。車中竟是盧植；張飛的怒火，也將考驗劉備的抉擇。',
  '山後官軍大敗，張角正率軍追擊。三兄弟決定先救受困之人，卻不知道救人之後，還有另一種冷暖等待著他們。'
 ];
+
+CHAPTER_BACKGROUNDS[3]={era:'黃巾背景・遊戲原創支線',history:'本章不重現一段確切史實。張寶、張梁是黃巾人物；這六關的護送、風雨法術與單挑是遊戲想像。',story:'三兄弟離開董卓軍後，在這段原創支線中護送鄉民，破除霧陣，並再次迎戰張寶與張梁。'};
+STAGE_LEADS.push(...THIRD_CHAPTER.map(s=>s.lead));

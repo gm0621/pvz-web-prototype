@@ -1,10 +1,10 @@
-import {renderTeamDuel} from './team-duel-view.mjs?v=team-duel-1';
-import {renderDuelCinematic} from './duel-cinematic.mjs?v=team-duel-1';
-import {duelPattern} from './duel-patterns.mjs?v=team-duel-1';
-import {renderDuelEntrance} from './duel-entrance.mjs?v=team-duel-1';
-import {HEROES,enemyArt,STAGES} from './story.mjs?v=team-duel-1';
-import {hitSound} from './audio.mjs?v=background-audio-1';
-import {duelBeats,duelBeat} from './engine.mjs?v=team-duel-1';
+import {renderTeamDuel} from './team-duel-view.mjs?v=chapter-three-1';
+import {renderDuelCinematic} from './duel-cinematic.mjs?v=chapter-three-1';
+import {duelPattern} from './duel-patterns.mjs?v=chapter-three-1';
+import {renderDuelEntrance} from './duel-entrance.mjs?v=chapter-three-1';
+import {HEROES,enemyArt,STAGES} from './story.mjs?v=chapter-three-1';
+import {hitSound} from './audio.mjs?v=chapter-three-1';
+import {duelBeats,duelBeat} from './engine.mjs?v=chapter-three-1';
 export function renderDuel(b){
  const d=b.duel,dialog=document.getElementById('duelDialog');if(!d)return;
  dialog.dataset.team=String(d.format==='two-v-one');
@@ -12,7 +12,7 @@ export function renderDuel(b){
  if(d.format==='two-v-one'){renderTeamDuel(b);return}
  if(renderDuelEntrance(b))return;
  const stage=STAGES[b.level-1]||{},custom=stage.bossName===d.bossName?stage:{},retreat=d.outcome==='retreat';
- document.getElementById('duelOutcomeNote').textContent=retreat?'破陣退敵・張角撤離戰場':'終結一擊擊敗敵將・其餘敵兵仍需清除';
+ document.getElementById('duelOutcomeNote').textContent=retreat?`破陣退敵・${d.bossName}撤離戰場`:'終結一擊擊敗敵將・其餘敵兵仍需清除';
  const beat=duelBeat(d),age=d.elapsed-beat.at,pulse=Math.max(0,1-age/.28),reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
  if(d.lastSoundBeat!==beat.at&&!b.paused){if(['hero','combo','enemy','block','finish'].includes(beat.side))hitSound(beat.side==='combo'?'hero':beat.side);d.lastSoundBeat=beat.at}
  dialog.dataset.beat=beat.side;const pattern=duelPattern(d);dialog.dataset.style=pattern.style;dialog.dataset.foe=custom.skillType||'melee';document.getElementById('duelStyle').textContent=pattern.name;

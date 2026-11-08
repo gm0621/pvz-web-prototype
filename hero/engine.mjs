@@ -1,9 +1,10 @@
-import {duelBeats} from './duel-patterns.mjs?v=team-duel-1';
-export {duelBeats} from './duel-patterns.mjs?v=team-duel-1';
-import {WEATHER_GENERALS} from './weather-generals.mjs?v=storm-battle-1';
-import {campaignState,weaponBonus} from './campaign.mjs?v=novel-camp-1';
-import {heroSkill} from './skills.mjs?v=novel-camp-1';
-import {HEROES,STAGES,UNLOCKS,FEATURES} from './story.mjs?v=team-duel-1';
+import {createMission,stepMission,protectBarrier,missionReady,missionDuelReady} from './chapter-missions.mjs?v=chapter-three-1';
+import {duelBeats} from './duel-patterns.mjs?v=chapter-three-1';
+export {duelBeats} from './duel-patterns.mjs?v=chapter-three-1';
+import {WEATHER_GENERALS} from './weather-generals.mjs?v=chapter-three-1';
+import {campaignState,weaponBonus} from './campaign.mjs?v=chapter-three-1';
+import {heroSkill} from './skills.mjs?v=chapter-three-1';
+import {HEROES,STAGES,UNLOCKS,FEATURES} from './story.mjs?v=chapter-three-1';
 
 export const SWING={duration:.58,impact:.24,frameTime:.08,frames:6};
 export const DUEL_DURATION=19;
@@ -20,7 +21,13 @@ export function enemyAttackFrame(unit,time){const age=time-(unit.swingStartedAt?
 function commandUnit(b,key){return b.allies.find(u=>u.hp>0&&(typeof key==='number'?u.id===key:key!=='archer'&&u.key===key))}
 export const SAVE_KEY='heroLegendProgress_v1';
 export const BOSS_SKILLS=['試刀','截糧斬','裂陣重擊','旋風斬','鐵壁盾擊','黃天裂陣','黃旗號令','餘燼火路','鉤鐮牽引','黃天符雷'];
-export function bossProfile(b,e){const stage=STAGES[b.level-1];return e.support?WEATHER_GENERALS[e.name]:{title:stage.bossTitle||'敵軍大將',skillType:stage.skillType,skillName:BOSS_SKILLS[b.level-1]}}
+// Boss armor makes the first exchange readable; a completed special opens a punish window.
+export function hurtEnemy(b,e,damage){
+ const guarded=e.boss&&!e.support;
+ const factor=!guarded?1:b.time<(e.recoveryUntil||0)?1.25:!e.skillsCast?(b.level<3?.75:.6):b.level<3?1:.8;
+ e.hp-=damage*factor;
+}
+export function bossProfile(b,e){const stage=STAGES[b.level-1];return e.support?WEATHER_GENERALS[e.name]:{title:stage.bossTitle||'敵軍大將',skillType:stage.skillType,skillName:stage.skillName||BOSS_SKILLS[b.level-1]}}
 export function positionHero(b,key,lane,x){
  if(!b||b.over||b.paused||b.duel||b.introPending||!Number.isFinite(x)||!Number.isInteger(lane)||lane<0||lane>2)return false;
  const u=commandUnit(b,key);if(!u)return false;
@@ -61,7 +68,7 @@ export function normalizeProgress(raw){
 }
 export function createBattle(level,seed=Date.now(),weapons={}){
  if(!Number.isInteger(level)||!STAGES[level-1])throw new Error('關卡不存在');
- return {level,weapons:{...weapons},seed:seed>>>0,time:0,food:220,lives:3,spawned:0,nextSpawn:6,bossSpawned:false,allies:[],enemies:[],effects:[],projectiles:[],hazards:[],oathUsed:false,skillNotice:null,cooldowns:{},nextId:1,paused:false,over:false,won:false,duel:null,duelSeen:false,notice:FEATURES[level-1].text,noticeUntil:8};
+ return {level,mission:createMission(level),weapons:{...weapons},seed:seed>>>0,time:0,food:220,lives:3,spawned:0,nextSpawn:6,bossSpawned:false,allies:[],enemies:[],effects:[],projectiles:[],hazards:[],oathUsed:false,skillNotice:null,cooldowns:{},nextId:1,paused:false,over:false,won:false,duel:null,duelSeen:false,notice:FEATURES[level-1].text,noticeUntil:8};
 }
 function random(b){b.seed=(Math.imul(b.seed,1664525)+1013904223)>>>0;return b.seed/4294967296}
 export function canDeploy(b,key,lane){
@@ -82,11 +89,13 @@ export function deploy(b,key,lane){
 function effect(b,type,lane,from,to=from,details={}){const duration=['roar','cleave','oath','heal','boss','rally','hook','thunder'].includes(type)?1:type==='retreat'?.9:type==='breach'?.7:type==='defeat'?.55:.4;const bossName=b.enemies.find(e=>e.boss&&e.lane===lane)?.name;b.effects.push({id:b.nextId++,type,lane,from,to,remaining:duration,duration,bossName,...details})}
 function spawn(b){
  const stage=STAGES[b.level-1],boss=b.spawned>=stage.enemyCount;
+ if(boss&&stage.noBoss){b.bossSpawned=true;b.nextSpawn=Infinity;return}
  const lane=boss?1:([1,0,2][b.spawned%3]);
  const heavy=!boss&&b.level>=UNLOCKS.shields&&b.spawned%4===3;
  const ranged=!boss&&!heavy&&b.level>=4&&b.spawned%6===4;
  const hp=ranged?46+Math.min(6,b.level)*3:boss?stage.bossHp:Math.round(48+Math.min(6,b.level)*6+(heavy?35:0));
  b.enemies.push({id:b.nextId++,lane,x:.94,hp,maxHp:hp,boss,ranged,name:boss?stage.bossName:ranged?'黃巾弓手':heavy?'黃巾盾賊':'黃巾刀賊',shielded:heavy||(boss&&b.level===5),stunnedUntil:0,damage:ranged?8:boss?17+Math.min(6,b.level):7+Math.min(6,b.level),rate:ranged?2.6:boss?1.6:1.5,speed:boss?.019:.027+random(b)*.004,lastAttack:b.time,flash:0,action:'marching'});
+ if(b.level===14&&!boss&&[0,6,12].includes(b.spawned)){for(const side of [0,2])b.enemies.push({id:b.nextId++,lane:side,x:.97,hp:52,maxHp:52,name:'黃旗衝鋒兵',elite:true,boss:false,damage:9,rate:1.5,speed:.04,lastAttack:b.time,flash:0});b.skillNotice={key:'enemy',text:`第 ${Math.floor(b.spawned/6)+1} 波・黃旗衝鋒`,until:b.time+3};}
  if(ranged){b.notice='黃巾弓手出現！會在遠處蓄力射箭，換路避箭或派武將逼近。';b.noticeUntil=b.time+5;}
  if(!boss&&b.level>=3){
   const number=b.spawned+1,ambushes=[Math.max(3,Math.ceil(stage.enemyCount*.35)),Math.max(6,Math.ceil(stage.enemyCount*.7))];
@@ -122,7 +131,7 @@ export function stepBattle(b,seconds){
   if(d.remaining<=.00001)resolveDuel(b);return;
  }
  b.effects=b.effects.filter(e=>{e.remaining-=dt;return e.remaining>0});
- b.time+=dt;
+ b.time+=dt;stepMission(b,dt);
  b.projectiles??=[];
  for(const shot of b.projectiles)if(b.time+1e-8>=shot.impactAt){
   const victim=b.allies.find(u=>u.id===shot.targetId&&u.hp>0&&u.lane===shot.lane&&Math.abs(u.x-shot.aimX)<.08);
@@ -150,12 +159,12 @@ export function stepBattle(b,seconds){
    continue;
   }
   if(u.pendingCleave&&b.time+1e-8>=u.pendingCleave.impactAt){
-   for(const victim of b.enemies)if(victim.hp>0&&victim.lane===u.lane&&u.pendingCleave.ids.includes(victim.id)&&Math.abs(victim.x-u.x)<=.32){victim.hp-=heroSkill('guanyu','cleave').power;victim.flash=.3}
+   for(const victim of b.enemies)if(victim.hp>0&&victim.lane===u.lane&&u.pendingCleave.ids.includes(victim.id)&&Math.abs(victim.x-u.x)<=.32){hurtEnemy(b,victim,heroSkill('guanyu','cleave').power);victim.flash=.3}
    effect(b,'cleave',u.lane,u.x,Math.min(.96,u.x+.15));u.impactUntil=b.time+.07;b.skillNotice={key:u.key,text:'關羽・青龍斬',until:b.time+1.5};u.pendingCleave=null;
   }
   if(u.pendingStrike&&b.time+1e-8>=u.pendingStrike.impactAt){
    const strike=u.pendingStrike,victim=b.enemies.find(e=>e.id===strike.targetId&&e.hp>0&&e.lane===u.lane);
-   if(victim&&Math.abs(victim.x-u.x)<=d.range+.09){victim.hp-=strike.damage;victim.flash=.2;effect(b,'slash',u.lane,u.x,victim.x,{weapon:u.key});u.impactUntil=b.time+.07}
+   if(victim&&Math.abs(victim.x-u.x)<=d.range+.09){hurtEnemy(b,victim,strike.damage);victim.flash=.2;effect(b,'slash',u.lane,u.x,victim.x,{weapon:u.key});u.impactUntil=b.time+.07}
    u.pendingStrike=null;
   }
   const target=b.enemies.filter(e=>e.hp>0&&e.lane===u.lane&&e.x>=u.x-.015).sort((a,c)=>a.x-c.x)[0];
@@ -163,12 +172,12 @@ export function stepBattle(b,seconds){
    if(b.level===5&&u.key==='liubei'&&target.boss&&target.hp/target.maxHp>.65&&!target.duelHintShown){target.duelHintShown=true;b.notice='先破盾才能單挑：把石魁生命打到 65% 以下，再由劉備同路近身。';b.noticeUntil=b.time+6;b.duelHint={text:b.notice,until:b.time+6};}
 
    const partner=stage.duelPartner?b.allies.find(a=>a.key===stage.duelPartner&&a.hp>0):null;
-   if((!stage.duelPartner||partner)&&target.boss&&!target.support&&!b.duelSeen&&stage.duelHero===u.key&&(!stage.duelHpRatio||target.hp/target.maxHp<=stage.duelHpRatio)&&target.x-u.x<=Math.max(.14,d.range)){
+   if((!stage.duelPartner||partner)&&target.boss&&!target.support&&missionDuelReady(b)&&!b.duelSeen&&stage.duelHero===u.key&&(!stage.duelHpRatio||target.hp/target.maxHp<=stage.duelHpRatio)&&target.x-u.x<=Math.max(.14,d.range)){
     b.duelHint=null;b.duelSeen=true;b.duel={...(partner?{format:'two-v-one',partnerId:partner.id,partnerKey:partner.key}:{}),heroId:u.id,bossId:target.id,heroKey:u.key,bossName:target.name,outcome:stage.duelOutcome||'defeat',remaining:DUEL_DURATION,elapsed:0,entranceElapsed:0,nextBeat:0,startHp:target.hp};return;
    }
    if(b.time-u.lastAttack>=d.rate&&!u.pendingCleave&&b.time-(u.swingStartedAt??-100)>=SWING.duration){
     u.lastAttack=b.time;const damage=(d.damage+weaponBonus(u.key,b.weapons?.[u.key]))*(b.time<(b.oathBuffUntil||0)?1.2:1)*(target.shielded&&u.key==='archer'?.5:1);
-    if(u.key==='archer'){u.flash=.32;effect(b,'arrow',u.lane,u.x,target.x);target.hp-=damage;target.flash=.2}
+    if(u.key==='archer'){u.flash=.32;effect(b,'arrow',u.lane,u.x,target.x);hurtEnemy(b,target,damage);target.flash=.2}
     else {u.swingStartedAt=b.time;u.pendingStrike={targetId:target.id,impactAt:b.time+SWING.impact,damage}}
    }
   }else{
@@ -181,13 +190,14 @@ export function stepBattle(b,seconds){
   }
   const nearby=b.enemies.filter(e=>e.hp>0&&e.lane===u.lane&&e.x>=u.x-.02&&e.x-u.x<=.23);
   if(u.key==='zhangfei'&&b.level>=heroSkill('zhangfei','roar').level&&nearby.length&&b.time-(u.lastSkill||0)>=heroSkill('zhangfei','roar').cooldown){
-   u.lastSkill=b.time;for(const e of nearby){e.hp-=heroSkill('zhangfei','roar').power;e.stunnedUntil=b.time+1.1;if(!e.boss)e.x=Math.min(.95,e.x+.065)}effect(b,'roar',u.lane,u.x);b.skillNotice={key:u.key,text:'張飛・燕人怒吼',until:b.time+1.5};
+   u.lastSkill=b.time;for(const e of nearby){hurtEnemy(b,e,heroSkill('zhangfei','roar').power);e.stunnedUntil=b.time+1.1;if(!e.boss)e.x=Math.min(.95,e.x+.065)}effect(b,'roar',u.lane,u.x);b.skillNotice={key:u.key,text:'張飛・燕人怒吼',until:b.time+1.5};
   }
   if(u.key==='guanyu'&&b.level>=heroSkill('guanyu','cleave').level&&nearby.length&&b.time-(u.lastSkill||0)>=heroSkill('guanyu','cleave').cooldown){
    u.lastSkill=b.time;if(!u.pendingStrike)u.swingStartedAt=b.time;u.pendingCleave={ids:nearby.map(e=>e.id),impactAt:u.pendingStrike?.impactAt??b.time+SWING.impact};
   }
   if(d.heal&&b.level>=heroSkill('liubei','heal').level&&b.time-u.lastHeal>=heroSkill('liubei','heal').cooldown){u.lastHeal=b.time;for(const ally of b.allies)if(ally.hp>0&&ally.lane===u.lane){if(ally.hp<ally.maxHp){effect(b,'heal',ally.lane,ally.x);b.skillNotice={key:'liubei',text:'劉備・仁德回春',until:b.time+1.8};}ally.hp=Math.min(ally.maxHp,ally.hp+heroSkill('liubei','heal').power)}}
  }
+ protectBarrier(b);
  for(const e of b.enemies){
   if(e.hp<=0)continue;e.action='guarding';e.flash=Math.max(0,e.flash-dt);if(b.time<(e.stunnedUntil||0)){e.action='stunned';e.pendingStrike=null;e.pendingShot=null;e.swingStartedAt=-100;continue}
   if(!e.boss&&e.pendingStrike&&b.time+1e-8>=e.pendingStrike.impactAt){const strike=e.pendingStrike,victim=b.allies.find(u=>u.id===strike.targetId&&u.hp>0&&u.lane===e.lane);if(victim&&Math.abs(e.x-victim.x)<=.11){victim.hp-=strike.damage;victim.flash=.2;effect(b,'enemy-slash',e.lane,e.x,victim.x);e.impactUntil=b.time+.08}e.pendingStrike=null}
@@ -199,13 +209,14 @@ export function stepBattle(b,seconds){
   const target=b.allies.filter(u=>u.hp>0&&u.lane===e.lane&&u.x<=e.x+.015).sort((a,c)=>c.x-a.x)[0];
   if(e.boss){
    if(b.level===5&&!e.guardBroken&&e.hp/e.maxHp<=.65){e.guardBroken=true;e.shielded=false;b.duelHint=null;b.skillNotice={key:'enemy',text:'盾勢已破！劉備同路近身即可單挑',until:b.time+3};effect(b,'block',e.lane,e.x);}
-   if((b.level===6||b.level===10)&&!e.enraged&&e.hp<=e.maxHp/2){e.enraged=true;e.rate=1.1;e.nextSkill=b.time;b.skillNotice={key:'enemy',text:`${e.name}・黃天狂攻！留意紅色路線`,until:b.time+3};effect(b,'boss',e.lane,e.x);}
+   if(b.level>=3&&!e.support&&!e.enraged&&e.hp<=e.maxHp/2){e.enraged=true;e.rate=1.1;e.nextSkill=b.time;b.skillNotice={key:'enemy',text:`${e.name}・黃天狂攻！留意紅色路線`,until:b.time+3};effect(b,'boss',e.lane,e.x);}
    if(e.castAt&&b.time>=e.castAt){
     const kind=bossProfile(b,e).skillType;
     if(kind==='rally'){
      for(const ally of b.enemies)if(ally.hp>0&&!ally.boss){ally.rallyUntil=b.time+4;effect(b,'rally',ally.lane,ally.x)}
      effect(b,'rally',e.lane,e.x);
     }else if(kind==='wind'||kind==='rain'){
+     if(b.level===15&&!b.allies.some(u=>u.hp>0&&(e.castLanes||[e.lane]).includes(u.lane))){e.stunnedUntil=b.time+2.5;b.notice='張梁呼風落空，露出破綻！趁機反擊。';b.noticeUntil=b.time+3;}
      for(const lane of e.castLanes||[e.lane]){
       for(const u of b.allies)if(u.hp>0&&u.lane===lane){u.hp-=kind==='wind'?12:8;u.flash=.3;if(kind==='wind'){u.x=Math.max(.06,u.x-.045);u.pendingStrike=null;if(u.order==='hold')u.targetX=u.x}else u.slowUntil=b.time+3;}
       effect(b,kind,lane,.5,.5,{duration:2.4,remaining:2.4});
@@ -221,10 +232,11 @@ export function stepBattle(b,seconds){
      for(const lane of e.castLanes||[e.lane])effect(b,kind==='thunder'?'thunder':'boss',lane,e.x);
      if(kind==='fire'){b.hazards.push({lane:e.lane,nextTick:b.time+1,until:b.time+3.2});effect(b,'fire',e.lane,.5,.5,{duration:3.2,remaining:3.2})}
     }
-    e.castAt=null;e.castLanes=null;e.castTargetId=null;e.nextSkill=b.time+(e.enraged?7:9);
+    e.skillsCast=(e.skillsCast||0)+1;e.recoveryUntil=b.time+2;e.castAt=null;e.castLanes=null;e.castTargetId=null;e.nextSkill=b.time+(e.enraged?7:9);
     b.skillNotice={key:'enemy',text:`${e.name}・${bossProfile(b,e).skillName}`,until:b.time+1.5};
    }
-   if(!e.castAt&&target&&e.x-target.x<.24&&b.time>=(e.nextSkill||0)){
+   if(b.time<(e.recoveryUntil||0)){e.action='recovering';continue}
+   if(!e.castAt&&target&&e.x-target.x<.34&&b.time>=(e.nextSkill||0)){
     e.castAt=b.time+(b.level>=5?2.5:1.8);e.castLanes=e.enraged?[e.lane,(e.lane+1)%3]:[e.lane];e.castTargetId=target.id;
     b.notice=`${e.name}蓄力：${bossProfile(b,e).skillName}！${bossProfile(b,e).skillType==='rally'?'敵兵即將加速，守住三路':'可換路閃避'}`;b.noticeUntil=e.castAt;
    }
@@ -241,8 +253,8 @@ export function stepBattle(b,seconds){
   if(e.x<.025){e.hp=0;e.escaped=true;if(e.boss&&!e.support)b.lossReason='commander-breach';effect(b,'breach',e.lane,.025,-.12,{enemy:true,boss:e.boss,shielded:e.shielded,ranged:e.ranged});b.lives--;b.notice='敵軍突破！留意另外兩路。';b.noticeUntil=b.time+3}
  }
  if(b.level>=UNLOCKS.oath&&!b.oathUsed&&['liubei','guanyu','zhangfei'].every(key=>b.allies.some(u=>u.key===key&&u.hp>0))){b.oathUsed=true;b.oathBuffUntil=b.time+5;for(const ally of b.allies)if(ally.hp>0){ally.hp=Math.min(ally.maxHp,ally.hp+55);effect(b,'oath',ally.lane,ally.x)}b.skillNotice={key:'liubei',text:'合擊・桃園同心',until:b.time+2.2};b.notice='桃園同心！全軍回復，五秒內攻擊提升。';b.noticeUntil=b.time+5}
- for(const unit of [...b.allies,...b.enemies])if(unit.hp<=0&&!unit.escaped){const retreat=unit.boss&&(b.level===10||unit.support);effect(b,retreat?'retreat':'defeat',unit.lane,unit.x,retreat?1.1:unit.x,{key:unit.key||null,enemy:!unit.key,boss:!!unit.boss,shielded:!!unit.shielded,ranged:!!unit.ranged,bossName:unit.name});if(retreat)b.bossRetreated=true;if(unit.key&&unit.key!=='archer')b.cooldowns[unit.key]=b.time+12}
+ for(const unit of [...b.allies,...b.enemies])if(unit.hp<=0&&!unit.escaped){const retreat=unit.boss&&(stage.duelOutcome==='retreat'||unit.support);effect(b,retreat?'retreat':'defeat',unit.lane,unit.x,retreat?1.1:unit.x,{key:unit.key||null,enemy:!unit.key,boss:!!unit.boss,shielded:!!unit.shielded,ranged:!!unit.ranged,bossName:unit.name});if(retreat)b.bossRetreated=true;if(unit.key&&unit.key!=='archer')b.cooldowns[unit.key]=b.time+12}
  b.allies=b.allies.filter(u=>u.hp>0);b.enemies=b.enemies.filter(u=>u.hp>0);
  if(b.lives<=0||b.lossReason==='commander-breach'){b.over=true;b.won=false}
- else if(b.bossSpawned&&!b.enemies.length){b.over=true;b.won=true}
+ else if(b.bossSpawned&&!b.enemies.length&&missionReady(b)){b.over=true;b.won=true}
 }

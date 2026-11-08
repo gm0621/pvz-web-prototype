@@ -1,12 +1,11 @@
-import {teamPose} from './team-duel-beats.mjs?v=team-duel-1';
-import {enemyArt} from './story.mjs?v=team-duel-1';
-import {DUEL_ENTRANCE_DURATION} from './engine.mjs?v=team-duel-1';
-import {hitSound} from './audio.mjs?v=background-audio-1';
+import {teamPose} from './team-duel-beats.mjs?v=chapter-three-1';
+import {DUEL_ENTRANCE_DURATION} from './engine.mjs?v=chapter-three-1';
+import {hitSound} from './audio.mjs?v=chapter-three-1';
 export function renderTeamDuel(b){
  const $=id=>document.getElementById(id),d=b.duel,dialog=$('duelDialog');let root=$('teamDuel');
- if(!root){root=document.createElement('section');root.id='teamDuel';root.innerHTML=`<p class="team-rule">聯手交鋒 · 二打一｜未來也可能一打二</p><div class="team-vitals"></div><div class="team-arena" aria-label="關羽、張飛聯手對戰雷烈"><div class="team-trail team-green"></div><div class="team-trail team-gold"></div><div class="team-ring"></div><div class="team-fighter" data-fighter="guanyu" role="img" aria-label="關羽"></div><div class="team-fighter" data-fighter="zhangfei" role="img" aria-label="張飛"></div><img class="team-fighter team-enemy" data-fighter="enemy" alt="雷烈"><span class="team-seal">二 對 一</span></div><h3 class="team-move" role="status"></h3><p class="team-line"></p><small>聯手演出期間三路暫停 · 結束後兩將返回原位</small>`;dialog.querySelector('.duel-controls').before(root);
+ if(!root){root=document.createElement('section');root.id='teamDuel';root.innerHTML=`<p class="team-rule">聯手交鋒 · 二打一｜未來也可能一打二</p><div class="team-vitals"></div><div class="team-arena" aria-label="關羽、張飛聯手對戰雷烈"><div class="team-trail team-green"></div><div class="team-trail team-gold"></div><div class="team-ring"></div><div class="team-fighter" data-fighter="guanyu" role="img" aria-label="關羽"></div><div class="team-fighter" data-fighter="zhangfei" role="img" aria-label="張飛"></div><div class="team-fighter team-enemy" data-fighter="enemy" role="img" aria-label="雷烈揮斧"></div><div class="team-axe-impact"></div><span class="team-seal">二 對 一</span></div><h3 class="team-move" role="status"></h3><p class="team-line"></p><small>聯手演出期間三路暫停 · 結束後兩將返回原位</small>`;dialog.querySelector('.duel-controls').before(root);
  for(const [key,name] of [['guanyu','關羽'],['zhangfei','張飛'],['enemy','雷烈']]){const card=document.createElement('div');card.innerHTML=`<strong>${name}</strong><div class="duel-health ${key==='enemy'?'':'ally-health'}" role="progressbar" aria-label="${name}生命" aria-valuemin="0"><i></i></div><small></small>`;card.dataset.health=key;root.querySelector('.team-vitals').append(card)}
- root.querySelector('[data-fighter="enemy"]').src=enemyArt('雷烈');
+
  }
  root.hidden=false;$('duelCombat').hidden=true;$('duelVersus').hidden=true;
  const entrance=d.elapsed===0&&d.entranceElapsed<DUEL_ENTRANCE_DURATION,hadFocus=document.activeElement===$('duelEnter');
@@ -17,8 +16,8 @@ export function renderTeamDuel(b){
  const fighters={guanyu:b.allies.find(u=>u.id===d.heroId),zhangfei:b.allies.find(u=>u.id===d.partnerId),enemy:b.enemies.find(u=>u.id===d.bossId)};
  for(const key of Object.keys(fighters)){
   const unit=fighters[key],hp=Math.max(0,unit?.hp||0),max=unit?.maxHp||1,card=root.querySelector(`[data-health="${key}"]`),bar=card.querySelector('[role="progressbar"]');bar.setAttribute('aria-valuenow',String(Math.ceil(hp)));bar.setAttribute('aria-valuemax',String(max));bar.querySelector('i').style.width=`${hp/max*100}%`;card.querySelector('small').textContent=`${Math.ceil(hp)} / ${max}`;
-  const pose=p[key],node=root.querySelector(`[data-fighter="${key}"]`);node.style.left=`${pose.x}%`;node.style.transform=`translateX(-50%) scaleX(${pose.facing})${key==='enemy'?` rotate(${pose.fallen?75:pose.rotation}deg)`:''}`;node.style.opacity=key==='enemy'&&pose.fallen?'.35':'1';
-  if(key!=='enemy'){node.style.backgroundImage=`url('./assets/attacks/${key}.png')`;node.style.backgroundPosition=`${pose.frame%3*50}% ${Math.floor(pose.frame/3)*100}%`;node.dataset.frame=pose.frame;}
+  const pose=p[key],node=root.querySelector(`[data-fighter="${key}"]`);node.style.left=`${pose.x}%`;node.style.transform=`translate(-50%,${key==='enemy'?'22%':'0'}) scaleX(${pose.facing})${key==='enemy'&&pose.fallen?' rotate(75deg)':''}`;node.style.opacity=key==='enemy'&&pose.fallen?'.35':'1';
+  if(key==='enemy'){node.style.backgroundImage="url('./assets/attacks/lei-lie.png')";node.style.backgroundPosition=`${pose.frame*50}% 0%`;node.dataset.frame=String(pose.frame)}else{node.style.backgroundImage=`url('./assets/attacks/${key}.png')`;node.style.backgroundPosition=`${pose.frame%3*50}% ${Math.floor(pose.frame/3)*100}%`;node.dataset.frame=pose.frame;}
   node.dataset.facing=pose.facing;
  }
  root.querySelector('.team-arena').style.transform=`translateX(${p.shake}px)`;

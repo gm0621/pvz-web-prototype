@@ -29,5 +29,5 @@ export function teamPose(d,reduced=false){
  if(beat.side==='enemy')ex-=Math.sin(clamp(age/1.1)*Math.PI)*15;
  const target=beat.side==='enemy'?(beat.counterTarget==='partner'?zx:gx):beat.actor==='zhangfei'?zx:gx;
  const frame=key=>{if(beat.side==='charge'||beat.side==='block'&&beat.actor===key)return 2;if(active&&(beat.actor===key||beat.actor==='both'))return age<.3?3:5;return 0};
- return {beat,age,pulse:reduced?0:pulse,counterPulse:reduced?0:counterPulse,guanyu:{x:gx,facing:gx<ex?1:-1,frame:frame('guanyu')},zhangfei:{x:zx,facing:zx<ex?1:-1,frame:frame('zhangfei')},enemy:{x:ex,facing:target<ex?-1:1,rotation:reduced?0:beat.side==='enemy'?Math.sin(clamp(age/1.1)*Math.PI)*-18:0,fallen:t>=16.1},shake:reduced?0:Math.sin(age*65)*pulse*(beat.side==='finish'?5:2)};
+ return {beat,age,pulse:reduced?0:pulse,counterPulse:reduced?0:counterPulse,guanyu:{x:gx,facing:gx<ex?1:-1,frame:frame('guanyu')},zhangfei:{x:zx,facing:zx<ex?1:-1,frame:frame('zhangfei')},enemy:{frame:beat.side==='enemy'?(age<.45?0:age<.85?1:2):2,x:ex,facing:target<ex?-1:1,rotation:reduced?0:beat.side==='enemy'?Math.sin(clamp(age/1.1)*Math.PI)*-18:0,fallen:t>=16.1},shake:reduced?0:Math.sin(age*65)*pulse*(beat.side==='finish'?5:2)};
 }

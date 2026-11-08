@@ -1,12 +1,13 @@
-import {campConversation} from './camp-talk.mjs?v=chapter-camp-2';
-import {GOODS,purchase} from './campaign.mjs?v=novel-camp-1';
-import {CAMP_LINES} from './novel.mjs?v=novel-camp-1';
-import {HERO_SKILLS} from './skills.mjs?v=novel-camp-1';
+import {campConversation} from './camp-talk.mjs?v=chapter-three-1';
+import {GOODS,purchase} from './campaign.mjs?v=chapter-three-1';
+import {CAMP_LINES} from './novel.mjs?v=chapter-three-1';
+import {HERO_SKILLS} from './skills.mjs?v=chapter-three-1';
 export function mountCamp({progress,level,heroes,stage,onSave,onContinue,won=true}){
  const $=id=>document.getElementById(id);let shop='items';
  const panels=['campTalk','campShop','campRoster'];
  function openPanel(id){for(const panel of panels)$(panel).hidden=panel!==id;for(const button of document.querySelectorAll('.tent-floor button'))button.setAttribute('aria-pressed','false')}
  openPanel(null);
+ let visitors=$('campVisitors');if(!visitors){visitors=document.createElement('button');visitors.id='campVisitors';visitors.className='quiet-button';visitors.textContent='探望鄉民與傷兵';$('campNarration').after(visitors)}visitors.hidden=level<11||!won;visitors.onclick=()=>{openPanel('campTalk');$('campTalkName').textContent='鄉民與傷兵';$('campTalkPortrait').hidden=true;$('campTalkText').textContent=level===16?'孩子已吃上熱粥，郎中正在替傷兵包紮。謝謝你們把大家平安帶回來。':'鄉民圍在營火旁，郎中替傷者包紮。先歇一歇，我們會彼此照應。';$('campTalkNext').textContent='回到營帳';$('campTalkNext').onclick=()=>openPanel(null)};
  $('campTitle').textContent=won?`${stage.name} · 歇馬整備`:'重整行裝，再來一次';$('campNarration').textContent=won?CAMP_LINES[level-1]:'先回營歇一歇。三兄弟清點行囊，準備再試一次。';
  $('campContinue').textContent=won?'繼續故事 ➜':'重新出戰 →';$('campContinue').onclick=onContinue;
  $('campMessage').textContent='點一間攤位逛逛。購物可略過；兵器會自動裝備，道具可在戰鬥中使用。';
@@ -27,7 +28,7 @@ export function mountCamp({progress,level,heroes,stage,onSave,onContinue,won=tru
  $('campPrepare').onclick=()=>{openPanel('campRoster');$('campPrepare').setAttribute('aria-pressed','true');render();$('campRoster').querySelector('h3').focus({preventScroll:true});$('campRoster').scrollIntoView({block:'nearest'})};
  for(const button of document.querySelectorAll('[data-talk]'))button.onclick=()=>{
   const key=button.dataset.talk,lines=campConversation(level,key,won);let index=0;openPanel('campTalk');button.setAttribute('aria-pressed','true');
-  function line(){const parts=lines[index].split('：');const speaker=parts.length>1?Object.keys(heroes).find(k=>heroes[k].name===parts[0]):key;const person=heroes[speaker]||heroes[key];$('campTalkName').textContent=person.name;$('campTalkPortrait').src=person.asset;$('campTalkText').textContent=parts.length>1?parts.slice(1).join('：'):lines[index];$('campTalkNext').textContent=index===lines.length-1?'聊完了，回帳中':'接著聽 →'}
+  function line(){$('campTalkPortrait').hidden=false;const parts=lines[index].split('：');const speaker=parts.length>1?Object.keys(heroes).find(k=>heroes[k].name===parts[0]):key;const person=heroes[speaker]||heroes[key];$('campTalkName').textContent=person.name;$('campTalkPortrait').src=person.asset;$('campTalkText').textContent=parts.length>1?parts.slice(1).join('：'):lines[index];$('campTalkNext').textContent=index===lines.length-1?'聊完了，回帳中':'接著聽 →'}
   $('campTalkNext').onclick=()=>{if(index<lines.length-1){index++;line()}else{openPanel(null);button.focus()}};line();$('campTalkNext').focus({preventScroll:true});$('campTalk').scrollIntoView({block:'nearest'});
  };render();
 }

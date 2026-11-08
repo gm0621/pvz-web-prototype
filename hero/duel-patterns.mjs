@@ -1,4 +1,4 @@
-import {TEAM_BEATS} from './team-duel-beats.mjs?v=team-duel-1';
+import {TEAM_BEATS} from './team-duel-beats.mjs?v=chapter-three-1';
 // Matchup-specific choreography. Every beat uses the engine's paused duel clock.
 const patterns={
  '鄧茂':{style:'spear',name:'猛攻搶先',beats:[[3,'hero','蛇矛搶先',.12],[4.8,'enemy','橫刀反擊',0,.03],[6.2,'block','架矛震刀'],[8,'hero','連環突刺',.18],[9.1,'enemy','回身劈斬',0,.03],[10,'charge','挺矛決勝']]},
@@ -18,6 +18,10 @@ const finishers={
  '杜衡':{id:'twin-dance',name:'仁義雙鋒・迴風連斬',color:'#b4eaff',setup:'解鉤換位，左右交擊',hits:[13.2,13.75,14.35],finish:15.5},
  '張角':{id:'seal-break',name:'雙劍同心・破雷開天',color:'#dcc2ff',setup:'閃避雷柱，逐一破符',hits:[13.3,13.85,14.4],finish:15.6}
 };
+patterns['張寶']={style:'blade',name:'破雨斷符',beats:[[2.6,'enemy','雨符封路',0,.03],[4,'block','橫刀護身'],[5.3,'hero','青龍試陣',.12],[6.7,'enemy','旋風回杖',0,.03],[8.1,'block','側步避風'],[9.3,'hero','回刀斷符',.18],[10.5,'charge','青龍收雨']]};
+patterns['張梁']={style:'spear',name:'挑旗震軍',beats:[[2.5,'hero','蛇矛試旗',.1],[3.9,'enemy','環刀重斬',0,.03],[5.2,'block','架矛接刀'],[6.5,'hero','回身連刺',.1],[7.8,'enemy','呼風裂陣',0,.03],[9.1,'hero','踏步挑旗',.1],[10.5,'charge','燕人震旗']]};
+finishers['張寶']={...finishers['韓旌'],name:'青龍偃月・斷符收雨',setup:'避過符杖，凌空斷符'};
+finishers['張梁']={...finishers['焦魯'],name:'丈八蛇矛・震軍挑旗',setup:'接住環刀，挺矛挑旗'};
 export function duelPattern(duel){return patterns[duel.bossName]||patterns['鄧茂']}
 export function duelFinisher(duel){return finishers[duel.bossName]||finishers['鄧茂']}
 export function duelBeats(duel){if(duel.bossName==='雷烈')return TEAM_BEATS;const f=duelFinisher(duel);return [
@@ -27,5 +31,5 @@ export function duelBeats(duel){if(duel.bossName==='雷烈')return TEAM_BEATS;co
  {at:12.7,text:f.setup,side:'maneuver'},
  ...f.hits.map((at,i)=>({at,text:`${f.name}・第${i+1}擊`,side:'combo',damage:.4/f.hits.length})),
  {at:f.finish,text:f.name,side:'finish',damage:1},
- {at:17.2,text:duel.outcome==='retreat'?'張角退走':'敵將討取',side:'victory'}
+ {at:17.2,text:duel.outcome==='retreat'?`${duel.bossName}退走`:'敵將討取',side:'victory'}
 ]}

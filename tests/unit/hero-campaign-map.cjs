@@ -1,9 +1,9 @@
 const {test}=require('node:test');const assert=require('node:assert/strict');
 const map=import('../../hero/campaign-map.mjs');
-test('all ten stages have explicit location notes and bounded map markers',async()=>{
+test('all sixteen stages have explicit location notes and bounded map markers',async()=>{
  const {stageLocation,STAGE_LOCATIONS}=await map,{STAGES}=await import('../../hero/story.mjs');assert.equal(STAGE_LOCATIONS.length,STAGES.length);
  for(let level=1;level<=STAGES.length;level++){const p=stageLocation(level);assert.ok(p.x>30&&p.x<650&&p.y>30&&p.y<410);assert.ok(p.detail&&p.modern);assert.ok((await map).campaignMapSvg(level).includes(p.name));}
- for(const bad of [0,11,NaN,1.5])assert.throws(()=>stageLocation(bad),RangeError);
+ for(const bad of [0,17,NaN,1.5])assert.throws(()=>stageLocation(bad),RangeError);
 });
 test('route follows story progression, merges local battles and includes return to Guangzong',async()=>{
  const {routeThrough,stageLocation}=await map;assert.deepEqual(routeThrough(4),['zhuo']);assert.deepEqual(routeThrough(6),['zhuo','qing']);assert.deepEqual(routeThrough(10),['zhuo','qing','guang','chang','road','guang']);assert.match(stageLocation(9).detail,/無確定坐標/);assert.match(stageLocation(3).detail,/非確定山址/);

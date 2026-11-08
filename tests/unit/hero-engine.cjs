@@ -22,7 +22,7 @@ test('progress is a separate, bounded ten-stage record',async()=>{
  const {normalizeProgress,SAVE_KEY}=await engine;
  assert.equal(SAVE_KEY,'heroLegendProgress_v1');
  for(const raw of [null,{},[],{completed:-9},{completed:'bad'}])assert.equal(normalizeProgress(raw).completed,0);
- assert.equal(normalizeProgress({completed:99}).completed,10);
+ assert.equal(normalizeProgress({completed:99}).completed,16);
  assert.equal(normalizeProgress({completed:3}).completed,3);
 });
 test('deployments pay once, respect cooldown and three-unit lane capacity',async()=>{
@@ -157,8 +157,8 @@ test('late bosses telegraph two lanes on rage and the remaining lane is safe',as
  }
 });
 test('old first-chapter completion unlocks the second chapter without resetting progress',async()=>{
- const {normalizeProgress,createBattle}=await engine;assert.equal(normalizeProgress({version:1,completed:6}).completed,6);assert.equal(createBattle(7).level,7);assert.equal(createBattle(10).level,10);assert.throws(()=>createBattle(11));
- const {STAGES,FEATURES}=await import('../../hero/story.mjs');assert.equal(STAGES.length,10);assert.equal(FEATURES.length,10);assert.equal(STAGES[4].duelHero,'liubei');assert.equal(STAGES[9].bossName,'張角');assert.equal(STAGES[9].duelHero,'liubei');assert.equal(STAGES[9].duelOutcome,'retreat');
+ const {normalizeProgress,createBattle}=await engine;assert.equal(normalizeProgress({version:1,completed:6}).completed,6);assert.equal(createBattle(7).level,7);assert.equal(createBattle(10).level,10);assert.throws(()=>createBattle(17));
+ const {STAGES,FEATURES}=await import('../../hero/story.mjs');assert.equal(STAGES.length,16);assert.equal(FEATURES.length,16);assert.equal(STAGES[4].duelHero,'liubei');assert.equal(STAGES[9].bossName,'張角');assert.equal(STAGES[9].duelHero,'liubei');assert.equal(STAGES[9].duelOutcome,'retreat');
 });
 test('Zhang Jiao withdraws instead of using a death or duel finisher',async()=>{
  const {createBattle,stepBattle}=await engine,b=createBattle(10,1);b.nextSpawn=Infinity;b.bossSpawned=true;b.enemies.push({...testEnemy(90,.5),boss:true,name:'張角',hp:0});stepBattle(b,.1);assert.equal(b.bossRetreated,true);assert.equal(b.duel,null);assert.ok(b.effects.some(e=>e.type==='retreat'));assert.equal(b.effects.some(e=>e.type==='defeat'),false);
@@ -290,9 +290,9 @@ test('ordinary and support breaches keep the existing three-life rule',async()=>
 test('a defeated commander still wins after an earlier ordinary breach',async()=>{
  const {createBattle,stepBattle}=await engine,b=createBattle(1);b.bossSpawned=true;b.lives=2;b.enemies=[{id:90,lane:1,x:.4,hp:0,maxHp:100,boss:true,name:'黃巾前哨'}];stepBattle(b,.1);assert.equal(b.won,true);
 });
-test('seven duel matchups have distinct ordered choreography',async()=>{
+test('nine duel matchups have distinct ordered choreography',async()=>{
  const {duelBeats}=await engine,{STAGES}=await import('../../hero/story.mjs');const sequences=STAGES.filter(s=>s.duelHero&&!s.duelPartner).map(s=>duelBeats({bossName:s.bossName,outcome:s.duelOutcome}));
- assert.equal(sequences.length,7);assert.equal(new Set(sequences.map(beats=>JSON.stringify(beats.map(b=>[b.at,b.side,b.damage])))).size,7);
+ assert.equal(sequences.length,9);assert.equal(new Set(sequences.map(beats=>JSON.stringify(beats.map(b=>[b.at,b.side,b.damage])))).size,9);
  for(const beats of sequences){assert.ok(beats.every((b,i)=>!i||b.at>beats[i-1].at));assert.equal(beats.filter(b=>b.side==='finish').length,1);assert.ok(Math.abs(beats.filter(b=>b.side!=='finish').reduce((sum,b)=>sum+(b.damage||0),0)-.7)<1e-8);}
 });
 for(const level of [3,4,5,7,8,9,10])test(`duel ${level} counters hit once at impact, freeze and preserve the intended outcome`,async()=>{
@@ -326,7 +326,7 @@ test('cinematic finishers have names, distinct movement and opposing facing dire
   }
   traces.push(JSON.stringify(trace));
  }
- assert.equal(new Set(traces).size,7);
+ assert.equal(new Set(traces).size,9);
  const back=duelPose({bossName:'程遠志',heroKey:'guanyu',elapsed:13.7});assert.ok(back.hero>back.enemy);assert.equal(back.heroFacing,-1);assert.equal(back.enemyFacing,1);
 });
 for(const level of [3,4,5,7,8,9,10])test(`finisher ${level} keeps HP through windup, hits in steps and holds impact before exit`,async()=>{

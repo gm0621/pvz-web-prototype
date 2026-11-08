@@ -1,3 +1,4 @@
+import {THIRD_CHAPTER} from './chapter-three.mjs?v=chapter-three-1';
 // Original child-friendly narration around the existing Romance chapter-one sequence.
 export const NOVEL_PAGES=[
  [['說書人','桃花落在酒碗邊，城外的招兵榜卻被風吹得啪啪作響。這一年，百姓盼望的，只是一頓安穩飯。'],['張飛','那位壯士，為何對著榜文嘆氣？有心做事，便說出來！'],['劉備','我想救助鄉親，可惜力量太小。若有人同行……也許就能多護住一個人。']],
@@ -23,6 +24,8 @@ export const CAMP_LINES=[
  '囚車已遠，張飛仍悶悶不樂。劉備遞來一碗水：先照顧好身邊的人。',
  '山口的敗兵得救了。世道的冷暖還在前頭，今夜，桃園兄弟先圍著同一堆火。'
 ];
+NOVEL_PAGES.push(...THIRD_CHAPTER.map(s=>s.novel));
+CAMP_LINES.push(...THIRD_CHAPTER.map(s=>s.campLine));
 export function mountNovel(level,heroes,background,lead){
  let pages=NOVEL_PAGES[level-1],index=0,notes=false;const $=id=>document.getElementById(id);
  function render(){const [name,line]=pages[index],key={劉備:'liubei',關羽:'guanyu',張飛:'zhangfei'}[name];$('novelSpeaker').textContent=name;$('novelText').textContent=line;$('novelCount').textContent=`${notes?'小札':'序幕'} ${index+1} / ${pages.length}`;$('novelPortrait').hidden=!key;if(key){$('novelPortrait').src=heroes[key].asset;$('novelPortrait').alt=name} $('novelPrevious').disabled=index===0;$('novelNext').textContent=index===pages.length-1?'換你想一想 →':'翻下一頁 →';$('novelPage').dataset.speaker=key||'narrator';if(!matchMedia('(prefers-reduced-motion: reduce)').matches)$('novelText').animate([{opacity:.25,transform:'translateX(6px)'},{opacity:1,transform:'translateX(0)'}],{duration:180});}
