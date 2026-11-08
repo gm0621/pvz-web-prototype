@@ -5,16 +5,16 @@ import {createFirstGuide} from './first-guide.mjs?v=novel-camp-1';
 import {mountStoryTask} from './story-play.mjs?v=story-play-1';
 import {CHAPTER_BACKGROUNDS,STAGE_LEADS} from './prologue.mjs?v=novel-camp-1';
 import {setMusic,setMusicMode,setMusicHome,musicTheme,musicOn,setSfx,unlockAudio,hitSound} from './audio.mjs?v=scene-audio-3';
-import {renderDuel} from './duel-view.mjs?v=battle-refresh-1';
+import {renderDuel} from './duel-view.mjs?v=duel-variety-1';
 import {chapterInfo,enemyArt,HEROES,STAGES,ENEMY_ART,SHIELD_ART,FEATURES,heroDescription} from './story.mjs?v=storm-battle-1';
-import {bossProfile,LANE_CAPACITY,laneCount,ENEMY_SWING,enemyAttackFrame,skipDuelEntrance,positionHero,commandHero,moveHero,BOSS_SKILLS,SAVE_KEY,normalizeProgress,createBattle,deploy,canDeploy,stepBattle,attackFrame,SWING} from './engine.mjs?v=battle-refresh-1';
+import {bossProfile,LANE_CAPACITY,laneCount,ENEMY_SWING,enemyAttackFrame,skipDuelEntrance,positionHero,commandHero,moveHero,BOSS_SKILLS,SAVE_KEY,normalizeProgress,createBattle,deploy,canDeploy,stepBattle,attackFrame,SWING} from './engine.mjs?v=duel-variety-1';
 
 const $=id=>document.getElementById(id);
 const GENERAL_ATTACK_SHEETS={'張梁':'zhang-liang.png','張寶':'zhang-bao.png'};
 let firstGuide=null;
 let progress,screen='home',battle=null,selected=null,selectedUnitId=null,storyLevel=1,lineIndex=0,storyPhase='opening',lastFrame=0,resultShown=false,duelShown=false;
 try{progress=normalizeProgress(JSON.parse(localStorage.getItem(SAVE_KEY)||'{}'))}catch{progress=normalizeProgress()}
-function saveProgress(){try{localStorage.setItem(SAVE_KEY,JSON.stringify(progress))}catch{$('storageNotice').hidden=false}}
+function saveProgress(){try{localStorage.setItem(SAVE_KEY,JSON.stringify(progress));$('storageNotice').hidden=true;return true}catch{$('storageNotice').hidden=false;return false}}
 function syncMusicButton(on=musicOn()){$('musicBtn').textContent=on?`♫ ${musicTheme().name}`:'♫ 音樂：關';$('musicBtn').setAttribute('aria-pressed',String(on))}
 let ownsFullscreen=false,focusRevision=0;
 function focusBattle(active){
@@ -160,14 +160,14 @@ function renderBattle(){
 }
 function showResult(){
  resultShown=true;selected=null;selectedUnitId=null;setMusicMode(battle.won?'victory':'prepare',battle.level);syncMusicButton();const stage=STAGES[battle.level-1];
- const balanceBefore=progress.coins;let earned=0;if(battle.won){earned=rewardVictory(progress,battle.level);saveProgress()}
+ const balanceBefore=progress.coins;let earned=0,saved=true;if(battle.won){earned=rewardVictory(progress,battle.level);saved=saveProgress()}
  $('resultMark').textContent=battle.won?'勝':'再起';$('resultChapter').textContent=`第${chapterInfo(battle.level).chapter===1?'一':'二'}章 · ${chapterInfo(battle.level).number}`;
  $('resultTitle').textContent=battle.won?(battle.level===6?'桃園同心':battle.level===STAGES.length?'烽火與義氣':'此戰告捷'):'重整陣形，再來一次';
- $('resultText').textContent=battle.won?stage.victory:'先讓弓兵照應三路，再用張飛頂住前線、關羽斬擊敵軍、劉備回復友軍。軍糧會持續補給，留意空著的路線。';
+ $('resultText').textContent=battle.won?stage.victory:battle.lossReason==='commander-breach'?'敵方主將突破防線，本關未完成。調動部隊攔住主將，再挑戰一次。':'先讓弓兵照應三路，再用張飛頂住前線、關羽斬擊敵軍、劉備回復友軍。軍糧會持續補給，留意空著的路線。';
  $('result').dataset.outcome=battle.won?'victory':'defeat';$('result').dataset.reward=String(progress.coins>balanceBefore);if(battle.won)void hitSound('oath');
  $('resultEarned').textContent=`+${progress.coins-balanceBefore}`;$('resultBalance').textContent=progress.coins.toLocaleString('en-US');
  $('resultRewardReason').textContent=!battle.won?'這次未能守住防線，沒有獲得軍資；已有軍資不扣除。':!earned?'本關首次通關獎勵已領取，重玩不重複發放。':progress.coins-balanceBefore<earned?'首次通關！軍資已補至持有上限 99,999。':'首次通關獎勵・80 軍資';
- $('resultSaved').textContent=battle.won&&earned?'軍資已存入行囊，可在營地使用':'保留目前軍資，可到營地整備';
+ $('resultSaved').textContent=!saved?'進度與軍資僅暫存於本頁，尚未保存；關閉或重新整理後可能遺失。':battle.won&&earned?'軍資與進度已保存，可在營地使用':'保留目前軍資，可到營地整備';
  $('resultNext').textContent='前往戰後營地 →';show('result');$('resultTitle').focus({preventScroll:true});
 }
 function openCamp(level,won){setMusicMode('camp',level);syncMusicButton();show('camp');mountCamp({progress,level,won,heroes:HEROES,stage:STAGES[level-1],onSave:saveProgress,onContinue:()=>won?startStory(level,'ending'):beginBattle(level)});$('campTitle').tabIndex=-1;$('campTitle').focus({preventScroll:true})}

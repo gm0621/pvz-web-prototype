@@ -1,3 +1,5 @@
+import {duelBeats} from './duel-patterns.mjs?v=duel-variety-1';
+export {duelBeats} from './duel-patterns.mjs?v=duel-variety-1';
 import {WEATHER_GENERALS} from './weather-generals.mjs?v=storm-battle-1';
 import {campaignState,weaponBonus} from './campaign.mjs?v=novel-camp-1';
 import {heroSkill} from './skills.mjs?v=novel-camp-1';
@@ -7,19 +9,9 @@ export const SWING={duration:.58,impact:.24,frameTime:.08,frames:6};
 export const DUEL_DURATION=15;
 export const DUEL_ENTRANCE_DURATION=3.2;
 export function skipDuelEntrance(b){if(!b?.duel||b.paused||b.over)return false;b.duel.entranceElapsed=DUEL_ENTRANCE_DURATION;return true}
-export const DUEL_BEATS=[
- {at:0,text:'一騎當千',side:'ready'},
- {at:1.5,text:'報上名來',side:'reply'},
- {at:3,text:'先聲奪人',side:'hero',damage:.12},
- {at:4.8,text:'敵將反擊',side:'enemy'},
- {at:6.2,text:'鏘！擋下了',side:'block'},
- {at:8,text:'破綻！連擊',side:'hero',damage:.18},
- {at:9.1,text:'回馬再戰',side:'enemy'},
- {at:10,text:'蓄勢・決勝一擊',side:'charge'},
- {at:11.8,text:'一擊斬將',side:'finish',damage:1},
- {at:13,text:'敵將討取',side:'victory'}
-];
-export function duelBeat(d){const beat=DUEL_BEATS.reduce((last,beat)=>d.elapsed>=beat.at?beat:last,DUEL_BEATS[0]);return d.outcome==='retreat'&&['finish','victory'].includes(beat.side)?{...beat,text:beat.side==='finish'?'破陣退敵':'張角退走'}:beat}
+// Retained for callers that inspect the original Deng Mao sequence.
+export const DUEL_BEATS=duelBeats({bossName:'鄧茂'});
+export function duelBeat(d){return duelBeats(d).reduce((last,beat)=>d.elapsed>=beat.at?beat:last,duelBeats(d)[0])}
 export function attackFrame(unit,time){const elapsed=time-(unit.swingStartedAt??-100);if(elapsed<0||elapsed>=SWING.duration)return 0;const frame=Math.min(5,Math.floor(elapsed/SWING.frameTime));return unit.key==='zhangfei'&&frame===4?3:frame}
 export const LANE_CAPACITY=3;
 export const laneCount=(b,lane)=>b.allies.filter(u=>u.hp>0&&u.lane===lane).length;
@@ -120,10 +112,11 @@ export function stepBattle(b,seconds){
   const d=b.duel;
   if(d.elapsed===0&&(d.entranceElapsed??DUEL_ENTRANCE_DURATION)<DUEL_ENTRANCE_DURATION){d.entranceElapsed=Math.min(DUEL_ENTRANCE_DURATION,d.entranceElapsed+dt);return}
   d.elapsed=Math.min(DUEL_DURATION,d.elapsed+dt);d.remaining=DUEL_DURATION-d.elapsed;
-  const boss=b.enemies.find(e=>e.id===d.bossId);
-  for(let i=d.nextBeat;i<DUEL_BEATS.length&&d.elapsed+1e-8>=DUEL_BEATS[i].at;i++){
-   const beat=DUEL_BEATS[i];if(boss&&beat.damage)boss.hp=beat.side==='finish'?0:Math.max(1,boss.hp-d.startHp*beat.damage);d.nextBeat=i+1;
+  const boss=b.enemies.find(e=>e.id===d.bossId),hero=b.allies.find(u=>u.id===d.heroId),beats=duelBeats(d);
+  for(let i=d.nextBeat;i<beats.length&&d.elapsed+1e-8>=beats[i].at;i++){
+   const beat=beats[i];if(boss&&beat.damage)boss.hp=beat.side==='finish'?0:Math.max(1,boss.hp-d.startHp*beat.damage);if(hero&&beat.heroDamage)d.pendingCounter={at:beat.at+.6,damage:hero.maxHp*beat.heroDamage};d.nextBeat=i+1;
   }
+  if(d.pendingCounter&&d.elapsed+1e-8>=d.pendingCounter.at){if(hero)hero.hp=Math.max(1,hero.hp-d.pendingCounter.damage);d.pendingCounter=null;}
   if(d.remaining<=.00001)resolveDuel(b);return;
  }
  b.effects=b.effects.filter(e=>{e.remaining-=dt;return e.remaining>0});
@@ -226,11 +219,11 @@ export function stepBattle(b,seconds){
   if(!e.boss&&b.time-(e.swingStartedAt??-100)<ENEMY_SWING.duration){e.action='striking';continue}
   if(target&&e.x-target.x<=.075){if(b.time-e.lastAttack>=e.rate){e.lastAttack=b.time;const damage=e.damage*(b.time<(e.rallyUntil||0)?1.3:1);if(e.boss){e.flash=.32;effect(b,'enemy-slash',e.lane,e.x,target.x);target.hp-=damage;target.flash=.2}else{e.swingStartedAt=b.time;e.pendingStrike={targetId:target.id,impactAt:b.time+ENEMY_SWING.impact,damage};e.action='striking'}}}
   else {e.action='marching';e.x-=e.speed*dt*(b.time<(e.rallyUntil||0)?1.35:1);}
-  if(e.x<.025){e.hp=0;e.escaped=true;effect(b,'breach',e.lane,.025,-.12,{enemy:true,boss:e.boss,shielded:e.shielded});b.lives--;b.notice='敵軍突破！留意另外兩路。';b.noticeUntil=b.time+3}
+  if(e.x<.025){e.hp=0;e.escaped=true;if(e.boss&&!e.support)b.lossReason='commander-breach';effect(b,'breach',e.lane,.025,-.12,{enemy:true,boss:e.boss,shielded:e.shielded});b.lives--;b.notice='敵軍突破！留意另外兩路。';b.noticeUntil=b.time+3}
  }
  if(b.level>=UNLOCKS.oath&&!b.oathUsed&&['liubei','guanyu','zhangfei'].every(key=>b.allies.some(u=>u.key===key&&u.hp>0))){b.oathUsed=true;b.oathBuffUntil=b.time+5;for(const ally of b.allies)if(ally.hp>0){ally.hp=Math.min(ally.maxHp,ally.hp+55);effect(b,'oath',ally.lane,ally.x)}b.skillNotice={key:'liubei',text:'合擊・桃園同心',until:b.time+2.2};b.notice='桃園同心！全軍回復，五秒內攻擊提升。';b.noticeUntil=b.time+5}
  for(const unit of [...b.allies,...b.enemies])if(unit.hp<=0&&!unit.escaped){const retreat=unit.boss&&(b.level===10||unit.support);effect(b,retreat?'retreat':'defeat',unit.lane,unit.x,retreat?1.1:unit.x,{key:unit.key||null,enemy:!unit.key,boss:!!unit.boss,shielded:!!unit.shielded,bossName:unit.name});if(retreat)b.bossRetreated=true;if(unit.key&&unit.key!=='archer')b.cooldowns[unit.key]=b.time+12}
  b.allies=b.allies.filter(u=>u.hp>0);b.enemies=b.enemies.filter(u=>u.hp>0);
- if(b.lives<=0){b.over=true;b.won=false}
+ if(b.lives<=0||b.lossReason==='commander-breach'){b.over=true;b.won=false}
  else if(b.bossSpawned&&!b.enemies.length){b.over=true;b.won=true}
 }
