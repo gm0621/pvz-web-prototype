@@ -3,7 +3,7 @@ test('old chapter-one save continues into four new playable stages',async({page}
  await page.addInitScript(()=>localStorage.setItem('heroLegendProgress_v1',JSON.stringify({version:1,completed:6})));
  await page.goto('/hero/');await expect(page.locator('#chapterDots button')).toHaveCount(10);await expect(page.locator('#chapterDots button').nth(6)).toBeEnabled();await expect(page.locator('#chapterDots button').nth(7)).toBeDisabled();
  await page.locator('#startBtn').click();await expect(page.locator('#storyChapter')).toContainText('第二章');await expect(page.locator('#storyTitle')).toHaveText('廣宗拜師');await page.locator('#storySkip').click();await expect(page.locator('#field')).toBeVisible();
- const theme=await page.evaluate(async()=>{const a=await import('/hero/audio.mjs?v=scene-audio-3');return a.audioStatus().theme});expect(theme).toBe('晴野行軍');
+ const theme=await page.evaluate(async()=>{const a=await import('/hero/audio.mjs?v=background-audio-1');return a.audioStatus().theme});expect(theme).toBe('晴野行軍');
  await page.reload();await expect(page.locator('#homeProgress')).toContainText('6 / 10');
 });
 test('selected hero taps stop immediately, and point orders can resume movement',async({page})=>{
@@ -32,3 +32,4 @@ test('chapter two final result saves ten stages and returns home after the endin
  await expect(page.locator('#resultTitle')).toHaveText('烽火與義氣',{timeout:15000});expect(await page.evaluate(()=>JSON.parse(localStorage.getItem('heroLegendProgress_v1')).completed)).toBe(10);
  await page.locator('#resultNext').click();await page.locator('#campContinue').click();await expect(page.locator('#storyLine')).toContainText('張角敗退');await page.locator('#storySkip').click();await expect(page.locator('#homeProgress')).toContainText('第二章完成');await page.reload();await expect(page.locator('#homeProgress')).toContainText('第二章完成');
 });
+
