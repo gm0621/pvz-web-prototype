@@ -144,7 +144,7 @@ test('a withdrawn attacker cannot inflict its queued melee strike',async()=>{
 
 test('Liu Bei is told to break the shield before dueling Shi Kui',async()=>{
  const {createBattle,deploy,stepBattle}=await engine,b=createBattle(5,1);b.nextSpawn=Infinity;b.bossSpawned=true;deploy(b,'liubei',1);
- const boss={...testEnemy(90,.17),hp:290,maxHp:290,boss:true,name:'石魁',shielded:true};b.enemies.push(boss);stepBattle(b,.1);assert.equal(b.duel,null);assert.match(b.duelHint.text,/先破盾.*65%/);boss.hp=180;stepBattle(b,.1);assert.equal(b.duel.heroKey,'liubei');assert.equal(b.duel.bossName,'石魁');const frozen=b.time;(await engine).skipDuelEntrance(b);
+ const boss={...testEnemy(90,.17),hp:290,maxHp:290,boss:true,name:'石魁',shielded:true};b.enemies.push(boss);stepBattle(b,.1);assert.equal(b.duel,null);assert.match(b.duelHint.text,/先破盾.*65%/);b.allies[0].lane=0;boss.hp=180;stepBattle(b,.1);assert.equal(b.duelHint,null);b.allies[0].lane=1;stepBattle(b,.1);assert.equal(b.duel.heroKey,'liubei');assert.equal(b.duel.bossName,'石魁');const frozen=b.time;(await engine).skipDuelEntrance(b);
  for(let i=0;i<150;i++)stepBattle(b,.1);assert.equal(b.time,frozen);assert.equal(boss.hp,0);
 });
 test('late bosses telegraph two lanes on rage and the remaining lane is safe',async()=>{

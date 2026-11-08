@@ -182,7 +182,7 @@ export function stepBattle(b,seconds){
   if(!e.boss&&e.pendingStrike&&b.time+1e-8>=e.pendingStrike.impactAt){const strike=e.pendingStrike,victim=b.allies.find(u=>u.id===strike.targetId&&u.hp>0&&u.lane===e.lane);if(victim&&Math.abs(e.x-victim.x)<=.11){victim.hp-=strike.damage;victim.flash=.2;effect(b,'enemy-slash',e.lane,e.x,victim.x);e.impactUntil=b.time+.08}e.pendingStrike=null}
   const target=b.allies.filter(u=>u.hp>0&&u.lane===e.lane&&u.x<=e.x+.015).sort((a,c)=>c.x-a.x)[0];
   if(e.boss){
-   if(b.level===5&&!e.guardBroken&&e.hp/e.maxHp<=.65){e.guardBroken=true;e.shielded=false;b.skillNotice={key:'enemy',text:'盾勢已破！劉備同路近身即可單挑',until:b.time+3};effect(b,'block',e.lane,e.x);}
+   if(b.level===5&&!e.guardBroken&&e.hp/e.maxHp<=.65){e.guardBroken=true;e.shielded=false;b.duelHint=null;b.skillNotice={key:'enemy',text:'盾勢已破！劉備同路近身即可單挑',until:b.time+3};effect(b,'block',e.lane,e.x);}
    if((b.level===6||b.level===10)&&!e.enraged&&e.hp<=e.maxHp/2){e.enraged=true;e.rate=1.1;e.nextSkill=b.time;b.skillNotice={key:'enemy',text:`${e.name}・黃天狂攻！留意紅色路線`,until:b.time+3};effect(b,'boss',e.lane,e.x);}
    if(e.castAt&&b.time>=e.castAt){
     const kind=bossProfile(b,e).skillType;

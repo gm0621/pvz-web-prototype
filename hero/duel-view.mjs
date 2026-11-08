@@ -1,7 +1,7 @@
-import {renderDuelEntrance} from './duel-entrance.mjs?v=storm-battle-1';
+import {renderDuelEntrance} from './duel-entrance.mjs?v=storm-battle-2';
 import {HEROES,enemyArt,STAGES} from './story.mjs?v=storm-battle-1';
 import {hitSound} from './audio.mjs?v=storm-battle-1';
-import {DUEL_BEATS,duelBeat} from './engine.mjs?v=storm-battle-1';
+import {DUEL_BEATS,duelBeat} from './engine.mjs?v=storm-battle-2';
 export function renderDuel(b){
  const d=b.duel,dialog=document.getElementById('duelDialog');if(!d)return;
  if(renderDuelEntrance(b))return;
