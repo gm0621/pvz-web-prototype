@@ -1,4 +1,6 @@
-import {THIRD_CHAPTER} from './chapter-three.mjs?v=boss-cutin-1';
+import {FOURTH_CHAPTER} from './chapter-four.mjs?v=history-coalition-1';
+import {paintPortrait} from './factions.mjs?v=history-coalition-1';
+import {THIRD_CHAPTER} from './chapter-three.mjs?v=history-coalition-1';
 // History and novel adaptation are deliberately separated in the introduction.
 export const CHAPTER_BACKGROUNDS={
  1:{era:'東漢末年・公元 184 年',history:'東漢朝局不安，民間生活困苦。張角聚眾起事，以黃巾為標誌，戰火迅速蔓延。朝廷派兵討伐，各地也招募義勇自保。',story:'《三國演義》從這場亂局寫起：劉備有志救民，卻缺兵少糧；張飛願出資，關羽前來投軍。三人相逢，將從桃園走向戰場。'},
@@ -19,3 +21,6 @@ export const STAGE_LEADS=[
 
 CHAPTER_BACKGROUNDS[3]={era:'黃巾背景・遊戲原創支線',history:'本章不重現一段確切史實。張寶、張梁是黃巾人物；這六關的護送、風雨法術與單挑是遊戲想像。',story:'三兄弟離開董卓軍後，在這段原創支線中護送鄉民，破除霧陣，並再次迎戰張寶與張梁。'};
 STAGE_LEADS.push(...THIRD_CHAPTER.map(s=>s.lead));
+
+CHAPTER_BACKGROUNDS[4]={era:'189—191 年・群雄討董',history:'董卓入京掌權，關東諸侯起兵。曹操與孫堅各有不同進軍路線，也各有勝敗；此時魏、吳尚未建國。',story:'本章以史書結果為骨架。對話、招式和三路操作為遊戲改編；汴水與梁東的撤退成功不改寫史實敗戰。'};
+STAGE_LEADS.push(...FOURTH_CHAPTER.map(s=>s.lead));

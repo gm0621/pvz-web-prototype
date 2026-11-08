@@ -18,11 +18,11 @@ test('manual orders move gradually, hold position, freeze and resume automatic a
  commandHero(b,'zhangfei','up');assert.equal(u.lane,0);assert.equal(commandHero(b,'zhangfei','up'),false);
 });
 
-test('progress is a separate, bounded ten-stage record',async()=>{
+test('progress is a separate, bounded campaign record',async()=>{
  const {normalizeProgress,SAVE_KEY}=await engine;
  assert.equal(SAVE_KEY,'heroLegendProgress_v1');
  for(const raw of [null,{},[],{completed:-9},{completed:'bad'}])assert.equal(normalizeProgress(raw).completed,0);
- assert.equal(normalizeProgress({completed:99}).completed,16);
+ assert.equal(normalizeProgress({completed:99}).completed,22);
  assert.equal(normalizeProgress({completed:3}).completed,3);
 });
 test('deployments pay once, respect cooldown and three-unit lane capacity',async()=>{
@@ -157,8 +157,8 @@ test('late bosses telegraph two lanes on rage and the remaining lane is safe',as
  }
 });
 test('old first-chapter completion unlocks the second chapter without resetting progress',async()=>{
- const {normalizeProgress,createBattle}=await engine;assert.equal(normalizeProgress({version:1,completed:6}).completed,6);assert.equal(createBattle(7).level,7);assert.equal(createBattle(10).level,10);assert.throws(()=>createBattle(17));
- const {STAGES,FEATURES}=await import('../../hero/story.mjs');assert.equal(STAGES.length,16);assert.equal(FEATURES.length,16);assert.equal(STAGES[4].duelHero,'liubei');assert.equal(STAGES[9].bossName,'張角');assert.equal(STAGES[9].duelHero,'liubei');assert.equal(STAGES[9].duelOutcome,'retreat');
+ const {normalizeProgress,createBattle}=await engine;assert.equal(normalizeProgress({version:1,completed:6}).completed,6);assert.equal(createBattle(7).level,7);assert.equal(createBattle(10).level,10);assert.throws(()=>createBattle(23));
+ const {STAGES,FEATURES}=await import('../../hero/story.mjs');assert.equal(STAGES.length,22);assert.equal(FEATURES.length,22);assert.equal(STAGES[4].duelHero,'liubei');assert.equal(STAGES[9].bossName,'張角');assert.equal(STAGES[9].duelHero,'liubei');assert.equal(STAGES[9].duelOutcome,'retreat');
 });
 test('Zhang Jiao withdraws instead of using a death or duel finisher',async()=>{
  const {createBattle,stepBattle}=await engine,b=createBattle(10,1);b.nextSpawn=Infinity;b.bossSpawned=true;b.enemies.push({...testEnemy(90,.5),boss:true,name:'張角',hp:0});stepBattle(b,.1);assert.equal(b.bossRetreated,true);assert.equal(b.duel,null);assert.ok(b.effects.some(e=>e.type==='retreat'));assert.equal(b.effects.some(e=>e.type==='defeat'),false);

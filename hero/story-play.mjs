@@ -1,4 +1,6 @@
-import {THIRD_CHAPTER} from './chapter-three.mjs?v=boss-cutin-1';
+import {FOURTH_CHAPTER} from './chapter-four.mjs?v=history-coalition-1';
+import {paintPortrait} from './factions.mjs?v=history-coalition-1';
+import {THIRD_CHAPTER} from './chapter-three.mjs?v=history-coalition-1';
 // Small, optional story choices. Facts, novel episodes and invented encounters stay labelled.
 export const STORY_TASKS=[
  {kind:'演義故事',hero:'zhangfei',title:'桃園缺一位好朋友',scene:'劉備想幫助鄉親，卻沒有招募義勇的錢。',question:'誰願意拿出家財，幫忙招募義勇？',choices:['張飛','關羽','張角'],answer:0,hint:'找找那位嗓門大、家中有莊田的朋友。',reply:'張飛：「俺願出資！」有了朋友相助，理想才能開始。桃園結義是《三國演義》的故事。'},
@@ -12,12 +14,12 @@ export const STORY_TASKS=[
  {kind:'演義故事',hero:'liubei',title:'先停一下，想一想',scene:'囚車裡竟是盧植！張飛很生氣，想立刻動手。',question:'如果你在旁邊，會怎麼勸張飛？',choices:['先問清楚，別衝動傷人','馬上攻擊押送的人','假裝沒看見'],answer:0,hint:'生氣可以理解，但先停一停，才能想出更好的辦法。',reply:'劉備：「先收起兵器。」《演義》中，劉備勸住張飛。遇到不公平，也要先想清楚行動的後果。'},
  {kind:'演義故事',hero:'liubei',title:'先救人，還是問身分？',scene:'官軍被追得四散，前方有人正等待援手。',question:'劉備決定先做什麼？',choices:['先救受困的人','先問有多少獎賞','等對方求自己'],answer:0,hint:'桃園的誓言，是想幫助受苦的人。',reply:'劉備：「救人要緊！」《演義》寫三兄弟救董卓，卻受到冷遇。張角的雷光與破陣單挑是遊戲想像。'}
 ];
-STORY_TASKS.push(...THIRD_CHAPTER.map(s=>s.quiz));
+STORY_TASKS.push(...THIRD_CHAPTER.map(s=>s.quiz),...FOURTH_CHAPTER.map(s=>s.quiz));
 export function mountStoryTask(level,heroes,onReward=()=>{}){
  const task=STORY_TASKS[level-1],root=document.getElementById('storyTask');
  root.dataset.solved='false';document.getElementById('taskKind').textContent=task.kind;
  document.getElementById('taskTitle').textContent=task.title;
- const portrait=document.getElementById('taskPortrait');portrait.src=heroes[task.hero].asset;portrait.alt=heroes[task.hero].name;
+ const portrait=document.getElementById('taskPortrait');paintPortrait(portrait,heroes[task.hero]);portrait.alt=heroes[task.hero].name;
  document.getElementById('taskScene').textContent=task.scene;
  document.getElementById('taskQuestion').textContent=task.question;
  const feedback=document.getElementById('taskFeedback');feedback.textContent='點一個答案，聽聽武將怎麼說。';

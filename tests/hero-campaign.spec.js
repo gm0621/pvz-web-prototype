@@ -1,10 +1,10 @@
 const {test,expect}=require('@playwright/test');
 test('old chapter-one save continues into four new playable stages',async({page})=>{
  await page.addInitScript(()=>localStorage.setItem('heroLegendProgress_v1',JSON.stringify({version:1,completed:6})));
- await page.goto('/hero/');await expect(page.locator('#chapterDots button')).toHaveCount(16);await expect(page.locator('#chapterDots button').nth(6)).toBeEnabled();await expect(page.locator('#chapterDots button').nth(7)).toBeDisabled();
+ await page.goto('/hero/');await expect(page.locator('#chapterDots button')).toHaveCount(22);await expect(page.locator('#chapterDots button').nth(6)).toBeEnabled();await expect(page.locator('#chapterDots button').nth(7)).toBeDisabled();
  await page.locator('#startBtn').click();await expect(page.locator('#storyChapter')).toContainText('第二章');await expect(page.locator('#storyTitle')).toHaveText('廣宗拜師');await page.locator('#storySkip').click();await expect(page.locator('#field')).toBeVisible();
- const theme=await page.evaluate(async()=>{const a=await import('/hero/audio.mjs?v=boss-cutin-1');return a.audioStatus().theme});expect(theme).toBe('晴野行軍');
- await page.reload();await expect(page.locator('#homeProgress')).toContainText('6 / 16');
+ const theme=await page.evaluate(async()=>{const a=await import('/hero/audio.mjs?v=history-coalition-1');return a.audioStatus().theme});expect(theme).toBe('晴野行軍');
+ await page.reload();await expect(page.locator('#homeProgress')).toContainText('6 / 22');
 });
 test('selected hero taps stop immediately, and point orders can resume movement',async({page})=>{
  await page.clock.install();await page.goto('/hero/');await page.locator('#startBtn').click();await page.locator('#storySkip').click();await page.locator('[data-hero="zhangfei"]').click();await page.locator('.lane[data-lane="1"]').click();
@@ -21,7 +21,7 @@ test('fifth boss arrival has a portrait, shield health bar and duel instructions
  expect(await page.locator('#cards').evaluate(e=>e.getBoundingClientRect().bottom<=innerHeight)).toBe(true);
 });
 test('all enemy portraits have transparent backgrounds and Yellow Turban assets',async({page})=>{
- await page.goto('/hero/');const data=await page.evaluate(async()=>{const s=await import('/hero/story.mjs?v=boss-cutin-1');const paths=[s.ENEMY_ART,s.SHIELD_ART,...[...new Set(s.STAGES.map(v=>s.enemyArt(v.bossName)))]];return await Promise.all(paths.map(async path=>{const img=new Image();img.src=new URL(path,location.href);await img.decode();const canvas=document.createElement('canvas');canvas.width=img.width;canvas.height=img.height;const ctx=canvas.getContext('2d');ctx.drawImage(img,0,0);return {path,alpha:ctx.getImageData(0,0,1,1).data[3]}}))});
+ await page.goto('/hero/');const data=await page.evaluate(async()=>{const s=await import('/hero/story.mjs?v=history-coalition-1');const paths=[s.ENEMY_ART,s.SHIELD_ART,...[...new Set(s.STAGES.map(v=>s.enemyArt(v.bossName)))]];return await Promise.all(paths.map(async path=>{const img=new Image();img.src=new URL(path,location.href);await img.decode();const canvas=document.createElement('canvas');canvas.width=img.width;canvas.height=img.height;const ctx=canvas.getContext('2d');ctx.drawImage(img,0,0);return {path,alpha:ctx.getImageData(0,0,1,1).data[3]}}))});
  expect(data.every(i=>i.alpha===0)).toBe(true);expect(data.every(i=>i.path.startsWith('./assets/'))).toBe(true);
 });
 test('chapter two ending preserves progress and continues into chapter three',async({page})=>{
@@ -30,6 +30,6 @@ test('chapter two ending preserves progress and continues into chapter three',as
  await page.route('**/hero/engine.mjs?*',async route=>{const r=await route.fetch();await route.fulfill({response:r,body:(await r.text()).replace('spawned:0,nextSpawn:6','spawned:STAGES[level-1].enemyCount,nextSpawn:0').replace('boss?stage.bossHp:','boss?1:').replace('lane,x:.94,hp','lane,x:.22,hp')})});
  await page.goto('/hero/');await page.locator('#startBtn').click();await expect(page.locator('#storyTitle')).toHaveText('義救董卓');await page.locator('#storySkip').click();await page.locator('#bossIntroContinue').click();await page.locator('[data-hero="guanyu"]').click();await page.locator('.lane[data-lane="1"]').click();
  await expect(page.locator('#resultTitle')).toHaveText('烽火與義氣',{timeout:15000});expect(await page.evaluate(()=>JSON.parse(localStorage.getItem('heroLegendProgress_v1')).completed)).toBe(10);
- await page.locator('#resultNext').click();await page.locator('#campContinue').click();await expect(page.locator('#storyLine')).toContainText('張角敗退');await page.locator('#storySkip').click();await expect(page.locator('#storyTitle')).toHaveText('雨夜護鄉民');await page.reload();await expect(page.locator('#homeProgress')).toContainText('10 / 16');
+ await page.locator('#resultNext').click();await page.locator('#campContinue').click();await expect(page.locator('#storyLine')).toContainText('張角敗退');await page.locator('#storySkip').click();await expect(page.locator('#storyTitle')).toHaveText('雨夜護鄉民');await page.reload();await expect(page.locator('#homeProgress')).toContainText('10 / 22');
 });
 

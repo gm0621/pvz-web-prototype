@@ -20,7 +20,7 @@ test('every chapter task has a distinct scenario and classification',async({page
 for(const level of [7,8,9,10])test(`chapter ${level} has unique counter poses and dialogue`,async({page},info)=>{
  await page.goto('/hero/');
  const result=await page.evaluate(async level=>{
-  const e=await import('/hero/engine.mjs?v=boss-cutin-1'),v=await import('/hero/duel-view.mjs?v=boss-cutin-1'),{STAGES}=await import('/hero/story.mjs?v=boss-cutin-1');
+  const e=await import('/hero/engine.mjs?v=history-coalition-1'),v=await import('/hero/duel-view.mjs?v=history-coalition-1'),{STAGES}=await import('/hero/story.mjs?v=history-coalition-1');
   const s=STAGES[level-1],b=e.createBattle(level);b.nextSpawn=Infinity;e.deploy(b,s.duelHero,1);b.enemies.push({id:90,lane:1,x:.17,hp:40,maxHp:300,boss:true,name:s.bossName});e.stepBattle(b,.1);b.duel.elapsed=5.4;document.getElementById('duelDialog').showModal();v.renderDuel(b);window.fixture={b,e,v};
   const portrait=new Image();portrait.src='/hero/'+s.bossArt;await portrait.decode();const pc=document.createElement('canvas');pc.width=portrait.width;pc.height=portrait.height;const pctx=pc.getContext('2d');pctx.drawImage(portrait,0,0);if(pctx.getImageData(0,0,1,1).data[3]!==0)throw new Error('Portrait is not transparent');
   const image=new Image();image.src=`/hero/assets/attacks/${s.duelSheet}`;await image.decode();const c=document.createElement('canvas');c.width=image.width;c.height=image.height;const ctx=c.getContext('2d');ctx.drawImage(image,0,0);const data=ctx.getImageData(0,0,c.width,c.height).data;let clear=0;for(let i=3;i<data.length;i+=4)if(data[i]<20)clear++;return {name:s.bossName,sheet:s.duelSheet,clear:clear/(data.length/4),ratio:image.width/image.height};

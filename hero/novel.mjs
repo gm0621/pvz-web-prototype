@@ -1,4 +1,6 @@
-import {THIRD_CHAPTER} from './chapter-three.mjs?v=boss-cutin-1';
+import {FOURTH_CHAPTER} from './chapter-four.mjs?v=history-coalition-1';
+import {paintPortrait} from './factions.mjs?v=history-coalition-1';
+import {THIRD_CHAPTER} from './chapter-three.mjs?v=history-coalition-1';
 // Original child-friendly narration around the existing Romance chapter-one sequence.
 export const NOVEL_PAGES=[
  [['說書人','桃花落在酒碗邊，城外的招兵榜卻被風吹得啪啪作響。這一年，百姓盼望的，只是一頓安穩飯。'],['張飛','那位壯士，為何對著榜文嘆氣？有心做事，便說出來！'],['劉備','我想救助鄉親，可惜力量太小。若有人同行……也許就能多護住一個人。']],
@@ -24,13 +26,13 @@ export const CAMP_LINES=[
  '囚車已遠，張飛仍悶悶不樂。劉備遞來一碗水：先照顧好身邊的人。',
  '山口的敗兵得救了。世道的冷暖還在前頭，今夜，桃園兄弟先圍著同一堆火。'
 ];
-NOVEL_PAGES.push(...THIRD_CHAPTER.map(s=>s.novel));
-CAMP_LINES.push(...THIRD_CHAPTER.map(s=>s.campLine));
+NOVEL_PAGES.push(...THIRD_CHAPTER.map(s=>s.novel),...FOURTH_CHAPTER.map(s=>s.novel));
+CAMP_LINES.push(...THIRD_CHAPTER.map(s=>s.campLine),...FOURTH_CHAPTER.map(s=>s.campLine));
 export function mountNovel(level,heroes,background,lead){
  let pages=NOVEL_PAGES[level-1],index=0,notes=false;const $=id=>document.getElementById(id);
- function render(){const [name,line]=pages[index],key={劉備:'liubei',關羽:'guanyu',張飛:'zhangfei'}[name];$('novelSpeaker').textContent=name;$('novelText').textContent=line;$('novelCount').textContent=`${notes?'小札':'序幕'} ${index+1} / ${pages.length}`;$('novelPortrait').hidden=!key;if(key){$('novelPortrait').src=heroes[key].asset;$('novelPortrait').alt=name} $('novelPrevious').disabled=index===0;$('novelNext').textContent=index===pages.length-1?'換你想一想 →':'翻下一頁 →';$('novelPage').dataset.speaker=key||'narrator';if(!matchMedia('(prefers-reduced-motion: reduce)').matches)$('novelText').animate([{opacity:.25,transform:'translateX(6px)'},{opacity:1,transform:'translateX(0)'}],{duration:180});}
+ function render(){const [name,line]=pages[index],key=Object.keys(heroes).find(k=>heroes[k].name===name);$('novelSpeaker').textContent=name;$('novelText').textContent=line;$('novelCount').textContent=`${notes?'小札':'序幕'} ${index+1} / ${pages.length}`;$('novelPortrait').hidden=!key;if(key){paintPortrait($('novelPortrait'),heroes[key]);$('novelPortrait').alt=name} $('novelPrevious').disabled=index===0;$('novelNext').textContent=index===pages.length-1?'換你想一想 →':'翻下一頁 →';$('novelPage').dataset.speaker=key||'narrator';if(!matchMedia('(prefers-reduced-motion: reduce)').matches)$('novelText').animate([{opacity:.25,transform:'translateX(6px)'},{opacity:1,transform:'translateX(0)'}],{duration:180});}
  $('novelNotes').textContent='說書人的歷史小札';
- $('novelNotes').onclick=()=>{notes=!notes;$('novelNotes').textContent=notes?'回到序幕':'說書人的歷史小札';pages=notes?[['說書人 · 歷史記載',background.history],['說書人 · 演義故事',background.story],['說書人 · 這一回',lead+'（對話與遭遇有遊戲改編。）']]:NOVEL_PAGES[level-1];index=0;$('novelPage').hidden=false;$('storyTask').hidden=true;render()};
+ $('novelNotes').onclick=()=>{notes=!notes;$('novelNotes').textContent=notes?'回到序幕':'說書人的歷史小札';pages=notes?[['說書人 · 歷史記載',FOURTH_CHAPTER[level-17]?.history||background.history],['說書人 · '+(level>=17?'遊戲改編':'演義故事'),FOURTH_CHAPTER[level-17]?.adaptation||background.story],['說書人 · 這一回',lead+'（對話與遭遇有遊戲改編。）']]:NOVEL_PAGES[level-1];index=0;$('novelPage').hidden=false;$('storyTask').hidden=true;render()};
  $('novelPrevious').onclick=()=>{if(index>0){index--;render()}};
  $('novelNext').onclick=()=>{if(index<pages.length-1){index++;render()}else{$('novelPage').hidden=true;$('storyTask').hidden=false;$('taskChoices').querySelector('button').focus()}};
  $('novelQuiz').onclick=()=>{$('novelPage').hidden=true;$('storyTask').hidden=false};

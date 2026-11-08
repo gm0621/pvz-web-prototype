@@ -1,4 +1,6 @@
-import {THIRD_CHAPTER} from './chapter-three.mjs?v=boss-cutin-1';
+import {FOURTH_CHAPTER} from './chapter-four.mjs?v=history-coalition-1';
+import {paintPortrait} from './factions.mjs?v=history-coalition-1';
+import {THIRD_CHAPTER} from './chapter-three.mjs?v=history-coalition-1';
 // Original camp conversations, inspired by the story; not historical quotations.
 const GUAN=[
  ['方才那些鄉勇，握刀的手還在抖。','可他們沒有逃走。勇敢，是害怕時仍願意保護別人。'],
@@ -26,7 +28,16 @@ const ZHANG=[
 ];
 GUAN.push(...THIRD_CHAPTER.map(s=>[s.campLine,'劉備：'+s.ending.at(-1)[1]]));
 ZHANG.push(...THIRD_CHAPTER.map(s=>['俺記住了：'+s.quiz.reply,'關羽：勝了也要照看同伴。歇好了，我們再一起出發。']));
+const HISTORY_CAMP=[
+ {guanyu:['夏侯惇：名冊又多了幾個名字。可要把大家變成一支軍隊，還得一起練。','曹操：先學會照應身旁的人。聯絡使者把人帶來，我們要讓人願意留下。'],zhangfei:['曹洪：家財換成了糧袋，糧袋換成了大家的一頓熱飯。','曹操：起兵不只是舉一面旗。軍糧、道路、信任，缺一樣都走不遠。']},
+ {guanyu:['夏侯惇：這麼多旗，為什麼大家還不一起出發？','曹操：同喊討董，不代表各軍都願意先走。今天你送出糧車，就知道合作也要花力氣。'],zhangfei:['曹洪：三路的糧車都到了。若只顧自己一路，另外兩隊可要餓肚子。','曹操：聯軍人多，也需要彼此照應。史書記下的，不只是刀劍勝負。']},
+ {guanyu:['夏侯惇：這一回沒能前進，我心裡不甘。','曹操：我也不甘。但不能為了一口氣，把還能救回的人丟下。先把隊伍整好。'],zhangfei:['曹洪：人還在，就還能一起想辦法。今天先把傷處包好。','曹操：汴水之敗要記住。保住同伴，不會把敗戰變成勝戰，卻能留下下一步。']},
+ {guanyu:['程普：把名冊展開，一個一個點清楚。突圍後最先要做的，是找回同伴。','孫堅：祖茂以赤幘引走追兵，才替我爭來脫身的機會。這份相救，我記在心裡。'],zhangfei:['黃蓋：方才你把誘餌放在哪一路？先看退路，再做選擇，便少一分慌亂。','孫堅：遊戲讓你選位置；史書真正記下的，是祖茂換戴赤幘，引開追兵。']},
+ {guanyu:['程普：有人問，這一仗是不是關羽溫酒斬華雄？','孫堅：那是演義裡的精彩故事。史書記的是孫堅軍在陽人破敵，華雄被斬。兩種說法，要分開讀。'],zhangfei:['黃蓋：梁東吃了敗仗，陽人才重新站穩。打仗哪有一路都順利的？','孫堅：勝了，也先照顧傷者。前面是洛陽，我們還不知道城裡成了什麼樣。']},
+ {guanyu:['程普：道路清出來了，城裡卻還這麼安靜。進了洛陽，怎麼沒有見到皇帝？','孫堅：朝廷已被董卓迫遷長安。記住：到達一座城，不等於所有難題都解開了。'],zhangfei:['黃蓋：把水桶放這邊。重建一座城，需要的可不只是兵器。','孫堅：史書記我整治宗廟；這一回清路、整井，是讓你想一想戰火過後，人們還需要什麼。']}
+];
 export function campConversation(level,key,won){
+ const stage=FOURTH_CHAPTER[level-17];if(stage)return won?HISTORY_CAMP[level-17][key]||[stage.history,stage.adaptation]:['先整理隊伍，想想哪一路需要接應。',stage.bossTip||'三路都安排友軍，守穩再前進。'];
  if(!won)return key==='guanyu'?['先別急，坐下歇一歇。方才哪條路最吃緊？','下一回先留些軍糧，讓三條路都有人照應。我陪你再試。']:['輸一陣算什麼！俺的矛還在，人也好好的。','先整理行囊，再看看敵人從哪裡來。這回咱們一起想辦法！'];
  return (key==='guanyu'?GUAN:ZHANG)[level-1]||['長路還在前頭，先歇一歇。','整備好行裝，我們再一同出發。'];
 }
