@@ -160,8 +160,9 @@ export function stepBattle(b,seconds){
    continue;
   }
   if(u.pendingCleave&&b.time+1e-8>=u.pendingCleave.impactAt){
-   for(const victim of b.enemies)if(victim.hp>0&&victim.lane===u.lane&&u.pendingCleave.ids.includes(victim.id)&&Math.abs(victim.x-u.x)<=.32){hurtEnemy(b,victim,heroSkill('guanyu','cleave',b.level).power);victim.flash=.3}
-   effect(b,'cleave',u.lane,u.x,Math.min(.96,u.x+.15));u.impactUntil=b.time+.07;b.skillNotice={key:u.key,text:`${d.name}・${heroSkill('guanyu','cleave',b.level).name}`,until:b.time+1.5};u.pendingCleave=null;
+   const skill=heroSkill(u.key,u.pendingCleave.skill||'cleave',b.level);
+   for(const victim of b.enemies)if(victim.hp>0&&victim.lane===u.lane&&u.pendingCleave.ids.includes(victim.id)&&Math.abs(victim.x-u.x)<=.32){hurtEnemy(b,victim,skill.power);victim.flash=.3}
+   effect(b,'cleave',u.lane,u.x,Math.min(.96,u.x+.15));u.impactUntil=b.time+.07;b.skillNotice={key:u.key,text:`${d.name}・${skill.name}`,until:b.time+1.5};u.pendingCleave=null;
   }
   if(u.pendingStrike&&b.time+1e-8>=u.pendingStrike.impactAt){
    const strike=u.pendingStrike,victim=b.enemies.find(e=>e.id===strike.targetId&&e.hp>0&&e.lane===u.lane);
@@ -196,7 +197,17 @@ export function stepBattle(b,seconds){
   if(u.key==='guanyu'&&b.level>=heroSkill('guanyu','cleave',b.level).level&&nearby.length&&b.time-(u.lastSkill||0)>=heroSkill('guanyu','cleave',b.level).cooldown){
    u.lastSkill=b.time;if(!u.pendingStrike)u.swingStartedAt=b.time;u.pendingCleave={ids:nearby.map(e=>e.id),impactAt:u.pendingStrike?.impactAt??b.time+SWING.impact};
   }
-  if(d.heal&&b.level>=heroSkill('liubei','heal',b.level).level&&b.time-u.lastHeal>=heroSkill('liubei','heal',b.level).cooldown){u.lastHeal=b.time;if(d.faction==='sun'){if(nearby.length){for(const e of nearby)hurtEnemy(b,e,heroSkill('liubei','heal',b.level).power);effect(b,'cleave',u.lane,u.x);b.skillNotice={key:u.key,text:'孫堅・虎威奮擊',until:b.time+1.5}}continue}if(d.faction==='cao')b.food=Math.min(300,b.food+4);for(const ally of b.allies)if(ally.hp>0&&ally.lane===u.lane){if(ally.hp<ally.maxHp){effect(b,'heal',ally.lane,ally.x);b.skillNotice={key:'liubei',text:`${d.name}・${heroSkill('liubei','heal',b.level).name}`,until:b.time+1.8};}ally.hp=Math.min(ally.maxHp,ally.hp+heroSkill('liubei','heal',b.level).power)}}
+  const leaderSkill=d.heal?heroSkill('liubei','heal',b.level):null;
+  if(leaderSkill&&b.level>=leaderSkill.level&&b.time-u.lastHeal>=leaderSkill.cooldown){
+   if(d.faction==='sun'){
+    // Offensive skills wait for a target and share the normal swing's impact frame.
+    if(nearby.length){u.lastHeal=b.time;if(!u.pendingStrike)u.swingStartedAt=b.time;u.pendingCleave={skill:'heal',ids:nearby.map(e=>e.id),impactAt:u.pendingStrike?.impactAt??b.time+SWING.impact}}
+    continue;
+   }
+   u.lastHeal=b.time;const foodBefore=b.food;if(d.faction==='cao')b.food=Math.min(300,b.food+4);let used=b.food>foodBefore;
+   for(const ally of b.allies)if(ally.hp>0&&ally.lane===u.lane){if(ally.hp<ally.maxHp){effect(b,'heal',ally.lane,ally.x);used=true}ally.hp=Math.min(ally.maxHp,ally.hp+leaderSkill.power)}
+   if(used)b.skillNotice={key:u.key,text:`${d.name}・${leaderSkill.name}`,until:b.time+1.8};
+  }
  }
  protectBarrier(b);
  for(const e of b.enemies){
@@ -210,7 +221,7 @@ export function stepBattle(b,seconds){
   const target=b.allies.filter(u=>u.hp>0&&u.lane===e.lane&&u.x<=e.x+.015).sort((a,c)=>c.x-a.x)[0];
   if(e.boss){
    if(b.level===5&&!e.guardBroken&&e.hp/e.maxHp<=.65){e.guardBroken=true;e.shielded=false;b.duelHint=null;b.skillNotice={key:'enemy',text:'盾勢已破！劉備同路近身即可單挑',until:b.time+3};effect(b,'block',e.lane,e.x);}
-   if(b.level>=3&&!e.support&&!e.enraged&&e.hp<=e.maxHp/2){e.enraged=true;e.rate=1.1;e.nextSkill=b.time;b.skillNotice={key:'enemy',text:`${e.name}・黃天狂攻！留意紅色路線`,until:b.time+3};effect(b,'boss',e.lane,e.x);}
+   if(b.level>=3&&!e.support&&!e.enraged&&e.hp<=e.maxHp/2){e.enraged=true;e.rate=1.1;e.nextSkill=b.time;b.skillNotice={key:'enemy',text:`${e.name}・${b.level>=17?'破陣狂攻':'黃天狂攻'}！留意紅色路線`,until:b.time+3};effect(b,'boss',e.lane,e.x);}
    if(e.castAt&&b.time>=e.castAt){
     const kind=bossProfile(b,e).skillType;
     if(kind==='rally'){

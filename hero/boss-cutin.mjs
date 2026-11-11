@@ -1,5 +1,5 @@
 import {enemyPortrait,paintPortrait} from './factions.mjs?v=history-coalition-1';
-import {bossProfile} from './engine.mjs?v=economy-save-1';
+import {bossProfile} from './engine.mjs?v=army-skills-1';
 import {enemyArt} from './story.mjs?v=history-coalition-1';
 import {hitSound} from './audio.mjs?v=history-coalition-1';
 const seen=new WeakMap();
