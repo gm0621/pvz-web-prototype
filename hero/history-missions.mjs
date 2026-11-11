@@ -1,3 +1,4 @@
+import {FACTIONS,factionFor} from './factions.mjs?v=history-coalition-1';
 const kinds=['dispatch','supply','withdraw','decoy','formation','restoration'];
 export function createHistoryMission(level){return {level,kind:kinds[level-17],done:false,message:'',lane:1,travel:0,rescued:0,delivered:0,charge:0,withdrawAt:null,ordered:false,decoyUsed:false,decoyLane:null,site:-1,sites:[0,0,0]}}
 const active=b=>b?.mission&&b.level>=17&&!b.over&&!b.paused&&!b.duel&&!b.introPending;
@@ -28,6 +29,12 @@ export const extracted=b=>['withdraw','decoy'].includes(b.mission?.kind)&&b.miss
 export function historyMissionText(b){const m=b.mission;
  if(m.kind==='dispatch')return `接應 ${m.rescued}／3 隊使者 · ${['上','中','下'][m.lane]}路 ${Math.floor(m.travel*100)}% · 守住道路才能前進`;
  if(m.kind==='supply')return `軍糧 ${m.delivered}／3 批 · 備車 ${Math.floor(m.charge/10*100)}% · 三路皆有接應、敵人未逼近才備車`;
+ if(['withdraw','decoy'].includes(m.kind)&&m.ordered){
+  const heroes=FACTIONS[factionFor(b.level)].heroes,missing=['liubei','zhangfei'].filter(key=>!b.allies.some(u=>u.key===key&&u.hp>0)).map(key=>heroes[key].name);
+  if(missing.length)return `${missing.join('、')}尚未在場，請整備後召回，再帶隊撤離 · 徐榮無須擊倒`;
+  const remaining=b.allies.filter(u=>u.hp>0&&u.x>.18).length;
+  return remaining?`撤離中：尚有 ${remaining} 名友軍未回到左側 · 所有在場友軍都需撤回`:'隊伍已撤回左側，確認全員平安';
+ }
  if(['withdraw','decoy'].includes(m.kind))return `${m.kind==='decoy'&&!m.decoyUsed?'先放置赤幘誘餌 · ':''}`+(m.withdrawAt===null?'守住三路，等徐榮出陣':b.time<m.withdrawAt?`接應尚需 ${Math.ceil(m.withdrawAt-b.time)} 秒`:'接應完成，按全軍撤離')+' · 本關目標是撤退，不是擊倒徐榮';
  if(m.kind==='restoration')return `城內整備 ${m.sites.filter(t=>t>=8).length}／3 · 點一處，再派友軍守住同路；敵人逼近時停工`;
  return '陽人之戰 · 三將合陣、避開重斧再反擊 · 史書記孫堅軍破敵，非關羽單挑';
@@ -35,7 +42,7 @@ export function historyMissionText(b){const m=b.mission;
 export function renderHistoryMission(b,panel,scene,refresh){
  const m=b.mission,locked=!active(b),choices=panel.querySelector('#missionChoices');
  panel.querySelector('#missionObjective').textContent=historyMissionText(b);panel.querySelector('#missionMessage').textContent=m.message;
- const items=m.kind==='dispatch'?[0,1,2].map(i=>['route',i,`使者走${['上','中','下'][i]}路`]):m.kind==='supply'?[['supply',0,'發送糧車']]:m.kind==='restoration'?['道路','水井','宗廟'].map((x,i)=>['site',i,`${x} ${Math.floor(m.sites[i]/8*100)}%`]):['withdraw','decoy'].includes(m.kind)?[...(m.kind==='decoy'?[0,1,2].map(i=>['decoy',i,`赤幘放${['上','中','下'][i]}路`]):[]),['retreat',0,'全軍撤離 ←']]:[];
+ const items=m.kind==='dispatch'?[0,1,2].map(i=>['route',i,`使者走${['上','中','下'][i]}路`]):m.kind==='supply'?[['supply',0,'發送糧車']]:m.kind==='restoration'?['道路','水井','宗廟'].map((x,i)=>['site',i,`${x} ${Math.floor(m.sites[i]/8*100)}%`]):['withdraw','decoy'].includes(m.kind)?[...(m.kind==='decoy'?[0,1,2].map(i=>['decoy',i,`赤幘放${['上','中','下'][i]}路`]):[]),['retreat',0,m.ordered?'重新下令撤離 ←':'全軍撤離 ←']]:[];
  if(choices.dataset.mode!==m.kind){choices.dataset.mode=m.kind;choices.replaceChildren(...items.map(()=>{const el=document.createElement('button');el.type='button';return el}))}
  items.forEach(([action,i,label],n)=>{const button=choices.children[n];button.textContent=label;button.dataset.action=action;button.disabled=locked||m.done||(action==='supply'&&(m.charge<10||m.delivered>=3))||(action==='decoy'&&(m.decoyUsed||!b.enemies.some(e=>e.boss&&!e.castAt)))||(action==='retreat'&&(m.withdrawAt===null||b.time<m.withdrawAt||m.kind==='decoy'&&!m.decoyUsed))||(action==='site'&&m.sites[i]>=8);button.setAttribute('aria-pressed',String(action==='route'?m.lane===i:action==='site'&&m.site===i));button.onclick=()=>{historyAction(b,action,i);refresh()}});
  scene.querySelector('.mission-fog').style.opacity='0';const group=scene.querySelector('.civilian-group');group.hidden=m.kind!=='dispatch'||m.done;group.querySelector('span').textContent='聯絡使者';group.style.left=`${18+m.travel*65}%`;group.style.top=`${(m.lane+.75)/3*100}%`;

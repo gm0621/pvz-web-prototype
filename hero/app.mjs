@@ -1,12 +1,12 @@
 import {renderPeople} from './characters.mjs?v=map-audit-1';
 import {FACTIONS,factionFor,enemyPortrait,paintPortrait} from './factions.mjs?v=history-coalition-1';
 import {mountHistoryLesson} from './history-view.mjs?v=history-coalition-1';
-import {renderBossCutin} from './boss-cutin.mjs?v=army-skills-1';
+import {renderBossCutin} from './boss-cutin.mjs?v=coalition-enemies-1';
 import {mountBattleKeys} from './battle-keys.mjs?v=history-coalition-1';
 import {mountJourney} from './journey-view.mjs?v=map-audit-1';
-import {renderMission} from './chapter-mission-view.mjs?v=history-coalition-1';
+import {renderMission} from './chapter-mission-view.mjs?v=coalition-enemies-1';
 import {mountCampaignMap} from './campaign-map.mjs?v=map-audit-1';
-import {advanceBattleFrame,normalizeBattleSpeed} from './battle-speed.mjs?v=army-skills-1';
+import {advanceBattleFrame,normalizeBattleSpeed} from './battle-speed.mjs?v=coalition-enemies-1';
 import {mountNovel} from './novel.mjs?v=map-audit-1';
 import {mountCamp} from './camp-view.mjs?v=army-identity-1';
 import {rewardVictory,useSupply} from './campaign.mjs?v=economy-save-1';
@@ -14,9 +14,9 @@ import {createFirstGuide} from './first-guide.mjs?v=history-coalition-1';
 import {mountStoryTask} from './story-play.mjs?v=history-coalition-1';
 import {CHAPTER_BACKGROUNDS,STAGE_LEADS} from './prologue.mjs?v=history-coalition-1';
 import {setMusic,setMusicMode,setMusicHome,musicTheme,musicOn,setSfx,unlockAudio,hitSound} from './audio.mjs?v=history-coalition-1';
-import {renderDuel} from './duel-view.mjs?v=army-skills-1';
+import {renderDuel} from './duel-view.mjs?v=coalition-enemies-1';
 import {chapterInfo,enemyArt,HEROES as BASE_HEROES,heroesForLevel,STAGES,ENEMY_ART,SHIELD_ART,FEATURES,heroDescription} from './story.mjs?v=history-coalition-1';
-import {bossProfile,LANE_CAPACITY,laneCount,ENEMY_SWING,enemyAttackFrame,skipDuelEntrance,positionHero,commandHero,moveHero,BOSS_SKILLS,SAVE_KEY,normalizeProgress,createBattle,deploy,canDeploy,attackFrame,SWING} from './engine.mjs?v=army-skills-1';
+import {bossProfile,LANE_CAPACITY,laneCount,ENEMY_SWING,enemyAttackFrame,skipDuelEntrance,positionHero,commandHero,moveHero,BOSS_SKILLS,SAVE_KEY,normalizeProgress,createBattle,deploy,canDeploy,attackFrame,SWING} from './engine.mjs?v=coalition-enemies-1';
 
 const $=id=>document.getElementById(id);
 let HEROES=BASE_HEROES;
@@ -144,6 +144,7 @@ function renderBattle(){
  $('bossHud').hidden=!boss;
  if(boss){$('bossHudName').textContent=`${bossProfile(battle,boss).title}・${boss.name}`;$('bossHudHp').style.width=`${boss.hp/boss.maxHp*100}%`;$('bossHudState').textContent=boss.castAt?`${bossProfile(battle,boss).skillName}蓄力！${stage.skillType==='rally'?'敵兵即將加速':'換路閃避'}`:boss.support?`${bossProfile(battle,boss).skillName}・預警後換路閃避`:stage.skillType?`${bossProfile(battle,boss).skillName}・${boss.hp/boss.maxHp>stage.duelHpRatio?'先削弱主將':(stage.duelHero?HEROES[stage.duelHero].short+'近身單挑':'避開大招，趁破綻反擊')}`:boss.enraged?'狂攻・兩路重擊':battle.level===5?(boss.hp/boss.maxHp>.65?`先破盾：生命 ${Math.ceil(boss.hp/boss.maxHp*100)}% → 65% 以下，劉備才可單挑`:'盾勢已破！劉備同路近身 → 自動單挑'):'大將出陣';}
  if(boss&&!boss.support){$('bossHud').dataset.phase=battle.time<(boss.recoveryUntil||0)?'exposed':boss.castAt?'casting':boss.enraged?'enraged':'guard';$('bossHudState').textContent=(battle.time<(boss.recoveryUntil||0)?'破綻！2 秒內反擊傷害提高 · ':!boss.skillsCast?'護身架勢：先誘出大招 · ':boss.enraged?'狂攻階段 · ':'')+$('bossHudState').textContent;}
+ if(boss&&['withdraw','decoy'].includes(battle.mission?.kind))$('bossHudState').textContent=(boss.castAt?`${bossProfile(battle,boss).skillName}蓄力！換路閃避 · `:battle.time<(boss.recoveryUntil||0)?'敵將收招，趁機拉開距離 · ':'避開追擊 · ')+'接應完成後全軍撤離，無須擊倒徐榮';
  if(boss&&stage.duelPartner&&!battle.duelSeen)$('bossHudState').textContent+=(b => b?' · 關羽同路近身 → 二打一':' · 召集關羽、張飛 → 聯手單挑')(battle.allies.some(u=>u.key==='guanyu'&&u.hp>0)&&battle.allies.some(u=>u.key==='zhangfei'&&u.hp>0));
  if(boss&&battle.level===5&&boss.castAt)$('bossHudState').textContent+=boss.hp/boss.maxHp>.65?' · 先破盾至 65% 以下':' · 劉備可近身單挑';
  for(const lane of $('lanes').children)lane.classList.toggle('danger',(battle.mission?.weather?.lane===Number(lane.dataset.lane)||battle.enemies.some(e=>e.hp>0&&e.castAt&&(e.castLanes||[e.lane]).includes(Number(lane.dataset.lane)))));
