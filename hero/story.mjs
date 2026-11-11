@@ -1,5 +1,5 @@
-import {FOURTH_CHAPTER} from './chapter-four.mjs?v=history-coalition-1';
-import {FACTIONS,factionFor} from './factions.mjs?v=history-coalition-1';
+import {HISTORICAL_STAGES} from './history-stages.mjs?v=chapter-five-1';
+import {FACTIONS,factionFor} from './factions.mjs?v=chapter-five-1';
 import {THIRD_CHAPTER} from './chapter-three.mjs?v=history-coalition-1';
 import {WEATHER_GENERALS} from './weather-generals.mjs?v=history-coalition-1';
 import {SECOND_CHAPTER} from './chapter-two.mjs?v=history-coalition-1';
@@ -53,8 +53,8 @@ export const STAGES=[
   victory:'三路夾攻，青州守軍也出城接應，城外黃巾終於退去。三兄弟救下百姓，再次踏上征途：下一站，前往協助恩師盧植。桃園同心，第一章完成。',note:'三路設伏依原著改編；雷烈為遊戲原創頭目。'}
 ];
 
-STAGES.push(...SECOND_CHAPTER,...THIRD_CHAPTER,...FOURTH_CHAPTER);
-export function chapterInfo(level){const chapter=STAGES[level-1]?.chapter||1;return {chapter,number:STAGES[level-1]?.number||level,count:STAGES.filter(s=>(s.chapter||1)===chapter).length,title:['','桃園同心','烽火與義氣','風雨破黃巾','群雄討董'][chapter]}}
+STAGES.push(...SECOND_CHAPTER,...THIRD_CHAPTER,...HISTORICAL_STAGES);
+export function chapterInfo(level){const chapter=STAGES[level-1]?.chapter||1;return {chapter,number:STAGES[level-1]?.number||level,count:STAGES.filter(s=>(s.chapter||1)===chapter).length,title:['','桃園同心','烽火與義氣','風雨破黃巾','群雄討董','兗州風雲'][chapter]}}
 
 export const UNLOCKS={healing:2,roar:3,cleave:4,shields:5,oath:6};
 export const FEATURES=[
@@ -70,7 +70,7 @@ export const FEATURES=[
  {name:'決戰・天公將軍',text:'半血後兩路蓄力；點地換路閃避，合力擊退張角。'}
 ];
 FEATURES.push(...THIRD_CHAPTER.map(s=>({name:s.name,text:s.bossTip||s.opening[1][1]})));
-FEATURES.push(...FOURTH_CHAPTER.map(s=>({name:`${s.year} 年・${FACTIONS[s.faction].title}`,text:s.bossTip||s.quiz.reply})));
+FEATURES.push(...HISTORICAL_STAGES.map(s=>({name:`${s.year} 年・${FACTIONS[s.faction].title}`,text:s.bossTip||s.quiz.reply})));
 export function heroDescription(key,level=1){
  if(factionFor(level))return heroesForLevel(level)[key].description;
  if(key==='archer')return '遠程支援・可重複出兵';

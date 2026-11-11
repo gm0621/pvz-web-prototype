@@ -1,6 +1,6 @@
-import {enemyPortrait,paintPortrait} from './factions.mjs?v=history-coalition-1';
-import {bossProfile} from './engine.mjs?v=coalition-objectives-1';
-import {enemyArt} from './story.mjs?v=history-coalition-1';
+import {enemyPortrait,paintPortrait} from './factions.mjs?v=chapter-five-1';
+import {bossProfile} from './engine.mjs?v=chapter-five-1';
+import {enemyArt} from './story.mjs?v=chapter-five-1';
 import {hitSound} from './audio.mjs?v=history-coalition-1';
 const seen=new WeakMap();
 const label=(root,selector,text)=>{const node=root.querySelector(selector);if(node.textContent!==text)node.textContent=text};

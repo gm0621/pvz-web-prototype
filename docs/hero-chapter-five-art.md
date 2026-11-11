@@ -1,0 +1,14 @@
+# 第五章美術紀錄
+
+使用內建 imagegen 工具生成，非 CLI。素材均複製到專案，原始生成檔保留。
+
+- `hero/assets/factions/yan.png`：3×3 透明動作圖集。第一列呂布、第二列呂布軍步兵、第三列黃巾游兵；每列待機／蓄勢／出擊三格。兼供呂布頭像與地圖使用。
+- `hero/assets/portraits/chapter-five.png`：3×2 人物半身圖集，依序董卓、王允、荀彧／程昱、陳宮、鮑信。生成結果帶繪製底色，僅用在人物提示卡，不當透明戰場角色使用。
+
+## 動作圖集最終提示
+
+Create a production game sprite atlas PNG on a truly transparent background, square canvas 1536x1536, precise 3 columns by 3 rows equal cells, no grid lines, no words. Match a polished Chinese Three Kingdoms chibi hand-painted mobile strategy game: big expressive heads, rich ink outlines, warm gold armor shading, full bodies and all weapons fully inside each cell, generous padding. Each row is one unique character, same size and feet baseline, repeated across 3 poses: column 1 guard idle facing left, column 2 raised weapon anticipation facing left, column 3 strike extended left. Row 1: LU BU, young clean-shaven fierce male general, distinctive two long curved pheasant feather plumes on golden crown, crimson and gold armor, purple-red cape, long fangtian halberd with side crescent blade. Row 2: an anonymous Lu Bu army foot soldier, grey and purple armor, purple helmet plume, short spear and rectangular shield, distinctly not Lu Bu. Row 3: an anonymous Qingzhou Yellow Turban infantry soldier, yellow head scarf, brown simple leather tunic, curved dao sword. Nine equally sized transparent cells, no ground or backdrop, no gore. Every character faces left (enemy side), idle portrait face clearly legible, coherent same character within each row. Save generated image as a local file accessible for project integration.
+
+## 人物提示卡最終提示
+
+Game portrait atlas, landscape canvas 1536 wide x 1024 tall, precisely 3 columns x 2 rows of equal square cells, transparent background, six DIFFERENT Chinese late Han historical characters, no text no borders no letters. Polished hand-painted chibi Three Kingdoms mobile strategy style: expressive big heads, dark ink outlines, rich warm shading, bust portraits centered in each cell with generous transparent padding. Row1 col1 Dong Zhuo: heavy-set middle-aged warlord, black beard, dark bronze armor, stern brow; row1 col2 Wang Yun: elderly court minister with grey beard, tall black Han court hat, burgundy robe, scroll; row1 col3 Xun Yu: elegant young male adviser, neat thin moustache, dark square scholar hat, blue-green robe. Row2 col1 Cheng Yu: older tall-faced male adviser, long grey-black beard, brown scholar hat, ochre robe. Row2 col2 Chen Gong: middle-aged strategist, short forked black beard, green scholar robe and black hat, folded map. Row2 col3 Bao Xin: mature friendly male military officer, close black beard, steel lamellar armor, modest blue helmet plume. Each character stays completely in own cell, same portrait scale, face at upper central area, three quarter view toward viewer, no weapons crossing cells, no scenery. Save image locally for use in project.

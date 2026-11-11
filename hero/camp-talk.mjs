@@ -1,5 +1,5 @@
-import {FOURTH_CHAPTER} from './chapter-four.mjs?v=history-coalition-1';
-import {paintPortrait} from './factions.mjs?v=history-coalition-1';
+import {HISTORICAL_STAGES} from './history-stages.mjs?v=chapter-five-1';
+import {paintPortrait} from './factions.mjs?v=chapter-five-1';
 import {THIRD_CHAPTER} from './chapter-three.mjs?v=history-coalition-1';
 // Original camp conversations, inspired by the story; not historical quotations.
 const GUAN=[
@@ -37,7 +37,7 @@ const HISTORY_CAMP=[
  {guanyu:['程普：道路清出來了，城裡卻還這麼安靜。進了洛陽，怎麼沒有見到皇帝？','孫堅：朝廷已被董卓迫遷長安。記住：到達一座城，不等於所有難題都解開了。'],zhangfei:['黃蓋：把水桶放這邊。重建一座城，需要的可不只是兵器。','孫堅：史書記我整治宗廟；這一回清路、整井，是讓你想一想戰火過後，人們還需要什麼。']}
 ];
 export function campConversation(level,key,won){
- const stage=FOURTH_CHAPTER[level-17];if(stage)return won?HISTORY_CAMP[level-17][key]||[stage.history,stage.adaptation]:['先整理隊伍，想想哪一路需要接應。',stage.bossTip||'三路都安排友軍，守穩再前進。'];
+ const stage=HISTORICAL_STAGES[level-17];if(stage)return won?(stage.campTalk||HISTORY_CAMP[level-17])?.[key]||[stage.history,stage.adaptation]:['先整理隊伍，想想哪一路需要接應。',stage.bossTip||'三路都安排友軍，守穩再前進。'];
  if(!won)return key==='guanyu'?['先別急，坐下歇一歇。方才哪條路最吃緊？','下一回先留些軍糧，讓三條路都有人照應。我陪你再試。']:['輸一陣算什麼！俺的矛還在，人也好好的。','先整理行囊，再看看敵人從哪裡來。這回咱們一起想辦法！'];
  return (key==='guanyu'?GUAN:ZHANG)[level-1]||['長路還在前頭，先歇一歇。','整備好行裝，我們再一同出發。'];
 }

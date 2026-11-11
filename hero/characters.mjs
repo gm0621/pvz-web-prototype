@@ -1,7 +1,8 @@
 import {WEATHER_GENERALS} from './weather-generals.mjs?v=history-coalition-1';
-import {HEROES,STAGES,ENEMY_ART,enemyArt} from './story.mjs?v=history-coalition-1';
-import {FACTIONS,factionFor,enemyPortrait,paintPortrait} from './factions.mjs?v=history-coalition-1';
-export const STORY_PEOPLE=[
+import {HEROES,STAGES,ENEMY_ART,enemyArt} from './story.mjs?v=chapter-five-1';
+import {BLANK_PORTRAIT,FACTIONS,factionFor,enemyPortrait,paintPortrait} from './factions.mjs?v=chapter-five-1';
+const fifthPortraits=['董卓','王允','荀彧','程昱','陳宮','鮑信'].map((name,i)=>({name,aliases:[name],asset:BLANK_PORTRAIT,atlas:'./assets/portraits/chapter-five.png',atlasRows:2,row:Math.floor(i/3),col:i%3,role:['掌權於洛陽、長安的軍閥','參與誅董卓的朝臣','守住鄄城的曹操軍謀士','協助保全兗州據點的謀士','迎呂布入兗州的謀士','迎曹操領兗州、戰死壽張的盟友'][i]}));
+export const STORY_PEOPLE=[...fifthPortraits,{...enemyPortrait('呂布',27),aliases:['呂布'],role:'飛將・與曹操爭奪兗州'},
  {name:'盧植',aliases:['盧植','盧公'],asset:'./assets/portraits/lu-zhi.webp?v=portrait-web-1',role:'劉備的老師・在廣宗討伐黃巾'},
  {name:'皇甫嵩',aliases:['皇甫嵩'],asset:'./assets/portraits/huangfu-song.webp?v=portrait-web-1',role:'朝廷將領・長社火攻的指揮者'},
  {name:'朱儁',aliases:['朱儁'],asset:'./assets/portraits/zhu-jun.webp?v=portrait-web-1',role:'朝廷將領・與皇甫嵩共同討黃巾'},
@@ -20,7 +21,7 @@ export function renderPeople(root,text,speaker=''){
 }
 export function stagePeople(level){
  const stage=STAGES[level-1],faction=factionFor(level),leader=faction?FACTIONS[faction].heroes.liubei:HEROES.liubei;
- return {leader,opponent:enemyPortrait(stage.bossName,level)||{name:stage.bossName,asset:stage.noBoss?ENEMY_ART:enemyArt(stage.bossName)},supports:level===8?Object.values(WEATHER_GENERALS):[],relation:[19,20].includes(level)?'保全撤離・追擊方':stage.noBoss?'本關遭遇':'本關對手'};
+ return {leader,opponent:enemyPortrait(stage.bossName,level)||{name:stage.bossName,asset:stage.noBoss?ENEMY_ART:enemyArt(stage.bossName)},supports:level===8?Object.values(WEATHER_GENERALS):[],relation:['withdraw','decoy'].includes(stage.mission)?'保全撤離・追擊方':stage.noBoss?'本關遭遇':'本關對手'};
 }
 // Nested SVG viewports select the existing atlas cell without creating new bitmap assets.
 export function mapPersonSvg(person,kind,x,y){

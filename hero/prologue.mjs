@@ -1,5 +1,5 @@
-import {FOURTH_CHAPTER} from './chapter-four.mjs?v=history-coalition-1';
-import {paintPortrait} from './factions.mjs?v=history-coalition-1';
+import {HISTORICAL_STAGES} from './history-stages.mjs?v=chapter-five-1';
+import {paintPortrait} from './factions.mjs?v=chapter-five-1';
 import {THIRD_CHAPTER} from './chapter-three.mjs?v=history-coalition-1';
 // History and novel adaptation are deliberately separated in the introduction.
 export const CHAPTER_BACKGROUNDS={
@@ -23,4 +23,6 @@ CHAPTER_BACKGROUNDS[3]={era:'黃巾背景・遊戲原創支線',history:'本章�
 STAGE_LEADS.push(...THIRD_CHAPTER.map(s=>s.lead));
 
 CHAPTER_BACKGROUNDS[4]={era:'189—191 年・群雄討董',history:'董卓入京掌權，關東諸侯起兵。曹操與孫堅各有不同進軍路線，也各有勝敗；此時魏、吳尚未建國。',story:'本章以史書結果為骨架。對話、招式和三路操作為遊戲改編；汴水與梁東的撤退成功不改寫史實敗戰。'};
-STAGE_LEADS.push(...FOURTH_CHAPTER.map(s=>s.lead));
+STAGE_LEADS.push(...HISTORICAL_STAGES.map(s=>s.lead));
+
+CHAPTER_BACKGROUNDS[5]={era:'192—195 年・兗州風雲',history:'長安政變後，關東戰事仍未停歇。曹操立足兗州，後與呂布爭奪各地；守城、敗退與缺糧交織，並非一路凱旋。',story:'本章沿用曹操軍。接應、糧車與三路任務為改編；濮陽保留曹操失利，定陶保留呂布向東退走。'};

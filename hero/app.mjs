@@ -1,22 +1,22 @@
-import {renderPeople} from './characters.mjs?v=map-audit-1';
-import {FACTIONS,factionFor,enemyPortrait,paintPortrait} from './factions.mjs?v=history-coalition-1';
-import {mountHistoryLesson} from './history-view.mjs?v=history-coalition-1';
-import {renderBossCutin} from './boss-cutin.mjs?v=coalition-objectives-1';
+import {renderPeople} from './characters.mjs?v=chapter-five-1';
+import {FACTIONS,factionFor,enemyPortrait,paintPortrait} from './factions.mjs?v=chapter-five-1';
+import {mountHistoryLesson} from './history-view.mjs?v=chapter-five-1';
+import {renderBossCutin} from './boss-cutin.mjs?v=chapter-five-1';
 import {mountBattleKeys} from './battle-keys.mjs?v=history-coalition-1';
-import {mountJourney} from './journey-view.mjs?v=map-audit-1';
-import {renderMission} from './chapter-mission-view.mjs?v=coalition-objectives-1';
-import {mountCampaignMap} from './campaign-map.mjs?v=map-audit-1';
-import {advanceBattleFrame,normalizeBattleSpeed} from './battle-speed.mjs?v=coalition-objectives-1';
-import {mountNovel} from './novel.mjs?v=map-audit-1';
-import {mountCamp} from './camp-view.mjs?v=chapter-transitions-1';
-import {rewardVictory,useSupply} from './campaign.mjs?v=economy-save-1';
+import {mountJourney} from './journey-view.mjs?v=chapter-five-1';
+import {renderMission} from './chapter-mission-view.mjs?v=chapter-five-1';
+import {mountCampaignMap} from './campaign-map.mjs?v=chapter-five-1';
+import {advanceBattleFrame,normalizeBattleSpeed} from './battle-speed.mjs?v=chapter-five-1';
+import {mountNovel} from './novel.mjs?v=chapter-five-1';
+import {mountCamp} from './camp-view.mjs?v=chapter-five-1';
+import {rewardVictory,useSupply} from './campaign.mjs?v=chapter-five-1';
 import {createFirstGuide} from './first-guide.mjs?v=history-coalition-1';
-import {mountStoryTask} from './story-play.mjs?v=history-coalition-1';
-import {CHAPTER_BACKGROUNDS,STAGE_LEADS} from './prologue.mjs?v=history-coalition-1';
+import {mountStoryTask} from './story-play.mjs?v=chapter-five-1';
+import {CHAPTER_BACKGROUNDS,STAGE_LEADS} from './prologue.mjs?v=chapter-five-1';
 import {setMusic,setMusicMode,setMusicHome,musicTheme,musicOn,setSfx,unlockAudio,hitSound} from './audio.mjs?v=history-coalition-1';
-import {renderDuel} from './duel-view.mjs?v=coalition-objectives-1';
-import {chapterInfo,enemyArt,HEROES as BASE_HEROES,heroesForLevel,STAGES,ENEMY_ART,SHIELD_ART,FEATURES,heroDescription} from './story.mjs?v=history-coalition-1';
-import {bossProfile,LANE_CAPACITY,laneCount,ENEMY_SWING,enemyAttackFrame,skipDuelEntrance,positionHero,commandHero,moveHero,BOSS_SKILLS,SAVE_KEY,normalizeProgress,createBattle,deploy,canDeploy,attackFrame,SWING} from './engine.mjs?v=coalition-objectives-1';
+import {renderDuel} from './duel-view.mjs?v=chapter-five-1';
+import {chapterInfo,enemyArt,HEROES as BASE_HEROES,heroesForLevel,STAGES,ENEMY_ART,SHIELD_ART,FEATURES,heroDescription} from './story.mjs?v=chapter-five-1';
+import {bossProfile,LANE_CAPACITY,laneCount,ENEMY_SWING,enemyAttackFrame,skipDuelEntrance,positionHero,commandHero,moveHero,BOSS_SKILLS,SAVE_KEY,normalizeProgress,createBattle,deploy,canDeploy,attackFrame,SWING} from './engine.mjs?v=chapter-five-1';
 
 const $=id=>document.getElementById(id);
 let HEROES=BASE_HEROES;
@@ -45,7 +45,7 @@ function show(id){screen=id;document.body.classList.toggle('story-focus',id==='s
 function updateHome(){
  const unfinished=battle&&!battle.over;
  $('startBtn').innerHTML=`${unfinished?'繼續戰鬥':progress.completed===STAGES.length?'重溫故事':progress.completed?'繼續故事':'開始故事'} <span>→</span>`;
- $('homeProgress').textContent=unfinished?`停在 ${chapterInfo(battle.level).chapter}-${chapterInfo(battle.level).number} · ${STAGES[battle.level-1].name}`:progress.completed===STAGES.length?'第四章完成 · 群雄討董':`已完成 ${progress.completed} / ${STAGES.length} 關 · 下一站：${STAGES[progress.completed].name}`;
+ $('homeProgress').textContent=unfinished?`停在 ${chapterInfo(battle.level).chapter}-${chapterInfo(battle.level).number} · ${STAGES[battle.level-1].name}`:progress.completed===STAGES.length?`第${['','一','二','三','四','五'][chapterInfo(STAGES.length).chapter]}章完成 · ${chapterInfo(STAGES.length).title}`:`已完成 ${progress.completed} / ${STAGES.length} 關 · 下一站：${STAGES[progress.completed].name}`;
  const currentChapter=chapterInfo(Math.min(progress.completed+1,STAGES.length)).chapter;
  const chapters=[...new Set(STAGES.map((_,i)=>chapterInfo(i+1).chapter))];
  function selectChapter(chapter){
@@ -79,7 +79,7 @@ function storyLines(){const stage=STAGES[storyLevel-1];return storyPhase==='endi
 function finishStory(){if(storyPhase==='opening')beginBattle(storyLevel);else if(storyLevel<STAGES.length)startStory(storyLevel+1);else goHome()}
 function renderStory(){
  const stage=STAGES[storyLevel-1],lines=storyLines(),[speaker,text]=lines[lineIndex],last=lineIndex===lines.length-1;
- $('storyChapter').textContent=`第${['','一','二','三','四'][chapterInfo(storyLevel).chapter]}章 · 第 ${chapterInfo(storyLevel).number} / ${chapterInfo(storyLevel).count} 關 · ${storyPhase==='ending'?'戰後':'戰前'}`;$('storyTitle').textContent=stage.name;$('storyAdaptation').textContent=storyLevel>=5?stage.note:'劇情依《三國演義》第一回改編；對話與小型遭遇為遊戲補寫。';$('storyPlace').textContent=stage.place;
+ $('storyChapter').textContent=`第${['','一','二','三','四','五'][chapterInfo(storyLevel).chapter]}章 · 第 ${chapterInfo(storyLevel).number} / ${chapterInfo(storyLevel).count} 關 · ${storyPhase==='ending'?'戰後':'戰前'}`;$('storyTitle').textContent=stage.name;$('storyAdaptation').textContent=storyLevel>=5?stage.note:'劇情依《三國演義》第一回改編；對話與小型遭遇為遊戲補寫。';$('storyPlace').textContent=stage.place;
  $('storySpeaker').textContent=speaker;$('storyLine').textContent=text;renderPeople($('storyPeople'),text,speaker);$('storyCount').textContent=`${lineIndex+1} / ${lines.length}`;
  $('storyPrevious').disabled=lineIndex===0;
  const finalLabel=storyPhase==='ending'?(storyLevel<STAGES.length?'下一段故事 →':'回主選單 →'):'出發迎戰 →';
@@ -92,7 +92,7 @@ function renderStory(){
  for(const actor of document.querySelectorAll('[data-actor]')){actor.classList.toggle('listening',actor.dataset.actor===partnerKey);actor.classList.toggle('speaking',actor.dataset.actor===key);actor.setAttribute('aria-label',actor.alt+(actor.dataset.actor===key?'，正在說話':''))}
  $('storyScene').dataset.speaker=key;
 }
-function beginBattle(level){useRoster(level);setMusicMode('battle',level);syncMusicButton();battle=createBattle(level,Date.now(),progress.weapons);firstGuide=createFirstGuide(level);selected=null;selectedUnitId=null;resultShown=false;duelShown=false;show('battle');$('battleChapter').textContent=`第${['','一','二','三','四'][chapterInfo(level).chapter]}章 · ${chapterInfo(level).number}`;$('battleTitle').textContent=STAGES[level-1].name+(factionFor(level)?` · ${FACTIONS[factionFor(level)].title}`:'');$('featureBadge').textContent=FEATURES[level-1].name;$('field').style.backgroundImage=`linear-gradient(#d4dfb655,#b9cda588),url("${STAGES[level-1].scene}")`;renderBattle();$('cards').querySelector('button')?.focus({preventScroll:true})}
+function beginBattle(level){useRoster(level);setMusicMode('battle',level);syncMusicButton();battle=createBattle(level,Date.now(),progress.weapons);firstGuide=createFirstGuide(level);selected=null;selectedUnitId=null;resultShown=false;duelShown=false;show('battle');$('battleChapter').textContent=`第${['','一','二','三','四','五'][chapterInfo(level).chapter]}章 · ${chapterInfo(level).number}`;$('battleTitle').textContent=STAGES[level-1].name+(factionFor(level)?` · ${FACTIONS[factionFor(level)].title}`:'');$('featureBadge').textContent=FEATURES[level-1].name;$('field').style.backgroundImage=`linear-gradient(#d4dfb655,#b9cda588),url("${STAGES[level-1].scene}")`;renderBattle();$('cards').querySelector('button')?.focus({preventScroll:true})}
 function selectedUnit(){return battle?.allies.find(u=>u.hp>0&&(selectedUnitId!==null?u.id===selectedUnitId:selected!=='archer'&&u.key===selected))}
 function syncPause(){if(!battle)return;$('field').classList.toggle('is-paused',battle.paused||!!battle.duel||!!battle.introPending);$('pauseOverlay').hidden=!battle.paused;$('pauseBtn').textContent=battle.paused?'▶ 繼續':'Ⅱ 暫停';$('pauseBtn').setAttribute('aria-pressed',String(battle.paused))}
 function setPause(value){if(!battle||battle.over)return;battle.paused=value;syncPause()}
@@ -144,7 +144,7 @@ function renderBattle(){
  $('bossHud').hidden=!boss;
  if(boss){$('bossHudName').textContent=`${bossProfile(battle,boss).title}・${boss.name}`;$('bossHudHp').style.width=`${boss.hp/boss.maxHp*100}%`;$('bossHudState').textContent=boss.castAt?`${bossProfile(battle,boss).skillName}蓄力！${stage.skillType==='rally'?'敵兵即將加速':'換路閃避'}`:boss.support?`${bossProfile(battle,boss).skillName}・預警後換路閃避`:stage.skillType?`${bossProfile(battle,boss).skillName}・${boss.hp/boss.maxHp>stage.duelHpRatio?'先削弱主將':(stage.duelHero?HEROES[stage.duelHero].short+'近身單挑':'避開大招，趁破綻反擊')}`:boss.enraged?'狂攻・兩路重擊':battle.level===5?(boss.hp/boss.maxHp>.65?`先破盾：生命 ${Math.ceil(boss.hp/boss.maxHp*100)}% → 65% 以下，劉備才可單挑`:'盾勢已破！劉備同路近身 → 自動單挑'):'大將出陣';}
  if(boss&&!boss.support){$('bossHud').dataset.phase=battle.time<(boss.recoveryUntil||0)?'exposed':boss.castAt?'casting':boss.enraged?'enraged':'guard';$('bossHudState').textContent=(battle.time<(boss.recoveryUntil||0)?'破綻！2 秒內反擊傷害提高 · ':!boss.skillsCast?'護身架勢：先誘出大招 · ':boss.enraged?'狂攻階段 · ':'')+$('bossHudState').textContent;}
- if(boss&&['withdraw','decoy'].includes(battle.mission?.kind))$('bossHudState').textContent=(boss.castAt?`${bossProfile(battle,boss).skillName}蓄力！換路閃避 · `:battle.time<(boss.recoveryUntil||0)?'敵將收招，趁機拉開距離 · ':'避開追擊 · ')+'接應完成後全軍撤離，無須擊倒徐榮';
+ if(boss&&['withdraw','decoy'].includes(battle.mission?.kind))$('bossHudState').textContent=(boss.castAt?`${bossProfile(battle,boss).skillName}蓄力！換路閃避 · `:battle.time<(boss.recoveryUntil||0)?'敵將收招，趁機拉開距離 · ':'避開追擊 · ')+`接應完成後全軍撤離，無須擊倒${stage.bossName}`;
  if(boss&&stage.duelPartner&&!battle.duelSeen)$('bossHudState').textContent+=(b => b?' · 關羽同路近身 → 二打一':' · 召集關羽、張飛 → 聯手單挑')(battle.allies.some(u=>u.key==='guanyu'&&u.hp>0)&&battle.allies.some(u=>u.key==='zhangfei'&&u.hp>0));
  if(boss&&battle.level===5&&boss.castAt)$('bossHudState').textContent+=boss.hp/boss.maxHp>.65?' · 先破盾至 65% 以下':' · 劉備可近身單挑';
  for(const lane of $('lanes').children)lane.classList.toggle('danger',(battle.mission?.weather?.lane===Number(lane.dataset.lane)||battle.enemies.some(e=>e.hp>0&&e.castAt&&(e.castLanes||[e.lane]).includes(Number(lane.dataset.lane)))));
@@ -186,7 +186,7 @@ function showResult(){
  for(const [i,img] of [...document.querySelectorAll('.result-company img')].entries())paintPortrait(img,HEROES[['guanyu','liubei','zhangfei'][i]]);
  document.querySelector('.result-next-step').textContent=battle.level>=17?'戰報看完了？回營整備，再聽同伴說說這一戰。':'戰報看完了？回營歇一歇，再聽三兄弟的故事。';
  document.querySelector('.victory-ribbon').textContent=stage.successTitle?'保 全 隊 伍 ・ 回 營 整 備':'捷 報 傳 回 ・ 凱 旋 歸 營';
- $('resultMark').textContent=battle.won?(stage.successTitle?'全':'勝'):'再起';$('resultChapter').textContent=`第${['','一','二','三','四'][chapterInfo(battle.level).chapter]}章 · ${chapterInfo(battle.level).number}`;
+ $('resultMark').textContent=battle.won?(stage.successTitle?'全':'勝'):'再起';$('resultChapter').textContent=`第${['','一','二','三','四','五'][chapterInfo(battle.level).chapter]}章 · ${chapterInfo(battle.level).number}`;
  $('resultTitle').textContent=battle.won?(stage.successTitle||((!STAGES[battle.level]||chapterInfo(battle.level+1).chapter!==chapterInfo(battle.level).chapter)?chapterInfo(battle.level).title:'此戰告捷')):'重整陣形，再來一次';
  $('resultText').textContent=battle.won?stage.victory:battle.lossReason==='commander-breach'?'敵方主將突破防線，本關未完成。調動部隊攔住主將，再挑戰一次。':(battle.level>=17?'先讓友軍照應三路，閱讀本關任務；撤軍關不必擊倒主將，接應完成後帶隊退回左側。':'先讓弓兵照應三路，再用張飛頂住前線、關羽斬擊敵軍、劉備回復友軍。軍糧會持續補給，留意空著的路線。');
  $('result').dataset.outcome=battle.won?'victory':'defeat';$('result').dataset.reward=String(progress.coins>balanceBefore);if(battle.won)void hitSound('oath');

@@ -42,7 +42,7 @@ test('victory camps and ending dialogue retain all six stage rosters, equipment 
   }
   await page.locator('#campPrepare').click();for(let i=0;i<3;i++){const card=page.locator('#campHeroes .camp-hero').nth(i);await expect(card.locator('strong')).toContainText(names[faction][i]);await portrait(card.locator('img'),names[faction][i],faction,i)}
   await page.locator('[data-shop=weapons]').click();for(let i=0;i<3;i++)await expect(page.locator('#shopGoods h4').nth(i)).toHaveText(names[faction][i]+'・兵器整備');if([17,20].includes(level)){await page.locator('[data-buy=guanyu]').click();await expect(page.locator('#campMessage')).toContainText(names[faction][1]+'兵器')}await fits(page);
-  await page.locator('#campContinue').click();await dialogue(page,faction);if(level===22)await expect(page.locator('#storyNext')).toHaveText('回主選單 →');await page.locator('#story [data-home]').click();
+  await page.locator('#campContinue').click();await dialogue(page,faction);if(level===22)await expect(page.locator('#storyNext')).toHaveText('下一段故事 →');await page.locator('#story [data-home]').click();
  }
 });
 test('defeat camps preserve the active army and retry uses the same cards',async({page})=>{

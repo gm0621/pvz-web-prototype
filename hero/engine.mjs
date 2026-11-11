@@ -1,11 +1,11 @@
-import {extracted} from './history-missions.mjs?v=coalition-objectives-1';
-import {createMission,stepMission,protectBarrier,missionReady,missionDuelReady} from './chapter-missions.mjs?v=coalition-objectives-1';
+import {extracted} from './history-missions.mjs?v=chapter-five-1';
+import {createMission,stepMission,protectBarrier,missionReady,missionDuelReady} from './chapter-missions.mjs?v=chapter-five-1';
 import {duelBeats} from './duel-patterns.mjs?v=history-coalition-1';
 export {duelBeats} from './duel-patterns.mjs?v=history-coalition-1';
 import {WEATHER_GENERALS} from './weather-generals.mjs?v=history-coalition-1';
-import {campaignState,weaponBonus} from './campaign.mjs?v=economy-save-1';
-import {heroSkill} from './skills.mjs?v=history-coalition-1';
-import {heroesForLevel,STAGES,UNLOCKS,FEATURES} from './story.mjs?v=history-coalition-1';
+import {campaignState,weaponBonus} from './campaign.mjs?v=chapter-five-1';
+import {heroSkill} from './skills.mjs?v=chapter-five-1';
+import {heroesForLevel,STAGES,UNLOCKS,FEATURES} from './story.mjs?v=chapter-five-1';
 
 export const SWING={duration:.58,impact:.24,frameTime:.08,frames:6};
 export const DUEL_DURATION=19;
@@ -95,16 +95,16 @@ function spawn(b){
  const heavy=!boss&&b.level>=UNLOCKS.shields&&b.spawned%4===3;
  const ranged=b.level<17&&!boss&&!heavy&&b.level>=4&&b.spawned%6===4;
  const hp=ranged?46+Math.min(6,b.level)*3:boss?stage.bossHp:Math.round(48+Math.min(6,b.level)*6+(heavy?35:0));
- b.enemies.push({id:b.nextId++,lane,x:.94,hp,maxHp:hp,boss,ranged,name:boss?stage.bossName:b.level>=17?(heavy?'董軍盾兵':'董軍刀兵'):ranged?'黃巾弓手':heavy?'黃巾盾賊':'黃巾刀賊',shielded:heavy||(boss&&b.level===5),stunnedUntil:0,damage:ranged?8:boss?17+Math.min(6,b.level):7+Math.min(6,b.level),rate:ranged?2.6:boss?1.6:1.5,speed:boss?.019:.027+random(b)*.004,lastAttack:b.time,flash:0,action:'marching'});
+ b.enemies.push({id:b.nextId++,lane,x:.94,hp,maxHp:hp,boss,ranged,name:boss?stage.bossName:b.level>=17?(stage.enemyArmy?(stage.enemyArmy+(heavy?'盾兵':'步兵')):(heavy?'董軍盾兵':'董軍刀兵')):ranged?'黃巾弓手':heavy?'黃巾盾賊':'黃巾刀賊',shielded:heavy||(boss&&b.level===5),stunnedUntil:0,damage:ranged?8:boss?17+Math.min(6,b.level):7+Math.min(6,b.level),rate:ranged?2.6:boss?1.6:1.5,speed:boss?.019:.027+random(b)*.004,lastAttack:b.time,flash:0,action:'marching'});
  if(b.level===14&&!boss&&[0,6,12].includes(b.spawned)){for(const side of [0,2])b.enemies.push({id:b.nextId++,lane:side,x:.97,hp:52,maxHp:52,name:'黃旗衝鋒兵',elite:true,boss:false,damage:9,rate:1.5,speed:.04,lastAttack:b.time,flash:0});b.skillNotice={key:'enemy',text:`第 ${Math.floor(b.spawned/6)+1} 波・黃旗衝鋒`,until:b.time+3};}
  if(ranged){b.notice='黃巾弓手出現！會在遠處蓄力射箭，換路避箭或派武將逼近。';b.noticeUntil=b.time+5;}
  if(!boss&&b.level>=3){
   const number=b.spawned+1,ambushes=[Math.max(3,Math.ceil(stage.enemyCount*.35)),Math.max(6,Math.ceil(stage.enemyCount*.7))];
   if(ambushes.includes(number)){
    const raidLane=(lane+(number%2?1:2))%3,raidHp=Math.round(35+Math.min(10,b.level)*3);
-   b.enemies.push({id:b.nextId++,lane:raidLane,x:.97,hp:raidHp,maxHp:raidHp,boss:false,elite:true,name:b.level>=17?'董軍疾行兵':'黃巾疾行兵',shielded:false,stunnedUntil:0,damage:8+Math.min(6,b.level),rate:1.25,speed:.042+random(b)*.003,lastAttack:b.time,flash:0,action:'marching'});
-   b.notice=`${b.level>=17?'董軍':'黃巾'}突襲！疾行兵從${['上','中','下'][raidLane]}路逼近，快換路補位！`;b.noticeUntil=b.time+4;
-   b.skillNotice={key:'enemy',text:`${b.level>=17?'董軍':'黃巾'}突襲・${['上','中','下'][raidLane]}路疾行兵！`,until:b.time+2.5};
+   b.enemies.push({id:b.nextId++,lane:raidLane,x:.97,hp:raidHp,maxHp:raidHp,boss:false,elite:true,name:(stage.enemyArmy||(b.level>=17?'董軍':'黃巾'))+'疾行兵',shielded:false,stunnedUntil:0,damage:8+Math.min(6,b.level),rate:1.25,speed:.042+random(b)*.003,lastAttack:b.time,flash:0,action:'marching'});
+   b.notice=`${stage.enemyArmy||(b.level>=17?'董軍':'黃巾')}突襲！疾行兵從${['上','中','下'][raidLane]}路逼近，快換路補位！`;b.noticeUntil=b.time+4;
+   b.skillNotice={key:'enemy',text:`${stage.enemyArmy||(b.level>=17?'董軍':'黃巾')}突襲・${['上','中','下'][raidLane]}路疾行兵！`,until:b.time+2.5};
   }
  }
  if(b.level===8&&!boss)for(const general of Object.values(WEATHER_GENERALS))if(b.spawned===general.spawnAt){b.enemies.push({id:b.nextId++,lane:general.lane,x:.94,hp:general.hp,maxHp:general.hp,boss:true,support:true,name:general.name,damage:10,rate:1.8,speed:.022,lastAttack:b.time,flash:0,stunnedUntil:0});b.skillNotice={key:'enemy',text:`${general.title}・${general.name}出陣！${general.skillName}`,until:b.time+4};}

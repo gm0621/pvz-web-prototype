@@ -50,6 +50,10 @@ npm test -- tests/hero-standalone.spec.js --workers=1
 # 英雄演義存檔、軍資、營地交易與保存失敗
 npm test -- tests/hero-economy-persistence.spec.js tests/hero-settlement.spec.js tests/hero-novel-camp.spec.js --retries=0
 
+# 第五章手機／平板與 28 關連續銜接
+npx playwright test --config=playwright.hero-five.config.js --retries=0
+npx playwright test --config=playwright.hero-transitions.config.js --retries=0
+
 # 新手教學、導覽與原戰役進度
 npm test -- tests/progressive-onboarding.spec.js tests/season-navigation.spec.js tests/defense-progression.spec.js --workers=1
 
