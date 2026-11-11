@@ -10,10 +10,10 @@ test('route follows story progression, merges local battles and includes return 
 });
 test('opening map pauses battle; closing preserves pause and background interruptions',async t=>{
  const {mountCampaignMap}=await map,{STAGES}=await import('../../hero/story.mjs');const prev={document:global.document,window:global.window};t.after(()=>Object.assign(global,prev));
- const nodes=new Map(),docEvents={},winEvents={};function element(){return {style:{},listeners:{},textContent:'',innerHTML:'',disabled:false,open:false,setAttribute(){},replaceChildren(){},focus(){},addEventListener(n,f){this.listeners[n]=f},showModal(){this.open=true},close(){this.open=false;this.listeners.close?.()}}}
+ const nodes=new Map(),docEvents={},winEvents={};function element(){return {style:{},listeners:{},textContent:'',innerHTML:'',disabled:false,open:false,setAttribute(){},replaceChildren(){},append(){},classList:{toggle(){}},focus(){},addEventListener(n,f){this.listeners[n]=f},showModal(){this.open=true},close(){this.open=false;this.listeners.close?.()}}}
  global.document={hidden:false,getElementById(id){if(!nodes.has(id))nodes.set(id,element());return nodes.get(id)},createElement:element,addEventListener(n,f){docEvents[n]=f}};global.window={addEventListener(n,f){winEvents[n]=f}};
  const battle={level:1,paused:false},control=mountCampaignMap({stages:STAGES,getBattle:()=>battle,setPaused:value=>battle.paused=value});control.update(battle);
- const button=document.getElementById('battleMapButton'),dialog=document.getElementById('campaignMapDialog');button.onclick();assert.equal(battle.paused,true);dialog.close();assert.equal(battle.paused,false);
+ const button=document.getElementById('battleMapButton'),dialog=document.getElementById('campaignMapDialog');button.onclick();assert.equal(battle.paused,true);dialog.listeners.close();assert.equal(battle.paused,true,'fullscreen reopens the modal before its queued close event');dialog.close();assert.equal(battle.paused,false);
  battle.paused=true;button.onclick();dialog.close();assert.equal(battle.paused,true);
  battle.paused=false;button.onclick();document.hidden=true;docEvents.visibilitychange();document.hidden=false;dialog.close();assert.equal(battle.paused,true);
  battle.paused=false;button.onclick();winEvents.pagehide();dialog.close();assert.equal(battle.paused,true);

@@ -1,13 +1,14 @@
+import {renderPeople} from './characters.mjs?v=character-map-1';
 import {FACTIONS,factionFor,enemyPortrait,paintPortrait} from './factions.mjs?v=history-coalition-1';
 import {mountHistoryLesson} from './history-view.mjs?v=history-coalition-1';
 import {renderBossCutin} from './boss-cutin.mjs?v=economy-save-1';
 import {mountBattleKeys} from './battle-keys.mjs?v=history-coalition-1';
-import {mountJourney} from './journey-view.mjs?v=history-coalition-1';
+import {mountJourney} from './journey-view.mjs?v=character-map-1';
 import {renderMission} from './chapter-mission-view.mjs?v=history-coalition-1';
-import {mountCampaignMap} from './campaign-map.mjs?v=history-coalition-1';
+import {mountCampaignMap} from './campaign-map.mjs?v=character-map-1';
 import {advanceBattleFrame,normalizeBattleSpeed} from './battle-speed.mjs?v=economy-save-1';
-import {mountNovel} from './novel.mjs?v=history-coalition-1';
-import {mountCamp} from './camp-view.mjs?v=economy-save-1';
+import {mountNovel} from './novel.mjs?v=character-map-1';
+import {mountCamp} from './camp-view.mjs?v=character-map-1';
 import {rewardVictory,useSupply} from './campaign.mjs?v=economy-save-1';
 import {createFirstGuide} from './first-guide.mjs?v=history-coalition-1';
 import {mountStoryTask} from './story-play.mjs?v=history-coalition-1';
@@ -79,7 +80,7 @@ function finishStory(){if(storyPhase==='opening')beginBattle(storyLevel);else if
 function renderStory(){
  const stage=STAGES[storyLevel-1],lines=storyLines(),[speaker,text]=lines[lineIndex],last=lineIndex===lines.length-1;
  $('storyChapter').textContent=`第${['','一','二','三','四'][chapterInfo(storyLevel).chapter]}章 · 第 ${chapterInfo(storyLevel).number} / ${chapterInfo(storyLevel).count} 關 · ${storyPhase==='ending'?'戰後':'戰前'}`;$('storyTitle').textContent=stage.name;$('storyAdaptation').textContent=storyLevel>=5?stage.note:'劇情依《三國演義》第一回改編；對話與小型遭遇為遊戲補寫。';$('storyPlace').textContent=stage.place;
- $('storySpeaker').textContent=speaker;$('storyLine').textContent=text;$('storyCount').textContent=`${lineIndex+1} / ${lines.length}`;
+ $('storySpeaker').textContent=speaker;$('storyLine').textContent=text;renderPeople($('storyPeople'),text,speaker);$('storyCount').textContent=`${lineIndex+1} / ${lines.length}`;
  $('storyPrevious').disabled=lineIndex===0;
  const finalLabel=storyPhase==='ending'?(storyLevel<STAGES.length?'下一段故事 →':'回到桃園 →'):'出發迎戰 →';
  $('storyNext').textContent=last?finalLabel:'下一句 →';$('storySkip').textContent=storyPhase==='ending'?(storyLevel<STAGES.length?'前往下一關':'回主選單'):'直接開戰';

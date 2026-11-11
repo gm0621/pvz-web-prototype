@@ -1,3 +1,4 @@
+import {stagePeople,mapPersonSvg,renderMatchup} from './characters.mjs?v=character-map-1';
 import {FOURTH_CHAPTER} from './chapter-four.mjs?v=history-coalition-1';
 // Approximate regional placement, not historical borders or a surveyed route.
 export const MAP_PLACES={
@@ -28,17 +29,17 @@ export function campaignMapSvg(level,mini=false){
  const current=stageLocation(level),route=routeThrough(level),visited=new Set(route);
  const points=route.map(key=>`${MAP_PLACES[key].x},${MAP_PLACES[key].y}`).join(' ');
  const cities=Object.entries(MAP_PLACES).map(([key,p])=>{
-  const active=key===current.place;if(level>=17&&!visited.has(key)&&!active)return '';if(level<17&&['luoyang','chenliu','suanzhao','bian','liangdong','yangren','luyang'].includes(key))return '';if(key.startsWith('side')&&!visited.has(key)&&!active)return '';
-  return `<g class="map-city ${active?'current':visited.has(key)?'visited':'future'}"><circle cx="${p.x}" cy="${p.y}" r="${active?16:7}"/>${active?`<circle class="map-current-ring" cx="${p.x}" cy="${p.y}" r="24"/><path class="map-flag" d="M${p.x},${p.y-14}v-34l26,7 -26,9"/>`:''}${mini||(key.startsWith('side')||level>=17)&&!active?'':`<text x="${p.x+27}" y="${p.y+7}">${p.name}</text>`}</g>`;
+  const active=key===current.place,labelOffset=active&&route.some(k=>k!==key&&Math.hypot(MAP_PLACES[k].x-p.x,MAP_PLACES[k].y-p.y)<55)?70:38;if(level>=17&&!visited.has(key)&&!active)return '';if(level<17&&['luoyang','chenliu','suanzhao','bian','liangdong','yangren','luyang'].includes(key))return '';if(key.startsWith('side')&&!visited.has(key)&&!active)return '';
+  return `<g class="map-city ${active?'current':visited.has(key)?'visited':'future'}"><circle cx="${p.x}" cy="${p.y}" r="${active?16:7}"/>${active?`<circle class="map-current-ring" cx="${p.x}" cy="${p.y}" r="24"/><path class="map-flag" d="M${p.x},${p.y-14}v-34l26,7 -26,9"/>`:''}${mini||key.startsWith('side')&&!active?'':`<text x="${active?p.x:p.x+32}" text-anchor="${active?'middle':'start'}" y="${p.y+(active?labelOffset:7)}">${p.name}</text>`}</g>`;
  }).join('');
- return `<svg viewBox="${level>=17?'150 235 340 205':'0 0 720 440'}" xmlns="http://www.w3.org/2000/svg" ${mini?'aria-hidden="true"':'role="img" aria-label="戰役方位示意圖，目前位於'+current.name+'"'}>
- <rect width="720" height="440" rx="18" fill="#eaddb9"/>
+ return `<svg viewBox="${level>=17?'150 190 340 280':'0 0 720 440'}" xmlns="http://www.w3.org/2000/svg" ${mini?'aria-hidden="true"':'role="img" aria-label="戰役方位示意圖，目前位於'+current.name+'"'}>
+ <rect width="720" height="480" rx="18" fill="#eaddb9"/>
  <path d="M580 0L720 0V440H655L632 395 660 350 638 310 675 276 646 239 681 216 658 191 606 206 577 181 563 140 593 109 567 68Z" fill="#a9c1bb" opacity=".75"/>
  <path d="M35 70L95 22 140 101 180 50 224 143 186 218 235 260 173 321 196 405 40 425Z" fill="#8c987c" opacity=".2"/>
  <path d="M82 180l25-46 28 46m13 28 22-40 24 40m-90 118 26-48 27 48m55-65 23-37 22 37" fill="none" stroke="#78826b" stroke-width="3" opacity=".4"/>
  <path d="M40 110H680M40 220H680M40 330H680M180 25V410M360 25V410M540 25V410" stroke="#ac986b" opacity=".14"/>
  ${mini||level>=17?'':`<g class="map-region"><text x="300" y="45">幽州</text><text x="265" y="152">冀州</text><text x="540" y="145">青州</text><text x="440" y="285">兗州</text><text x="215" y="390">豫州</text><text x="635" y="105">海</text></g><g class="map-reference"><circle cx="212" cy="327" r="5"/><text x="157" y="350">洛陽</text><text x="250" y="422">中原</text></g><path d="M65 95V45m-10 15 10-15 10 15" stroke="#5b6048" stroke-width="3" fill="none"/><text x="56" y="30" class="map-north">北</text>`}
- <polyline points="${points}" class="map-route"/>${cities}
+ <polyline points="${points}" class="map-route"/>${cities}${mini?'':mapPersonSvg(stagePeople(level).leader,'map-leader',current.x-36,current.y-44)+mapPersonSvg(stagePeople(level).opponent,'map-opponent',current.x+36,current.y-44)}
  </svg>`;
 }
 export function mountCampaignMap({stages,getBattle,setPaused}){
@@ -50,6 +51,7 @@ export function mountCampaignMap({stages,getBattle,setPaused}){
   document.getElementById('battleMapPlace').textContent=stage.place;
   document.getElementById('battleMapStage').textContent=`第 ${level} 關・${stage.name}`;
   document.getElementById('campaignMapCanvas').innerHTML=campaignMapSvg(level);
+  renderMatchup(document.getElementById('campaignMapMatchup'),level);
   document.getElementById('campaignMapLocation').textContent=`目前：${stage.place}`;
   document.getElementById('campaignMapModern').textContent=p.modern;
   document.getElementById('campaignMapDetail').textContent=p.detail;
@@ -58,7 +60,7 @@ export function mountCampaignMap({stages,getBattle,setPaused}){
  };
  trigger.onclick=()=>{const b=getBattle();if(!b||b.over||b.duel||b.introPending)return;render(b.level);openedBattle=b;wasPaused=b.paused;interrupted=false;setPaused(true);dialog.showModal();document.getElementById('campaignMapClose').focus()};
  document.getElementById('campaignMapClose').onclick=()=>dialog.close();
- dialog.addEventListener('close',()=>{if(openedBattle===getBattle()&&!wasPaused&&!interrupted&&!document.hidden)setPaused(false);openedBattle=null;trigger.focus({preventScroll:true})});
+ dialog.addEventListener('close',()=>{if(dialog.open)return;if(openedBattle===getBattle()&&!wasPaused&&!interrupted&&!document.hidden)setPaused(false);openedBattle=null;trigger.focus({preventScroll:true})});
  document.addEventListener('visibilitychange',()=>{if(document.hidden&&dialog.open)interrupted=true});
  window.addEventListener('pagehide',()=>{if(dialog.open)interrupted=true});
  return {update(b){render(b.level);trigger.disabled=!!b.duel||!!b.introPending||b.over}};

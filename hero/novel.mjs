@@ -1,3 +1,4 @@
+import {renderPeople} from './characters.mjs?v=character-map-1';
 import {FOURTH_CHAPTER} from './chapter-four.mjs?v=history-coalition-1';
 import {paintPortrait} from './factions.mjs?v=history-coalition-1';
 import {THIRD_CHAPTER} from './chapter-three.mjs?v=history-coalition-1';
@@ -30,7 +31,7 @@ NOVEL_PAGES.push(...THIRD_CHAPTER.map(s=>s.novel),...FOURTH_CHAPTER.map(s=>s.nov
 CAMP_LINES.push(...THIRD_CHAPTER.map(s=>s.campLine),...FOURTH_CHAPTER.map(s=>s.campLine));
 export function mountNovel(level,heroes,background,lead){
  let pages=NOVEL_PAGES[level-1],index=0,notes=false;const $=id=>document.getElementById(id);
- function render(){const [name,line]=pages[index],key=Object.keys(heroes).find(k=>heroes[k].name===name);$('novelSpeaker').textContent=name;$('novelText').textContent=line;$('novelCount').textContent=`${notes?'小札':'序幕'} ${index+1} / ${pages.length}`;$('novelPortrait').hidden=!key;if(key){paintPortrait($('novelPortrait'),heroes[key]);$('novelPortrait').alt=name} $('novelPrevious').disabled=index===0;$('novelNext').textContent=index===pages.length-1?'換你想一想 →':'翻下一頁 →';$('novelPage').dataset.speaker=key||'narrator';if(!matchMedia('(prefers-reduced-motion: reduce)').matches)$('novelText').animate([{opacity:.25,transform:'translateX(6px)'},{opacity:1,transform:'translateX(0)'}],{duration:180});}
+ function render(){const [name,line]=pages[index],key=Object.keys(heroes).find(k=>heroes[k].name===name);$('novelSpeaker').textContent=name;$('novelText').textContent=line;renderPeople($('novelPeople'),line,name);$('novelCount').textContent=`${notes?'小札':'序幕'} ${index+1} / ${pages.length}`;$('novelPortrait').hidden=!key;if(key){paintPortrait($('novelPortrait'),heroes[key]);$('novelPortrait').alt=name} $('novelPrevious').disabled=index===0;$('novelNext').textContent=index===pages.length-1?'換你想一想 →':'翻下一頁 →';$('novelPage').dataset.speaker=key||'narrator';if(!matchMedia('(prefers-reduced-motion: reduce)').matches)$('novelText').animate([{opacity:.25,transform:'translateX(6px)'},{opacity:1,transform:'translateX(0)'}],{duration:180});}
  $('novelNotes').textContent='說書人的歷史小札';
  $('novelNotes').onclick=()=>{notes=!notes;$('novelNotes').textContent=notes?'回到序幕':'說書人的歷史小札';pages=notes?[['說書人 · 歷史記載',FOURTH_CHAPTER[level-17]?.history||background.history],['說書人 · '+(level>=17?'遊戲改編':'演義故事'),FOURTH_CHAPTER[level-17]?.adaptation||background.story],['說書人 · 這一回',lead+'（對話與遭遇有遊戲改編。）']]:NOVEL_PAGES[level-1];index=0;$('novelPage').hidden=false;$('storyTask').hidden=true;render()};
  $('novelPrevious').onclick=()=>{if(index>0){index--;render()}};
