@@ -43,17 +43,20 @@ node tests/support/static-server.js
 先停止手動預覽，再執行下列命令。`playwright.config.js` 自己啟動 4174 埠服務，預設測桌機與手機，單 worker。
 
 ```sh
-# 獨立英雄演義：完整單元測試（引擎、五章、地圖與背景音訊）及 UI
+# 獨立英雄演義：完整單元測試（引擎、六章、地圖與背景音訊）及 UI
 npm run test:hero:engine
 npm test -- tests/hero-standalone.spec.js --workers=1
 
 # 英雄演義存檔、軍資、營地交易與保存失敗
 npm test -- tests/hero-economy-persistence.spec.js tests/hero-settlement.spec.js tests/hero-novel-camp.spec.js --retries=0
 
+# 第六章與人物圖鑑手機／平板
+npx playwright test --config=playwright.hero-six.config.js
+
 # 第五章手機／平板完整檢查（含存檔與跨章）
 npx playwright test --config=playwright.hero-five-audit.config.js --retries=0
 
-# 第五章手機／平板、五章連續銜接與 28 關亂序重玩
+# 第五章手機／平板、六章連續銜接與 34 關亂序重玩
 npx playwright test --config=playwright.hero-five.config.js --retries=0
 npx playwright test --config=playwright.hero-transitions.config.js --retries=0
 
@@ -93,7 +96,9 @@ npm test -- --config=playwright.hero-touch.config.js --retries=0
 | `js/app.js` | 戰局建立／還原、戰鬥、畫面、導覽、結果結算 |
 | `js/data.js` | 第一季兵種、關卡與戰鬥資料 |
 | `js/season2-data.js`、`js/season2-game.js` | 第二季資料與特有行為、季度選擇 |
-| `hero/story.mjs` | 第一章資料、角色數值與五章關卡組合；後續章節見 `hero/chapter-two.mjs`、`hero/chapter-three.mjs`、`hero/chapter-four.mjs` |
+| `hero/people.html` | 人物圖鑑；people-data.mjs 維護姓名別名、簡介、分類、出場關卡，people.mjs 唯讀搜尋，無存檔寫入 |
+| `hero/chapter-six.mjs` | 第 29～34 關史實、對話、任務、營地與來源；規格見 hero-history-chapter-six.md |
+| `hero/story.mjs` | 第一章資料、角色數值與六章關卡組合；後續章節見 `hero/chapter-two.mjs`、`hero/chapter-three.mjs`、`hero/chapter-four.mjs` |
 | `hero/engine.mjs` | 獨立三路戰鬥、補糧、部署、分段單挑與勝負 |
 | `hero/app.mjs`、`hero/game.css` | 獨立畫面、操作及本機保存；配樂見 `hero/audio.mjs`，營地經濟見 `hero/campaign.mjs` |
 | `js/romance-*.js` | 舊版相容程式，沒有首頁入口 |
@@ -111,7 +116,7 @@ npm test -- --config=playwright.hero-touch.config.js --retries=0
 ## 保存與模式界線
 
 - 原戰役 `season 1/2` 使用既有玩家 profile、雲端進度與權威獎勵；勿改變原有驗證契約。
-- 獨立英雄演義只使用 `heroLegendProgress_v1`：版本、已完成關數 0–28（上限由 `hero/campaign-config.mjs` 的 `CAMPAIGN_LENGTH` 定義）、軍資 coins、獎勵標記 rewarded、道具 inventory、兵器 weapons，不按帳號分區，不與原 profile 共用。
+- 獨立英雄演義只使用 `heroLegendProgress_v1`：版本、已完成關數 0–34（上限由 `hero/campaign-config.mjs` 的 `CAMPAIGN_LENGTH` 定義）、軍資 coins、獎勵標記 rewarded、道具 inventory、兵器 weapons，不按帳號分區，不與原 profile 共用。
 - 回主選單暫停並保留當頁戰局；重整後保留已完成關數、軍資、道具與兵器，不保存進行中的單位、冷卻或單挑。
 - 營地購買與戰鬥道具需成功保存才接受扣款／消耗；寫入失敗會回復交易，且道具不生效。通關獎勵保存失敗時留在當頁，可於結算點「重試保存」，未保存前重整仍回到最後成功的存檔。讀取拋錯或 JSON 損壞時顯示警告，當頁拒絕覆寫原存檔，待重新整理再讀取。
 - 原遊戲及舊共用演義存檔原封保留；不自動遷移，以免不同身份或規則互相覆寫。

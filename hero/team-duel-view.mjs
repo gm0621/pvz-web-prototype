@@ -1,5 +1,5 @@
 import {teamPose} from './team-duel-beats.mjs?v=history-coalition-1';
-import {DUEL_ENTRANCE_DURATION} from './engine.mjs?v=five-flow-1';
+import {DUEL_ENTRANCE_DURATION} from './engine.mjs?v=chapter-six-1';
 import {hitSound} from './audio.mjs?v=history-coalition-1';
 export function renderTeamDuel(b){
  const $=id=>document.getElementById(id),d=b.duel,dialog=$('duelDialog');let root=$('teamDuel');

@@ -1,5 +1,5 @@
-import {HISTORICAL_STAGES} from './history-stages.mjs?v=chapter-five-1';
-import {paintPortrait} from './factions.mjs?v=chapter-five-1';
+import {HISTORICAL_STAGES} from './history-stages.mjs?v=chapter-six-1';
+import {paintPortrait} from './factions.mjs?v=chapter-six-1';
 import {THIRD_CHAPTER} from './chapter-three.mjs?v=history-coalition-1';
 // History and novel adaptation are deliberately separated in the introduction.
 export const CHAPTER_BACKGROUNDS={
@@ -26,3 +26,5 @@ CHAPTER_BACKGROUNDS[4]={era:'189—191 年・群雄討董',history:'董卓入京
 STAGE_LEADS.push(...HISTORICAL_STAGES.map(s=>s.lead));
 
 CHAPTER_BACKGROUNDS[5]={era:'192—195 年・兗州風雲',history:'長安政變後，關東戰事仍未停歇。曹操立足兗州，後與呂布爭奪各地；守城、敗退與缺糧交織，並非一路凱旋。',story:'本章沿用曹操軍。接應、糧車與三路任務為改編；濮陽保留曹操失利，定陶保留呂布向東退走。'};
+
+CHAPTER_BACKGROUNDS[6]={era:'196—198 年・迎駕與下邳',history:'漢獻帝遷許、屯田與宛城敗退之後，曹操軍再向下邳進發。建安三年末的下邳結局按公曆換算可跨入 199 年初。',story:'沿用曹操軍；接應、運糧與圍城補給為改編。宛城保留敗退與傷亡，下邳保留呂布被俘後處死的結果。'};

@@ -43,3 +43,5 @@ body.battle-focus .battle-stats{margin:0;padding:5px 10px;flex-shrink:0}body.bat
 #duelDialog[data-phase=combat]{max-height:94dvh;overflow-y:auto;overflow-x:hidden}#duelDialog[data-phase=combat] .duel-controls{position:sticky;bottom:-1px;background:#172825;z-index:10}
 
 .lane.burning .enemy-zone-label:after{content:" ⚠ 火焰"}
+
+.combat-effect.capture{width:100px;height:105px;transform:translate(-50%,-50%)}.combat-effect.capture img{width:100%;height:100%;object-fit:contain;transform:none}.combat-effect.capture small{position:absolute;bottom:0;left:20%;background:#f5e2b1;color:#254335;border:1px solid #6c6245;border-radius:5px;padding:3px 8px;font:bold 14px serif}

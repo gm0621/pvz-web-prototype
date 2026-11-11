@@ -1,4 +1,4 @@
-import {CAMPAIGN_LENGTH} from './campaign-config.mjs?v=chapter-five-1';
+import {CAMPAIGN_LENGTH} from './campaign-config.mjs?v=chapter-six-1';
 // Local campaign economy, independent of the original zombie game's account/store.
 export const GOODS={
  herb:{name:'行軍藥包',shop:'items',price:25,icon:'✚',description:'戰鬥中使用，所有在場友軍回復 60 生命。'},

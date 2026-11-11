@@ -1,9 +1,9 @@
-import {FACTIONS,paintPortrait} from './factions.mjs?v=chapter-five-1';
+import {FACTIONS,paintPortrait} from './factions.mjs?v=chapter-six-1';
 export function mountHistoryLesson(stage,heroes){
  let root=document.getElementById('historyLesson');if(!root){root=document.createElement('details');root.id='historyLesson';document.getElementById('storyPrologue').prepend(root)}root.hidden=!stage.year;if(!stage.year)return;root.open=false;
  root.innerHTML='<summary class="history-toggle"></summary><div class="history-timeline"><span>189 · 董卓入京</span><span>190 · 聯軍起兵</span><span>191 · 孫堅北進</span></div><h3></h3><div class="history-roster"></div><div class="history-tabs"><button type="button">史書記了什麼？</button><button type="button">哪些是遊戲改編？</button></div><p class="history-fact"></p><details><summary>查看史料出處</summary><div></div></details>';
  root.querySelector('.history-toggle').textContent=`${stage.year} 年 · ${FACTIONS[stage.faction].title} · 點開歷史小檔案`; root.querySelector('h3').textContent=`${stage.year} 年 · 視角：${FACTIONS[stage.faction].title}${stage.viewpointShift?' · 換一雙眼睛看歷史':''}`;
- const timeline=stage.chapter===5?[[192,'長安政變・兗州立足'],[194,'鄄城與濮陽'],[195,'定陶再起']]:[[189,'董卓入京'],[190,'聯軍起兵'],[191,'孫堅北進']];
+ const timeline=stage.chapter===6?[[196,'迎駕與屯田'],[197,'宛城與陳地'],[198,'下邳合圍']]:stage.chapter===5?[[192,'長安政變・兗州立足'],[194,'鄄城與濮陽'],[195,'定陶再起']]:[[189,'董卓入京'],[190,'聯軍起兵'],[191,'孫堅北進']];
  for(const [i,item] of [...root.querySelectorAll('.history-timeline span')].entries()){item.textContent=timeline[i].join(' · ');item.classList.toggle('current',stage.year===timeline[i][0])}
  for(const key of ['liubei','guanyu','zhangfei']){const fig=document.createElement('figure'),img=document.createElement('img'),caption=document.createElement('figcaption');paintPortrait(img,heroes[key]);img.alt=heroes[key].name;caption.textContent=heroes[key].name;fig.append(img,caption);root.querySelector('.history-roster').append(fig)}
  const buttons=root.querySelectorAll('.history-tabs button');function select(i){root.querySelector('.history-fact').textContent=i?stage.adaptation:stage.history;buttons.forEach((b,j)=>b.setAttribute('aria-pressed',String(i===j)))}buttons.forEach((b,i)=>b.onclick=()=>select(i));select(0);

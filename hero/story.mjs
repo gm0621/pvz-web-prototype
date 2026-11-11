@@ -1,5 +1,5 @@
-import {HISTORICAL_STAGES} from './history-stages.mjs?v=chapter-five-1';
-import {FACTIONS,factionFor} from './factions.mjs?v=chapter-five-1';
+import {HISTORICAL_STAGES} from './history-stages.mjs?v=chapter-six-1';
+import {FACTIONS,factionFor} from './factions.mjs?v=chapter-six-1';
 import {THIRD_CHAPTER} from './chapter-three.mjs?v=history-coalition-1';
 import {WEATHER_GENERALS} from './weather-generals.mjs?v=history-coalition-1';
 import {SECOND_CHAPTER} from './chapter-two.mjs?v=history-coalition-1';
@@ -54,7 +54,7 @@ export const STAGES=[
 ];
 
 STAGES.push(...SECOND_CHAPTER,...THIRD_CHAPTER,...HISTORICAL_STAGES);
-export function chapterInfo(level){const chapter=STAGES[level-1]?.chapter||1;return {chapter,number:STAGES[level-1]?.number||level,count:STAGES.filter(s=>(s.chapter||1)===chapter).length,title:['','桃園同心','烽火與義氣','風雨破黃巾','群雄討董','兗州風雲'][chapter]}}
+export function chapterInfo(level){const chapter=STAGES[level-1]?.chapter||1;return {chapter,number:STAGES[level-1]?.number||level,count:STAGES.filter(s=>(s.chapter||1)===chapter).length,title:['','桃園同心','烽火與義氣','風雨破黃巾','群雄討董','兗州風雲','迎駕與下邳'][chapter]}}
 
 export const UNLOCKS={healing:2,roar:3,cleave:4,shields:5,oath:6};
 export const FEATURES=[

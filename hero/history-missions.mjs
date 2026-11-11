@@ -1,5 +1,5 @@
-import {HISTORICAL_STAGES} from './history-stages.mjs?v=chapter-five-1';
-import {FACTIONS,factionFor} from './factions.mjs?v=chapter-five-1';
+import {HISTORICAL_STAGES} from './history-stages.mjs?v=chapter-six-1';
+import {FACTIONS,factionFor} from './factions.mjs?v=chapter-six-1';
 const siteNames=['道路','水井','宗廟'],laneNames=['上','中','下'];
 const kinds=HISTORICAL_STAGES.map(s=>s.mission);
 export function createHistoryMission(level){return {level,kind:kinds[level-17],hold:0,done:false,message:'',lane:1,travel:0,rescued:0,delivered:0,charge:0,withdrawAt:null,ordered:false,decoyUsed:false,decoyLane:null,site:-1,sites:[0,0,0]}}
@@ -31,9 +31,9 @@ export function stepHistoryMission(b,dt){
 }
 export function protectHistoricalOutcome(b){if(['withdraw','decoy'].includes(b.mission?.kind))for(const e of b.enemies)if(e.boss&&!e.escaped)e.hp=Math.max(e.hp,e.maxHp*.35)}
 export const extracted=b=>['withdraw','decoy'].includes(b.mission?.kind)&&b.mission.done;
-export function historyMissionText(b){const m=b.mission,opponent=HISTORICAL_STAGES[b.level-17].bossName;
+export function historyMissionText(b){const m=b.mission,stage=HISTORICAL_STAGES[b.level-17],opponent=stage.bossName,holdTitle=stage.missionTitle||'鄄城接應';
  if(m.done&&['dispatch','supply','restoration','holdout'].includes(m.kind)){
-  const title={dispatch:'接應 3／3 隊使者',supply:'軍糧 3／3 批',restoration:'城內整備 3／3',holdout:'鄄城接應 24／24 秒'}[m.kind];
+  const title={dispatch:'接應 3／3 隊使者',supply:'軍糧 3／3 批',restoration:'城內整備 3／3',holdout:holdTitle+' 24／24 秒'}[m.kind];
   return `${title} · 任務已完成`+(b.won?'':b.bossSpawned?'，清退剩餘敵軍後過關':'，守住防線並清退後續敵軍');
  }
  if(m.kind==='dispatch')return `接應 ${m.rescued}／3 隊使者 · ${['上','中','下'][m.lane]}路 ${Math.floor(m.travel*100)}% · 守住道路才能前進`;
@@ -49,7 +49,7 @@ export function historyMissionText(b){const m=b.mission,opponent=HISTORICAL_STAG
   const detail=m.site<0?'選一處整備，派友軍守住對應路線':`${siteNames[m.site]}・${laneNames[m.site]}路 · ${!b.allies.some(u=>u.hp>0&&u.lane===m.site)?'等候友軍接應':!safe(b,m.site)?'敵軍逼近，整備暫停':'整備中'}`;
   return `城內整備 ${m.sites.filter(t=>t>=8).length}／3 · ${detail}`;
  }
- if(m.kind==='holdout')return `鄄城接應 ${Math.floor(m.hold)}／24 秒 · 三路皆有友軍、敵人未逼近才計時 · 受阻暫停，進度保留`;
+ if(m.kind==='holdout')return `${holdTitle} ${Math.floor(m.hold)}／24 秒 · 三路皆有友軍、敵人未逼近才計時 · 受阻暫停，進度保留`;
  if(b.level>=23)return HISTORICAL_STAGES[b.level-17].bossTip;
  return '陽人之戰 · 三將合陣、避開重斧再反擊 · 史書記孫堅軍破敵，非關羽單挑';
 }
