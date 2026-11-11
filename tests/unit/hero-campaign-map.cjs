@@ -19,3 +19,9 @@ test('opening map pauses battle; closing preserves pause and background interrup
  battle.paused=false;button.onclick();winEvents.pagehide();dialog.close();assert.equal(battle.paused,true);
  battle.duel={};control.update(battle);assert.equal(button.disabled,true);button.onclick();assert.equal(dialog.open,false);
 });
+test('all travel segments use the previous location, except explicit faction origins; zoom contains both markers',async()=>{
+ const {journeyRoute,stageLocation}=await map;for(let level=1;level<=22;level++){
+  const r=journeyRoute(level),[x,y,w,h]=r.viewBox.split(' ').map(Number);assert.equal(r.to.place,stageLocation(level).place);assert.equal(r.from.place,level===17?'luoyang':level===20?'luyang':stageLocation(Math.max(1,level-1)).place);
+  for(const p of [r.start,r.end,{x:r.to.x+36,y:r.to.y-44}]){assert.ok(p.x-29>=x&&p.x+29<=x+w,`level ${level} horizontal marker`);assert.ok(p.y-29>=y&&p.y+49<=y+h,`level ${level} vertical marker`)}
+ }
+});

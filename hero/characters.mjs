@@ -1,4 +1,5 @@
-import {HEROES,STAGES,enemyArt} from './story.mjs?v=history-coalition-1';
+import {WEATHER_GENERALS} from './weather-generals.mjs?v=history-coalition-1';
+import {HEROES,STAGES,ENEMY_ART,enemyArt} from './story.mjs?v=history-coalition-1';
 import {FACTIONS,factionFor,enemyPortrait,paintPortrait} from './factions.mjs?v=history-coalition-1';
 export const STORY_PEOPLE=[
  {name:'盧植',aliases:['盧植','盧公'],asset:'./assets/portraits/lu-zhi.webp?v=portrait-web-1',role:'劉備的老師・在廣宗討伐黃巾'},
@@ -19,11 +20,11 @@ export function renderPeople(root,text,speaker=''){
 }
 export function stagePeople(level){
  const stage=STAGES[level-1],faction=factionFor(level),leader=faction?FACTIONS[faction].heroes.liubei:HEROES.liubei;
- return {leader,opponent:enemyPortrait(stage.bossName,level)||{name:stage.bossName,asset:enemyArt(stage.bossName)},relation:[19,20].includes(level)?'保全撤離・追擊方':stage.noBoss?'本關遭遇':'本關對手'};
+ return {leader,opponent:enemyPortrait(stage.bossName,level)||{name:stage.bossName,asset:stage.noBoss?ENEMY_ART:enemyArt(stage.bossName)},supports:level===8?Object.values(WEATHER_GENERALS):[],relation:[19,20].includes(level)?'保全撤離・追擊方':stage.noBoss?'本關遭遇':'本關對手'};
 }
 // Nested SVG viewports select the existing atlas cell without creating new bitmap assets.
 export function mapPersonSvg(person,kind,x,y){
  const image=person.atlas?`<svg x="-27" y="-29" width="54" height="54" viewBox="0 ${person.row*100} 100 65"><image href="${person.atlas}" width="300" height="300"/></svg>`:`<svg x="-27" y="-29" width="54" height="54" viewBox="15 0 70 65"><image href="${person.asset}" width="100" height="100"/></svg>`;
  return `<g class="map-person ${kind}" data-person="${person.name}" transform="translate(${x} ${y})"><title>${person.name}</title><path d="M-6 26L0 34 6 26"/><circle r="29"/>${image}<text y="46" text-anchor="middle">${person.name}</text></g>`;
 }
-export function renderMatchup(root,level){const {leader,opponent,relation}=stagePeople(level);root.replaceChildren();for(const [person,label] of [[leader,'目前軍隊'],[opponent,relation]]){const card=document.createElement('div');card.className='map-side';const img=document.createElement('img');paintPortrait(img,person);img.alt=person.name;const copy=document.createElement('div'),small=document.createElement('small'),strong=document.createElement('strong');small.textContent=label;strong.textContent=person.name;copy.append(small,strong);card.append(img,copy);root.append(card)}}
+export function renderMatchup(root,level){const {leader,opponent,supports,relation}=stagePeople(level);root.replaceChildren();for(const [person,label] of [[leader,'目前軍隊'],[opponent,relation],...supports.map(p=>[p,`支援將・${p.lane===0?'上路':'下路'}`])]){const card=document.createElement('div');card.className='map-side';card.setAttribute('data-side',person===leader?'army':'enemy');const img=document.createElement('img');paintPortrait(img,person);img.alt=person.name;const copy=document.createElement('div'),small=document.createElement('small'),strong=document.createElement('strong');small.textContent=label;strong.textContent=person.name;copy.append(small,strong);card.append(img,copy);root.append(card)}}

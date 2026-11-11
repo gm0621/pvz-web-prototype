@@ -1,4 +1,4 @@
-import {stagePeople,mapPersonSvg,renderMatchup} from './characters.mjs?v=character-map-3';
+import {stagePeople,mapPersonSvg,renderMatchup} from './characters.mjs?v=map-audit-1';
 import {FOURTH_CHAPTER} from './chapter-four.mjs?v=history-coalition-1';
 // Approximate regional placement, not historical borders or a surveyed route.
 export const MAP_PLACES={
@@ -25,6 +25,15 @@ Object.assign(MAP_PLACES,{luoyang:{name:'洛陽',modern:'今河南洛陽一帶',
 STAGE_LOCATIONS.push(...FOURTH_CHAPTER.map(s=>({place:s.mapPlace,detail:`${s.year} 年・${s.faction==='cao'?'曹操軍':'孫堅軍'}視角。${s.viewpointShift?'此處切換敘事視角，不是上一支軍隊的連續行程。':''}地點為歷史區域示意，並非精確軍事路線。`})));
 export function stageLocation(level){if(!Number.isInteger(level)||!STAGE_LOCATIONS[level-1])throw new RangeError('未知戰役關卡');const s=STAGE_LOCATIONS[level-1];return {...MAP_PLACES[s.place],...s,level}}
 export function routeThrough(level){stageLocation(level);if(level>=17){const start=level>=20?19:16,origin=level>=20?'luyang':'luoyang';return [origin,...STAGE_LOCATIONS.slice(start,level).map(s=>s.place)].filter((p,i,a)=>i===0||p!==a[i-1])}return STAGE_LOCATIONS.slice(0,level).map(s=>s.place).filter((key,i,arr)=>i===0||key!==arr[i-1])}
+// Only this stage's travel segment; changing factions uses its explicit origin.
+export function journeyRoute(level){
+ const to=stageLocation(level),origin=level>=17?FOURTH_CHAPTER[level-17].originPlace:null;
+ const from=origin?{...MAP_PLACES[origin],place:origin}:stageLocation(Math.max(1,level-1)),same=from.place===to.place;
+ const start={x:same?to.x-90:from.x-36,y:same?to.y-10:from.y-44},end={x:to.x-36,y:to.y-44};
+ const left=Math.min(start.x,end.x)-50,right=Math.max(start.x,to.x+36)+65,top=Math.min(start.y,end.y)-45,bottom=Math.max(from.y,to.y)+95;
+ const width=Math.max(320,right-left),height=Math.max(210,bottom-top);
+ return {from,to,same,start,end,viewBox:`${(left+right-width)/2} ${Math.max(0,(top+bottom-height)/2)} ${width} ${height}`};
+}
 export function campaignMapSvg(level,mini=false){
  const current=stageLocation(level),route=routeThrough(level),visited=new Set(route);
  const points=route.map(key=>`${MAP_PLACES[key].x},${MAP_PLACES[key].y}`).join(' ');
@@ -32,13 +41,13 @@ export function campaignMapSvg(level,mini=false){
   const active=key===current.place,labelOffset=active&&route.some(k=>k!==key&&Math.hypot(MAP_PLACES[k].x-p.x,MAP_PLACES[k].y-p.y)<55)?70:38;if(level>=17&&!visited.has(key)&&!active)return '';if(level<17&&['luoyang','chenliu','suanzhao','bian','liangdong','yangren','luyang'].includes(key))return '';if(key.startsWith('side')&&!visited.has(key)&&!active)return '';
   return `<g class="map-city ${active?'current':visited.has(key)?'visited':'future'}"><circle cx="${p.x}" cy="${p.y}" r="${active?16:7}"/>${active?`<circle class="map-current-ring" cx="${p.x}" cy="${p.y}" r="24"/><path class="map-flag" d="M${p.x},${p.y-14}v-34l26,7 -26,9"/>`:''}${mini||key.startsWith('side')&&!active?'':`<text x="${active?p.x:p.x+32}" text-anchor="${active?'middle':'start'}" y="${p.y+(active?labelOffset:7)}">${p.name}</text>`}</g>`;
  }).join('');
- return `<svg viewBox="${level>=17?'150 190 340 280':'0 0 720 440'}" xmlns="http://www.w3.org/2000/svg" ${mini?'aria-hidden="true"':'role="img" aria-label="戰役方位示意圖，目前位於'+current.name+'"'}>
- <rect width="720" height="480" rx="18" fill="#eaddb9"/>
+ return `<svg viewBox="${level>=17?'150 190 340 280':'220 0 440 440'}" xmlns="http://www.w3.org/2000/svg" ${mini?'aria-hidden="true"':'role="img" aria-label="戰役方位示意圖，目前位於'+current.name+'"'}>
+ <rect width="720" height="600" rx="18" fill="#eaddb9"/>
  <path d="M580 0L720 0V440H655L632 395 660 350 638 310 675 276 646 239 681 216 658 191 606 206 577 181 563 140 593 109 567 68Z" fill="#a9c1bb" opacity=".75"/>
  <path d="M35 70L95 22 140 101 180 50 224 143 186 218 235 260 173 321 196 405 40 425Z" fill="#8c987c" opacity=".2"/>
  <path d="M82 180l25-46 28 46m13 28 22-40 24 40m-90 118 26-48 27 48m55-65 23-37 22 37" fill="none" stroke="#78826b" stroke-width="3" opacity=".4"/>
  <path d="M40 110H680M40 220H680M40 330H680M180 25V410M360 25V410M540 25V410" stroke="#ac986b" opacity=".14"/>
- ${mini||level>=17?'':`<g class="map-region"><text x="300" y="45">幽州</text><text x="265" y="152">冀州</text><text x="540" y="145">青州</text><text x="440" y="285">兗州</text><text x="215" y="390">豫州</text><text x="635" y="105">海</text></g><g class="map-reference"><circle cx="212" cy="327" r="5"/><text x="157" y="350">洛陽</text><text x="250" y="422">中原</text></g><path d="M65 95V45m-10 15 10-15 10 15" stroke="#5b6048" stroke-width="3" fill="none"/><text x="56" y="30" class="map-north">北</text>`}
+ ${mini||level>=17?'':`<g class="map-region"><text x="300" y="45">幽州</text><text x="265" y="152">冀州</text><text x="540" y="145">青州</text><text x="440" y="285">兗州</text><text x="235" y="390">豫州</text><text x="635" y="105">海</text></g><g class="map-reference"><circle cx="212" cy="327" r="5"/><text x="157" y="350">洛陽</text><text x="250" y="422">中原</text></g><path d="M245 85V35m-10 15 10-15 10 15" stroke="#5b6048" stroke-width="3" fill="none"/><text x="236" y="20" class="map-north">北</text>`}
  <polyline points="${points}" class="map-route"/>${cities}${mini?'':mapPersonSvg(stagePeople(level).leader,'map-leader',current.x-36,current.y-44)+mapPersonSvg(stagePeople(level).opponent,'map-opponent',current.x+36,current.y-44)}
  </svg>`;
 }

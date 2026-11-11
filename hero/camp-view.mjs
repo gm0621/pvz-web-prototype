@@ -1,7 +1,7 @@
 import {FACTION_SKILLS,factionFor,paintPortrait} from './factions.mjs?v=history-coalition-1';
 import {campConversation} from './camp-talk.mjs?v=history-coalition-1';
 import {GOODS,purchase} from './campaign.mjs?v=economy-save-1';
-import {CAMP_LINES} from './novel.mjs?v=character-map-3';
+import {CAMP_LINES} from './novel.mjs?v=map-audit-1';
 import {HERO_SKILLS} from './skills.mjs?v=history-coalition-1';
 export function mountCamp({progress,level,heroes,stage,onSave,onContinue,won=true}){
  const $=id=>document.getElementById(id);let shop='items';
