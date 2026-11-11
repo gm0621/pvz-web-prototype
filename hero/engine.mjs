@@ -256,6 +256,8 @@ export function stepBattle(b,seconds){
  if(b.level>=UNLOCKS.oath&&!b.oathUsed&&['liubei','guanyu','zhangfei'].every(key=>b.allies.some(u=>u.key===key&&u.hp>0))){b.oathUsed=true;b.oathBuffUntil=b.time+5;for(const ally of b.allies)if(ally.hp>0){ally.hp=Math.min(ally.maxHp,ally.hp+55);effect(b,'oath',ally.lane,ally.x)}b.skillNotice={key:'liubei',text:b.level>=17?'合擊・同袍合陣':'合擊・桃園同心',until:b.time+2.2};b.notice=(b.level>=17?'同袍合陣':'桃園同心')+'！全軍回復，五秒內攻擊提升。';b.noticeUntil=b.time+5}
  for(const unit of [...b.allies,...b.enemies])if(unit.hp<=0&&!unit.escaped){const retreat=unit.boss&&(stage.duelOutcome==='retreat'||unit.support);effect(b,retreat?'retreat':'defeat',unit.lane,unit.x,retreat?1.1:unit.x,{key:unit.key||null,enemy:!unit.key,boss:!!unit.boss,shielded:!!unit.shielded,ranged:!!unit.ranged,bossName:unit.name});if(retreat)b.bossRetreated=true;if(unit.key&&unit.key!=='archer')b.cooldowns[unit.key]=b.time+12}
  b.allies=b.allies.filter(u=>u.hp>0);b.enemies=b.enemies.filter(u=>u.hp>0);
+ // Recheck evacuation after this tick's damage and movement, without advancing mission time.
+ if(['withdraw','decoy'].includes(b.mission?.kind))stepMission(b,0);
  if(b.lives<=0||b.lossReason==='commander-breach'){b.over=true;b.won=false}
  else if(extracted(b)||b.bossSpawned&&!b.enemies.length&&missionReady(b)){b.over=true;b.won=true}
 }

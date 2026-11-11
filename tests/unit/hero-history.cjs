@@ -1,4 +1,22 @@
 const {test}=require('node:test'),assert=require('node:assert/strict');const engine=import('../../hero/engine.mjs'),history=import('../../hero/history-missions.mjs');
+for(const level of [19,20])for(const key of ['liubei','zhangfei'])test(`retreat ${level} does not complete when ${key} falls on the extraction tick`,async()=>{
+ const {createBattle,deploy,stepBattle}=await engine,{historyAction}=await history;
+ const b=createBattle(level,1);b.nextSpawn=Infinity;b.food=300;
+ deploy(b,'liubei',0);deploy(b,'zhangfei',1);b.bossSpawned=true;b.mission.withdrawAt=0;
+ b.enemies=[{id:90,name:'徐榮',boss:true,lane:2,x:.7,hp:440,maxHp:440,damage:0,rate:3,speed:0,lastAttack:0}];
+ if(level===20)assert.equal(historyAction(b,'decoy',2),true);
+ assert.equal(historyAction(b,'retreat'),true);
+ const victim=b.allies.find(u=>u.key===key);victim.hp=1;
+ b.projectiles=[{targetId:victim.id,lane:victim.lane,aimX:victim.x,impactAt:.1,damage:10}];
+ stepBattle(b,.1);
+ assert.equal(b.allies.some(u=>u.key===key),false);
+ assert.equal(b.won,false);assert.equal(b.over,false);assert.equal(b.mission.done,false);
+ // A surviving army can recall the fallen general after the existing recovery period.
+ for(let i=0;i<121;i++)stepBattle(b,.1);
+ assert.equal(deploy(b,key,victim.lane),true);
+ assert.equal(historyAction(b,'retreat'),true);stepBattle(b,.1);
+ assert.equal(b.won,true);assert.equal(b.mission.done,true);
+});
 for(let level=17;level<=22;level++)test(`historical stage ${level} completes using legal deployment and its objective`,async()=>{
  const {createBattle,deploy,stepBattle}=await engine,{historyAction}=await history;
  for(const seed of [1,42,2026]){const b=createBattle(level,seed);for(let i=0;i<5000&&!b.over;i++){

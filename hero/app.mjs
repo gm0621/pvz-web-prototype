@@ -1,11 +1,11 @@
 import {FACTIONS,factionFor,enemyPortrait,paintPortrait} from './factions.mjs?v=history-coalition-1';
 import {mountHistoryLesson} from './history-view.mjs?v=history-coalition-1';
-import {renderBossCutin} from './boss-cutin.mjs?v=history-coalition-1';
+import {renderBossCutin} from './boss-cutin.mjs?v=withdrawal-settlement-1';
 import {mountBattleKeys} from './battle-keys.mjs?v=history-coalition-1';
 import {mountJourney} from './journey-view.mjs?v=history-coalition-1';
 import {renderMission} from './chapter-mission-view.mjs?v=history-coalition-1';
 import {mountCampaignMap} from './campaign-map.mjs?v=history-coalition-1';
-import {advanceBattleFrame,normalizeBattleSpeed} from './battle-speed.mjs?v=history-coalition-1';
+import {advanceBattleFrame,normalizeBattleSpeed} from './battle-speed.mjs?v=withdrawal-settlement-1';
 import {mountNovel} from './novel.mjs?v=history-coalition-1';
 import {mountCamp} from './camp-view.mjs?v=history-coalition-1';
 import {rewardVictory,useSupply} from './campaign.mjs?v=history-coalition-1';
@@ -13,9 +13,9 @@ import {createFirstGuide} from './first-guide.mjs?v=history-coalition-1';
 import {mountStoryTask} from './story-play.mjs?v=history-coalition-1';
 import {CHAPTER_BACKGROUNDS,STAGE_LEADS} from './prologue.mjs?v=history-coalition-1';
 import {setMusic,setMusicMode,setMusicHome,musicTheme,musicOn,setSfx,unlockAudio,hitSound} from './audio.mjs?v=history-coalition-1';
-import {renderDuel} from './duel-view.mjs?v=history-coalition-1';
+import {renderDuel} from './duel-view.mjs?v=withdrawal-settlement-1';
 import {chapterInfo,enemyArt,HEROES as BASE_HEROES,heroesForLevel,STAGES,ENEMY_ART,SHIELD_ART,FEATURES,heroDescription} from './story.mjs?v=history-coalition-1';
-import {bossProfile,LANE_CAPACITY,laneCount,ENEMY_SWING,enemyAttackFrame,skipDuelEntrance,positionHero,commandHero,moveHero,BOSS_SKILLS,SAVE_KEY,normalizeProgress,createBattle,deploy,canDeploy,attackFrame,SWING} from './engine.mjs?v=history-coalition-1';
+import {bossProfile,LANE_CAPACITY,laneCount,ENEMY_SWING,enemyAttackFrame,skipDuelEntrance,positionHero,commandHero,moveHero,BOSS_SKILLS,SAVE_KEY,normalizeProgress,createBattle,deploy,canDeploy,attackFrame,SWING} from './engine.mjs?v=withdrawal-settlement-1';
 
 const $=id=>document.getElementById(id);
 let HEROES=BASE_HEROES;
