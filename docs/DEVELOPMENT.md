@@ -53,7 +53,7 @@ npm test -- tests/hero-economy-persistence.spec.js tests/hero-settlement.spec.js
 # 第五章手機／平板完整檢查（含存檔與跨章）
 npx playwright test --config=playwright.hero-five-audit.config.js --retries=0
 
-# 第五章手機／平板與 28 關連續銜接
+# 第五章手機／平板、五章連續銜接與 28 關亂序重玩
 npx playwright test --config=playwright.hero-five.config.js --retries=0
 npx playwright test --config=playwright.hero-transitions.config.js --retries=0
 
