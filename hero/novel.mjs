@@ -1,4 +1,4 @@
-import {renderPeople} from './characters.mjs?v=character-map-2';
+import {renderPeople} from './characters.mjs?v=character-map-3';
 import {FOURTH_CHAPTER} from './chapter-four.mjs?v=history-coalition-1';
 import {paintPortrait} from './factions.mjs?v=history-coalition-1';
 import {THIRD_CHAPTER} from './chapter-three.mjs?v=history-coalition-1';

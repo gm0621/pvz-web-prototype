@@ -1,9 +1,9 @@
 import {HEROES,STAGES,enemyArt} from './story.mjs?v=history-coalition-1';
 import {FACTIONS,factionFor,enemyPortrait,paintPortrait} from './factions.mjs?v=history-coalition-1';
 export const STORY_PEOPLE=[
- {name:'盧植',aliases:['盧植','盧公'],asset:'./assets/portraits/lu-zhi.webp',role:'劉備的老師・在廣宗討伐黃巾'},
- {name:'皇甫嵩',aliases:['皇甫嵩'],asset:'./assets/portraits/huangfu-song.webp',role:'朝廷將領・長社火攻的指揮者'},
- {name:'朱儁',aliases:['朱儁'],asset:'./assets/portraits/zhu-jun.webp',role:'朝廷將領・與皇甫嵩共同討黃巾'},
+ {name:'盧植',aliases:['盧植','盧公'],asset:'./assets/portraits/lu-zhi.webp?v=portrait-web-1',role:'劉備的老師・在廣宗討伐黃巾'},
+ {name:'皇甫嵩',aliases:['皇甫嵩'],asset:'./assets/portraits/huangfu-song.webp?v=portrait-web-1',role:'朝廷將領・長社火攻的指揮者'},
+ {name:'朱儁',aliases:['朱儁'],asset:'./assets/portraits/zhu-jun.webp?v=portrait-web-1',role:'朝廷將領・與皇甫嵩共同討黃巾'},
  {...FACTIONS.cao.heroes.liubei,aliases:['曹操'],role:'曹操軍主將'},
  {...FACTIONS.sun.heroes.liubei,aliases:['孫堅'],role:'孫堅軍主將'},
  {name:'張角',aliases:['張角'],asset:enemyArt('張角'),role:'黃巾領袖・大賢良師'},
