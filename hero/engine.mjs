@@ -242,14 +242,14 @@ export function stepBattle(b,seconds){
       if(b.level===5){u.x=Math.max(.06,u.x-.07);if(u.order==='hold')u.targetX=u.x;u.pendingStrike=null;u.pendingCleave=null;u.swingStartedAt=-100;}
      }
      for(const lane of e.castLanes||[e.lane])effect(b,kind==='thunder'?'thunder':'boss',lane,e.x);
-     if(kind==='fire'){b.hazards.push({lane:e.lane,nextTick:b.time+1,until:b.time+3.2});effect(b,'fire',e.lane,.5,.5,{duration:3.2,remaining:3.2})}
+     if(kind==='fire')for(const lane of e.castLanes||[e.lane]){b.hazards.push({lane,nextTick:b.time+1,until:b.time+3.2});effect(b,'fire',lane,.5,.5,{duration:3.2,remaining:3.2})}
     }
     e.skillsCast=(e.skillsCast||0)+1;e.recoveryUntil=b.time+2;e.castAt=null;e.castLanes=null;e.castTargetId=null;e.nextSkill=b.time+(e.enraged?7:9);
     b.skillNotice={key:'enemy',text:`${e.name}・${bossProfile(b,e).skillName}`,until:b.time+1.5};
    }
    if(b.time<(e.recoveryUntil||0)){e.action='recovering';continue}
    if(!e.castAt&&target&&e.x-target.x<.34&&b.time>=(e.nextSkill||0)){
-    e.castStartedAt=b.time;e.castAt=b.time+(b.level>=5?2.5:1.8);e.castLanes=e.enraged?[e.lane,(e.lane+1)%3]:[e.lane];e.castTargetId=target.id;
+    e.castStartedAt=b.time;e.castAt=b.time+(b.level>=5?2.5:1.8);e.castLanes=e.enraged&&bossProfile(b,e).skillType!=='hook'?[e.lane,(e.lane+1)%3]:[e.lane];e.castTargetId=target.id;
     b.notice=`${e.name}蓄力：${bossProfile(b,e).skillName}！${bossProfile(b,e).skillType==='rally'?'敵兵即將加速，守住三路':'可換路閃避'}`;b.noticeUntil=e.castAt;
    }
    if(e.castAt){e.action='casting';continue}

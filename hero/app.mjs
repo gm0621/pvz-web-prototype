@@ -1,12 +1,12 @@
 import {renderPeople} from './characters.mjs?v=chapter-five-1';
 import {FACTIONS,factionFor,enemyPortrait,paintPortrait} from './factions.mjs?v=chapter-five-1';
 import {mountHistoryLesson} from './history-view.mjs?v=chapter-five-1';
-import {renderBossCutin} from './boss-cutin.mjs?v=chapter-five-1';
+import {renderBossCutin} from './boss-cutin.mjs?v=five-flow-1';
 import {mountBattleKeys} from './battle-keys.mjs?v=history-coalition-1';
 import {mountJourney} from './journey-view.mjs?v=chapter-five-1';
 import {renderMission} from './chapter-mission-view.mjs?v=chapter-five-1';
 import {mountCampaignMap} from './campaign-map.mjs?v=chapter-five-1';
-import {advanceBattleFrame,normalizeBattleSpeed} from './battle-speed.mjs?v=chapter-five-1';
+import {advanceBattleFrame,normalizeBattleSpeed} from './battle-speed.mjs?v=five-flow-1';
 import {mountNovel} from './novel.mjs?v=chapter-five-1';
 import {mountCamp} from './camp-view.mjs?v=chapter-five-1';
 import {rewardVictory,useSupply} from './campaign.mjs?v=chapter-five-1';
@@ -14,9 +14,9 @@ import {createFirstGuide} from './first-guide.mjs?v=history-coalition-1';
 import {mountStoryTask} from './story-play.mjs?v=chapter-five-1';
 import {CHAPTER_BACKGROUNDS,STAGE_LEADS} from './prologue.mjs?v=chapter-five-1';
 import {setMusic,setMusicMode,setMusicHome,musicTheme,musicOn,setSfx,unlockAudio,hitSound} from './audio.mjs?v=history-coalition-1';
-import {renderDuel} from './duel-view.mjs?v=chapter-five-1';
+import {renderDuel} from './duel-view.mjs?v=five-flow-1';
 import {chapterInfo,enemyArt,HEROES as BASE_HEROES,heroesForLevel,STAGES,ENEMY_ART,SHIELD_ART,FEATURES,heroDescription} from './story.mjs?v=chapter-five-1';
-import {bossProfile,LANE_CAPACITY,laneCount,ENEMY_SWING,enemyAttackFrame,skipDuelEntrance,positionHero,commandHero,moveHero,BOSS_SKILLS,SAVE_KEY,normalizeProgress,createBattle,deploy,canDeploy,attackFrame,SWING} from './engine.mjs?v=chapter-five-1';
+import {bossProfile,LANE_CAPACITY,laneCount,ENEMY_SWING,enemyAttackFrame,skipDuelEntrance,positionHero,commandHero,moveHero,BOSS_SKILLS,SAVE_KEY,normalizeProgress,createBattle,deploy,canDeploy,attackFrame,SWING} from './engine.mjs?v=five-flow-1';
 
 const $=id=>document.getElementById(id);
 let HEROES=BASE_HEROES;
@@ -147,7 +147,7 @@ function renderBattle(){
  if(boss&&['withdraw','decoy'].includes(battle.mission?.kind))$('bossHudState').textContent=(boss.castAt?`${bossProfile(battle,boss).skillName}蓄力！換路閃避 · `:battle.time<(boss.recoveryUntil||0)?'敵將收招，趁機拉開距離 · ':'避開追擊 · ')+`接應完成後全軍撤離，無須擊倒${stage.bossName}`;
  if(boss&&stage.duelPartner&&!battle.duelSeen)$('bossHudState').textContent+=(b => b?' · 關羽同路近身 → 二打一':' · 召集關羽、張飛 → 聯手單挑')(battle.allies.some(u=>u.key==='guanyu'&&u.hp>0)&&battle.allies.some(u=>u.key==='zhangfei'&&u.hp>0));
  if(boss&&battle.level===5&&boss.castAt)$('bossHudState').textContent+=boss.hp/boss.maxHp>.65?' · 先破盾至 65% 以下':' · 劉備可近身單挑';
- for(const lane of $('lanes').children)lane.classList.toggle('danger',(battle.mission?.weather?.lane===Number(lane.dataset.lane)||battle.enemies.some(e=>e.hp>0&&e.castAt&&(e.castLanes||[e.lane]).includes(Number(lane.dataset.lane)))));
+ for(const lane of $('lanes').children){const index=Number(lane.dataset.lane),burning=battle.hazards.some(h=>h.lane===index&&h.until>battle.time);lane.classList.toggle('burning',burning);lane.classList.toggle('danger',burning||battle.mission?.weather?.lane===index||battle.enemies.some(e=>e.hp>0&&e.castAt&&(e.castLanes||[e.lane]).includes(index)));}
  if(musicOn())$('musicBtn').textContent=`♫ ${musicTheme().name}`;
  if(selectedUnitId!==null&&!selectedUnit()){selected=null;selectedUnitId=null}
  const controlled=selectedUnit();
