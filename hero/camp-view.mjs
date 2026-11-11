@@ -10,7 +10,9 @@ export function mountCamp({progress,level,heroes,stage,onSave,onContinue,won=tru
  openPanel(null);for(const button of document.querySelectorAll('[data-talk]')){const d=heroes[button.dataset.talk];paintPortrait(button.querySelector('img'),d);button.querySelector('img').alt=d.name;button.querySelector('strong').textContent=d.name;button.querySelector('small').textContent='聊聊這一戰';}document.querySelector('.tent-banner').textContent=level>=20?'孫':level>=17?'曹':'義';
  let visitors=$('campVisitors');if(!visitors){visitors=document.createElement('button');visitors.id='campVisitors';visitors.className='quiet-button';visitors.textContent='探望鄉民與傷兵';$('campNarration').after(visitors)}visitors.hidden=level<11||!won;visitors.onclick=()=>{openPanel('campTalk');$('campTalkName').textContent='鄉民與傷兵';$('campTalkPortrait').hidden=true;$('campTalkText').textContent=level===16?'孩子已吃上熱粥，郎中正在替傷兵包紮。謝謝你們把大家平安帶回來。':'鄉民圍在營火旁，郎中替傷者包紮。先歇一歇，我們會彼此照應。';$('campTalkNext').textContent='回到營帳';$('campTalkNext').onclick=()=>openPanel(null)};
  $('campTitle').textContent=won?`${stage.name} · 歇馬整備`:'重整行裝，再來一次';$('campNarration').textContent=won?CAMP_LINES[level-1]:'先回營歇一歇。將士清點行囊，準備再試一次。';
- $('campContinue').textContent=won?'繼續故事 ➜':'重新出戰 →';$('campContinue').onclick=onContinue;
+ const finale=won&&level===22;
+ document.querySelector('.camp-departure strong').textContent=finale?'第四章完成，聽聽戰後故事。':'整備好了，就繼續冒險！';
+ $('campContinue').textContent=finale?'第四章尾聲 ➜':won?'繼續故事 ➜':'重新出戰 →';$('campContinue').onclick=onContinue;
  $('campMessage').textContent=(level>=17?'軍資、行囊與兵器整備沿用，換軍不必重買。':'')+'點一間攤位逛逛。購物可略過；兵器會自動裝備，道具可在戰鬥中使用。';
  function render(){
   $('campCoins').textContent=progress.coins;

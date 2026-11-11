@@ -13,3 +13,6 @@
 body:has(#result.active,#camp.active) .storage-notice{position:static;margin:12px auto;max-width:1120px}
 #resultSaved{display:block}
 #result #resultRetrySave:not([hidden]){display:block;margin:12px auto 0}
+
+body:has(#storageRetry:not([hidden])) .storage-notice{position:static;margin:12px auto;max-width:1120px}
+#storageRetry:not([hidden]){display:block;margin:12px auto 24px;max-width:calc(100% - 24px)}

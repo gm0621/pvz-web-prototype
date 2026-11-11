@@ -8,7 +8,7 @@ import {renderMission} from './chapter-mission-view.mjs?v=coalition-objectives-1
 import {mountCampaignMap} from './campaign-map.mjs?v=map-audit-1';
 import {advanceBattleFrame,normalizeBattleSpeed} from './battle-speed.mjs?v=coalition-objectives-1';
 import {mountNovel} from './novel.mjs?v=map-audit-1';
-import {mountCamp} from './camp-view.mjs?v=army-identity-1';
+import {mountCamp} from './camp-view.mjs?v=final-chapter-1';
 import {rewardVictory,useSupply} from './campaign.mjs?v=economy-save-1';
 import {createFirstGuide} from './first-guide.mjs?v=history-coalition-1';
 import {mountStoryTask} from './story-play.mjs?v=history-coalition-1';
@@ -31,7 +31,7 @@ try{progress=normalizeProgress(JSON.parse(localStorage.getItem(SAVE_KEY)||'{}'))
 }
 function saveProgress(next=progress){
  if(storageReadFailed)return false;
- try{localStorage.setItem(SAVE_KEY,JSON.stringify(next));$('storageNotice').hidden=true;return true}catch{$('storageNotice').textContent='目前無法保存；未保存的通關與軍資在重整後可能遺失。購買或使用道具失敗時不會扣除。';$('storageNotice').hidden=false;return false}
+ try{localStorage.setItem(SAVE_KEY,JSON.stringify(next));$('storageNotice').hidden=true;$('storageRetry').hidden=true;$('resultRetrySave').hidden=true;return true}catch{$('storageNotice').textContent='目前無法保存；未保存的通關與軍資在重整後可能遺失。購買或使用道具失敗時不會扣除。';$('storageNotice').hidden=false;$('storageRetry').hidden=false;return false}
 }
 function syncMusicButton(on=musicOn()){$('musicBtn').textContent=on?`♫ ${musicTheme().name}`:'♫ 音樂：關';$('musicBtn').setAttribute('aria-pressed',String(on))}
 let ownsFullscreen=false,focusRevision=0;
@@ -208,6 +208,7 @@ $('prologueContinue').onclick=()=>setPrologue(false);
 $('storyPrevious').onclick=()=>{if(lineIndex>0){lineIndex--;renderStory()}};
 $('storySkip').onclick=finishStory;
 $('resultNext').onclick=()=>openCamp(battle.level,battle.won);
+$('storageRetry').onclick=()=>{if(saveProgress())$('resultSaved').textContent='軍資與進度已保存，可在營地使用'};
 $('resultRetrySave').onclick=()=>{if(battle?.won&&saveProgress()){$('resultSaved').textContent='軍資與進度已保存，可在營地使用';$('resultRetrySave').hidden=true;$('resultSaved').tabIndex=-1;$('resultSaved').focus({preventScroll:true})}};
 
 for(const button of $('supplies').children)button.onclick=()=>{if(useSupply(battle,progress,button.dataset.supply,saveProgress)){hitSound('heal');renderBattle()}};
