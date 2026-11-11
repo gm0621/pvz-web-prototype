@@ -8,7 +8,9 @@
 - 新增 `tests/hero-final-chapter.spec.js` 與 `playwright.hero-final.config.js`：最後通關 +80、購買兵器／糧袋、尾聲返回、重整、連續重玩 +0、劉備／曹操／孫堅跨章切換、失敗不扣款、未保存重整回復舊進度、離開結算後重試及保存後不重複領獎。
 - 六尺寸首輪 17/18 通過，1024×768 橫向平板實際重現營地黏附底列遮住兵器攤位；已將離營列統一置於正常頁面流，不再蓋住攤位或面板。修正後完整 18/18 通過（48.8 秒、無重試）：320×568、667×375、768×1024、1024×768 Chromium，390×844、820×1180 WebKit。檢查按鈕至少 44px 及中心命中、首頁不橫向溢出；人工檢視窄手機未保存首頁截圖，警告與重試入口完整可見。
 - 完整引擎單元測試 189/189 通過。瀏覽器案例使用隔離存檔及受控最後戰局，不宣稱自然通關、平衡測試或實機 iOS 驗收。
-- 本次 app、camp-view、settlement、troop-controls 與 HTML 快取參數同步 `final-chapter-1`。既有 economy-persistence、settlement、novel-camp、history 桌機／手機回歸 52/52 通過（2.5 分鐘、無重試）。發布後驗證結果另記。
+- 本次 app、camp-view、settlement、troop-controls 與 HTML 快取參數同步 `final-chapter-1`。既有 economy-persistence、settlement、novel-camp、history 桌機／手機回歸 52/52 通過（2.5 分鐘、無重試）。
+- 已提交 `db26d19` 並推送 main；[Pages 工作 42983855620](https://github.com/gm0621/pvz-web-prototype/actions/runs/42983855620) 成功，SHA 相符。正式站五份修改前端逐位元符合提交，原遊戲入口亦與未修改原檔一致。
+- 正式站手機 Chromium／平板 WebKit 6/6 通過（57.1 秒、無重試）：最後通關、營地購買與尾聲、重整保留 22 關進度及裝備／道具／軍資、重玩不重領、跨章換軍、失敗保存離開結算後重試、未保存重整及再次通關。均使用隔離存檔與受控戰局。
 
 ## 第四章使者、運糧與洛陽整備檢查（2026-11-11）
 
