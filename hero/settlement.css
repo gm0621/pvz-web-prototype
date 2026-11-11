@@ -9,3 +9,7 @@
 @media(prefers-reduced-motion:reduce){#result .result-panel,#result .result-mark,#result .result-company img,#result .victory-ribbon,#result .reward-ledger,#result #resultEarned,#result .reward-balance,#result .reward-ledger:after,#result .reward-coins i,#result .reward-particles i,#result #resultNext{animation:none!important}.reward-coins,.reward-particles{display:none}}
 .result-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;max-width:450px;margin:auto}#result .result-actions button{margin:0;min-width:0}#result .result-actions #resultNext{grid-column:1/-1;margin:0;width:100%}
 @media(max-width:600px){#result .result-mark{width:58px;height:58px;font-size:35px;margin-bottom:7px}.result-company{height:76px;margin-top:8px}.result-company img{width:78px}#result #resultText{font-size:14px;line-height:1.7;margin:12px auto}#result .result-panel{padding:18px 15px}.reward-ledger{padding:13px}#resultEarned{font-size:52px;margin:6px}.victory-ribbon{font-size:10px;padding:5px;margin-bottom:9px}#result .result-next-step{margin:12px 0}.result-actions{gap:8px}.reward-balance{padding:10px 0 6px}}
+/* Keep storage warnings readable without covering the ledger or camp purchases. */
+body:has(#result.active,#camp.active) .storage-notice{position:static;margin:12px auto;max-width:1120px}
+#resultSaved{display:block}
+#result #resultRetrySave:not([hidden]){display:block;margin:12px auto 0}

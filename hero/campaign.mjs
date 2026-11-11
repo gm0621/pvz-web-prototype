@@ -20,19 +20,25 @@ export function rewardVictory(progress,level){
  if(!fresh)return 0;
  const reward=80;progress.coins=Math.min(99999,progress.coins+reward);progress.rewarded=Array.from({length:progress.completed},(_,i)=>i+1);return reward;
 }
-export function purchase(progress,id){
+// A caller may require durable storage before accepting an economy change.
+function persist(progress,save){try{return !save||save(progress)!==false}catch{return false}}
+export function purchase(progress,id,save){
  const item=Object.hasOwn(GOODS,id)?GOODS[id]:null;if(!item)return '找不到這件商品。';
  const weapon=item.shop==='weapons',owned=weapon?progress.weapons[id]:progress.inventory[id],cap=weapon?3:9;
  if(owned>=cap)return weapon?'這件兵器已強化到最高級。':'行囊已裝滿這種道具。';
  const price=item.price*(weapon?owned+1:1);if(progress.coins<price)return '軍資不足，先去完成新的關卡吧。';
  progress.coins-=price;if(weapon)progress.weapons[id]++;else progress.inventory[id]++;
+ if(!persist(progress,save)){progress.coins+=price;if(weapon)progress.weapons[id]--;else progress.inventory[id]--;return '無法保存，這次未購買；軍資與物品未變動，請稍後再試。'}
  return '';
 }
 export function weaponBonus(key,rank){return Math.max(0,Math.min(3,rank||0))*(key==='liubei'?3:4)}
-export function useSupply(battle,progress,id){
+export function useSupply(battle,progress,id,save){
  if(!battle||battle.over||battle.paused||battle.duel||battle.introPending)return false;
  if(!['herb','grain'].includes(id)||!progress.inventory[id])return false;
- if(id==='herb'){if(!battle.allies.some(u=>u.hp>0&&u.hp<u.maxHp))return false;for(const u of battle.allies)if(u.hp>0)u.hp=Math.min(u.maxHp,u.hp+60)}
- else {if(battle.food>=300)return false;battle.food=Math.min(300,battle.food+80)}
- progress.inventory[id]--;battle.notice=id==='herb'?'行軍藥包：全軍回復！':'備用糧袋：軍糧補充！';battle.noticeUntil=battle.time+3;return true;
+ if(id==='herb'&&!battle.allies.some(u=>u.hp>0&&u.hp<u.maxHp)||id==='grain'&&battle.food>=300)return false;
+ progress.inventory[id]--;
+ if(!persist(progress,save)){progress.inventory[id]++;return false}
+ if(id==='herb'){for(const u of battle.allies)if(u.hp>0)u.hp=Math.min(u.maxHp,u.hp+60)}
+ else battle.food=Math.min(300,battle.food+80);
+ battle.notice=id==='herb'?'行軍藥包：全軍回復！':'備用糧袋：軍糧補充！';battle.noticeUntil=battle.time+3;return true;
 }

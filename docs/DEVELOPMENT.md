@@ -47,6 +47,9 @@ node tests/support/static-server.js
 npm run test:hero:engine
 npm test -- tests/hero-standalone.spec.js --workers=1
 
+# 英雄演義存檔、軍資、營地交易與保存失敗
+npm test -- tests/hero-economy-persistence.spec.js tests/hero-settlement.spec.js tests/hero-novel-camp.spec.js --retries=0
+
 # 新手教學、導覽與原戰役進度
 npm test -- tests/progressive-onboarding.spec.js tests/season-navigation.spec.js tests/defense-progression.spec.js --workers=1
 
@@ -103,6 +106,7 @@ npm test -- --config=playwright.hero-touch.config.js --retries=0
 - 原戰役 `season 1/2` 使用既有玩家 profile、雲端進度與權威獎勵；勿改變原有驗證契約。
 - 獨立英雄演義只使用 `heroLegendProgress_v1`：版本、已完成關數 0–22（上限由 `hero/campaign-config.mjs` 的 `CAMPAIGN_LENGTH` 定義）、軍資 coins、獎勵標記 rewarded、道具 inventory、兵器 weapons，不按帳號分區，不與原 profile 共用。
 - 回主選單暫停並保留當頁戰局；重整後保留已完成關數、軍資、道具與兵器，不保存進行中的單位、冷卻或單挑。
+- 營地購買與戰鬥道具需成功保存才接受扣款／消耗；寫入失敗會回復交易，且道具不生效。通關獎勵保存失敗時留在當頁，可於結算點「重試保存」，未保存前重整仍回到最後成功的存檔。讀取拋錯或 JSON 損壞時顯示警告，當頁拒絕覆寫原存檔，待重新整理再讀取。
 - 原遊戲及舊共用演義存檔原封保留；不自動遷移，以免不同身份或規則互相覆寫。
 - 新版劇情與圖片規格見 [獨立版設計](hero-standalone.md)。舊 [第一章設計](romance-chapter-one.md) 僅為歷史規劃，非新版實作規格。
 

@@ -3,7 +3,7 @@ import {createMission,stepMission,protectBarrier,missionReady,missionDuelReady} 
 import {duelBeats} from './duel-patterns.mjs?v=history-coalition-1';
 export {duelBeats} from './duel-patterns.mjs?v=history-coalition-1';
 import {WEATHER_GENERALS} from './weather-generals.mjs?v=history-coalition-1';
-import {campaignState,weaponBonus} from './campaign.mjs?v=history-coalition-1';
+import {campaignState,weaponBonus} from './campaign.mjs?v=economy-save-1';
 import {heroSkill} from './skills.mjs?v=history-coalition-1';
 import {heroesForLevel,STAGES,UNLOCKS,FEATURES} from './story.mjs?v=history-coalition-1';
 

@@ -1,21 +1,21 @@
 import {FACTIONS,factionFor,enemyPortrait,paintPortrait} from './factions.mjs?v=history-coalition-1';
 import {mountHistoryLesson} from './history-view.mjs?v=history-coalition-1';
-import {renderBossCutin} from './boss-cutin.mjs?v=withdrawal-settlement-1';
+import {renderBossCutin} from './boss-cutin.mjs?v=economy-save-1';
 import {mountBattleKeys} from './battle-keys.mjs?v=history-coalition-1';
 import {mountJourney} from './journey-view.mjs?v=history-coalition-1';
 import {renderMission} from './chapter-mission-view.mjs?v=history-coalition-1';
 import {mountCampaignMap} from './campaign-map.mjs?v=history-coalition-1';
-import {advanceBattleFrame,normalizeBattleSpeed} from './battle-speed.mjs?v=withdrawal-settlement-1';
+import {advanceBattleFrame,normalizeBattleSpeed} from './battle-speed.mjs?v=economy-save-1';
 import {mountNovel} from './novel.mjs?v=history-coalition-1';
-import {mountCamp} from './camp-view.mjs?v=history-coalition-1';
-import {rewardVictory,useSupply} from './campaign.mjs?v=history-coalition-1';
+import {mountCamp} from './camp-view.mjs?v=economy-save-1';
+import {rewardVictory,useSupply} from './campaign.mjs?v=economy-save-1';
 import {createFirstGuide} from './first-guide.mjs?v=history-coalition-1';
 import {mountStoryTask} from './story-play.mjs?v=history-coalition-1';
 import {CHAPTER_BACKGROUNDS,STAGE_LEADS} from './prologue.mjs?v=history-coalition-1';
 import {setMusic,setMusicMode,setMusicHome,musicTheme,musicOn,setSfx,unlockAudio,hitSound} from './audio.mjs?v=history-coalition-1';
-import {renderDuel} from './duel-view.mjs?v=withdrawal-settlement-1';
+import {renderDuel} from './duel-view.mjs?v=economy-save-1';
 import {chapterInfo,enemyArt,HEROES as BASE_HEROES,heroesForLevel,STAGES,ENEMY_ART,SHIELD_ART,FEATURES,heroDescription} from './story.mjs?v=history-coalition-1';
-import {bossProfile,LANE_CAPACITY,laneCount,ENEMY_SWING,enemyAttackFrame,skipDuelEntrance,positionHero,commandHero,moveHero,BOSS_SKILLS,SAVE_KEY,normalizeProgress,createBattle,deploy,canDeploy,attackFrame,SWING} from './engine.mjs?v=withdrawal-settlement-1';
+import {bossProfile,LANE_CAPACITY,laneCount,ENEMY_SWING,enemyAttackFrame,skipDuelEntrance,positionHero,commandHero,moveHero,BOSS_SKILLS,SAVE_KEY,normalizeProgress,createBattle,deploy,canDeploy,attackFrame,SWING} from './engine.mjs?v=economy-save-1';
 
 const $=id=>document.getElementById(id);
 let HEROES=BASE_HEROES;
@@ -24,8 +24,14 @@ function useRoster(level){HEROES=heroesForLevel(level);document.body.dataset.fac
 const GENERAL_ATTACK_SHEETS={'張梁':'zhang-liang.png','張寶':'zhang-bao.png'};
 let firstGuide=null,battleSpeed=1;
 let progress,screen='home',battle=null,selected=null,selectedUnitId=null,storyLevel=1,lineIndex=0,storyPhase='opening',lastFrame=0,resultShown=false,duelShown=false;
-try{progress=normalizeProgress(JSON.parse(localStorage.getItem(SAVE_KEY)||'{}'))}catch{progress=normalizeProgress()}
-function saveProgress(){try{localStorage.setItem(SAVE_KEY,JSON.stringify(progress));$('storageNotice').hidden=true;return true}catch{$('storageNotice').hidden=false;return false}}
+let storageReadFailed=false;
+try{progress=normalizeProgress(JSON.parse(localStorage.getItem(SAVE_KEY)||'{}'))}catch{
+ progress=normalizeProgress();storageReadFailed=true;$('storageNotice').textContent='無法讀取原存檔。為保護已有進度，本頁不會覆寫；請重新整理後再試。';$('storageNotice').hidden=false;
+}
+function saveProgress(next=progress){
+ if(storageReadFailed)return false;
+ try{localStorage.setItem(SAVE_KEY,JSON.stringify(next));$('storageNotice').hidden=true;return true}catch{$('storageNotice').textContent='目前無法保存；未保存的通關與軍資在重整後可能遺失。購買或使用道具失敗時不會扣除。';$('storageNotice').hidden=false;return false}
+}
 function syncMusicButton(on=musicOn()){$('musicBtn').textContent=on?`♫ ${musicTheme().name}`:'♫ 音樂：關';$('musicBtn').setAttribute('aria-pressed',String(on))}
 let ownsFullscreen=false,focusRevision=0;
 function focusBattle(active){
@@ -185,6 +191,7 @@ function showResult(){
  $('resultEarned').textContent=`+${progress.coins-balanceBefore}`;$('resultBalance').textContent=progress.coins.toLocaleString('en-US');
  $('resultRewardReason').textContent=!battle.won?'這次未能守住防線，沒有獲得軍資；已有軍資不扣除。':!earned?'本關首次通關獎勵已領取，重玩不重複發放。':progress.coins-balanceBefore<earned?'首次通關！軍資已補至持有上限 99,999。':'首次通關獎勵・80 軍資';
  $('resultSaved').textContent=!saved?'進度與軍資僅暫存於本頁，尚未保存；關閉或重新整理後可能遺失。':battle.won&&earned?'軍資與進度已保存，可在營地使用':'保留目前軍資，可到營地整備';
+ $('resultRetrySave').hidden=saved||!battle.won||storageReadFailed;
  $('resultNext').textContent='前往戰後營地 →';show('result');$('resultTitle').focus({preventScroll:true});
 }
 function openCamp(level,won){useRoster(level);setMusicMode('camp',level);syncMusicButton();show('camp');mountCamp({progress,level,won,heroes:HEROES,stage:STAGES[level-1],onSave:saveProgress,onContinue:()=>won?startStory(level,'ending'):beginBattle(level)});$('campTitle').tabIndex=-1;$('campTitle').focus({preventScroll:true})}
@@ -199,8 +206,9 @@ $('prologueContinue').onclick=()=>setPrologue(false);
 $('storyPrevious').onclick=()=>{if(lineIndex>0){lineIndex--;renderStory()}};
 $('storySkip').onclick=finishStory;
 $('resultNext').onclick=()=>openCamp(battle.level,battle.won);
+$('resultRetrySave').onclick=()=>{if(battle?.won&&saveProgress()){$('resultSaved').textContent='軍資與進度已保存，可在營地使用';$('resultRetrySave').hidden=true;$('resultSaved').tabIndex=-1;$('resultSaved').focus({preventScroll:true})}};
 
-for(const button of $('supplies').children)button.onclick=()=>{if(useSupply(battle,progress,button.dataset.supply)){saveProgress();hitSound('heal');renderBattle()}};
+for(const button of $('supplies').children)button.onclick=()=>{if(useSupply(battle,progress,button.dataset.supply,saveProgress)){hitSound('heal');renderBattle()}};
 for(const button of document.querySelectorAll('[data-home]'))button.onclick=goHome;
 $('battleSpeed').onchange=()=>{battleSpeed=normalizeBattleSpeed($('battleSpeed').value);$('battleSpeed').value=String(battleSpeed)};
 $('pauseBtn').onclick=()=>setPause(!battle.paused);$('resumeBtn').onclick=()=>setPause(false);
