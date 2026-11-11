@@ -26,3 +26,10 @@
  .story-scene:not(.has-prologue) .scene-cast{height:clamp(190px,30dvh,280px)}
  .story-scene:not(.has-prologue) .scene-cast img{width:48%}
 }
+/* Leave both navigation labels intact on the narrowest phones. */
+@media(max-width:360px){
+ .scene-dialogue .story-actions{display:grid;grid-template-columns:1fr auto;gap:8px}
+ .scene-dialogue #storyPrevious{justify-self:start;white-space:nowrap;min-height:44px}
+ .scene-dialogue #storyCount{grid-column:2;grid-row:1}
+ .scene-dialogue #storyNext{grid-column:1/-1;width:100%;min-width:0;white-space:nowrap}
+}

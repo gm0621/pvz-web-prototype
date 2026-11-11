@@ -67,6 +67,12 @@ npx playwright install chromium webkit
 npm test -- --config=playwright.tablet.config.js --workers=1
 ```
 
+英雄演義的手機／平板劇情、營地與單挑觸控檢查（含 Chromium、WebKit、直橫向與旋轉）：
+
+```sh
+npm test -- --config=playwright.hero-touch.config.js --retries=0
+```
+
 視改動選擇相關測試。記錄執行命令、實際瀏覽器、通過／失敗／略過項目。受控 fixture、強制結算及手動改狀態只驗證流程，不能作為自然戰鬥平衡或真人勝率的證據。
 
 ## 程式導覽

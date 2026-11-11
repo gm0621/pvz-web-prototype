@@ -1,0 +1,30 @@
+/* Short touch screens keep the fight and its controls visible together. */
+@media(max-height:500px) and (min-width:500px){
+ #duelDialog[data-phase=combat]{padding:8px 12px;max-height:96dvh}
+ #duelDialog[data-phase=combat]>.eyebrow{display:none}
+ #duelDialog[data-phase=combat]>h2{font-size:18px;margin:0 0 6px}
+ #duelDialog[data-phase=combat] .duel-controls{padding:6px 0 0}
+ #duelCombat:not([hidden]){display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:3px 12px;align-items:center}
+ #duelCombat .duel-vitals{grid-column:1;grid-row:1;margin:0;align-self:end}
+ #duelDialog #duelCombat .duel-portraits{grid-column:1;grid-row:2/7;height:clamp(120px,42dvh,160px);margin:0;padding:0;align-self:start}
+ #duelDialog #duelSprite,#duelDialog #duelEnemySprite{max-width:125px}
+ #duelCombat .duel-enemy-talk{grid-column:2;grid-row:1}
+ #duelCombat .duel-hero-talk{grid-column:2;grid-row:5}
+ #duelCombat .duel-enemy-talk,#duelCombat .duel-hero-talk{margin:0;min-height:0;padding:4px 6px;gap:5px}
+ #duelCombat .duel-enemy-talk img,#duelCombat .duel-hero-talk img{width:32px;height:38px}
+ #duelCombat .duel-enemy-talk p,#duelCombat .duel-hero-talk p{font-size:12px!important;line-height:1.4!important}
+ #duelStyle{grid-column:2;grid-row:2;margin:0;font-size:10px}
+ #duelDialog #duelCallout{grid-column:2;grid-row:3;margin:0;font-size:18px}
+ #duelDialog #duelCaption{grid-column:2;grid-row:4;margin:0;font-size:11px}
+ #duelDialog #duelOutcomeNote{grid-column:2;grid-row:6;margin:0;font-size:10px}
+ #teamDuel:not([hidden]){display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:6px 12px;align-items:center}
+ .team-vitals{grid-column:1;grid-row:1;gap:7px}
+ .team-vitals strong{font-size:14px;margin:0}
+ .team-vitals small{font-size:11px}
+ .team-arena{grid-column:1;grid-row:2/5;height:clamp(110px,40dvh,150px);margin:0;align-self:start}
+ .team-fighter{max-width:120px}.team-enemy{max-width:140px}
+ .team-rule{grid-column:2;grid-row:1;font-size:12px;margin:0;padding:5px 8px}
+ .team-move{grid-column:2;grid-row:2;font-size:20px;min-height:0;margin:0}
+ .team-line{grid-column:2;grid-row:3;font-size:13px;min-height:0;margin:0}
+ #teamDuel>small{grid-column:2;grid-row:4;font-size:10px}
+}
