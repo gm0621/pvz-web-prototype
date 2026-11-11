@@ -8,7 +8,7 @@ import {renderMission} from './chapter-mission-view.mjs?v=history-coalition-1';
 import {mountCampaignMap} from './campaign-map.mjs?v=map-audit-1';
 import {advanceBattleFrame,normalizeBattleSpeed} from './battle-speed.mjs?v=economy-save-1';
 import {mountNovel} from './novel.mjs?v=map-audit-1';
-import {mountCamp} from './camp-view.mjs?v=map-audit-1';
+import {mountCamp} from './camp-view.mjs?v=army-identity-1';
 import {rewardVictory,useSupply} from './campaign.mjs?v=economy-save-1';
 import {createFirstGuide} from './first-guide.mjs?v=history-coalition-1';
 import {mountStoryTask} from './story-play.mjs?v=history-coalition-1';
@@ -20,7 +20,7 @@ import {bossProfile,LANE_CAPACITY,laneCount,ENEMY_SWING,enemyAttackFrame,skipDue
 
 const $=id=>document.getElementById(id);
 let HEROES=BASE_HEROES;
-function useRoster(level){HEROES=heroesForLevel(level);document.body.dataset.faction=factionFor(level)||'shu';for(const card of $('cards').children){const d=HEROES[card.dataset.hero];paintPortrait(card.querySelector('img'),d);card.querySelector('strong').textContent=d.short;card.querySelector('.cost').textContent=`🌾 ${d.cost}`;}for(const actor of document.querySelectorAll('[data-actor]')){const d=HEROES[actor.dataset.actor];paintPortrait(actor,d);actor.alt=d.name;}}
+function useRoster(level){HEROES=heroesForLevel(level);document.body.dataset.faction=factionFor(level)||'shu';for(const card of $('cards').children){const d=HEROES[card.dataset.hero];paintPortrait(card.querySelector('img'),d);card.querySelector('img').alt=d.name;card.querySelector('strong').textContent=d.short;card.querySelector('.cost').textContent=`🌾 ${d.cost}`;}for(const actor of document.querySelectorAll('[data-actor]')){const d=HEROES[actor.dataset.actor];paintPortrait(actor,d);actor.alt=d.name;}}
 
 const GENERAL_ATTACK_SHEETS={'張梁':'zhang-liang.png','張寶':'zhang-bao.png'};
 let firstGuide=null,battleSpeed=1;
@@ -82,7 +82,7 @@ function renderStory(){
  $('storyChapter').textContent=`第${['','一','二','三','四'][chapterInfo(storyLevel).chapter]}章 · 第 ${chapterInfo(storyLevel).number} / ${chapterInfo(storyLevel).count} 關 · ${storyPhase==='ending'?'戰後':'戰前'}`;$('storyTitle').textContent=stage.name;$('storyAdaptation').textContent=storyLevel>=5?stage.note:'劇情依《三國演義》第一回改編；對話與小型遭遇為遊戲補寫。';$('storyPlace').textContent=stage.place;
  $('storySpeaker').textContent=speaker;$('storyLine').textContent=text;renderPeople($('storyPeople'),text,speaker);$('storyCount').textContent=`${lineIndex+1} / ${lines.length}`;
  $('storyPrevious').disabled=lineIndex===0;
- const finalLabel=storyPhase==='ending'?(storyLevel<STAGES.length?'下一段故事 →':'回到桃園 →'):'出發迎戰 →';
+ const finalLabel=storyPhase==='ending'?(storyLevel<STAGES.length?'下一段故事 →':'回主選單 →'):'出發迎戰 →';
  $('storyNext').textContent=last?finalLabel:'下一句 →';$('storySkip').textContent=storyPhase==='ending'?(storyLevel<STAGES.length?'前往下一關':'回主選單'):'直接開戰';
  const key=Object.keys(HEROES).find(k=>HEROES[k].name===speaker);
  const speakingEnemy=['張寶','張梁'].includes(speaker);$('storyPortrait').hidden=!key&&!speakingEnemy;if(key||speakingEnemy){paintPortrait($('storyPortrait'),key?HEROES[key]:{asset:enemyArt(speaker)});$('storyPortrait').alt=speaker}
