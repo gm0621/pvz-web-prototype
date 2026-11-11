@@ -1,5 +1,5 @@
-import {stagePeople,mapPersonSvg,renderMatchup} from './characters.mjs?v=character-map-1';
-import {campaignMapSvg,stageLocation,MAP_PLACES} from './campaign-map.mjs?v=character-map-1';
+import {stagePeople,mapPersonSvg,renderMatchup} from './characters.mjs?v=character-map-2';
+import {campaignMapSvg,stageLocation,MAP_PLACES} from './campaign-map.mjs?v=character-map-2';
 let cancelJourney=()=>{};
 export function mountJourney(level,stage){
  cancelJourney();let root=document.getElementById('journeyIntro');

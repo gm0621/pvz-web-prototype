@@ -1,4 +1,4 @@
-import {stagePeople,mapPersonSvg,renderMatchup} from './characters.mjs?v=character-map-1';
+import {stagePeople,mapPersonSvg,renderMatchup} from './characters.mjs?v=character-map-2';
 import {FOURTH_CHAPTER} from './chapter-four.mjs?v=history-coalition-1';
 // Approximate regional placement, not historical borders or a surveyed route.
 export const MAP_PLACES={

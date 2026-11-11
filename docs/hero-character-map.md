@@ -9,6 +9,8 @@
 
 使用內建 imagegen（非 API CLI）；透明 PNG 原檔保存在 `hero/assets/portraits/`。原始生成輸出保留在產生工具的預設目錄。以下為最終提示詞。
 
+網頁使用同目錄的 `.webp` 衍生檔，以 `cwebp -lossless -exact -m 6` 無損編碼，保留原圖與透明度；PNG 原檔不刪除。這是檔案編碼最佳化，沒有重新繪製角色。
+
 ### lu-zhi.png
 
 Use case: stylized-concept. Project-bound game portrait for a cute Three Kingdoms Chinese story game. Generate one isolated head-and-shoulders portrait of Lu Zhi (盧植), an elderly Eastern Han scholar-general, wise kind but firm expression, long neatly divided grey beard, dark blue Han scholar headpiece, navy robe and restrained bronze lamellar shoulder armor, holding a rolled bamboo scroll barely visible at lower edge. High quality polished chibi mobile-game illustration, oversized expressive head, warm golden outlines, crisp painted detail readable at 64 pixels. 3/4 view facing slightly right, face centered and fully visible, generous transparent margins. Actual transparent background. No text, letters, watermark, borders or additional characters. A stylized fictional interpretation, not an authentic historical likeness.
