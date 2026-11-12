@@ -1,22 +1,22 @@
-import {renderPeople} from './characters.mjs?v=chapter-six-1';
+import {renderPeople,STORY_PEOPLE} from './characters.mjs?v=cao-people-1';
 import {FACTIONS,factionFor,enemyPortrait,paintPortrait} from './factions.mjs?v=chapter-six-1';
 import {mountHistoryLesson} from './history-view.mjs?v=chapter-six-1';
-import {renderBossCutin} from './boss-cutin.mjs?v=six-audit-1';
+import {renderBossCutin} from './boss-cutin.mjs?v=cao-people-1';
 import {mountBattleKeys} from './battle-keys.mjs?v=history-coalition-1';
-import {mountJourney} from './journey-view.mjs?v=chapter-six-1';
-import {renderMission} from './chapter-mission-view.mjs?v=six-audit-1';
-import {mountCampaignMap} from './campaign-map.mjs?v=chapter-six-1';
-import {advanceBattleFrame,normalizeBattleSpeed} from './battle-speed.mjs?v=six-audit-1';
-import {mountNovel} from './novel.mjs?v=chapter-six-1';
-import {mountCamp} from './camp-view.mjs?v=chapter-six-1';
+import {mountJourney} from './journey-view.mjs?v=cao-people-1';
+import {renderMission} from './chapter-mission-view.mjs?v=cao-people-1';
+import {mountCampaignMap} from './campaign-map.mjs?v=cao-people-1';
+import {advanceBattleFrame,normalizeBattleSpeed} from './battle-speed.mjs?v=cao-people-1';
+import {mountNovel} from './novel.mjs?v=cao-people-1';
+import {mountCamp} from './camp-view.mjs?v=cao-people-1';
 import {rewardVictory,useSupply} from './campaign.mjs?v=chapter-six-1';
 import {createFirstGuide} from './first-guide.mjs?v=history-coalition-1';
-import {mountStoryTask} from './story-play.mjs?v=chapter-six-1';
-import {CHAPTER_BACKGROUNDS,STAGE_LEADS} from './prologue.mjs?v=chapter-six-1';
+import {mountStoryTask} from './story-play.mjs?v=cao-people-1';
+import {CHAPTER_BACKGROUNDS,STAGE_LEADS} from './prologue.mjs?v=cao-people-1';
 import {setMusic,setMusicMode,setMusicHome,musicTheme,musicOn,setSfx,unlockAudio,hitSound} from './audio.mjs?v=history-coalition-1';
-import {renderDuel} from './duel-view.mjs?v=six-audit-1';
-import {chapterInfo,enemyArt,HEROES as BASE_HEROES,heroesForLevel,STAGES,ENEMY_ART,SHIELD_ART,FEATURES,heroDescription} from './story.mjs?v=chapter-six-1';
-import {bossProfile,LANE_CAPACITY,laneCount,ENEMY_SWING,enemyAttackFrame,skipDuelEntrance,positionHero,commandHero,moveHero,BOSS_SKILLS,SAVE_KEY,normalizeProgress,createBattle,deploy,canDeploy,attackFrame,SWING} from './engine.mjs?v=six-audit-1';
+import {renderDuel} from './duel-view.mjs?v=cao-people-1';
+import {chapterInfo,enemyArt,HEROES as BASE_HEROES,heroesForLevel,STAGES,ENEMY_ART,SHIELD_ART,FEATURES,heroDescription} from './story.mjs?v=cao-people-1';
+import {bossProfile,LANE_CAPACITY,laneCount,ENEMY_SWING,enemyAttackFrame,skipDuelEntrance,positionHero,commandHero,moveHero,BOSS_SKILLS,SAVE_KEY,normalizeProgress,createBattle,deploy,canDeploy,attackFrame,SWING} from './engine.mjs?v=cao-people-1';
 
 const $=id=>document.getElementById(id);
 let HEROES=BASE_HEROES;
@@ -85,7 +85,7 @@ function renderStory(){
  const finalLabel=storyPhase==='ending'?(storyLevel<STAGES.length?'下一段故事 →':'回主選單 →'):'出發迎戰 →';
  $('storyNext').textContent=last?finalLabel:'下一句 →';$('storySkip').textContent=storyPhase==='ending'?(storyLevel<STAGES.length?'前往下一關':'回主選單'):'直接開戰';
  const key=Object.keys(HEROES).find(k=>HEROES[k].name===speaker);
- const speakingEnemy=['張寶','張梁'].includes(speaker);$('storyPortrait').hidden=!key&&!speakingEnemy;if(key||speakingEnemy){paintPortrait($('storyPortrait'),key?HEROES[key]:{asset:enemyArt(speaker)});$('storyPortrait').alt=speaker}
+ const person=HEROES[key]||STORY_PEOPLE.find(p=>p.name===speaker);$('storyPortrait').hidden=!person;if(person){paintPortrait($('storyPortrait'),person);$('storyPortrait').alt=speaker}
  $('storyScene').dataset.level=String(storyLevel);
  const partner=lines.slice(lineIndex+1).find(line=>line[0]!==speaker)?.[0]||lines.slice(0,lineIndex).reverse().find(line=>line[0]!==speaker)?.[0];
  const partnerKey=Object.keys(HEROES).find(k=>HEROES[k].name===partner);

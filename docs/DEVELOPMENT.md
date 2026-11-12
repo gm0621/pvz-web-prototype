@@ -50,6 +50,9 @@ npm test -- tests/hero-standalone.spec.js --workers=1
 # 英雄演義存檔、軍資、營地交易與保存失敗
 npm test -- tests/hero-economy-persistence.spec.js tests/hero-settlement.spec.js tests/hero-novel-camp.spec.js --retries=0
 
+# 曹仁／夏侯淵劇情、營地、圖鑑與虛構標示（六尺寸）
+npx playwright test --config=playwright.hero-cao-people.config.js
+
 # 第六章完整流程、圖鑑、第五章邊界與最終存檔
 npx playwright test --config=playwright.hero-six-audit.config.js
 

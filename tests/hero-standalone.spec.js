@@ -69,7 +69,7 @@ test('story opens in a real scene with conversations, speaker emphasis and previ
  await expect(page.locator('[data-actor="liubei"]')).toHaveClass(/speaking/);
  await page.locator('#storyPrevious').click();await expect(page.locator('#storyLine')).toHaveText(first);
  const data=await page.evaluate(async()=>{const {STAGES}=await import('/hero/story.mjs');return STAGES.map(s=>({chapter:s.chapter||1,scene:s.scene,opening:s.opening.length,ending:s.ending.length,speakers:[...s.opening,...s.ending].map(l=>l[0])}))});
- expect(new Set(data.map(d=>d.scene)).size).toBe(7);for(const d of data){expect(d.opening).toBeGreaterThanOrEqual(d.chapter===3||d.chapter>=5?4:7);expect(d.ending).toBeGreaterThanOrEqual(d.chapter===3||d.chapter>=5?3:4);expect(d.speakers.every(s=>(d.chapter>=4?['曹操','夏侯惇','曹洪','孫堅','程普','黃蓋','祖茂','說書人']:d.chapter===3?['劉備','關羽','張飛','張梁','張寶','說書人','鄉民']:['劉備','關羽','張飛']).includes(s))).toBe(true)}
+ expect(new Set(data.map(d=>d.scene)).size).toBe(7);for(const d of data){expect(d.opening).toBeGreaterThanOrEqual(d.chapter===3||d.chapter>=5?4:7);expect(d.ending).toBeGreaterThanOrEqual(d.chapter===3||d.chapter>=5?3:4);expect(d.speakers.every(s=>(d.chapter>=4?['曹操','夏侯惇','曹洪','曹仁','夏侯淵','孫堅','程普','黃蓋','祖茂','說書人']:d.chapter===3?['劉備','關羽','張飛','張梁','張寶','說書人','鄉民']:['劉備','關羽','張飛']).includes(s))).toBe(true)}
  expect(await page.locator('#sceneBackdrop').evaluate(img=>img.complete&&img.naturalWidth>0)).toBe(true);
  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
  for(const selector of ['#storyNext','#storyPrevious','#storySkip']){const r=await page.locator(selector).boundingBox();expect(r.height).toBeGreaterThanOrEqual(44)}

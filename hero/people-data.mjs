@@ -1,18 +1,20 @@
-import {NOVEL_PAGES,CAMP_LINES} from './novel.mjs?v=chapter-six-1';
-import {campConversation} from './camp-talk.mjs?v=chapter-six-1';
-import {STORY_TASKS} from './story-play.mjs?v=chapter-six-1';
-import {CHAPTER_BACKGROUNDS,STAGE_LEADS} from './prologue.mjs?v=chapter-six-1';
-import {STORY_PEOPLE} from './characters.mjs?v=chapter-six-1';
-import {HEROES,STAGES,chapterInfo,enemyArt,heroesForLevel} from './story.mjs?v=chapter-six-1';
+import {NOVEL_PAGES,CAMP_LINES} from './novel.mjs?v=cao-people-1';
+import {campConversation} from './camp-talk.mjs?v=cao-people-1';
+import {STORY_TASKS} from './story-play.mjs?v=cao-people-1';
+import {CHAPTER_BACKGROUNDS,STAGE_LEADS} from './prologue.mjs?v=cao-people-1';
+import {STORY_PEOPLE} from './characters.mjs?v=cao-people-1';
+import {HEROES,STAGES,chapterInfo,enemyArt,heroesForLevel} from './story.mjs?v=cao-people-1';
 import {FACTIONS,enemyPortrait} from './factions.mjs?v=chapter-six-1';
 // Child-friendly summaries; comparisons are memory aids, not historical quotations.
 const bios=[
+ ['曹仁','史實人物','叫我子孝，別和曹洪認錯！','他很早就跟隨曹操，也帶隊作戰。討呂布時，他曾另攻句陽、俘獲敵將；迎天子到許的時期也有功勞。','曹仁字子孝，曹洪字子廉。先記住兩張臉，再把各自的故事放對位置！','句陽是另一條戰線，不等於定陶最後一擊。營中說話是改編；本次以劇情人物登場，沒有新增出戰兵卡。'],
+ ['夏侯淵','史實人物','妙才來了，元讓是另一位！','他是早期跟隨曹操的將領。遊戲裡用紅褐披風與弓箭幫你認人；第五、六章先聽他在營中聊聊同伴和糧食。','夏侯是複姓。夏侯淵字妙才，夏侯惇字元讓，就像兩位同姓同學，要看完整名字。','紅披風與弓箭是遊戲造型。營中對話為改編；官渡運糧、漢中作戰屬後續年代，沒有提前搬進目前關卡。'],
  ['劉備','史實人物','把夥伴放在心上的帶隊人','故事從他與關羽、張飛相遇開始。遊戲裡他能照應同路友軍，像一位隨時回頭看看大家的隊長。','記住雙劍與兩位好兄弟，就能很快找到他！','桃園結義是《三國演義》的著名情節，不能把所有細節都當成史書記錄。'],
  ['關羽','史實人物','長刀一揮，幫同伴開路','他是劉備的重要夥伴，和張飛一起走過許多戰事。遊戲裡長刀一揮，就像替同伴推開一扇擋路的大門。','長鬍子、大刀，是這款遊戲給他的辨識線索。','青龍斬的光效與傷害數值是遊戲設計；史書人物不會施放遊戲技能。'],
  ['張飛','史實人物','嗓門響亮的前排夥伴','他與關羽長年跟隨劉備。故事裡他嗓門大、行動快，看到同伴有難就想衝上前；但有時「等一下」也是勇敢！','看到蛇矛，想起這位直來直往的夥伴。','怒吼震退敵人是遊戲效果；角色個性和對話也有演義與原創改編。'],
  ['曹操','史實人物','既要看戰場，也要管糧袋','第四章開始，你會換到他的軍隊。招募、運糧、迎天子、屯田，都需要他作決定；他也曾戰敗，並不是場場都贏。','佩劍、曹字軍旗，身旁是夏侯惇與曹洪。','本作的 189～198 年故事中，他還不是皇帝。宛城的敗退不會被改寫成大勝。'],
- ['夏侯惇','史實人物','曹操軍的長槍隊友','他是曹操的重要將領，長年隨軍行動。遊戲裡拿著長槍，像隊伍伸出去的一隻長手，幫同伴擋住靠近的敵人。','夏侯是複姓，讀名字時不要把「夏」拆成單獨的姓。','他是史實人物；奮槍突進的名稱與數值是遊戲改編。'],
- ['曹洪','史實人物','退路上的可靠幫手','在撤軍關，你不只要保住曹操，也要讓曹洪活著退回左側。他用刀與盾，替隊伍爭取轉身的時間。','刀盾加上「曹」姓，是認出他的線索。','本作統一使用曹洪作護衛，並不表示每次史實救援都由他完成。'],
+ ['夏侯惇','史實人物','曹操軍的長槍隊友','他是曹操的重要將領，長年隨軍行動。遊戲裡拿著長槍，像隊伍伸出去的一隻長手，幫同伴擋住靠近的敵人。','夏侯是複姓。夏侯惇字元讓，夏侯淵字妙才，是兩位不同的將領。','他是史實人物；奮槍突進的名稱與數值是遊戲改編。'],
+ ['曹洪','史實人物','退路上的可靠幫手','在撤軍關，你不只要保住曹操，也要讓曹洪活著退回左側。他用刀與盾，替隊伍爭取轉身的時間。','曹洪字子廉，曹仁字子孝。讓出坐騎救曹操脫險的是曹洪，別把兩人的故事交換了。','本作統一使用曹洪作護衛，並不表示每次史實救援都由他完成。'],
  ['孫堅','史實人物','從南方走向洛陽的主將','第四章換到孫堅軍後，隊友會變成程普、黃蓋。他曾在梁東失利，也在陽人擊敗敵軍，最後進入殘破的洛陽。','看軍旗上的「孫」，就知道已換了一支軍隊。','史書記孫堅軍擊破華雄；關羽溫酒斬華雄是演義故事。'],
  ['程普','史實人物','孫堅軍的長矛夥伴','他很早就跟隨孫堅出征，是孫家軍的老夥伴。換到孫堅軍時，看到那桿長矛，就像認出班上熟悉的老隊友。','想起孫堅身旁那位拿長矛的隊友。','鐵脊橫掃是本作設計的招式，不是史書上的技能表。'],
  ['黃蓋','史實人物','拿盾守住隊伍的人','他也是早期跟隨孫堅的將領。本作給他鐵鞭與盾，讓他像一面會走動的護牆；撤退時，可別把這位夥伴忘在前頭。','鐵鞭與盾，是他的遊戲造型。','這裡介紹的是討董時期的他；其他年代的故事不會提前搬進這幾關。'],
@@ -54,7 +56,7 @@ const portraits=new Map([...STORY_PEOPLE,...Object.values(HEROES),...Object.valu
 for(const name of ['徐榮','華雄'])portraits.set(name,enemyPortrait(name,19));
 for(const name of ['鄧茂','程遠志','石魁','雷烈','韓旌','焦魯','杜衡'])portraits.set(name,{name,asset:enemyArt(name)});
 export const PEOPLE=bios.map(([name,kind,title,intro,remember,note])=>{
- const portrait=portraits.get(name),aliases=portrait.aliases||[name];
+ const portrait=portraits.get(name),aliases=[...new Set([...(portrait.aliases||[name]),...({曹洪:['子廉'],夏侯惇:['元讓']}[name]||[])])];
  // Reference titles are bibliography, not appearances; historical chapters show stage-specific notes.
  const levels=STAGES.flatMap((s,i)=>{const {references,...content}=s;const roster=Object.values(heroesForLevel(i+1)).some(p=>p.name===name),text=JSON.stringify([content,NOVEL_PAGES[i],CAMP_LINES[i],STORY_TASKS[i],STAGE_LEADS[i],i<16?CHAPTER_BACKGROUNDS[chapterInfo(i+1).chapter]:null,campConversation(i+1,'guanyu',true),campConversation(i+1,'zhangfei',true)]);return roster||aliases.some(a=>text.includes(a))?[i+1]:[]});
  return {name,kind,title,intro,remember,note,portrait,aliases,levels};

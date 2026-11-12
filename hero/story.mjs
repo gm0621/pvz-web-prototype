@@ -1,4 +1,4 @@
-import {HISTORICAL_STAGES} from './history-stages.mjs?v=chapter-six-1';
+import {HISTORICAL_STAGES} from './history-stages.mjs?v=cao-people-1';
 import {FACTIONS,factionFor} from './factions.mjs?v=chapter-six-1';
 import {THIRD_CHAPTER} from './chapter-three.mjs?v=history-coalition-1';
 import {WEATHER_GENERALS} from './weather-generals.mjs?v=history-coalition-1';
