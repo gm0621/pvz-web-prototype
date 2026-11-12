@@ -1,8 +1,8 @@
-import {HISTORICAL_STAGES} from './history-stages.mjs?v=chapter-ten-1';
-import {FACTIONS,factionFor} from './factions.mjs?v=chapter-ten-1';
-import {THIRD_CHAPTER} from './chapter-three.mjs?v=chapter-ten-1';
-import {WEATHER_GENERALS} from './weather-generals.mjs?v=chapter-ten-1';
-import {SECOND_CHAPTER} from './chapter-two.mjs?v=chapter-ten-1';
+import {HISTORICAL_STAGES} from './history-stages.mjs?v=chapter-eleven-1';
+import {FACTIONS,factionFor} from './factions.mjs?v=chapter-eleven-1';
+import {THIRD_CHAPTER} from './chapter-three.mjs?v=chapter-eleven-1';
+import {WEATHER_GENERALS} from './weather-generals.mjs?v=chapter-eleven-1';
+import {SECOND_CHAPTER} from './chapter-two.mjs?v=chapter-eleven-1';
 export const HEROES={
  archer:{name:'義軍弓兵',short:'弓兵',cost:50,hp:85,damage:13,rate:1.05,range:.29,speed:.045,cooldown:3,description:'遠程支援',asset:'../assets/characters/shu-archer.webp'},
  liubei:{name:'劉備',short:'劉備',cost:90,hp:155,damage:15,rate:1.15,range:.08,speed:.043,cooldown:5,heal:13,description:'回復同路友軍',asset:'./assets/liubei.png'},
@@ -54,7 +54,7 @@ export const STAGES=[
 ];
 
 STAGES.push(...SECOND_CHAPTER,...THIRD_CHAPTER,...HISTORICAL_STAGES);
-export function chapterInfo(level){const chapter=STAGES[level-1]?.chapter||1;return {chapter,number:STAGES[level-1]?.number||level,count:STAGES.filter(s=>(s.chapter||1)===chapter).length,title:['','桃園同心','烽火與義氣','風雨破黃巾','群雄討董','兗州風雲','迎駕與下邳','官渡風雲','河北爭戰','北征與歸途','荊州與赤壁'][chapter]}}
+export function chapterInfo(level){const chapter=STAGES[level-1]?.chapter||1;return {chapter,number:STAGES[level-1]?.number||level,count:STAGES.filter(s=>(s.chapter||1)===chapter).length,title:['','桃園同心','烽火與義氣','風雨破黃巾','群雄討董','兗州風雲','迎駕與下邳','官渡風雲','河北爭戰','北征與歸途','荊州與赤壁','江陵與關中'][chapter]}}
 
 export const UNLOCKS={healing:2,roar:3,cleave:4,shields:5,oath:6};
 export const FEATURES=[

@@ -1,6 +1,6 @@
-import {HISTORICAL_STAGES} from './history-stages.mjs?v=chapter-ten-1';
-import {paintPortrait} from './factions.mjs?v=chapter-ten-1';
-import {THIRD_CHAPTER} from './chapter-three.mjs?v=chapter-ten-1';
+import {HISTORICAL_STAGES} from './history-stages.mjs?v=chapter-eleven-1';
+import {paintPortrait} from './factions.mjs?v=chapter-eleven-1';
+import {THIRD_CHAPTER} from './chapter-three.mjs?v=chapter-eleven-1';
 // History and novel adaptation are deliberately separated in the introduction.
 export const CHAPTER_BACKGROUNDS={
  1:{era:'東漢末年・公元 184 年',history:'東漢朝局不安，民間生活困苦。張角聚眾起事，以黃巾為標誌，戰火迅速蔓延。朝廷派兵討伐，各地也招募義勇自保。',story:'《三國演義》從這場亂局寫起：劉備有志救民，卻缺兵少糧；張飛願出資，關羽前來投軍。三人相逢，將從桃園走向戰場。'},
@@ -34,3 +34,5 @@ CHAPTER_BACKGROUNDS[8]={era:'201—204 年・河北爭戰',history:'官渡後的
 CHAPTER_BACKGROUNDS[7]={era:'199—200 年・官渡風雲',history:'下邳戰後，曹操與袁紹在官渡對峙。白馬、延津、糧運與烏巢，牽動兩軍勝敗。',story:'本章保留史實功勞與結局；三路任務是改編，兵卡是抽象職能，不代表每位武將在場。'};
 
 CHAPTER_BACKGROUNDS[10]={era:'208 年・荊州與赤壁',history:'曹操南征、劉琮歸降，長坂交戰後，孫權與劉備聯合抗曹。赤壁保留曹軍敗退的結果。',story:'沿用曹操軍；三路任務代表岸邊與驛道，不模擬水戰。人物對話為改編，關羽義釋曹操、借東風等小說情節不當作本章史實。'};
+
+CHAPTER_BACKGROUNDS[11]={era:'209—211 年・江陵與關中',history:'赤壁後曹操北返，曹仁在江陵撤守。北方整備後，曹操西征，與馬超、韓遂等在潼關及渭水交戰。',story:'江陵段切換到留守軍消息，兵卡沿用抽象職能。三路接應與運糧為改編，保留江陵失守與馬超、韓遂退走的結果。'};

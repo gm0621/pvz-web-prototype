@@ -128,7 +128,7 @@ npx playwright test --config=playwright.hero-companion-audit.config.js --retries
 ## 保存與模式界線
 
 - 原戰役 `season 1/2` 使用既有玩家 profile、雲端進度與權威獎勵；勿改變原有驗證契約。
-- 獨立英雄演義只使用 `heroLegendProgress_v1`：版本、已完成關數 0–58（上限由 `hero/campaign-config.mjs` 的 `CAMPAIGN_LENGTH` 定義）、軍資 coins、獎勵標記 rewarded、道具 inventory、兵器 weapons，不按帳號分區，不與原 profile 共用。
+- 獨立英雄演義只使用 `heroLegendProgress_v1`：版本、已完成關數 0–64（上限由 `hero/campaign-config.mjs` 的 `CAMPAIGN_LENGTH` 定義）、軍資 coins、獎勵標記 rewarded、道具 inventory、兵器 weapons，不按帳號分區，不與原 profile 共用。
 - 回主選單暫停並保留當頁戰局；重整後保留已完成關數、軍資、道具與兵器，不保存進行中的單位、冷卻或單挑。
 - 營地購買與戰鬥道具需成功保存才接受扣款／消耗；寫入失敗會回復交易，且道具不生效。通關獎勵保存失敗時留在當頁，可於結算點「重試保存」，未保存前重整仍回到最後成功的存檔。讀取拋錯或 JSON 損壞時顯示警告，當頁拒絕覆寫原存檔，待重新整理再讀取。
 - 原遊戲及舊共用演義存檔原封保留；不自動遷移，以免不同身份或規則互相覆寫。
@@ -181,3 +181,5 @@ npx playwright test --config=playwright.hero-nine.config.js --workers=1
 第十章六尺寸完整流程：`npx playwright test --config=playwright.hero-ten.config.js --workers=1 --retries=0`。涵蓋六關、52→53、圖鑑／頭像／路線、最終撤軍與保存，以及實際觸控事件補驗。
 
 第十章完整檢查（含長行軍圖與撤軍邊界）：`npx playwright test --config=playwright.hero-ten-review.config.js --workers=1 --retries=0`。
+
+第十一章六尺寸流程、58→59、圖鑑、地圖、營地與最終保存：`npx playwright test --config=playwright.hero-eleven.config.js --workers=1 --retries=0`。

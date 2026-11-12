@@ -1,1 +1,1 @@
-export const CAMPAIGN_LENGTH=58;
+export const CAMPAIGN_LENGTH=64;
