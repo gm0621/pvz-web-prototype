@@ -128,7 +128,7 @@ npx playwright test --config=playwright.hero-companion-audit.config.js --retries
 ## 保存與模式界線
 
 - 原戰役 `season 1/2` 使用既有玩家 profile、雲端進度與權威獎勵；勿改變原有驗證契約。
-- 獨立英雄演義只使用 `heroLegendProgress_v1`：版本、已完成關數 0–34（上限由 `hero/campaign-config.mjs` 的 `CAMPAIGN_LENGTH` 定義）、軍資 coins、獎勵標記 rewarded、道具 inventory、兵器 weapons，不按帳號分區，不與原 profile 共用。
+- 獨立英雄演義只使用 `heroLegendProgress_v1`：版本、已完成關數 0–40（上限由 `hero/campaign-config.mjs` 的 `CAMPAIGN_LENGTH` 定義）、軍資 coins、獎勵標記 rewarded、道具 inventory、兵器 weapons，不按帳號分區，不與原 profile 共用。
 - 回主選單暫停並保留當頁戰局；重整後保留已完成關數、軍資、道具與兵器，不保存進行中的單位、冷卻或單挑。
 - 營地購買與戰鬥道具需成功保存才接受扣款／消耗；寫入失敗會回復交易，且道具不生效。通關獎勵保存失敗時留在當頁，可於結算點「重試保存」，未保存前重整仍回到最後成功的存檔。讀取拋錯或 JSON 損壞時顯示警告，當頁拒絕覆寫原存檔，待重新整理再讀取。
 - 原遊戲及舊共用演義存檔原封保留；不自動遷移，以免不同身份或規則互相覆寫。
@@ -155,3 +155,5 @@ git status --short
 ## 給下一個 Agent 的開場句
 
 > 請先讀根目錄 AGENTS.md，以及 docs/PROJECT_STATUS.md。確認目前分支、工作區與遠端版本後，再依本次任務讀相關開發／設計文件。保留原有殭屍戰役與玩家存檔；實際執行相關測試，並把完成狀態與未完成事項更新回交接文件。
+
+第七章六尺寸流程：`npx playwright test --config=playwright.hero-seven.config.js --retries=0`。

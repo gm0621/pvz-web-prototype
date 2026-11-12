@@ -1,5 +1,5 @@
-import {HISTORICAL_STAGES} from './history-stages.mjs?v=cao-people-1';
-import {FACTIONS,factionFor} from './factions.mjs?v=chapter-six-1';
+import {HISTORICAL_STAGES} from './history-stages.mjs?v=chapter-seven-1';
+import {FACTIONS,factionFor} from './factions.mjs?v=chapter-seven-1';
 const siteNames=['道路','水井','宗廟'],laneNames=['上','中','下'];
 const kinds=HISTORICAL_STAGES.map(s=>s.mission);
 export function createHistoryMission(level){return {level,kind:kinds[level-17],hold:0,done:false,message:'',lane:1,travel:0,rescued:0,delivered:0,charge:0,withdrawAt:null,ordered:false,decoyUsed:false,decoyLane:null,site:-1,sites:[0,0,0]}}

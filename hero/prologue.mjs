@@ -1,6 +1,6 @@
-import {HISTORICAL_STAGES} from './history-stages.mjs?v=cao-people-1';
-import {paintPortrait} from './factions.mjs?v=chapter-six-1';
-import {THIRD_CHAPTER} from './chapter-three.mjs?v=history-coalition-1';
+import {HISTORICAL_STAGES} from './history-stages.mjs?v=chapter-seven-1';
+import {paintPortrait} from './factions.mjs?v=chapter-seven-1';
+import {THIRD_CHAPTER} from './chapter-three.mjs?v=chapter-seven-1';
 // History and novel adaptation are deliberately separated in the introduction.
 export const CHAPTER_BACKGROUNDS={
  1:{era:'東漢末年・公元 184 年',history:'東漢朝局不安，民間生活困苦。張角聚眾起事，以黃巾為標誌，戰火迅速蔓延。朝廷派兵討伐，各地也招募義勇自保。',story:'《三國演義》從這場亂局寫起：劉備有志救民，卻缺兵少糧；張飛願出資，關羽前來投軍。三人相逢，將從桃園走向戰場。'},
@@ -28,3 +28,5 @@ STAGE_LEADS.push(...HISTORICAL_STAGES.map(s=>s.lead));
 CHAPTER_BACKGROUNDS[5]={era:'192—195 年・兗州風雲',history:'長安政變後，關東戰事仍未停歇。曹操立足兗州，後與呂布爭奪各地；守城、敗退與缺糧交織，並非一路凱旋。',story:'本章沿用曹操軍。接應、糧車與三路任務為改編；濮陽保留曹操失利，定陶保留呂布向東退走。'};
 
 CHAPTER_BACKGROUNDS[6]={era:'196—198 年・迎駕與下邳',history:'漢獻帝遷許、屯田與宛城敗退之後，曹操軍再向下邳進發。建安三年末的下邳結局按公曆換算可跨入 199 年初。',story:'沿用曹操軍；接應、運糧與圍城補給為改編。宛城保留敗退與傷亡，下邳保留呂布被俘後處死的結果。'};
+
+CHAPTER_BACKGROUNDS[7]={era:'199—200 年・官渡風雲',history:'下邳戰後，曹操與袁紹在官渡對峙。白馬、延津、糧運與烏巢，牽動兩軍勝敗。',story:'本章保留史實功勞與結局；三路任務是改編，兵卡是抽象職能，不代表每位武將在場。'};
