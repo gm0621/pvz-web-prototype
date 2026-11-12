@@ -165,3 +165,9 @@ git status --short
 全 46 關銜接、亂序重玩、八個跨章／換軍保存邊界與舊章回歸：`npx playwright test --config=playwright.hero-eight-flow.config.js --retries=0`。每關行軍圖六尺寸：`npx playwright test --config=playwright.hero-map-audit.config.js --grep "chapter 8" --retries=0`。
 
 第八章完整檢查：`npx playwright test --config=playwright.hero-eight-audit.config.js --retries=0`。整合六關、行軍圖、圖鑑、40→41 保存失敗、最終結算；另逐句檢查六關序幕／戰前前後翻頁及勝敗營地頭像，驗證第四～八章歷史小檔案時間軸、年份標示、出處欄與手機點擊範圍。
+
+第九章六尺寸流程、人物、行軍與保存：
+
+```sh
+npx playwright test --config=playwright.hero-nine.config.js --workers=1
+```

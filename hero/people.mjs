@@ -1,5 +1,5 @@
-import {PEOPLE,searchPeople} from './people-data.mjs?v=chapter-eight-1';
-import {paintPortrait} from './factions.mjs?v=chapter-eight-1';
+import {PEOPLE,searchPeople} from './people-data.mjs?v=chapter-nine-1';
+import {paintPortrait} from './factions.mjs?v=chapter-nine-1';
 const $=id=>document.getElementById(id);let kind='all';
 const node=(tag,text,className)=>{const e=document.createElement(tag);if(text)e.textContent=text;if(className)e.className=className;return e};
 function render(){

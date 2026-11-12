@@ -1,6 +1,6 @@
-import {HISTORICAL_STAGES} from './history-stages.mjs?v=chapter-eight-1';
-import {paintPortrait} from './factions.mjs?v=chapter-eight-1';
-import {THIRD_CHAPTER} from './chapter-three.mjs?v=chapter-eight-1';
+import {HISTORICAL_STAGES} from './history-stages.mjs?v=chapter-nine-1';
+import {paintPortrait} from './factions.mjs?v=chapter-nine-1';
+import {THIRD_CHAPTER} from './chapter-three.mjs?v=chapter-nine-1';
 // History and novel adaptation are deliberately separated in the introduction.
 export const CHAPTER_BACKGROUNDS={
  1:{era:'東漢末年・公元 184 年',history:'東漢朝局不安，民間生活困苦。張角聚眾起事，以黃巾為標誌，戰火迅速蔓延。朝廷派兵討伐，各地也招募義勇自保。',story:'《三國演義》從這場亂局寫起：劉備有志救民，卻缺兵少糧；張飛願出資，關羽前來投軍。三人相逢，將從桃園走向戰場。'},
@@ -29,5 +29,6 @@ CHAPTER_BACKGROUNDS[5]={era:'192—195 年・兗州風雲',history:'長安政變
 
 CHAPTER_BACKGROUNDS[6]={era:'196—198 年・迎駕與下邳',history:'漢獻帝遷許、屯田與宛城敗退之後，曹操軍再向下邳進發。建安三年末的下邳結局按公曆換算可跨入 199 年初。',story:'沿用曹操軍；接應、運糧與圍城補給為改編。宛城保留敗退與傷亡，下邳保留呂布被俘後處死的結果。'};
 
+CHAPTER_BACKGROUNDS[9]={era:'205—207 年・北征與歸途',history:'南皮、壺關之後，曹操北征烏桓，經盧龍至白狼山、柳城。袁氏兄弟的故事逐一走向結局。',story:'延續曹操軍視角。三路任務、兵卡及整備為改編；主戰與人物結局另由文字交代，不等於天下統一。'};
 CHAPTER_BACKGROUNDS[8]={era:'201—204 年・河北爭戰',history:'官渡後的倉亭、黎陽與鄴城戰事；袁紹病逝，袁譚、袁尚爭奪勢力。',story:'沿史書交代結果；三路任務與戰後整備是改編。取得鄴城不代表河北全定。'};
 CHAPTER_BACKGROUNDS[7]={era:'199—200 年・官渡風雲',history:'下邳戰後，曹操與袁紹在官渡對峙。白馬、延津、糧運與烏巢，牽動兩軍勝敗。',story:'本章保留史實功勞與結局；三路任務是改編，兵卡是抽象職能，不代表每位武將在場。'};

@@ -1,11 +1,12 @@
-import {WEATHER_GENERALS} from './weather-generals.mjs?v=chapter-eight-1';
-import {HEROES,STAGES,ENEMY_ART,enemyArt} from './story.mjs?v=chapter-eight-1';
-import {BLANK_PORTRAIT,FACTIONS,factionFor,enemyPortrait,paintPortrait} from './factions.mjs?v=chapter-eight-1';
+import {WEATHER_GENERALS} from './weather-generals.mjs?v=chapter-nine-1';
+import {HEROES,STAGES,ENEMY_ART,enemyArt} from './story.mjs?v=chapter-nine-1';
+import {BLANK_PORTRAIT,FACTIONS,factionFor,enemyPortrait,paintPortrait} from './factions.mjs?v=chapter-nine-1';
 const fifthPortraits=['董卓','王允','荀彧','程昱','陳宮','鮑信'].map((name,i)=>({name,aliases:[name],asset:BLANK_PORTRAIT,atlas:'./assets/portraits/chapter-five.png',atlasRows:2,row:Math.floor(i/3),col:i%3,role:['掌權於洛陽、長安的軍閥','參與誅董卓的朝臣','守住鄄城的曹操軍謀士','協助保全兗州據點的謀士','迎呂布入兗州的謀士','迎曹操領兗州、戰死壽張的盟友'][i]}));
 const sixthPortraits=['漢獻帝','袁術','典韋','曹昂','曹安民','賈詡','郭嘉','荀攸','棗祗'].map((name,i)=>({name,aliases:name==='漢獻帝'?['漢獻帝','劉協']:[name],asset:BLANK_PORTRAIT,atlas:'./assets/portraits/chapter-six.png',row:Math.floor(i/3),col:i%3,role:['東漢皇帝・輾轉遷到許縣','淮南軍閥・197 年稱帝','曹操護衛・宛城遇害','曹操長子・宛城遇害','曹操的侄子・宛城遇害','張繡的謀士・後歸曹操','曹操軍謀士・參與下邳之計','曹操軍謀士・參與下邳之計','推動屯田的官員'][i]}));
 const seventhPortraits=['袁紹','顏良','文醜','許攸','張遼','淳于瓊'].map((name,i)=>({name,aliases:[name],asset:BLANK_PORTRAIT,atlas:'./assets/portraits/chapter-seven.png',atlasRows:2,row:Math.floor(i/3),col:i%3,role:['河北軍閥・官渡敗退','袁紹部將・白馬戰死','袁紹部將・延津戰死','由袁紹轉投曹操的謀士','白馬先鋒・與關羽同戰','袁軍糧屯守將・烏巢戰敗'][i]}));
 const eighthPortraits=['袁譚','袁尚','審配','辛毗','劉表'].map((name,i)=>({name,aliases:[name],asset:BLANK_PORTRAIT,atlas:'./assets/portraits/chapter-eight.png',atlasRows:2,row:Math.floor(i/3),col:i%3,role:['袁紹長子・與弟弟袁尚爭奪勢力','袁紹之子・繼掌父親勢力','袁尚部下・守衛鄴城','袁譚的使者・前往曹操軍求援','荊州牧・劉備曾投奔他'][i]}));
-export const STORY_PEOPLE=[...eighthPortraits,...seventhPortraits,{...HEROES.guanyu,aliases:['關羽','雲長'],role:'劉備的夥伴・白馬斬顏良'},
+const ninthPortraits=["高幹", "袁熙", "田疇", "蹋頓", "公孫康"].map((name,i)=>({name,aliases:[name],asset:BLANK_PORTRAIT,atlas:'./assets/portraits/chapter-nine.png',atlasRows:2,row:Math.floor(i/3),col:i%3,role:["袁紹外甥・并州起兵", "袁紹之子・與袁尚北走", "北征嚮導・指出盧龍舊路", "烏桓首領・白狼山戰死", "遼東掌權者・袁氏兄弟投奔對象"][i]}));
+export const STORY_PEOPLE=[...ninthPortraits,...eighthPortraits,...seventhPortraits,{...HEROES.guanyu,aliases:['關羽','雲長'],role:'劉備的夥伴・白馬斬顏良'},
  {...FACTIONS.cao.heroes.zhangfei,aliases:['曹洪','子廉'],role:'曹操軍護衛・字子廉，與曹仁不同人'},
  {...FACTIONS.cao.heroes.guanyu,aliases:['夏侯惇','元讓'],role:'曹操軍將領・字元讓，與夏侯淵不同人'},
  {name:'曹仁',aliases:['曹仁','子孝'],asset:'./assets/portraits/cao-ren.png',role:'曹操軍將領・字子孝，與曹洪不同人'},
