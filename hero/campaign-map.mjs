@@ -48,7 +48,7 @@ export function campaignMapSvg(level,mini=false){
  }).join('');
  return `<svg viewBox="${level>=47?'220 -65 565 430':level>=41?'285 115 285 430':level>=35?'280 190 380 310':level>=29?'145 245 530 285':level>=23?'345 165 250 260':level>=17?'150 190 340 280':'220 0 440 440'}" xmlns="http://www.w3.org/2000/svg" ${mini?'aria-hidden="true"':'role="img" aria-label="戰役方位示意圖，目前位於'+current.name+'"'}>
  <rect x="-100" y="-100" width="950" height="750" rx="18" fill="#eaddb9"/>
- <path d="M580 0L720 0V440H655L632 395 660 350 638 310 675 276 646 239 681 216 658 191 606 206 577 181 563 140 593 109 567 68Z" fill="#a9c1bb" opacity=".75"/>
+ ${level>=47?'':`<path d="M580 0L720 0V440H655L632 395 660 350 638 310 675 276 646 239 681 216 658 191 606 206 577 181 563 140 593 109 567 68Z" fill="#a9c1bb" opacity=".75"/>`}
  <path d="M35 70L95 22 140 101 180 50 224 143 186 218 235 260 173 321 196 405 40 425Z" fill="#8c987c" opacity=".2"/>
  <path d="M82 180l25-46 28 46m13 28 22-40 24 40m-90 118 26-48 27 48m55-65 23-37 22 37" fill="none" stroke="#78826b" stroke-width="3" opacity=".4"/>
  <path d="M40 110H680M40 220H680M40 330H680M180 25V410M360 25V410M540 25V410" stroke="#ac986b" opacity=".14"/>
