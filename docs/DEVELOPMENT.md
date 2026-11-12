@@ -183,3 +183,5 @@ npx playwright test --config=playwright.hero-nine.config.js --workers=1
 第十章完整檢查（含長行軍圖與撤軍邊界）：`npx playwright test --config=playwright.hero-ten-review.config.js --workers=1 --retries=0`。
 
 第十一章六尺寸流程、58→59、圖鑑、地圖、營地與最終保存：`npx playwright test --config=playwright.hero-eleven.config.js --workers=1 --retries=0`。
+
+第十一章完整檢查（含地圖重開與江陵撤守邊界）：`npx playwright test --config=playwright.hero-eleven-review.config.js --workers=2 --retries=0`。
