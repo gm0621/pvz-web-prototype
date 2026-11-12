@@ -1,5 +1,9 @@
+import {NOVEL_PAGES,CAMP_LINES} from './novel.mjs?v=chapter-six-1';
+import {campConversation} from './camp-talk.mjs?v=chapter-six-1';
+import {STORY_TASKS} from './story-play.mjs?v=chapter-six-1';
+import {CHAPTER_BACKGROUNDS,STAGE_LEADS} from './prologue.mjs?v=chapter-six-1';
 import {STORY_PEOPLE} from './characters.mjs?v=chapter-six-1';
-import {HEROES,STAGES,enemyArt,heroesForLevel} from './story.mjs?v=chapter-six-1';
+import {HEROES,STAGES,chapterInfo,enemyArt,heroesForLevel} from './story.mjs?v=chapter-six-1';
 import {FACTIONS,enemyPortrait} from './factions.mjs?v=chapter-six-1';
 // Child-friendly summaries; comparisons are memory aids, not historical quotations.
 const bios=[
@@ -51,7 +55,8 @@ for(const name of ['徐榮','華雄'])portraits.set(name,enemyPortrait(name,19))
 for(const name of ['鄧茂','程遠志','石魁','雷烈','韓旌','焦魯','杜衡'])portraits.set(name,{name,asset:enemyArt(name)});
 export const PEOPLE=bios.map(([name,kind,title,intro,remember,note])=>{
  const portrait=portraits.get(name),aliases=portrait.aliases||[name];
- const levels=STAGES.flatMap((s,i)=>{const roster=Object.values(heroesForLevel(i+1)).some(p=>p.name===name),text=JSON.stringify(s);return roster||aliases.some(a=>text.includes(a))?[i+1]:[]});
+ // Reference titles are bibliography, not appearances; historical chapters show stage-specific notes.
+ const levels=STAGES.flatMap((s,i)=>{const {references,...content}=s;const roster=Object.values(heroesForLevel(i+1)).some(p=>p.name===name),text=JSON.stringify([content,NOVEL_PAGES[i],CAMP_LINES[i],STORY_TASKS[i],STAGE_LEADS[i],i<16?CHAPTER_BACKGROUNDS[chapterInfo(i+1).chapter]:null,campConversation(i+1,'guanyu',true),campConversation(i+1,'zhangfei',true)]);return roster||aliases.some(a=>text.includes(a))?[i+1]:[]});
  return {name,kind,title,intro,remember,note,portrait,aliases,levels};
 });
 export function searchPeople(query='',kind='all'){const text=query.trim().normalize('NFKC').toLocaleLowerCase();return PEOPLE.filter(p=>(kind==='all'||p.kind===kind)&&(!text||[p.name,...p.aliases,p.title,p.intro,p.remember].join(' ').normalize('NFKC').toLocaleLowerCase().includes(text))).sort((a,b)=>Number([b.name,...b.aliases].includes(text))-Number([a.name,...a.aliases].includes(text)))}

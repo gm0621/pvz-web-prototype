@@ -16,3 +16,11 @@ test('game opens book separately and retains chapter six story',async({page})=>{
  await page.goto('/hero/');const popupPromise=page.waitForEvent('popup');await page.locator('#home .people-link').click();const popup=await popupPromise;await expect(popup.locator('.person-card')).toHaveCount(42);await popup.close();await page.locator('#startBtn').click();await expect(page.locator('#storyTitle')).toHaveText('洛陽接駕');
  const link=page.locator('#storyPrologue .people-link');await link.scrollIntoViewIfNeeded();expect(await link.evaluate(e=>{const r=e.getBoundingClientRect();return document.elementFromPoint(r.x+r.width/2,r.y+r.height/2)===e})).toBe(true);await expect(link).toHaveAttribute('target','_blank');expect(await page.evaluate(()=>JSON.parse(localStorage.getItem('heroLegendProgress_v1')).completed)).toBe(28);
 });
+test('book matches named atlas cells and narrative appearances, excluding source-only names',async({page})=>{
+ await page.goto('/hero/people.html');
+ for(const [name,row,col] of [['漢獻帝',0,0],['袁術',0,1],['典韋',0,2],['曹昂',1,0],['曹安民',1,1],['賈詡',1,2],['郭嘉',2,0],['荀攸',2,1],['棗祗',2,2]]){
+  await page.locator('#peopleSearch').fill(name);const card=page.locator(`[data-person="${name}"]`);await expect(card.locator('img')).toHaveAttribute('alt',name);expect(await card.locator('img').evaluate(e=>e.style.backgroundPosition)).toBe(`${col*50}% ${row*50}%`);expect(await card.locator('img').evaluate(e=>e.style.backgroundImage)).toContain('portraits/chapter-six.png');
+ }
+ for(const [name,yes,no] of [['張角',1,34],['盧植',8,34],['典韋',31,34],['呂布',34,30]]){await page.locator('#peopleSearch').fill(name);const card=page.locator(`[data-person="${name}"]`);await card.locator('summary').click();await expect(card.locator('.stage-pills span').filter({hasText:new RegExp(`^第 ${yes} 關$`)})).toHaveCount(1);await expect(card.locator('.stage-pills span').filter({hasText:new RegExp(`^第 ${no} 關$`)})).toHaveCount(0)}
+ await page.locator('#peopleSearch').fill('賈詡');await page.locator('[data-person="賈詡"] summary').click();await expect(page.locator('[data-person="賈詡"] .stage-pills')).toHaveText('延伸認識的人物');
+});

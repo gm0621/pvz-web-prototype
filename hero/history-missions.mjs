@@ -50,6 +50,7 @@ export function historyMissionText(b){const m=b.mission,stage=HISTORICAL_STAGES[
   return `城內整備 ${m.sites.filter(t=>t>=8).length}／3 · ${detail}`;
  }
  if(m.kind==='holdout')return `${holdTitle} ${Math.floor(m.hold)}／24 秒 · 三路皆有友軍、敵人未逼近才計時 · 受阻暫停，進度保留`;
+ if(b.bossCaptured)return `${opponent}已被俘 · ${b.won?'本關完成':'守住三路，清退餘兵後過關'}`;
  if(b.level>=23)return HISTORICAL_STAGES[b.level-17].bossTip;
  return '陽人之戰 · 三將合陣、避開重斧再反擊 · 史書記孫堅軍破敵，非關羽單挑';
 }

@@ -1,5 +1,5 @@
-import {extracted} from './history-missions.mjs?v=chapter-six-1';
-import {createMission,stepMission,protectBarrier,missionReady,missionDuelReady} from './chapter-missions.mjs?v=chapter-six-1';
+import {extracted} from './history-missions.mjs?v=six-audit-1';
+import {createMission,stepMission,protectBarrier,missionReady,missionDuelReady} from './chapter-missions.mjs?v=six-audit-1';
 import {duelBeats} from './duel-patterns.mjs?v=history-coalition-1';
 export {duelBeats} from './duel-patterns.mjs?v=history-coalition-1';
 import {WEATHER_GENERALS} from './weather-generals.mjs?v=history-coalition-1';
