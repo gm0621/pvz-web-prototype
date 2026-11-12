@@ -179,3 +179,5 @@ npx playwright test --config=playwright.hero-nine.config.js --workers=1
 沿用第九章六尺寸矩陣，加入行軍動畫、地圖暫停恢復及道具保存失敗的實際觸控事件檢查。測試使用隔離存檔與受控戰局。
 
 第十章六尺寸完整流程：`npx playwright test --config=playwright.hero-ten.config.js --workers=1 --retries=0`。涵蓋六關、52→53、圖鑑／頭像／路線、最終撤軍與保存，以及實際觸控事件補驗。
+
+第十章完整檢查（含長行軍圖與撤軍邊界）：`npx playwright test --config=playwright.hero-ten-review.config.js --workers=1 --retries=0`。

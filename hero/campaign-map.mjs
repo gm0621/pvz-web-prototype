@@ -73,7 +73,7 @@ export function mountCampaignMap({stages,getBattle,setPaused}){
   document.getElementById('campaignMapRoute').textContent=routeThrough(level).map(key=>MAP_PLACES[key].name).join(' → ');
   document.getElementById('campaignMapStages').replaceChildren(...stages.map((s,i)=>{const li=document.createElement('li');li.textContent=`${i+1}. ${s.name} · ${MAP_PLACES[STAGE_LOCATIONS[i].place].name}`;if(i+1===level)li.setAttribute('aria-current','step');else if(i+1>level)li.className='future';return li}));
  };
- trigger.onclick=()=>{const b=getBattle();if(!b||b.over||b.duel||b.introPending)return;render(b.level);openedBattle=b;wasPaused=b.paused;interrupted=false;setPaused(true);dialog.showModal();document.getElementById('campaignMapClose').focus()};
+ trigger.onclick=()=>{const b=getBattle();if(!b||b.over||b.duel||b.introPending)return;render(b.level);openedBattle=b;wasPaused=b.paused;interrupted=false;setPaused(true);dialog.showModal();dialog.scrollTop=0;document.getElementById('campaignMapClose').focus()};
  document.getElementById('campaignMapClose').onclick=()=>dialog.close();
  dialog.addEventListener('close',()=>{if(dialog.open)return;if(openedBattle===getBattle()&&!wasPaused&&!interrupted&&!document.hidden)setPaused(false);openedBattle=null;trigger.focus({preventScroll:true})});
  document.addEventListener('visibilitychange',()=>{if(document.hidden&&dialog.open)interrupted=true});

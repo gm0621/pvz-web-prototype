@@ -1,0 +1,17 @@
+const {test,expect}=require('@playwright/test');
+async function tap(page,selector){const el=page.locator(selector);await el.scrollIntoViewIfNeeded();await el.tap()}
+test('chapter ten map overview: current location and return stay reachable on long routes',async({page},info)=>{
+ await page.emulateMedia({reducedMotion:'reduce'});await page.goto('/hero/');
+ for(let n=53;n<=58;n++){
+  await page.evaluate(n=>localStorage.setItem('heroLegendProgress_v1',JSON.stringify({completed:n-1,coins:160})),n);await page.reload();await tap(page,'#startBtn');await tap(page,'#storySkip');await tap(page,'#battleMapButton');
+  await expect(page.locator('#campaignMapLocation')).toBeInViewport();
+  if(n===58)await page.screenshot({path:info.outputPath('map-overview.png')});
+  await page.locator('#campaignMapDialog').evaluate(e=>e.scrollTop=e.scrollHeight);await expect(page.locator('#campaignMapClose')).toBeInViewport();await page.locator('#campaignMapClose').tap();await expect(page.locator('#campaignMapDialog')).not.toBeVisible();await tap(page,'#battleMapButton');await expect(page.locator('#campaignMapLocation')).toBeInViewport();await page.locator('#campaignMapClose').tap();
+ }
+});
+test('chapter ten withdrawal: missing guard, paused orders and late reinforcements cannot finish early',async({page},info)=>{
+ test.setTimeout(90000);await page.clock.install();await page.emulateMedia({reducedMotion:'reduce'});await page.addInitScript(()=>localStorage.setItem('heroLegendProgress_v1',JSON.stringify({completed:57,coins:100})));
+ await page.route('**/hero/engine.mjs?*',async route=>{const r=await route.fetch();await route.fulfill({response:r,body:(await r.text()).replace('return {level,mission:','return window.reviewBattle={level,mission:')})});await page.goto('/hero/');await page.clock.pauseAt(await page.evaluate(()=>Date.now()+1000));await tap(page,'#startBtn');await tap(page,'#storySkip');
+ await page.evaluate(()=>{const b=window.reviewBattle;b.nextSpawn=Infinity;b.bossSpawned=true;b.food=999});await tap(page,'#cards [data-hero=liubei]');await page.locator('.lane').first().tap();await page.clock.runFor(30000);await tap(page,'#pauseBtn');await page.clock.runFor(100);await expect(page.locator('[data-action=retreat]')).toBeDisabled();const frozen=await page.evaluate(()=>JSON.stringify(window.reviewBattle));await page.clock.runFor(1000);expect(await page.evaluate(()=>JSON.stringify(window.reviewBattle))).toBe(frozen);await tap(page,'#resumeBtn');await page.clock.runFor(100);await tap(page,'[data-action=retreat]');await page.clock.runFor(30000);await expect(page.locator('#missionObjective')).toContainText('曹洪尚未在場');await expect(page.locator('#result')).not.toBeVisible();
+ await tap(page,'#cards [data-hero=zhangfei]');await page.locator('.lane').nth(1).tap();await tap(page,'#cards [data-hero=archer]');await page.locator('.lane').nth(2).tap();await page.evaluate(()=>{window.reviewBattle.allies.find(u=>u.key==='archer').x=.65});await page.clock.runFor(100);await expect(page.locator('#result')).not.toBeVisible();await tap(page,'[data-action=retreat]');await page.clock.runFor(100);await expect(page.locator('#result')).not.toBeVisible();await page.clock.runFor(30000);await expect(page.locator('#resultTitle')).toHaveText('保全撤離');await expect(page.locator('#resultEarned')).toHaveText('+80');expect(await page.evaluate(()=>JSON.parse(localStorage.getItem('heroLegendProgress_v1')))).toMatchObject({completed:58,coins:180});await page.screenshot({path:info.outputPath('withdrawal-result.png')});
+});
