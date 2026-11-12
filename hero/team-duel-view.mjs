@@ -1,6 +1,6 @@
-import {teamPose} from './team-duel-beats.mjs?v=chapter-eleven-1';
-import {DUEL_ENTRANCE_DURATION} from './engine.mjs?v=chapter-eleven-1';
-import {hitSound} from './audio.mjs?v=chapter-eleven-1';
+import {teamPose} from './team-duel-beats.mjs?v=coalition-fixes-1';
+import {DUEL_ENTRANCE_DURATION} from './engine.mjs?v=coalition-fixes-1';
+import {hitSound} from './audio.mjs?v=coalition-fixes-1';
 export function renderTeamDuel(b){
  const $=id=>document.getElementById(id),d=b.duel,dialog=$('duelDialog');let root=$('teamDuel');
  if(!root){root=document.createElement('section');root.id='teamDuel';root.innerHTML=`<p class="team-rule">聯手交鋒 · 二打一｜未來也可能一打二</p><div class="team-vitals"></div><div class="team-arena" aria-label="關羽、張飛聯手對戰雷烈"><div class="team-trail team-green"></div><div class="team-trail team-gold"></div><div class="team-ring"></div><div class="team-fighter" data-fighter="guanyu" role="img" aria-label="關羽"></div><div class="team-fighter" data-fighter="zhangfei" role="img" aria-label="張飛"></div><div class="team-fighter team-enemy" data-fighter="enemy" role="img" aria-label="雷烈揮斧"></div><div class="team-axe-impact"></div><span class="team-seal">二 對 一</span></div><h3 class="team-move" role="status"></h3><p class="team-line"></p><small>聯手演出期間三路暫停 · 結束後兩將返回原位</small>`;dialog.querySelector('.duel-controls').before(root);

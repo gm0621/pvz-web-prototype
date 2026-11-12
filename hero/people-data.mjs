@@ -1,10 +1,10 @@
-import {NOVEL_PAGES,CAMP_LINES} from './novel.mjs?v=chapter-eleven-1';
-import {campConversation} from './camp-talk.mjs?v=chapter-eleven-1';
-import {STORY_TASKS} from './story-play.mjs?v=chapter-eleven-1';
-import {CHAPTER_BACKGROUNDS,STAGE_LEADS} from './prologue.mjs?v=chapter-eleven-1';
-import {STORY_PEOPLE} from './characters.mjs?v=chapter-eleven-1';
-import {HEROES,STAGES,chapterInfo,enemyArt,heroesForLevel} from './story.mjs?v=chapter-eleven-1';
-import {FACTIONS,enemyPortrait} from './factions.mjs?v=chapter-eleven-1';
+import {NOVEL_PAGES,CAMP_LINES} from './novel.mjs?v=coalition-fixes-1';
+import {campConversation} from './camp-talk.mjs?v=coalition-fixes-1';
+import {STORY_TASKS} from './story-play.mjs?v=coalition-fixes-1';
+import {CHAPTER_BACKGROUNDS,STAGE_LEADS} from './prologue.mjs?v=coalition-fixes-1';
+import {STORY_PEOPLE} from './characters.mjs?v=coalition-fixes-1';
+import {HEROES,STAGES,chapterInfo,enemyArt,heroesForLevel} from './story.mjs?v=coalition-fixes-1';
+import {FACTIONS,enemyPortrait} from './factions.mjs?v=coalition-fixes-1';
 // Child-friendly summaries; comparisons are memory aids, not historical quotations.
 const bios=[
 ["馬超", "史實人物", "白甲孟起，先看他在哪一隊", "他字孟起。211 年與韓遂等關中將領迎戰曹操，敗後退走。後來才投奔劉備；讀不同年份，要跟著更新他的隊伍！", "超是超越的超；白甲藍羽是遊戲的記憶線索。", "本章不把後來的投奔提前，也不安排他在渭南戰死。"],

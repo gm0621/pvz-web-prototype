@@ -1,5 +1,5 @@
-import {stagePeople,mapPersonSvg,renderMatchup} from './characters.mjs?v=chapter-eleven-1';
-import {campaignMapSvg,journeyRoute} from './campaign-map.mjs?v=chapter-eleven-1';
+import {stagePeople,mapPersonSvg,renderMatchup} from './characters.mjs?v=coalition-fixes-1';
+import {campaignMapSvg,journeyRoute} from './campaign-map.mjs?v=coalition-fixes-1';
 let cancelJourney=()=>{};
 export function mountJourney(level,stage){
  cancelJourney();let root=document.getElementById('journeyIntro');

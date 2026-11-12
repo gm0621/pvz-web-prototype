@@ -1,6 +1,6 @@
 const {test,expect}=require('@playwright/test');
 async function tap(l){await l.scrollIntoViewIfNeeded();const r=await l.boundingBox();expect(r.width).toBeGreaterThanOrEqual(44);expect(r.height).toBeGreaterThanOrEqual(44);await l.tap()}
-async function openLevel(page,level){await page.evaluate(n=>localStorage.setItem('heroLegendProgress_v1',JSON.stringify({completed:n-1,coins:160,weapons:{liubei:1},inventory:{grain:2}})),level);await page.reload();await tap(page.locator('#startBtn'))}
+async function openLevel(page,level){await page.evaluate(n=>localStorage.setItem('heroLegendProgress_v1',JSON.stringify({completed:n-1,coins:160,armyWeapons:{cao:{liubei:1}},inventory:{grain:2}})),level);await page.reload();await tap(page.locator('#startBtn'))}
 test('chapter eleven history files follow the actual chapter and highlight every current year',async({page},info)=>{
  test.setTimeout(120000);await page.emulateMedia({reducedMotion:'reduce'});await page.goto('/hero/');
  for(const [level,years,current] of [59,60,61,62,63,64].map((level,i)=>[level,[209,210,211],[209,209,210,211,211,211][i]])){

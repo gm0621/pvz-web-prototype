@@ -74,7 +74,7 @@
 - 首次通關每關 80 軍資，重玩及敗戰 +0，軍資上限 99,999；結算顯示實際增加額。
 - 藥包 25（全軍 +60 HP）、糧袋 20（+80 糧，上限 300），單種最多 9。滿血／滿糧不耗用；暫停、出場劇情、單挑、結算不能使用。
 - 三將兵器各至多強化三次，價格 60／120／180；劉備每級普攻 +3，關羽／張飛 +4。購買後自動裝備，新戰局取兵器快照。
-- `heroLegendProgress_v1`：`version:1`、`completed:0..16`、`coins`、`rewarded`、`inventory:{herb,grain}`、`weapons:{liubei,guanyu,zhangfei}`。缺 coins 的舊存檔按已通關數 ×80 遷移；正規化後 rewarded 由完成關數重建。
+- `heroLegendProgress_v1`：`version:1`、`completed:0..64`、`coins`、`rewarded`、`inventory:{herb,grain}`、`weapons:{liubei,guanyu,zhangfei}`（劉備軍）、`armyWeapons:{cao:{liubei,guanyu,zhangfei},sun:{liubei,guanyu,zhangfei}}`（各軍三將獨立強化）。舊共用強化只保留給劉備軍；曹操／孫堅軍缺資料時為零，不複製或重發軍資。缺 coins 的舊存檔按已通關數 ×80 遷移；正規化後 rewarded 由完成關數重建。
 - 不按帳號區分、不跨裝置。保存失敗保留當頁資料並顯示尚未保存；成功保存後清除警告。回首頁保留當頁暫停戰局，重整不還原戰鬥中的單位、冷卻、單挑。
 - 七種場景配樂：首頁、故事、整備、戰鬥、單挑、營地、勝利。戰鬥為〈晴野行軍〉；錄製音訊失敗可退回合成曲。角色人聲已移除，保留兵器與風雨雷等音效。
 

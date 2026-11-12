@@ -1,5 +1,5 @@
-import {HISTORICAL_STAGES} from './history-stages.mjs?v=chapter-eleven-1';
-import {FACTIONS,factionFor} from './factions.mjs?v=chapter-eleven-1';
+import {HISTORICAL_STAGES} from './history-stages.mjs?v=coalition-fixes-1';
+import {FACTIONS,factionFor} from './factions.mjs?v=coalition-fixes-1';
 const siteNames=['道路','水井','宗廟'],laneNames=['上','中','下'];
 const kinds=HISTORICAL_STAGES.map(s=>s.mission);
 export function createHistoryMission(level){return {level,kind:kinds[level-17],hold:0,done:false,message:'',lane:1,travel:0,rescued:0,delivered:0,charge:0,withdrawAt:null,ordered:false,decoyUsed:false,decoyLane:null,site:-1,sites:[0,0,0]}}
@@ -37,7 +37,12 @@ export function historyMissionText(b){const m=b.mission,stage=HISTORICAL_STAGES[
   return `${title} · 任務已完成`+(b.won?'':b.bossSpawned?'，清退剩餘敵軍後過關':'，守住防線並清退後續敵軍');
  }
  if(m.kind==='dispatch')return `接應 ${m.rescued}／3 隊使者 · ${['上','中','下'][m.lane]}路 ${Math.floor(m.travel*100)}% · 守住道路才能前進`;
- if(m.kind==='supply')return `軍糧 ${m.delivered}／3 批 · 備車 ${Math.floor(m.charge/10*100)}% · ${m.charge>=10?'備車完成，按「發送糧車」':'三路皆有接應、敵人未逼近才備車'}`;
+ if(m.kind==='supply'){
+  const missing=[0,1,2].filter(l=>!b.allies.some(u=>u.hp>0&&u.lane===l)).map(l=>laneNames[l]+'路');
+  const blocked=[0,1,2].filter(l=>b.enemies.some(e=>e.hp>0&&e.lane===l&&e.x<.48)).map(l=>laneNames[l]+'路');
+  const next=m.charge>=10?'備車完成！請按「發送糧車」':missing.length?`請派武將或弓兵駐守${missing.join('、')}，三路都有人才會備車`:blocked.length?`${blocked.join('、')}敵軍逼近，清退後繼續備車`:'三路接應就位，正在備車；完成後按「發送糧車」';
+  return `${b.bossSpawned&&!b.enemies.some(e=>e.hp>0)?'敵軍已清退，還要完成運糧！ · ':''}軍糧 ${m.delivered}／3 批 · 備車 ${Math.floor(m.charge/10*100)}% · ${next}`;
+ }
  if(['withdraw','decoy'].includes(m.kind)&&m.ordered){
   const heroes=FACTIONS[factionFor(b.level)].heroes,missing=['liubei','zhangfei'].filter(key=>!b.allies.some(u=>u.key===key&&u.hp>0)).map(key=>heroes[key].name);
   if(missing.length)return `${missing.join('、')}尚未在場，請整備後召回，再帶隊撤離 · ${opponent}無須擊倒`;

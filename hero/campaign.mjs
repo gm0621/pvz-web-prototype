@@ -1,4 +1,5 @@
-import {CAMPAIGN_LENGTH} from './campaign-config.mjs?v=chapter-eleven-1';
+import {factionFor} from './factions.mjs?v=coalition-fixes-1';
+import {CAMPAIGN_LENGTH} from './campaign-config.mjs?v=coalition-fixes-1';
 // Local campaign economy, independent of the original zombie game's account/store.
 export const GOODS={
  herb:{name:'行軍藥包',shop:'items',price:25,icon:'✚',description:'戰鬥中使用，所有在場友軍回復 60 生命。'},
@@ -8,9 +9,11 @@ export const GOODS={
  zhangfei:{name:'蛇矛・精鍛',shop:'weapons',price:60,icon:'長矛',description:'張飛每次普攻 +4；最多強化三次。'}
 };
 const bounded=(value,max)=>Number.isFinite(Number(value))?Math.max(0,Math.min(max,Math.floor(Number(value)))):0;
+const ranks=raw=>Object.fromEntries(['liubei','guanyu','zhangfei'].map(k=>[k,bounded(raw?.[k],3)]));
+export function weaponsForLevel(progress,level=1){const army=factionFor(level);return army?progress.armyWeapons[army]:progress.weapons}
 export function campaignState(raw,completed){
  const legacy=!raw||!Object.hasOwn(raw,'coins');
- return {coins:legacy?completed*80:bounded(raw.coins,99999),rewarded:Array.from({length:completed},(_,i)=>i+1),inventory:{herb:bounded(raw?.inventory?.herb,9),grain:bounded(raw?.inventory?.grain,9)},weapons:Object.fromEntries(['liubei','guanyu','zhangfei'].map(k=>[k,bounded(raw?.weapons?.[k],3)]))};
+ return {coins:legacy?completed*80:bounded(raw.coins,99999),rewarded:Array.from({length:completed},(_,i)=>i+1),inventory:{herb:bounded(raw?.inventory?.herb,9),grain:bounded(raw?.inventory?.grain,9)},weapons:ranks(raw?.weapons),armyWeapons:{cao:ranks(raw?.armyWeapons?.cao),sun:ranks(raw?.armyWeapons?.sun)}};
 }
 export function rewardVictory(progress,level){
  if(!Number.isInteger(level)||level<1||level>CAMPAIGN_LENGTH)return 0;
@@ -22,13 +25,13 @@ export function rewardVictory(progress,level){
 }
 // A caller may require durable storage before accepting an economy change.
 function persist(progress,save){try{return !save||save(progress)!==false}catch{return false}}
-export function purchase(progress,id,save){
+export function purchase(progress,id,save,level=1){
  const item=Object.hasOwn(GOODS,id)?GOODS[id]:null;if(!item)return '找不到這件商品。';
- const weapon=item.shop==='weapons',owned=weapon?progress.weapons[id]:progress.inventory[id],cap=weapon?3:9;
+ const weapons=weaponsForLevel(progress,level),weapon=item.shop==='weapons',owned=weapon?weapons[id]:progress.inventory[id],cap=weapon?3:9;
  if(owned>=cap)return weapon?'這件兵器已強化到最高級。':'行囊已裝滿這種道具。';
  const price=item.price*(weapon?owned+1:1);if(progress.coins<price)return '軍資不足，先去完成新的關卡吧。';
- progress.coins-=price;if(weapon)progress.weapons[id]++;else progress.inventory[id]++;
- if(!persist(progress,save)){progress.coins+=price;if(weapon)progress.weapons[id]--;else progress.inventory[id]--;return '無法保存，這次未購買；軍資與物品未變動，請稍後再試。'}
+ progress.coins-=price;if(weapon)weapons[id]++;else progress.inventory[id]++;
+ if(!persist(progress,save)){progress.coins+=price;if(weapon)weapons[id]--;else progress.inventory[id]--;return '無法保存，這次未購買；軍資與物品未變動，請稍後再試。'}
  return '';
 }
 export function weaponBonus(key,rank){return Math.max(0,Math.min(3,rank||0))*(key==='liubei'?3:4)}

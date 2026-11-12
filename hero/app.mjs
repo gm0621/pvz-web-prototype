@@ -1,22 +1,23 @@
-import {renderPeople,STORY_PEOPLE} from './characters.mjs?v=chapter-eleven-1';
-import {FACTIONS,factionFor,enemyPortrait,paintPortrait} from './factions.mjs?v=chapter-eleven-1';
-import {mountHistoryLesson} from './history-view.mjs?v=chapter-eleven-1';
-import {renderBossCutin} from './boss-cutin.mjs?v=chapter-eleven-1';
-import {mountBattleKeys} from './battle-keys.mjs?v=chapter-eleven-1';
-import {mountJourney} from './journey-view.mjs?v=chapter-eleven-1';
-import {renderMission} from './chapter-mission-view.mjs?v=chapter-eleven-1';
-import {mountCampaignMap} from './campaign-map.mjs?v=chapter-eleven-1';
-import {advanceBattleFrame,normalizeBattleSpeed} from './battle-speed.mjs?v=chapter-eleven-1';
-import {mountNovel} from './novel.mjs?v=chapter-eleven-1';
-import {mountCamp} from './camp-view.mjs?v=chapter-eleven-1';
-import {rewardVictory,useSupply} from './campaign.mjs?v=chapter-eleven-1';
-import {createFirstGuide} from './first-guide.mjs?v=chapter-eleven-1';
-import {mountStoryTask} from './story-play.mjs?v=chapter-eleven-1';
-import {CHAPTER_BACKGROUNDS,STAGE_LEADS} from './prologue.mjs?v=chapter-eleven-1';
-import {setMusic,setMusicMode,setMusicHome,musicTheme,musicOn,setSfx,unlockAudio,hitSound} from './audio.mjs?v=chapter-eleven-1';
-import {renderDuel} from './duel-view.mjs?v=chapter-eleven-1';
-import {chapterInfo,enemyArt,HEROES as BASE_HEROES,heroesForLevel,STAGES,ENEMY_ART,SHIELD_ART,FEATURES,heroDescription} from './story.mjs?v=chapter-eleven-1';
-import {bossProfile,LANE_CAPACITY,laneCount,ENEMY_SWING,enemyAttackFrame,skipDuelEntrance,positionHero,commandHero,moveHero,BOSS_SKILLS,SAVE_KEY,normalizeProgress,createBattle,deploy,canDeploy,attackFrame,SWING} from './engine.mjs?v=chapter-eleven-1';
+import {mountSkillGuide} from './skill-guide.mjs?v=coalition-fixes-1';
+import {renderPeople,STORY_PEOPLE} from './characters.mjs?v=coalition-fixes-1';
+import {FACTIONS,factionFor,enemyPortrait,paintPortrait} from './factions.mjs?v=coalition-fixes-1';
+import {mountHistoryLesson} from './history-view.mjs?v=coalition-fixes-1';
+import {renderBossCutin} from './boss-cutin.mjs?v=coalition-fixes-1';
+import {mountBattleKeys} from './battle-keys.mjs?v=coalition-fixes-1';
+import {mountJourney} from './journey-view.mjs?v=coalition-fixes-1';
+import {renderMission} from './chapter-mission-view.mjs?v=coalition-fixes-1';
+import {mountCampaignMap} from './campaign-map.mjs?v=coalition-fixes-1';
+import {advanceBattleFrame,normalizeBattleSpeed} from './battle-speed.mjs?v=coalition-fixes-1';
+import {mountNovel} from './novel.mjs?v=coalition-fixes-1';
+import {mountCamp} from './camp-view.mjs?v=coalition-fixes-1';
+import {rewardVictory,useSupply,weaponsForLevel} from './campaign.mjs?v=coalition-fixes-1';
+import {createFirstGuide} from './first-guide.mjs?v=coalition-fixes-1';
+import {mountStoryTask} from './story-play.mjs?v=coalition-fixes-1';
+import {CHAPTER_BACKGROUNDS,STAGE_LEADS} from './prologue.mjs?v=coalition-fixes-1';
+import {setMusic,setMusicMode,setMusicHome,musicTheme,musicOn,setSfx,unlockAudio,hitSound} from './audio.mjs?v=coalition-fixes-1';
+import {renderDuel} from './duel-view.mjs?v=coalition-fixes-1';
+import {chapterInfo,enemyArt,HEROES as BASE_HEROES,heroesForLevel,STAGES,ENEMY_ART,SHIELD_ART,FEATURES,heroDescription} from './story.mjs?v=coalition-fixes-1';
+import {bossProfile,LANE_CAPACITY,laneCount,ENEMY_SWING,enemyAttackFrame,skipDuelEntrance,positionHero,commandHero,moveHero,BOSS_SKILLS,SAVE_KEY,normalizeProgress,createBattle,deploy,canDeploy,attackFrame,SWING} from './engine.mjs?v=coalition-fixes-1';
 
 const $=id=>document.getElementById(id);
 let HEROES=BASE_HEROES;
@@ -92,7 +93,7 @@ function renderStory(){
  for(const actor of document.querySelectorAll('[data-actor]')){actor.classList.toggle('listening',actor.dataset.actor===partnerKey);actor.classList.toggle('speaking',actor.dataset.actor===key);actor.setAttribute('aria-label',actor.alt+(actor.dataset.actor===key?'，正在說話':''))}
  $('storyScene').dataset.speaker=key;
 }
-function beginBattle(level){useRoster(level);setMusicMode('battle',level);syncMusicButton();battle=createBattle(level,Date.now(),progress.weapons);firstGuide=createFirstGuide(level);selected=null;selectedUnitId=null;resultShown=false;duelShown=false;show('battle');$('battleChapter').textContent=`第${['','一','二','三','四','五','六','七','八','九','十','十一'][chapterInfo(level).chapter]}章 · ${chapterInfo(level).number}`;$('battleTitle').textContent=STAGES[level-1].name+(factionFor(level)?` · ${FACTIONS[factionFor(level)].title}`:'');$('featureBadge').textContent=FEATURES[level-1].name;$('field').style.backgroundImage=`linear-gradient(#d4dfb655,#b9cda588),url("${STAGES[level-1].scene}")`;renderBattle();$('cards').querySelector('button')?.focus({preventScroll:true})}
+function beginBattle(level){useRoster(level);setMusicMode('battle',level);syncMusicButton();battle=createBattle(level,Date.now(),weaponsForLevel(progress,level));firstGuide=createFirstGuide(level);selected=null;selectedUnitId=null;resultShown=false;duelShown=false;show('battle');$('battleChapter').textContent=`第${['','一','二','三','四','五','六','七','八','九','十','十一'][chapterInfo(level).chapter]}章 · ${chapterInfo(level).number}`;$('battleTitle').textContent=STAGES[level-1].name+(factionFor(level)?` · ${FACTIONS[factionFor(level)].title}`:'');$('featureBadge').textContent=FEATURES[level-1].name;$('field').style.backgroundImage=`linear-gradient(#d4dfb655,#b9cda588),url("${STAGES[level-1].scene}")`;renderBattle();$('cards').querySelector('button')?.focus({preventScroll:true})}
 function selectedUnit(){return battle?.allies.find(u=>u.hp>0&&(selectedUnitId!==null?u.id===selectedUnitId:selected!=='archer'&&u.key===selected))}
 function syncPause(){if(!battle)return;$('field').classList.toggle('is-paused',battle.paused||!!battle.duel||!!battle.introPending);$('pauseOverlay').hidden=!battle.paused;$('pauseBtn').textContent=battle.paused?'▶ 繼續':'Ⅱ 暫停';$('pauseBtn').setAttribute('aria-pressed',String(battle.paused))}
 function setPause(value){if(!battle||battle.over)return;battle.paused=value;syncPause()}
@@ -121,7 +122,7 @@ function renderUnits(){
   const id=String(u.id);ids.add(id);let el=existing.get(id);if(!el){el=unitNode(u,enemy);root.append(el)}
   const atlas=enemy?enemyPortrait(u.name,battle.level):HEROES[u.key].atlas?HEROES[u.key]:null,generalFramed=enemy&&!!GENERAL_ATTACK_SHEETS[u.name],framed=!!atlas||(enemy?(!u.boss&&!u.ranged||generalFramed):u.key!=='archer'),attacking=u.ranged?battle.time-(u.shotAt??-100)<.32:generalFramed?!!u.castAt:framed?battle.time-(u.swingStartedAt??-100)<(enemy?ENEMY_SWING.duration:SWING.duration):battle.time-u.lastAttack<.32;
   el.setAttribute('aria-pressed',String(!enemy&&selectedUnit()?.id===u.id));el.dataset.order=u.order||'auto';el.dataset.lane=String(u.lane);el.dataset.bossName=u.boss?u.name:'';el.dataset.bossPhase=!u.boss?'':battle.time<(u.recoveryUntil||0)?'exposed':u.castAt?'casting':u.enraged?'enraged':!u.skillsCast?'guard':'fighting';el.dataset.skill=u.boss?bossProfile(battle,u).skillType||'':'';el.style.setProperty('--cast-progress',String(u.castAt?Math.max(0,1-(u.castAt-battle.time)/2.5):0));
-  el.className=`unit ${enemy?'enemy':'ally'}${framed?' has-attack-frames':''}${u.boss?' boss':''}${u.elite?' elite':''}${u.ranged?' ranged-enemy':''}${battle.time<(u.rallyUntil||0)?' rallied':''}${u.shielded?' shielded':''}${battle.time<(u.slowUntil||0)?' rain-slowed':''} ${u.action||'guarding'}${attacking?(u.key==='archer'||u.ranged?' shooting':' striking'):''}${u.flash>0&&!attacking?' hit':''}`;
+  el.className=`unit ${atlas?.atlas.endsWith('/dong.png')?'atlas-unit ':''}${enemy?'enemy':'ally'}${framed?' has-attack-frames':''}${u.boss?' boss':''}${u.elite?' elite':''}${u.ranged?' ranged-enemy':''}${battle.time<(u.rallyUntil||0)?' rallied':''}${u.shielded?' shielded':''}${battle.time<(u.slowUntil||0)?' rain-slowed':''} ${u.action||'guarding'}${attacking?(u.key==='archer'||u.ranged?' shooting':' striking'):''}${u.flash>0&&!attacking?' hit':''}`;
   if(framed){const frame=generalFramed?(u.castAt?(u.castAt-battle.time>.45?0:1):2):enemy?enemyAttackFrame(u,battle.time):attackFrame(u,battle.time),sprite=el.querySelector('.attack-sprite');sprite.dataset.frame=frame;sprite.style.backgroundSize=generalFramed?'300% 100%':'300% 200%';sprite.style.backgroundPosition=`${(frame%3)*50}% ${generalFramed?0:enemy?(u.shielded?100:0):Math.floor(frame/3)*100}%`;el.classList.toggle('impact',generalFramed?frame===1:battle.time<(u.impactUntil||0))}
   if(atlas){const sprite=el.querySelector('.attack-sprite'),age=battle.time-(u.swingStartedAt??-100),frame=u.castAt?(u.castAt-battle.time>.45?1:2):u.boss?(battle.time-u.lastAttack<.32?2:0):age>=0&&age<.58?(age<.24?1:2):0;sprite.style.backgroundSize='300% 300%';sprite.style.backgroundPosition=`${frame*50}% ${atlas.row*50}%`;sprite.dataset.frame=String(frame);}
   el.style.left=u.boss?`clamp(50px, ${u.x*100}%, calc(100% - 50px))`:`${u.x*100}%`;const row=list.filter(a=>a.lane===u.lane&&a.hp>0).sort((a,b)=>a.id-b.id),offset=!enemy&&row.length>1?(row.indexOf(u)-(row.length-1)/2)*18:0;el.style.top=`calc(${(u.lane+.5)/3*100}% + ${offset}px)`;el.querySelector('.unit-name').textContent=(enemy?u.name:HEROES[u.key].name)+(u.action==='holding'?' · 駐守':'');el.querySelector('.health i').style.width=`${Math.max(0,u.hp/u.maxHp*100)}%`;
@@ -130,7 +131,7 @@ function renderUnits(){
 }
 function renderEffects(){
  const sounded=new Set();const root=$('effects'),existing=new Map([...root.children].map(el=>[el.dataset.id,el])),ids=new Set();
- for(const e of battle.effects){const id=String(e.id);ids.add(id);let el=existing.get(id);if(!el){if(['slash','enemy-slash','arrow','enemy-arrow','cleave','heal','oath','roar','boss','block','rally','fire','hook','thunder','wind','rain','rock'].includes(e.type)&&!sounded.has(e.type)){hitSound(({'enemy-arrow':'arrow',rally:'roar',fire:'boss',hook:'cleave',thunder:'thunder',rock:'boss'})[e.type]||e.type);sounded.add(e.type)}el=document.createElement('span');el.dataset.id=id;el.className=`combat-effect ${e.type}`;if(e.type==='defeat'||e.type==='breach'||e.type==='retreat'||e.type==='capture'){const img=document.createElement('img');img.src=e.key?HEROES[e.key].asset:e.boss?enemyArt(e.bossName):e.ranged?HEROES.archer.asset:e.shielded?SHIELD_ART:ENEMY_ART;const portrait=e.key?HEROES[e.key]:enemyPortrait(e.bossName,battle.level);if(portrait)paintPortrait(img,portrait);img.alt=e.type==='capture'?e.bossName+'被俘':'';el.append(img);if(e.type==='capture'){const label=document.createElement('small');label.textContent='被俘';el.append(label)};el.classList.toggle('enemy-exit',!!e.enemy);el.classList.toggle('ranged-exit',!!e.ranged)}else el.textContent=e.type==='heal'||e.type==='oath'?'+':e.type==='roar'?'震':e.type==='cleave'?'斬':e.type==='arrow'?'➶':({rally:'旗',fire:'♨',hook:'⛓',thunder:'ϟ',wind:'風',rain:'雨'})[e.type]||'';root.append(el)}
+ for(const e of battle.effects){const id=String(e.id);ids.add(id);let el=existing.get(id);if(!el){if(['slash','enemy-slash','arrow','enemy-arrow','cleave','heal','oath','roar','boss','block','rally','fire','hook','thunder','wind','rain','rock'].includes(e.type)&&!sounded.has(e.type)){hitSound(({'enemy-arrow':'arrow',rally:'roar',fire:'boss',hook:'cleave',thunder:'thunder',rock:'boss'})[e.type]||e.type);sounded.add(e.type)}el=document.createElement('span');el.dataset.id=id;el.className=`combat-effect ${e.type}`;if(e.type==='defeat'||e.type==='breach'||e.type==='retreat'||e.type==='capture'){const img=document.createElement('img');img.src=e.key?HEROES[e.key].asset:e.boss?enemyArt(e.bossName):e.ranged?HEROES.archer.asset:e.shielded?SHIELD_ART:ENEMY_ART;const portrait=e.key?HEROES[e.key]:enemyPortrait(e.bossName,battle.level);if(portrait)paintPortrait(img,portrait);img.alt=e.type==='capture'?e.bossName+'被俘':'';el.append(img);if(e.type==='capture'){const label=document.createElement('small');label.textContent='被俘';el.append(label)};el.classList.toggle('enemy-exit',!!e.enemy);el.classList.toggle('ranged-exit',!!e.ranged);el.classList.toggle('left-facing-exit',!!e.enemy&&!!portrait?.atlas&&!portrait.atlas.endsWith('/dong.png'))}else el.textContent=e.type==='heal'||e.type==='oath'?'+':e.type==='roar'?'震':e.type==='cleave'?'斬':e.type==='arrow'?'➶':({rally:'旗',fire:'♨',hook:'⛓',thunder:'ϟ',wind:'風',rain:'雨'})[e.type]||'';root.append(el)}
  const progress=1-e.remaining/e.duration,x=['arrow','enemy-arrow','breach','retreat'].includes(e.type)?e.from+(e.to-e.from)*progress:e.to;
  el.style.left=`${x*100}%`;el.style.top=`${(e.lane+.5)/3*100}%`;el.style.opacity=String(['arrow','enemy-arrow'].includes(e.type)?1:['defeat','breach','retreat','capture'].includes(e.type)?1-progress:Math.sin(Math.PI*progress));
  if(e.type==='slash'&&e.weapon==='zhangfei'){el.classList.add('spear-thrust');el.style.width=`${Math.max(.03,e.to-e.from)*100}%`}
@@ -230,3 +231,5 @@ $('duelEnter').onclick=()=>{if(skipDuelEntrance(battle))renderBattle()};
 $('duelPause').onclick=()=>{setPause(!battle.paused);renderBattle()};
 const campaignMap=mountCampaignMap({stages:STAGES,getBattle:()=>battle,setPaused:setPause});
 buildControls();mountBattleKeys({getBattle:()=>battle,getSelected:selectedUnit,isBattle:()=>screen==='battle',refresh:renderBattle,onOrder:(b,id,order)=>{if(commandHero(b,id,order))firstGuide?.event(order==='hold'?'hold':order==='forward'?'move':'')}});updateHome();requestAnimationFrame(frame);
+
+mountSkillGuide({getBattle:()=>battle,setPaused:setPause});
