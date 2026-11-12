@@ -1,6 +1,6 @@
 import {renderPeople,STORY_PEOPLE} from './characters.mjs?v=chapter-eight-1';
 import {FACTIONS,factionFor,enemyPortrait,paintPortrait} from './factions.mjs?v=chapter-eight-1';
-import {mountHistoryLesson} from './history-view.mjs?v=chapter-eight-1';
+import {mountHistoryLesson} from './history-view.mjs?v=eight-audit-1';
 import {renderBossCutin} from './boss-cutin.mjs?v=chapter-eight-1';
 import {mountBattleKeys} from './battle-keys.mjs?v=chapter-eight-1';
 import {mountJourney} from './journey-view.mjs?v=chapter-eight-1';
