@@ -157,3 +157,9 @@ git status --short
 > 請先讀根目錄 AGENTS.md，以及 docs/PROJECT_STATUS.md。確認目前分支、工作區與遠端版本後，再依本次任務讀相關開發／設計文件。保留原有殭屍戰役與玩家存檔；實際執行相關測試，並把完成狀態與未完成事項更新回交接文件。
 
 第七章六尺寸流程：`npx playwright test --config=playwright.hero-seven.config.js --retries=0`。
+
+完整銜接與最終關結算／保存恢復：`npx playwright test --config=playwright.hero-seven-flow.config.js --retries=0`（檔名沿用，實際依目前 46 關驗證）。
+
+第八章六尺寸新關、人物圖鑑、40→41 保存失敗與第 46 關結算：`npx playwright test --config=playwright.hero-eight.config.js --retries=0`。
+
+全 46 關銜接、亂序重玩、八個跨章／換軍保存邊界與舊章回歸：`npx playwright test --config=playwright.hero-eight-flow.config.js --retries=0`。每關行軍圖六尺寸：`npx playwright test --config=playwright.hero-map-audit.config.js --grep "chapter 8" --retries=0`。

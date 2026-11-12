@@ -1,12 +1,17 @@
-import {NOVEL_PAGES,CAMP_LINES} from './novel.mjs?v=chapter-seven-1';
-import {campConversation} from './camp-talk.mjs?v=chapter-seven-1';
-import {STORY_TASKS} from './story-play.mjs?v=chapter-seven-1';
-import {CHAPTER_BACKGROUNDS,STAGE_LEADS} from './prologue.mjs?v=chapter-seven-1';
-import {STORY_PEOPLE} from './characters.mjs?v=chapter-seven-1';
-import {HEROES,STAGES,chapterInfo,enemyArt,heroesForLevel} from './story.mjs?v=chapter-seven-1';
-import {FACTIONS,enemyPortrait} from './factions.mjs?v=chapter-seven-1';
+import {NOVEL_PAGES,CAMP_LINES} from './novel.mjs?v=chapter-eight-1';
+import {campConversation} from './camp-talk.mjs?v=chapter-eight-1';
+import {STORY_TASKS} from './story-play.mjs?v=chapter-eight-1';
+import {CHAPTER_BACKGROUNDS,STAGE_LEADS} from './prologue.mjs?v=chapter-eight-1';
+import {STORY_PEOPLE} from './characters.mjs?v=chapter-eight-1';
+import {HEROES,STAGES,chapterInfo,enemyArt,heroesForLevel} from './story.mjs?v=chapter-eight-1';
+import {FACTIONS,enemyPortrait} from './factions.mjs?v=chapter-eight-1';
 // Child-friendly summaries; comparisons are memory aids, not historical quotations.
 const bios=[
+["袁譚", "史實人物", "袁家兄弟中的哥哥", "他是袁紹的長子，和弟弟袁尚一起對抗曹操，後來卻互相交戰。被圍在平原時，他派辛毗向曹操求援。", "紅色盔甲是遊戲辨識線索；譚和尚，不是同一個名字。", "第八章結束時他仍在世；求援不代表雙方永遠合作。"],
+["袁尚", "史實人物", "接下父親勢力的弟弟", "袁紹病逝後，他接掌父親的勢力。他與哥哥袁譚爭鬥，又試著救援鄴城，失敗後逃到中山。", "青綠盔甲的弟弟袁尚，和紅甲哥哥袁譚一起記。", "遊戲沒有讓他在鄴城被殺；圖像造型由本作設計。"],
+["審配", "史實人物", "留在鄴城的守城者", "袁尚外出時，他留下守衛鄴城。圍城很久，百姓遭遇飢餓；城破後，他被俘並被處死。", "紫色衣服、嚴肅表情，是遊戲裡認出他的線索。", "戰後整備是改編，完成任務不會改寫他的結局。"],
+["辛毗", "史實人物", "帶著求援信改變行軍方向", "袁譚被弟弟圍攻，派他去找曹操。他把消息帶到西平，曹操接受求援後北返。小小一封信，也會影響大隊伍！", "毗讀 ㄆㄧˊ；他是送信者，袁譚才是求援者。", "三隊使者是遊戲任務，不是說史書有三個辛毗。"],
+["劉表", "史實人物", "劉備在荊州投奔的人", "他掌管荊州。劉備在汝南失利後前來投奔；後來曹操南征、駐軍西平，也和他有關。", "都姓劉，但劉表和劉備是不同的人。", "第八章以文字回顧荊州，沒有讓他到黎陽當敵將。"],
 ["袁紹", "史實人物", "河北的大軍，也需要好決定", "他在北方掌握大片地區，與曹操在官渡交戰。軍隊人多，仍要處理糧食、情報與同伴的建議。", "袁紹與袁術是不同的人；官渡敗退的是袁紹。", "袁紹在官渡後退回河北，沒有在烏巢被殺。"],
 ["顏良", "史實人物", "白馬城前的袁軍將領", "他是袁紹的部將，攻打白馬時遇上曹操援軍。張遼與關羽為先鋒，關羽斬顏良。", "顏良對應白馬，文醜對應延津，先把地名配對！", "本關以文字交代主戰；玩家接應外圍使者，不把關羽功勞改給曹洪。"],
 ["文醜", "史實人物", "沿河追來的騎兵將領", "他與劉備率軍追擊曹操，在延津一帶戰敗被斬。別看到顏良、文醜常一起出現，就把故事混成一場。", "白馬是顏良，延津是文醜。", "《武帝紀》這段沒有指定誰斬文醜；不把小說的關羽斬文醜當成此處史實。"],

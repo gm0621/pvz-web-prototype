@@ -1,7 +1,7 @@
-import {renderPeople,STORY_PEOPLE} from './characters.mjs?v=chapter-seven-1';
-import {HISTORICAL_STAGES} from './history-stages.mjs?v=chapter-seven-1';
-import {paintPortrait} from './factions.mjs?v=chapter-seven-1';
-import {THIRD_CHAPTER} from './chapter-three.mjs?v=chapter-seven-1';
+import {renderPeople,STORY_PEOPLE} from './characters.mjs?v=chapter-eight-1';
+import {HISTORICAL_STAGES} from './history-stages.mjs?v=chapter-eight-1';
+import {paintPortrait} from './factions.mjs?v=chapter-eight-1';
+import {THIRD_CHAPTER} from './chapter-three.mjs?v=chapter-eight-1';
 // Original child-friendly narration around the existing Romance chapter-one sequence.
 export const NOVEL_PAGES=[
  [['說書人','桃花落在酒碗邊，城外的招兵榜卻被風吹得啪啪作響。這一年，百姓盼望的，只是一頓安穩飯。'],['張飛','那位壯士，為何對著榜文嘆氣？有心做事，便說出來！'],['劉備','我想救助鄉親，可惜力量太小。若有人同行……也許就能多護住一個人。']],
