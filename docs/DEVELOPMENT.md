@@ -94,6 +94,12 @@ npm test -- --config=playwright.hero-touch.config.js --retries=0
 
 視改動選擇相關測試。記錄執行命令、實際瀏覽器、通過／失敗／略過項目。受控 fixture、強制結算及手動改狀態只驗證流程，不能作為自然戰鬥平衡或真人勝率的證據。
 
+第五、六章人物一致性檢查（十二關序幕來回翻頁、勝敗營地逐句比對圖鑑，以及六尺寸關卡流程）：
+
+```sh
+npx playwright test --config=playwright.hero-companion-audit.config.js --retries=0
+```
+
 ## 程式導覽
 
 | 檔案 | 主要用途 |
