@@ -1,4 +1,4 @@
-import {mountSkillGuide} from './skill-guide.mjs?v=coalition-fixes-1';
+import {mountSkillGuide} from './skill-guide.mjs?v=coalition-audit-1';
 import {renderPeople,STORY_PEOPLE} from './characters.mjs?v=coalition-fixes-1';
 import {FACTIONS,factionFor,enemyPortrait,paintPortrait} from './factions.mjs?v=coalition-fixes-1';
 import {mountHistoryLesson} from './history-view.mjs?v=coalition-fixes-1';

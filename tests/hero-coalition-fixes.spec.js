@@ -15,8 +15,8 @@ test('Cao archers retain natural colors, Dong soldiers face left, and skill guid
  await expect(page.locator('.ally[data-kind=archer] .unit-figure')).toHaveCSS('filter','none');await expect(page.locator('.enemy.atlas-unit .frame-figure').first()).toHaveCSS('transform','matrix(-1, 0, 0, 1, 0, 0)');
  await tap(page.locator('#skillGuideButton'));const before=await page.evaluate(()=>window.transitionBattle.time);await page.clock.runFor(4000);expect(await page.evaluate(()=>window.transitionBattle.time)).toBe(before);
  for(const [army,people] of [['17',['曹操','夏侯惇','曹洪']],['20',['孫堅','程普','黃蓋']],['1',['劉備','關羽','張飛']]]){await page.locator('#skillGuide select').selectOption(army);for(const name of people)await expect(page.locator('#skillGuide')).toContainText(name);expect(await page.locator('#skillGuide').evaluate(e=>e.scrollWidth<=e.clientWidth)).toBe(true)}
- await page.screenshot({path:info.outputPath('skill-guide.png'),fullPage:true});await tap(page.locator('#skillGuide header button'));expect(await page.evaluate(()=>window.transitionBattle.paused)).toBe(false);
- await tap(page.locator('#pauseBtn'));await tap(page.locator('#skillGuideButton'));await tap(page.locator('#skillGuide header button'));expect(await page.evaluate(()=>window.transitionBattle.paused)).toBe(true);
+ await page.screenshot({path:info.outputPath('skill-guide.png'),fullPage:true});await tap(page.locator('#skillGuide header button'));await expect.poll(()=>page.evaluate(()=>window.transitionBattle.paused)).toBe(false);
+ await tap(page.locator('#pauseBtn'));await tap(page.locator('#skillGuideButton'));await tap(page.locator('#skillGuide header button'));await expect.poll(()=>page.evaluate(()=>window.transitionBattle.paused)).toBe(true);
 });
 test('stage 18 cleared battlefield guides missing lane and three real shipment clicks finish and save',async({page},info)=>{
  test.setTimeout(90000);await setup(page,17);await tap(page.locator('#startBtn'));await tap(page.locator('#storySkip'));
@@ -32,4 +32,27 @@ test('legacy Liu ranks never equip Cao or Sun; purchases, failed writes and relo
  if(n===17||n===20){await page.evaluate(()=>window.blockSave=true);await tap(page.locator('[data-buy=liubei]'));await expect(page.locator('#campMessage')).toContainText('未購買');await page.evaluate(()=>window.blockSave=false);await tap(page.locator('[data-buy=liubei]'));await expect(page.locator('#shopGoods')).toContainText('已強化 1 / 3');}
  await page.reload();}
  expect(await stored(page)).toMatchObject({weapons:{liubei:3,guanyu:2,zhangfei:1},armyWeapons:{cao:{liubei:1},sun:{liubei:1}}});
+});
+
+test('skill guide stays paused after leaving the page and after fullscreen dialog reattachment',async({page})=>{
+ await setup(page,16);await tap(page.locator('#startBtn'));await tap(page.locator('#storySkip'));await tap(page.locator('#skillGuideButton'));
+ await page.evaluate(()=>window.dispatchEvent(new Event('pagehide')));await tap(page.locator('#skillGuide header button'));await expect.poll(()=>page.evaluate(()=>window.transitionBattle.paused)).toBe(true);
+ await tap(page.locator('#resumeBtn'));await tap(page.locator('#skillGuideButton'));await page.evaluate(()=>{const d=document.getElementById('skillGuide');d.close();d.showModal()});await page.clock.runFor(1000);await expect.poll(()=>page.evaluate(()=>window.transitionBattle.paused)).toBe(true);await tap(page.locator('#skillGuide header button'));await expect.poll(()=>page.evaluate(()=>window.transitionBattle.paused)).toBe(false);
+});
+
+test('stage 17 escort completes via three routes, freezes in guide, and recovers failed victory save',async({page},info)=>{
+ test.setTimeout(90000);await setup(page,16);await tap(page.locator('#startBtn'));await tap(page.locator('#storySkip'));
+ await page.evaluate(()=>{const b=window.transitionBattle;b.bossSpawned=true;b.nextSpawn=Infinity;b.enemies=[];b.food=300});
+ for(const lane of [0,1,2]){await tap(page.locator('[data-hero=archer]'));await tap(page.locator(`.lane[data-lane="${lane}"]`));await page.clock.runFor(4500)}
+ await tap(page.locator('#skillGuideButton'));const frozen=await page.evaluate(()=>JSON.stringify(window.transitionBattle));await page.clock.runFor(2000);expect(await page.evaluate(()=>JSON.stringify(window.transitionBattle))).toBe(frozen);await tap(page.locator('#skillGuide header button'));
+ await page.evaluate(()=>window.blockSave=true);await page.clock.runFor(30000);await expect(page.locator('#result')).toBeVisible();expect(await stored(page)).toMatchObject({completed:16,coins:1280});await expect(page.locator('#resultRetrySave')).toBeVisible();await page.evaluate(()=>window.blockSave=false);await tap(page.locator('#resultRetrySave'));expect(await stored(page)).toMatchObject({completed:17,coins:1360});await page.screenshot({path:info.outputPath('escort-save.png'),fullPage:true});await page.reload();await tap(page.locator('#startBtn'));await tap(page.locator('#storySkip'));expect(await page.evaluate(()=>window.transitionBattle.level)).toBe(18);
+});
+
+test('all nine weapon purchases remain with their named generals after switching armies and reloading',async({page})=>{
+ test.setTimeout(120000);await setup(page,64);const expected={1:{liubei:1,guanyu:2,zhangfei:3},17:{liubei:3,guanyu:1,zhangfei:2},20:{liubei:2,guanyu:3,zhangfei:1}};let spent=0;
+ for(const level of [1,17,20]){await select(page,level);await tap(page.locator('#storySkip'));await win(page);await tap(page.locator('#resultNext'));await tap(page.locator('[data-shop=weapons]'));
+ for(const [key,rank] of Object.entries(expected[level]))for(let n=1;n<=rank;n++){await tap(page.locator(`[data-buy=${key}]`));spent+=60*n}
+ await tap(page.locator('#campPrepare'));for(const [i,rank] of Object.values(expected[level]).entries())await expect(page.locator('#campHeroes .camp-hero').nth(i)).toContainText(`兵器強化 ${rank} / 3`);await page.reload();}
+ for(const level of [20,1,17,23]){await select(page,level);await tap(page.locator('#storySkip'));expect(await page.evaluate(()=>window.transitionBattle.weapons)).toEqual(expected[level===23?17:level]);await tap(page.locator('#skillGuideButton'));await expect(page.locator('#skillGuide select')).toHaveValue(String(level===23?17:level));await tap(page.locator('#skillGuide header button'));await page.locator('#battle [data-home]').click()}
+ expect(await stored(page)).toMatchObject({coins:5120-spent,weapons:expected[1],armyWeapons:{cao:expected[17],sun:expected[20]}});
 });
