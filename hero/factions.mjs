@@ -12,7 +12,7 @@ export const FACTIONS={
   zhangfei:person('黃蓋','sun',2,{hp:310,damage:23,range:.08,rate:1.4},'鐵鞭與盾／近戰','堅陣護軍・震退近敵')
  }}
 };
-export const factionFor=level=>level>=20&&level<=22?'sun':(level>=17&&level<=19||level>=23&&level<=52)?'cao':null;
+export const factionFor=level=>level>=20&&level<=22?'sun':(level>=17&&level<=19||level>=23&&level<=58)?'cao':null;
 export const FACTION_SKILLS={
  cao:{liubei:[{id:'heal',name:'整軍號令',level:1,cooldown:4,power:10,text:'同路回復 10，另補充 4 軍糧。'}],guanyu:[{id:'cleave',name:'奮槍突進',level:1,cooldown:6,power:40,text:'長槍穿擊前方多名敵人。'}],zhangfei:[{id:'roar',name:'捨身斷後',level:1,cooldown:8,power:14,text:'震退近敵，爭取撤軍時間。'}]},
  sun:{liubei:[{id:'heal',name:'虎威奮擊',level:1,cooldown:5,power:22,text:'斬擊同路近處敵人，不提供治療。'}],guanyu:[{id:'cleave',name:'鐵脊橫掃',level:1,cooldown:6,power:42,text:'長矛掃擊前方多名敵人。'}],zhangfei:[{id:'roar',name:'堅陣護軍',level:1,cooldown:7,power:15,text:'盾陣震退近敵，短暫打斷進攻。'}]}

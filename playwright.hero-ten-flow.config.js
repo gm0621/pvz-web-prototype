@@ -1,0 +1,1 @@
+const base=require('./playwright.hero-eight-flow.config');module.exports={...base,testMatch:['hero-chapter-transitions.spec.js','hero-chapter-nine.spec.js','hero-standalone.spec.js','hero-all-stage-map.spec.js','hero-story-layout.spec.js'],grepInvert:/chapter 10:/};

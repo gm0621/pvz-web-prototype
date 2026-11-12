@@ -1,11 +1,11 @@
-import {extracted} from './history-missions.mjs?v=chapter-nine-1';
-import {createMission,stepMission,protectBarrier,missionReady,missionDuelReady} from './chapter-missions.mjs?v=chapter-nine-1';
-import {duelBeats} from './duel-patterns.mjs?v=chapter-nine-1';
-export {duelBeats} from './duel-patterns.mjs?v=chapter-nine-1';
-import {WEATHER_GENERALS} from './weather-generals.mjs?v=chapter-nine-1';
-import {campaignState,weaponBonus} from './campaign.mjs?v=chapter-nine-1';
-import {heroSkill} from './skills.mjs?v=chapter-nine-1';
-import {heroesForLevel,STAGES,UNLOCKS,FEATURES} from './story.mjs?v=chapter-nine-1';
+import {extracted} from './history-missions.mjs?v=chapter-ten-1';
+import {createMission,stepMission,protectBarrier,missionReady,missionDuelReady} from './chapter-missions.mjs?v=chapter-ten-1';
+import {duelBeats} from './duel-patterns.mjs?v=chapter-ten-1';
+export {duelBeats} from './duel-patterns.mjs?v=chapter-ten-1';
+import {WEATHER_GENERALS} from './weather-generals.mjs?v=chapter-ten-1';
+import {campaignState,weaponBonus} from './campaign.mjs?v=chapter-ten-1';
+import {heroSkill} from './skills.mjs?v=chapter-ten-1';
+import {heroesForLevel,STAGES,UNLOCKS,FEATURES} from './story.mjs?v=chapter-ten-1';
 
 export const SWING={duration:.58,impact:.24,frameTime:.08,frames:6};
 export const DUEL_DURATION=19;
