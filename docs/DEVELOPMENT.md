@@ -171,3 +171,9 @@ git status --short
 ```sh
 npx playwright test --config=playwright.hero-nine.config.js --workers=1
 ```
+
+### 第九章觸控與存檔補驗
+
+`npx playwright test --config=playwright.hero-nine-audit.config.js --workers=1 --retries=0`
+
+沿用第九章六尺寸矩陣，加入行軍動畫、地圖暫停恢復及道具保存失敗的實際觸控事件檢查。測試使用隔離存檔與受控戰局。
