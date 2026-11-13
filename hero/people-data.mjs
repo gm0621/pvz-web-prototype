@@ -1,10 +1,11 @@
-import {NOVEL_PAGES,CAMP_LINES} from './novel.mjs?v=coalition-fixes-1';
-import {campConversation} from './camp-talk.mjs?v=coalition-fixes-1';
-import {STORY_TASKS} from './story-play.mjs?v=coalition-fixes-1';
-import {CHAPTER_BACKGROUNDS,STAGE_LEADS} from './prologue.mjs?v=coalition-fixes-1';
-import {STORY_PEOPLE} from './characters.mjs?v=coalition-fixes-1';
-import {HEROES,STAGES,chapterInfo,enemyArt,heroesForLevel} from './story.mjs?v=coalition-fixes-1';
-import {FACTIONS,enemyPortrait} from './factions.mjs?v=coalition-fixes-1';
+import {GENERALS} from './roster.mjs?v=roster-growth-1';
+import {NOVEL_PAGES,CAMP_LINES} from './novel.mjs?v=roster-growth-1';
+import {campConversation} from './camp-talk.mjs?v=roster-growth-1';
+import {STORY_TASKS} from './story-play.mjs?v=roster-growth-1';
+import {CHAPTER_BACKGROUNDS,STAGE_LEADS} from './prologue.mjs?v=roster-growth-1';
+import {STORY_PEOPLE} from './characters.mjs?v=roster-growth-1';
+import {HEROES,STAGES,chapterInfo,enemyArt,heroesForLevel} from './story.mjs?v=roster-growth-1';
+import {FACTIONS,enemyPortrait} from './factions.mjs?v=roster-growth-1';
 // Child-friendly summaries; comparisons are memory aids, not historical quotations.
 const bios=[
 ["馬超", "史實人物", "白甲孟起，先看他在哪一隊", "他字孟起。211 年與韓遂等關中將領迎戰曹操，敗後退走。後來才投奔劉備；讀不同年份，要跟著更新他的隊伍！", "超是超越的超；白甲藍羽是遊戲的記憶線索。", "本章不把後來的投奔提前，也不安排他在渭南戰死。"],
@@ -34,7 +35,8 @@ const bios=[
 ["許攸", "史實人物", "帶來糧屯線索的謀士", "他原在袁紹一方，後來投奔曹操，提出襲擊袁軍糧屯的建議。一條新消息，可能讓整場戰事轉向。", "名字裡的「攸」讀 ㄧㄡ，與荀攸不是同一人。", "遊戲的夜間路線與對話是改編；消息有用，也需要軍隊實際行動。"],
 ["張遼", "史實人物", "白馬先鋒中的新面孔", "他曾跟隨呂布，後來歸曹操。白馬作戰時與關羽一同擔任先鋒，兩人各有自己的故事。", "張遼與張飛不是同一人。這回記住他與關羽同在白馬前線。", "第九章再任白狼山先鋒；目前只有劇情頭像，沒有新增出戰兵卡，也尚未演到合肥之戰。"],
 ["淳于瓊", "史實人物", "守護袁軍糧屯的將領", "烏巢的糧食關係著袁軍吃不吃得飽。他等人守衛糧屯，卻遭曹操奇襲，最終戰敗被殺。", "淳于是複姓；看到烏巢糧屯，就想起這位守將。", "軍旗催陣與血量是遊戲設計；畫面不呈現刑罰或血腥場面。"],
- ['曹仁','史實人物','叫我子孝，別和曹洪認錯！','他很早就跟隨曹操，也帶隊作戰。討呂布時，他曾另攻句陽、俘獲敵將；迎天子到許的時期也有功勞。','曹仁字子孝，曹洪字子廉。先記住兩張臉，再把各自的故事放對位置！','句陽是另一條戰線，不等於定陶最後一擊。營中說話是改編；本次以劇情人物登場，沒有新增出戰兵卡。'],
+ ['于禁','史實人物','文則帶隊，整整齊齊！','于禁字文則，是曹操麾下的將領。他在混亂中整頓隊伍，也曾參與下邳與官渡一帶戰事。','藍灰盔甲、槍和盾：遊戲裡擅長讓敵人停步，幫大家爭取時間。','可在曹操軍選將時出戰。列陣技能與數值是遊戲改編；可選關卡不是史實到場名單。史料：三國志卷十七于禁傳。'],
+ ['曹仁','史實人物','叫我子孝，別和曹洪認錯！','他很早就跟隨曹操，也帶隊作戰。討呂布時，他曾另攻句陽、俘獲敵將；迎天子到許的時期也有功勞。','曹仁字子孝，曹洪字子廉。先記住兩張臉，再把各自的故事放對位置！','句陽是另一條戰線，不等於定陶最後一擊。營中說話是改編；可在曹操軍選將時出戰；護盾技能是遊戲改編。'],
  ['夏侯淵','史實人物','妙才來了，元讓是另一位！','他是早期跟隨曹操的將領。遊戲裡用紅褐披風與弓箭幫你認人；第五、六章認識同伴，第七章再認識他於官渡勝後督運軍糧的工作。','夏侯是複姓。夏侯淵字妙才，夏侯惇字元讓，就像兩位同姓同學，要看完整名字。','紅披風與弓箭是遊戲造型。營中對話為改編；史書將督運三州軍糧放在袁紹戰敗之後；漢中作戰屬後續年代，不提前搬入。'],
  ['劉備','史實人物','把夥伴放在心上的帶隊人','故事從他與關羽、張飛相遇開始。遊戲裡他能照應同路友軍，像一位隨時回頭看看大家的隊長。','記住雙劍與兩位好兄弟，就能很快找到他！','桃園結義是《三國演義》的著名情節，不能把所有細節都當成史書記錄。'],
  ['關羽','史實人物','長刀一揮，幫同伴開路','他是劉備的重要夥伴，和張飛一起走過許多戰事。遊戲裡長刀一揮，就像替同伴推開一扇擋路的大門。','長鬍子、大刀，是這款遊戲給他的辨識線索。','青龍斬的光效與傷害數值是遊戲設計；史書人物不會施放遊戲技能。'],
@@ -80,6 +82,7 @@ const bios=[
  ['杜衡','遊戲原創','北返驛道上的追兵頭目','三兄弟在驛道遇上他。守住防線、保全隊伍，是這段遭遇的重點。','把他和「驛道」連在一起記。','他是遊戲原創頭目，驛道追擊也有補寫。']
 ];
 const portraits=new Map([...STORY_PEOPLE,...Object.values(HEROES),...Object.values(FACTIONS).flatMap(f=>Object.values(f.heroes))].map(p=>[p.name,p]));
+portraits.set('于禁',GENERALS.yujin);
 for(const name of ['徐榮','華雄'])portraits.set(name,enemyPortrait(name,19));
 for(const name of ['鄧茂','程遠志','石魁','雷烈','韓旌','焦魯','杜衡'])portraits.set(name,{name,asset:enemyArt(name)});
 export const PEOPLE=bios.map(([name,kind,title,intro,remember,note])=>{
