@@ -1,5 +1,5 @@
-import {stagePeople,mapPersonSvg,renderMatchup} from './characters.mjs?v=multilane-boss-1';
-import {campaignMapSvg,journeyRoute} from './campaign-map.mjs?v=multilane-boss-1';
+import {stagePeople,mapPersonSvg,renderMatchup} from './characters.mjs?v=multilane-logistics-1';
+import {campaignMapSvg,journeyRoute} from './campaign-map.mjs?v=multilane-logistics-1';
 let cancelJourney=()=>{};
 export function mountJourney(level,stage){
  cancelJourney();let root=document.getElementById('journeyIntro');

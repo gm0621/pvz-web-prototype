@@ -1,5 +1,5 @@
-import {GENERALS,DEFAULT_TEAM,SLOTS,heroLevel,selectedTeam,maxLanes,buyHeroWeapon} from './roster.mjs?v=multilane-boss-1';
-import {paintPortrait} from './factions.mjs?v=multilane-boss-1';
+import {GENERALS,DEFAULT_TEAM,SLOTS,heroLevel,selectedTeam,maxLanes,buyHeroWeapon} from './roster.mjs?v=multilane-logistics-1';
+import {paintPortrait} from './factions.mjs?v=multilane-logistics-1';
 const el=(tag,text)=>{const e=document.createElement(tag);if(text)e.textContent=text;return e};
 export function skillSummary(g,level){return `被動｜${g.passive}\n`+g.skills.map(s=>`${level<s.level?'🔒 Lv.'+s.level:'主動'}｜${s.name}：${s.text}（${s.mp} MP／${s.cooldown} 秒）`).join('\n')}
 export function openDeployment({level,progress,save,onStart}){

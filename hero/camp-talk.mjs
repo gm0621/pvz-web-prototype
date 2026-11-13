@@ -1,6 +1,6 @@
-import {HISTORICAL_STAGES} from './history-stages.mjs?v=multilane-boss-1';
-import {paintPortrait} from './factions.mjs?v=multilane-boss-1';
-import {THIRD_CHAPTER} from './chapter-three.mjs?v=multilane-boss-1';
+import {HISTORICAL_STAGES} from './history-stages.mjs?v=multilane-logistics-1';
+import {paintPortrait} from './factions.mjs?v=multilane-logistics-1';
+import {THIRD_CHAPTER} from './chapter-three.mjs?v=multilane-logistics-1';
 // Original camp conversations, inspired by the story; not historical quotations.
 const GUAN=[
  ['方才那些鄉勇，握刀的手還在抖。','可他們沒有逃走。勇敢，是害怕時仍願意保護別人。'],

@@ -1,10 +1,10 @@
-import {renderTeamDuel} from './team-duel-view.mjs?v=multilane-boss-1';
-import {renderDuelCinematic} from './duel-cinematic.mjs?v=multilane-boss-1';
-import {duelPattern} from './duel-patterns.mjs?v=multilane-boss-1';
-import {renderDuelEntrance} from './duel-entrance.mjs?v=multilane-boss-1';
-import {HEROES,enemyArt,STAGES} from './story.mjs?v=multilane-boss-1';
-import {hitSound} from './audio.mjs?v=multilane-boss-1';
-import {duelBeats,duelBeat} from './engine.mjs?v=multilane-boss-1';
+import {renderTeamDuel} from './team-duel-view.mjs?v=multilane-logistics-1';
+import {renderDuelCinematic} from './duel-cinematic.mjs?v=multilane-logistics-1';
+import {duelPattern} from './duel-patterns.mjs?v=multilane-logistics-1';
+import {renderDuelEntrance} from './duel-entrance.mjs?v=multilane-logistics-1';
+import {HEROES,enemyArt,STAGES} from './story.mjs?v=multilane-logistics-1';
+import {hitSound} from './audio.mjs?v=multilane-logistics-1';
+import {duelBeats,duelBeat} from './engine.mjs?v=multilane-logistics-1';
 export function renderDuel(b){
  const d=b.duel,dialog=document.getElementById('duelDialog');if(!d)return;
  dialog.dataset.team=String(d.format==='two-v-one');
