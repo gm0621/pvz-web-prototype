@@ -1,11 +1,11 @@
-import {extracted} from './history-missions.mjs?v=roster-growth-1';
-import {createMission,stepMission,protectBarrier,missionReady,missionDuelReady} from './chapter-missions.mjs?v=roster-growth-1';
-import {duelBeats} from './duel-patterns.mjs?v=roster-growth-1';
-export {duelBeats} from './duel-patterns.mjs?v=roster-growth-1';
-import {WEATHER_GENERALS} from './weather-generals.mjs?v=roster-growth-1';
-import {campaignState,weaponBonus} from './campaign.mjs?v=roster-growth-1';
-import {heroSkill} from './skills.mjs?v=roster-growth-1';
-import {heroesForLevel,STAGES,UNLOCKS,FEATURES} from './story.mjs?v=roster-growth-1';
+import {extracted} from './history-missions.mjs?v=roster-audit-1';
+import {createMission,stepMission,protectBarrier,missionReady,missionDuelReady} from './chapter-missions.mjs?v=roster-audit-1';
+import {duelBeats} from './duel-patterns.mjs?v=roster-audit-1';
+export {duelBeats} from './duel-patterns.mjs?v=roster-audit-1';
+import {WEATHER_GENERALS} from './weather-generals.mjs?v=roster-audit-1';
+import {campaignState,weaponBonus} from './campaign.mjs?v=roster-audit-1';
+import {heroSkill} from './skills.mjs?v=roster-audit-1';
+import {heroesForLevel,STAGES,UNLOCKS,FEATURES} from './story.mjs?v=roster-audit-1';
 
 export const SWING={duration:.58,impact:.24,frameTime:.08,frames:6};
 export const DUEL_DURATION=19;
@@ -286,6 +286,6 @@ export function castActive(b,key,index){
  const allies=b.allies.filter(a=>a.hp>0&&(s.id==='fort'||s.id==='supply'||a.lane===u.lane));
  if(['heal','supply'].includes(s.id)){for(const a of allies){a.hp=Math.min(a.maxHp,a.hp+(s.id==='heal'?35:15));effect(b,'heal',a.lane,a.x)}if(s.id==='supply')b.food=Math.min(300,b.food+60)}
  if(['shield','escape','fort','lock'].includes(s.id))for(const a of allies){a.shield=Math.max(a.shield||0,s.id==='shield'?35:s.id==='lock'?30:45);a.shieldUntil=b.time+6;effect(b,'block',a.lane,a.x)}
- if(offensive){for(const e of s.id==='volley'?near.slice(0,1):near){hurtEnemy(b,e,({pierce:45,sweep:65,push:20,volley:60,rain:45,halt:15,lock:0})[s.id]);if(['sweep','push','halt','lock'].includes(s.id))e.stunnedUntil=b.time+(s.id==='push'?1:s.id==='lock'?3:2);if(s.id==='push'&&!e.boss)e.x=Math.min(.95,e.x+.065);e.flash=.3}effect(b,d.ranged?'arrow':'roar',u.lane,u.x)}
+ if(offensive){for(const e of s.id==='volley'?[...near].sort((a,c)=>Math.abs(a.x-u.x)-Math.abs(c.x-u.x)).slice(0,1):near){hurtEnemy(b,e,({pierce:45,sweep:65,push:20,volley:60,rain:45,halt:15,lock:0})[s.id]);if(['sweep','push','halt','lock'].includes(s.id))e.stunnedUntil=b.time+(s.id==='push'?1:s.id==='lock'?3:2);if(s.id==='push'&&!e.boss)e.x=Math.min(.95,e.x+.065);e.flash=.3}effect(b,d.ranged?'arrow':'roar',u.lane,u.x)}
  b.skillNotice={key,text:d.name+'・'+s.name,until:b.time+2};return true;
 }

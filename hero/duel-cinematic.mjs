@@ -1,4 +1,4 @@
-import {duelBeats,duelFinisher} from './duel-patterns.mjs?v=roster-growth-1';
+import {duelBeats,duelFinisher} from './duel-patterns.mjs?v=roster-audit-1';
 const clamp=n=>Math.max(0,Math.min(1,n));
 const ease=n=>{n=clamp(n);return n*n*(3-2*n)};
 // Pure samples of the paused engine clock. No CSS animation or wall-clock timer.

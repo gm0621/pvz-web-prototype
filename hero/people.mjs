@@ -1,7 +1,7 @@
-import {GENERALS} from './roster.mjs?v=roster-growth-1';
-import {skillSummary} from './roster-view.mjs?v=roster-growth-1';
-import {PEOPLE,searchPeople} from './people-data.mjs?v=roster-growth-1';
-import {paintPortrait} from './factions.mjs?v=roster-growth-1';
+import {GENERALS} from './roster.mjs?v=roster-audit-1';
+import {skillSummary} from './roster-view.mjs?v=roster-audit-1';
+import {PEOPLE,searchPeople} from './people-data.mjs?v=roster-audit-1';
+import {paintPortrait} from './factions.mjs?v=roster-audit-1';
 const $=id=>document.getElementById(id);let kind='all';
 const node=(tag,text,className)=>{const e=document.createElement(tag);if(text)e.textContent=text;if(className)e.className=className;return e};
 function render(){
