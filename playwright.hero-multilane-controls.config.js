@@ -1,0 +1,1 @@
+const base=require('./playwright.hero-map-audit.config');module.exports={...base,testMatch:['hero-multilane-controls.spec.js','hero-logistics-lane-switch.spec.js','hero-multilane-boss.spec.js'],retries:0};

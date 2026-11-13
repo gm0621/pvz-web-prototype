@@ -9,3 +9,5 @@
 #attackRange span{display:none}#attackRange{opacity:.7;border-right-width:1.5px}
 
 /* Departure stays in document flow so it cannot cover tent stalls or open panels. */
+
+.unit-picker{display:flex;align-items:center;flex-wrap:wrap;gap:8px;flex-shrink:0;margin:6px 0;font-size:14px}.unit-picker[hidden]{display:none}.unit-picker select{min-height:44px;max-width:100%;min-width:0;padding:8px;border:1px solid #9b884e;border-radius:9px;background:#fff4d5;color:#254335;font:inherit}.unit-picker select:focus-visible{outline:3px solid #215d80;outline-offset:2px}

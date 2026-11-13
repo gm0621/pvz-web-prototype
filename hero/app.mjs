@@ -1,26 +1,26 @@
-import {configureRoster,awardExperience,SLOTS,GENERALS} from './roster.mjs?v=multilane-logistics-1';
-import {openDeployment,mountActiveSkills} from './roster-view.mjs?v=multilane-logistics-1';
-import {castActive,lanesFor,laneLabel} from './engine.mjs?v=multilane-logistics-1';
-import {mountSkillGuide} from './skill-guide.mjs?v=multilane-logistics-1';
-import {renderPeople,STORY_PEOPLE} from './characters.mjs?v=multilane-logistics-1';
-import {FACTIONS,factionFor,enemyPortrait,paintPortrait} from './factions.mjs?v=multilane-logistics-1';
-import {mountHistoryLesson} from './history-view.mjs?v=multilane-logistics-1';
-import {renderBossCutin} from './boss-cutin.mjs?v=multilane-logistics-1';
-import {mountBattleKeys} from './battle-keys.mjs?v=multilane-logistics-1';
-import {mountJourney} from './journey-view.mjs?v=multilane-logistics-1';
-import {renderMission} from './chapter-mission-view.mjs?v=multilane-logistics-1';
-import {mountCampaignMap} from './campaign-map.mjs?v=multilane-logistics-1';
-import {advanceBattleFrame,normalizeBattleSpeed} from './battle-speed.mjs?v=multilane-logistics-1';
-import {mountNovel} from './novel.mjs?v=multilane-logistics-1';
-import {mountCamp} from './camp-view.mjs?v=multilane-logistics-1';
-import {rewardVictory,useSupply,weaponsForLevel} from './campaign.mjs?v=multilane-logistics-1';
-import {createFirstGuide} from './first-guide.mjs?v=multilane-logistics-1';
-import {mountStoryTask} from './story-play.mjs?v=multilane-logistics-1';
-import {CHAPTER_BACKGROUNDS,STAGE_LEADS} from './prologue.mjs?v=multilane-logistics-1';
-import {setMusic,setMusicMode,setMusicHome,musicTheme,musicOn,setSfx,unlockAudio,hitSound} from './audio.mjs?v=multilane-logistics-1';
-import {renderDuel} from './duel-view.mjs?v=multilane-logistics-1';
-import {chapterInfo,enemyArt,HEROES as BASE_HEROES,heroesForLevel,STAGES,ENEMY_ART,SHIELD_ART,FEATURES,heroDescription} from './story.mjs?v=multilane-logistics-1';
-import {bossProfile,LANE_CAPACITY,laneCount,ENEMY_SWING,enemyAttackFrame,skipDuelEntrance,positionHero,commandHero,moveHero,BOSS_SKILLS,SAVE_KEY,normalizeProgress,createBattle,deploy,canDeploy,attackFrame,SWING} from './engine.mjs?v=multilane-logistics-1';
+import {configureRoster,awardExperience,SLOTS,GENERALS} from './roster.mjs?v=multilane-controls-1';
+import {openDeployment,mountActiveSkills} from './roster-view.mjs?v=multilane-controls-1';
+import {castActive,lanesFor,laneLabel} from './engine.mjs?v=multilane-controls-1';
+import {mountSkillGuide} from './skill-guide.mjs?v=multilane-controls-1';
+import {renderPeople,STORY_PEOPLE} from './characters.mjs?v=multilane-controls-1';
+import {FACTIONS,factionFor,enemyPortrait,paintPortrait} from './factions.mjs?v=multilane-controls-1';
+import {mountHistoryLesson} from './history-view.mjs?v=multilane-controls-1';
+import {renderBossCutin} from './boss-cutin.mjs?v=multilane-controls-1';
+import {mountBattleKeys} from './battle-keys.mjs?v=multilane-controls-1';
+import {mountJourney} from './journey-view.mjs?v=multilane-controls-1';
+import {renderMission} from './chapter-mission-view.mjs?v=multilane-controls-1';
+import {mountCampaignMap} from './campaign-map.mjs?v=multilane-controls-1';
+import {advanceBattleFrame,normalizeBattleSpeed} from './battle-speed.mjs?v=multilane-controls-1';
+import {mountNovel} from './novel.mjs?v=multilane-controls-1';
+import {mountCamp} from './camp-view.mjs?v=multilane-controls-1';
+import {rewardVictory,useSupply,weaponsForLevel} from './campaign.mjs?v=multilane-controls-1';
+import {createFirstGuide} from './first-guide.mjs?v=multilane-controls-1';
+import {mountStoryTask} from './story-play.mjs?v=multilane-controls-1';
+import {CHAPTER_BACKGROUNDS,STAGE_LEADS} from './prologue.mjs?v=multilane-controls-1';
+import {setMusic,setMusicMode,setMusicHome,musicTheme,musicOn,setSfx,unlockAudio,hitSound} from './audio.mjs?v=multilane-controls-1';
+import {renderDuel} from './duel-view.mjs?v=multilane-controls-1';
+import {chapterInfo,enemyArt,HEROES as BASE_HEROES,heroesForLevel,STAGES,ENEMY_ART,SHIELD_ART,FEATURES,heroDescription} from './story.mjs?v=multilane-controls-1';
+import {bossProfile,LANE_CAPACITY,laneCount,ENEMY_SWING,enemyAttackFrame,skipDuelEntrance,positionHero,commandHero,moveHero,BOSS_SKILLS,SAVE_KEY,normalizeProgress,createBattle,deploy,canDeploy,attackFrame,SWING} from './engine.mjs?v=multilane-controls-1';
 
 const $=id=>document.getElementById(id);
 let HEROES=BASE_HEROES;
@@ -101,6 +101,7 @@ function selectedUnit(){return battle?.allies.find(u=>u.hp>0&&(selectedUnitId!==
 function syncPause(){if(!battle)return;$('field').classList.toggle('is-paused',battle.paused||!!battle.duel||!!battle.introPending);$('pauseOverlay').hidden=!battle.paused;$('pauseBtn').textContent=battle.paused?'▶ 繼續':'Ⅱ 暫停';$('pauseBtn').setAttribute('aria-pressed',String(battle.paused))}
 function setPause(value){if(!battle||battle.over)return;battle.paused=value;syncPause()}
 function buildControls(){
+ const picker=document.createElement('label');picker.id='unitPicker';picker.className='unit-picker';picker.append('選擇場上友軍 ');const select=document.createElement('select');select.id='unitSelect';select.setAttribute('aria-label','選擇場上友軍');select.onchange=()=>{if(!battle||battle.paused||battle.over||battle.duel||battle.introPending)return;const unit=battle.allies.find(u=>u.hp>0&&String(u.id)===select.value);selected=unit?.key||null;selectedUnitId=unit?.id??null;renderBattle()};picker.append(select);$('field').after(picker);
  const controls=document.createElement('div');controls.id='orders';controls.className='orders';controls.setAttribute('aria-label','部隊調動');
  const marker=document.createElement('span');marker.id='moveTarget';marker.setAttribute('aria-hidden','true');$('field').append(marker);
  const label=document.createElement('span');label.id='orderStatus';controls.append(label);
@@ -182,6 +183,7 @@ function renderBattle(){
  for(const lane of $('lanes').children){const index=Number(lane.dataset.lane),unit=selectedUnit(),ready=unit?unit.lane!==index&&battle.time>=(unit.moveReadyAt||0)&&laneCount(battle,index)<LANE_CAPACITY:selected&&!canDeploy(battle,selected,index);const count=laneCount(battle,index),full=count>=LANE_CAPACITY;lane.querySelector('.lane-capacity').textContent=`${full?'已滿 ':''}${count}／${LANE_CAPACITY}`;lane.classList.toggle('full',full);lane.setAttribute('aria-label',`${laneLabel(battle,index)}路，${count}／${LANE_CAPACITY} 名友軍${full?'，已滿；可調動本路單位，不能再增援或換入':''}`);lane.classList.toggle('ready',!!ready);lane.disabled=battle.paused||!!battle.duel||!!battle.introPending||battle.over}
  for(const button of $('supplies').children){const id=button.dataset.supply;button.textContent=`${id==='herb'?'藥包':'糧袋'} ×${progress.inventory[id]}`;button.disabled=!progress.inventory[id]||battle.paused||battle.over||!!battle.duel||!!battle.introPending}
  $('supplies').hidden=!progress.inventory.herb&&!progress.inventory.grain;
+ const living=battle.allies.filter(u=>u.hp>0),picker=$('unitPicker'),select=$('unitSelect');picker.hidden=!living.length;const labels=living.map(u=>{const same=living.filter(a=>a.key===u.key);return {id:String(u.id),label:HEROES[u.key].name+(same.length>1?' '+(same.indexOf(u)+1):'')+' · '+laneLabel(battle,u.lane)+'路'}}),signature=JSON.stringify(labels);if(select.dataset.options!==signature){select.dataset.options=signature;select.replaceChildren(new Option('選友軍，再點路線或調動指令',''),...labels.map(u=>new Option(u.label,u.id)))}select.value=String(selectedUnit()?.id||'');select.disabled=battle.paused||battle.over||!!battle.duel||!!battle.introPending;
  renderActiveSkills();renderUnits();renderEffects();syncPause();const skill=battle.skillNotice&&battle.time<battle.skillNotice.until?battle.skillNotice:null;$('skillBanner').hidden=!skill;if(skill){$('skillBanner').textContent=skill.text;$('skillBanner').dataset.hero=skill.key}
  if(battle.duel&&!duelShown){const d=battle.duel;setMusicMode('duel',battle.level);syncMusicButton();$('duelTitle').textContent=`${HEROES[d.heroKey].short}${d.partnerKey?' ＋ '+HEROES[d.partnerKey].short:''} 對 ${d.bossName}`;$('duelHero').src=HEROES[d.heroKey].asset;$('duelHero').alt=HEROES[d.heroKey].name;$('duelEnemy').src=enemyArt(d.bossName);$('duelDialog').showModal();duelShown=true}
  if(battle.duel)renderDuel(battle);

@@ -1,11 +1,11 @@
-import {renderHeroCamp} from './roster-view.mjs?v=multilane-logistics-1';
-import {STORY_PEOPLE,renderPeople} from './characters.mjs?v=multilane-logistics-1';
-import {STAGES,chapterInfo} from './story.mjs?v=multilane-logistics-1';
-import {FACTION_SKILLS,factionFor,paintPortrait} from './factions.mjs?v=multilane-logistics-1';
-import {campConversation} from './camp-talk.mjs?v=multilane-logistics-1';
-import {GOODS,purchase,weaponsForLevel} from './campaign.mjs?v=multilane-logistics-1';
-import {CAMP_LINES} from './novel.mjs?v=multilane-logistics-1';
-import {HERO_SKILLS} from './skills.mjs?v=multilane-logistics-1';
+import {renderHeroCamp} from './roster-view.mjs?v=multilane-controls-1';
+import {STORY_PEOPLE,renderPeople} from './characters.mjs?v=multilane-controls-1';
+import {STAGES,chapterInfo} from './story.mjs?v=multilane-controls-1';
+import {FACTION_SKILLS,factionFor,paintPortrait} from './factions.mjs?v=multilane-controls-1';
+import {campConversation} from './camp-talk.mjs?v=multilane-controls-1';
+import {GOODS,purchase,weaponsForLevel} from './campaign.mjs?v=multilane-controls-1';
+import {CAMP_LINES} from './novel.mjs?v=multilane-controls-1';
+import {HERO_SKILLS} from './skills.mjs?v=multilane-controls-1';
 export function mountCamp({progress,level,heroes,stage,onSave,onContinue,won=true}){
  const $=id=>document.getElementById(id);let shop='items';
  let people=$('campTalkPeople');if(!people){people=document.createElement('aside');people.id='campTalkPeople';people.className='story-people';people.setAttribute('aria-label','對話提及人物');$('campTalkText').after(people)}people.hidden=true;
