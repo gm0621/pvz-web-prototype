@@ -1,7 +1,7 @@
-import {enemyPortrait,paintPortrait} from './factions.mjs?v=roster-audit-1';
-import {bossProfile} from './engine.mjs?v=roster-audit-1';
-import {enemyArt} from './story.mjs?v=roster-audit-1';
-import {hitSound} from './audio.mjs?v=roster-audit-1';
+import {enemyPortrait,paintPortrait} from './factions.mjs?v=roster-chapters-1';
+import {bossProfile} from './engine.mjs?v=roster-chapters-1';
+import {enemyArt} from './story.mjs?v=roster-chapters-1';
+import {hitSound} from './audio.mjs?v=roster-chapters-1';
 const seen=new WeakMap();
 const label=(root,selector,text)=>{const node=root.querySelector(selector);if(node.textContent!==text)node.textContent=text};
 const clamp=n=>Math.max(0,Math.min(1,n));
