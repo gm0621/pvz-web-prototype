@@ -1,5 +1,5 @@
-import {HISTORICAL_STAGES} from './history-stages.mjs?v=roster-chapters-1';
-import {FACTIONS,factionFor} from './factions.mjs?v=roster-chapters-1';
+import {HISTORICAL_STAGES} from './history-stages.mjs?v=multilane-balance-1';
+import {FACTIONS,factionFor} from './factions.mjs?v=multilane-balance-1';
 const laneList=b=>Array.from({length:b.laneTotal||3},(_,i)=>i);
 const siteNames=['道路','水井','宗廟'],laneNames=['上','中','下'];
 const kinds=HISTORICAL_STAGES.map(s=>s.mission);
@@ -32,7 +32,7 @@ export function stepHistoryMission(b,dt){
 }
 export function protectHistoricalOutcome(b){if(['withdraw','decoy'].includes(b.mission?.kind))for(const e of b.enemies)if(e.boss&&!e.escaped)e.hp=Math.max(e.hp,e.maxHp*.35)}
 export const extracted=b=>['withdraw','decoy'].includes(b.mission?.kind)&&b.mission.done;
-export function historyMissionText(b){const m=b.mission,stage=HISTORICAL_STAGES[b.level-17],opponent=stage.bossName,holdTitle=stage.missionTitle||'鄄城接應';
+export function historyMissionText(b){const fronts=['','','','三','四','五'][b.laneTotal||3];const m=b.mission,stage=HISTORICAL_STAGES[b.level-17],opponent=stage.bossName,holdTitle=stage.missionTitle||'鄄城接應';
  if(m.done&&['dispatch','supply','restoration','holdout'].includes(m.kind)){
   const title={dispatch:'接應 3／3 隊使者',supply:'軍糧 3／3 批',restoration:'城內整備 3／3',holdout:holdTitle+' 24／24 秒'}[m.kind];
   return `${title} · 任務已完成`+(b.won?'':b.bossSpawned?'，清退剩餘敵軍後過關':'，守住防線並清退後續敵軍');
@@ -50,13 +50,13 @@ export function historyMissionText(b){const m=b.mission,stage=HISTORICAL_STAGES[
   const remaining=b.allies.filter(u=>u.hp>0&&u.x>.18).length;
   return remaining?`撤離中：尚有 ${remaining} 名友軍未回到左側 · 所有在場友軍都需撤回`:'隊伍已撤回左側，確認全員平安';
  }
- if(['withdraw','decoy'].includes(m.kind))return `${m.kind==='decoy'&&!m.decoyUsed?'先放置赤幘誘餌 · ':''}`+(m.withdrawAt===null?(stage.noBoss?'守住三路，等待後隊接應':`守住三路，等${opponent}出陣`):b.time<m.withdrawAt?`接應尚需 ${Math.ceil(m.withdrawAt-b.time)} 秒`:'接應完成，按全軍撤離')+` · 本關目標是撤退，不是擊倒${opponent}`;
+ if(['withdraw','decoy'].includes(m.kind))return `${m.kind==='decoy'&&!m.decoyUsed?'先放置赤幘誘餌 · ':''}`+(m.withdrawAt===null?(stage.noBoss?`守住${fronts}路，等待後隊接應`:`守住${fronts}路，等${opponent}出陣`):b.time<m.withdrawAt?`接應尚需 ${Math.ceil(m.withdrawAt-b.time)} 秒`:'接應完成，按全軍撤離')+` · 本關目標是撤退，不是擊倒${opponent}`;
  if(m.kind==='restoration'){
   const detail=m.site<0?'選一處整備，派友軍守住對應路線':`${siteNames[m.site]}・${laneNames[m.site]}路 · ${!b.allies.some(u=>u.hp>0&&u.lane===m.site)?'等候友軍接應':!safe(b,m.site)?'敵軍逼近，整備暫停':'整備中'}`;
   return `城內整備 ${m.sites.filter(t=>t>=8).length}／3 · ${detail}`;
  }
  if(m.kind==='holdout')return `${holdTitle} ${Math.floor(m.hold)}／24 秒 · 每路皆有友軍、敵人未逼近才計時 · 受阻暫停，進度保留`;
- if(b.bossCaptured)return `${opponent}已被俘 · ${b.won?'本關完成':'守住三路，清退餘兵後過關'}`;
+ if(b.bossCaptured)return `${opponent}已被俘 · ${b.won?'本關完成':`守住${fronts}路，清退餘兵後過關`}`;
  if(b.level>=23)return HISTORICAL_STAGES[b.level-17].bossTip;
  return '陽人之戰 · 三將合陣、避開重斧再反擊 · 史書記孫堅軍破敵，非關羽單挑';
 }
