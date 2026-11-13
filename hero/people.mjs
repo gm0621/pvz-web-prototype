@@ -1,7 +1,7 @@
-import {GENERALS} from './roster.mjs?v=multilane-balance-1';
-import {skillSummary} from './roster-view.mjs?v=multilane-balance-1';
-import {PEOPLE,searchPeople} from './people-data.mjs?v=multilane-balance-1';
-import {paintPortrait} from './factions.mjs?v=multilane-balance-1';
+import {GENERALS} from './roster.mjs?v=multilane-boss-1';
+import {skillSummary} from './roster-view.mjs?v=multilane-boss-1';
+import {PEOPLE,searchPeople} from './people-data.mjs?v=multilane-boss-1';
+import {paintPortrait} from './factions.mjs?v=multilane-boss-1';
 const $=id=>document.getElementById(id);let kind='all';
 const node=(tag,text,className)=>{const e=document.createElement(tag);if(text)e.textContent=text;if(className)e.className=className;return e};
 function render(){

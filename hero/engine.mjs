@@ -1,11 +1,11 @@
-import {extracted} from './history-missions.mjs?v=multilane-balance-1';
-import {createMission,stepMission,protectBarrier,missionReady,missionDuelReady} from './chapter-missions.mjs?v=multilane-balance-1';
-import {duelBeats} from './duel-patterns.mjs?v=multilane-balance-1';
-export {duelBeats} from './duel-patterns.mjs?v=multilane-balance-1';
-import {WEATHER_GENERALS} from './weather-generals.mjs?v=multilane-balance-1';
-import {campaignState,weaponBonus} from './campaign.mjs?v=multilane-balance-1';
-import {heroSkill} from './skills.mjs?v=multilane-balance-1';
-import {heroesForLevel,STAGES,UNLOCKS,FEATURES} from './story.mjs?v=multilane-balance-1';
+import {extracted} from './history-missions.mjs?v=multilane-boss-1';
+import {createMission,stepMission,protectBarrier,missionReady,missionDuelReady} from './chapter-missions.mjs?v=multilane-boss-1';
+import {duelBeats} from './duel-patterns.mjs?v=multilane-boss-1';
+export {duelBeats} from './duel-patterns.mjs?v=multilane-boss-1';
+import {WEATHER_GENERALS} from './weather-generals.mjs?v=multilane-boss-1';
+import {campaignState,weaponBonus} from './campaign.mjs?v=multilane-boss-1';
+import {heroSkill} from './skills.mjs?v=multilane-boss-1';
+import {heroesForLevel,STAGES,UNLOCKS,FEATURES} from './story.mjs?v=multilane-boss-1';
 
 export const SWING={duration:.58,impact:.24,frameTime:.08,frames:6};
 export const DUEL_DURATION=19;
@@ -255,7 +255,7 @@ export function stepBattle(b,seconds){
    if(b.time<(e.recoveryUntil||0)){e.action='recovering';continue}
    if(!e.castAt&&target&&e.x-target.x<.34&&b.time>=(e.nextSkill||0)){
     e.castStartedAt=b.time;e.castAt=b.time+(b.level>=5?2.5:1.8);e.castLanes=e.enraged&&bossProfile(b,e).skillType!=='hook'?[e.lane,(e.lane+1)%lanesFor(b)]:[e.lane];e.castTargetId=target.id;
-    b.notice=`${e.name}蓄力：${bossProfile(b,e).skillName}！${bossProfile(b,e).skillType==='rally'?'敵兵即將加速，守住三路':'可換路閃避'}`;b.noticeUntil=e.castAt;
+    b.notice=`${e.name}蓄力：${bossProfile(b,e).skillName}！${bossProfile(b,e).skillType==='rally'?'敵兵即將加速，守住各路':'可換路閃避'}`;b.noticeUntil=e.castAt;
    }
    if(e.castAt){e.action='casting';continue}
   }

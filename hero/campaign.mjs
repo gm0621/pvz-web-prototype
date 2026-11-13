@@ -1,6 +1,6 @@
-import {growthState,selectedTeam,DEFAULT_TEAM} from './roster.mjs?v=multilane-balance-1';
-import {factionFor} from './factions.mjs?v=multilane-balance-1';
-import {CAMPAIGN_LENGTH} from './campaign-config.mjs?v=multilane-balance-1';
+import {growthState,selectedTeam,DEFAULT_TEAM} from './roster.mjs?v=multilane-boss-1';
+import {factionFor} from './factions.mjs?v=multilane-boss-1';
+import {CAMPAIGN_LENGTH} from './campaign-config.mjs?v=multilane-boss-1';
 // Local campaign economy, independent of the original zombie game's account/store.
 export const GOODS={
  herb:{name:'行軍藥包',shop:'items',price:25,icon:'✚',description:'戰鬥中使用，所有在場友軍回復 60 生命。'},

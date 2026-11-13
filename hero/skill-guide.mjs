@@ -1,8 +1,8 @@
-import {GENERALS} from './roster.mjs?v=multilane-balance-1';
-import {skillSummary} from './roster-view.mjs?v=multilane-balance-1';
-import {heroesForLevel} from './story.mjs?v=multilane-balance-1';
-import {HERO_SKILLS} from './skills.mjs?v=multilane-balance-1';
-import {FACTION_SKILLS,factionFor,paintPortrait} from './factions.mjs?v=multilane-balance-1';
+import {GENERALS} from './roster.mjs?v=multilane-boss-1';
+import {skillSummary} from './roster-view.mjs?v=multilane-boss-1';
+import {heroesForLevel} from './story.mjs?v=multilane-boss-1';
+import {HERO_SKILLS} from './skills.mjs?v=multilane-boss-1';
+import {FACTION_SKILLS,factionFor,paintPortrait} from './factions.mjs?v=multilane-boss-1';
 export function mountSkillGuide({getBattle,setPaused}){
  const button=document.createElement('button');button.id='skillGuideButton';button.className='quiet-button';button.textContent='武將技能介紹';button.setAttribute('aria-haspopup','dialog');document.getElementById('cards').before(button);
  const dialog=document.createElement('dialog');dialog.id='skillGuide';dialog.className='skill-guide';dialog.setAttribute('aria-labelledby','skillGuideTitle');dialog.innerHTML='<header><h2 id="skillGuideTitle">武將技能介紹</h2><button class="quiet-button">返回戰場 ✕</button></header><p>劉備、孫堅軍招式自動施放；曹操軍的被動技自動生效，主動技請點戰場技能按鈕。MP 上限 60，通常每秒回復 3；暫停不回復。營地購買的是兵器強化，只增加該武將的普通攻擊，不會把他的招式或強化送給別人。</p><label>查看軍隊 <select aria-label="查看軍隊"><option value="1">劉備軍</option><option value="17">曹操軍</option><option value="20">孫堅軍</option></select></label><div class="skill-guide-list"></div><p>曹操軍可選六位武將。出戰後勝利 +20 經驗；敗戰需持續 10 秒才 +5。Lv.3 解鎖第二主動技，最高 Lv.10；每級生命 +5、普攻 +1。小兵沒有武將 MP 技能。</p>';document.body.append(dialog);

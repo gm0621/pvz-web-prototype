@@ -1,5 +1,5 @@
-import {HISTORICAL_STAGES} from './history-stages.mjs?v=multilane-balance-1';
-import {FACTIONS,factionFor} from './factions.mjs?v=multilane-balance-1';
+import {HISTORICAL_STAGES} from './history-stages.mjs?v=multilane-boss-1';
+import {FACTIONS,factionFor} from './factions.mjs?v=multilane-boss-1';
 const laneList=b=>Array.from({length:b.laneTotal||3},(_,i)=>i);
 const siteNames=['道路','水井','宗廟'],laneNames=['上','中','下'];
 const kinds=HISTORICAL_STAGES.map(s=>s.mission);
