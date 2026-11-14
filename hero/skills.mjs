@@ -1,4 +1,4 @@
-import {FACTION_SKILLS,factionFor} from './factions.mjs?v=story-reader-1';
+import {FACTION_SKILLS,factionFor} from './factions.mjs?v=peach-growth-1';
 // Per-hero entries keep future techniques separate from deployment and shop data.
 export const HERO_SKILLS={
  liubei:[{id:'heal',name:'仁德回春',level:2,cooldown:3,power:13,text:'定時回復同路友軍。'}],

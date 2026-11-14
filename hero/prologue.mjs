@@ -1,6 +1,6 @@
-import {HISTORICAL_STAGES} from './history-stages.mjs?v=story-reader-1';
-import {paintPortrait} from './factions.mjs?v=story-reader-1';
-import {THIRD_CHAPTER} from './chapter-three.mjs?v=story-reader-1';
+import {HISTORICAL_STAGES} from './history-stages.mjs?v=peach-growth-1';
+import {paintPortrait} from './factions.mjs?v=peach-growth-1';
+import {THIRD_CHAPTER} from './chapter-three.mjs?v=peach-growth-1';
 // History and novel adaptation are deliberately separated in the introduction.
 export const CHAPTER_BACKGROUNDS={
  1:{era:'東漢末年・公元 184 年',history:'東漢朝局不安，民間生活困苦。張角聚眾起事，以黃巾為標誌，戰火迅速蔓延。朝廷派兵討伐，各地也招募義勇自保。',story:'《三國演義》從這場亂局寫起：劉備有志救民，卻缺兵少糧；張飛願出資，關羽前來投軍。三人相逢，將從桃園走向戰場。'},

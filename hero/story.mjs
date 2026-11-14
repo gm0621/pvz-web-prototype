@@ -1,14 +1,10 @@
-import {HISTORICAL_STAGES} from './history-stages.mjs?v=story-reader-1';
-import {FACTIONS,factionFor} from './factions.mjs?v=story-reader-1';
-import {THIRD_CHAPTER} from './chapter-three.mjs?v=story-reader-1';
-import {WEATHER_GENERALS} from './weather-generals.mjs?v=story-reader-1';
-import {SECOND_CHAPTER} from './chapter-two.mjs?v=story-reader-1';
-export const HEROES={
- archer:{name:'義軍弓兵',short:'弓兵',cost:50,hp:85,damage:13,rate:1.05,range:.29,speed:.045,cooldown:3,description:'遠程支援',asset:'../assets/characters/shu-archer.webp'},
- liubei:{name:'劉備',short:'劉備',cost:90,hp:155,damage:15,rate:1.15,range:.08,speed:.043,cooldown:5,heal:13,description:'回復同路友軍',asset:'./assets/liubei.png'},
- guanyu:{name:'關羽',short:'關羽',cost:100,hp:190,damage:32,rate:1.3,range:.09,speed:.05,cooldown:5.5,description:'高傷斬擊',asset:'./assets/guanyu.webp'},
- zhangfei:{name:'張飛',short:'張飛',cost:110,hp:285,damage:24,rate:1.45,range:.11,speed:.04,cooldown:6,description:'耐打的前鋒',asset:'./assets/zhangfei.png'}
-};
+import {HISTORICAL_STAGES} from './history-stages.mjs?v=peach-growth-1';
+import {FACTIONS,factionFor} from './factions.mjs?v=peach-growth-1';
+import {THIRD_CHAPTER} from './chapter-three.mjs?v=peach-growth-1';
+import {WEATHER_GENERALS} from './weather-generals.mjs?v=peach-growth-1';
+import {SECOND_CHAPTER} from './chapter-two.mjs?v=peach-growth-1';
+import {PEACH_HEROES} from './hero-base.mjs?v=peach-growth-1';
+export const HEROES=PEACH_HEROES;
 const ROSTERS=Object.fromEntries(Object.entries(FACTIONS).map(([f,data])=>[f,Object.fromEntries(Object.entries(HEROES).map(([key,hero])=>[key,{...hero,...data.heroes[key],...(key==='archer'?{name:data.title+'弓兵'}:{})}]))]));
 export const heroesForLevel=level=>ROSTERS[factionFor(level)]||HEROES;
 export const ENEMY_ART='./assets/yellow-turban-raider.png';
@@ -59,9 +55,9 @@ export function chapterInfo(level){const chapter=STAGES[level-1]?.chapter||1;ret
 export const UNLOCKS={healing:2,roar:3,cleave:4,shields:5,oath:6};
 export const FEATURES=[
  {name:'初陣・三路布陣',text:'先選兵卡，再點路線。武將各限一位，退場整備 12 秒後可召回。'},
- {name:'新招式・仁德',text:'劉備自動回復同路友軍，讓他跟著前鋒一起出戰。'},
- {name:'新招式・燕人怒吼',text:'張飛自動怒吼，震退身前敵軍並短暫震懾。'},
- {name:'新招式・青龍斬',text:'關羽自動揮出刀光，同時斬擊身前同路敵軍。'},
+ {name:'照應傷者・仁德',text:'劉備的仁心會自動小量回復；同伴受傷時，點劉備再按「仁德回春」。'},
+ {name:'主動技・燕人怒吼',text:'敵軍近身時，點張飛再按「燕人怒吼」，震退小兵並暈眩近敵。'},
+ {name:'主動技・青龍斬',text:'敵軍聚在同路近處時，點關羽再按「青龍斬」，一次斬擊多名敵人。'},
  {name:'新敵軍・黃巾盾兵',text:'盾兵能擋下部分箭傷，派近戰武將迎擊更有效。'},
  {name:'合擊・桃園同心',text:'劉、關、張同時在場，自動回復全軍生命；本場只觸發一次。'},
  {name:'廣宗・奉師命',text:'三路開道，擊退外圍黃巾，前往盧植軍前。'},
@@ -74,8 +70,8 @@ FEATURES.push(...HISTORICAL_STAGES.map(s=>({name:`${s.year} 年・${FACTIONS[s.f
 export function heroDescription(key,level=1){
  if(factionFor(level))return heroesForLevel(level)[key].description;
  if(key==='archer')return '遠程支援・可重複出兵';
- if(key==='liubei')return level>=UNLOCKS.healing?'仁德・自動治療同路':'近戰支援・第2關學仁德';
- if(key==='zhangfei')return level>=UNLOCKS.roar?'怒吼・震退並震懾':'前鋒・第3關學怒吼';
- return level>=UNLOCKS.cleave?'青龍斬・同路穿斬':'斬擊・第4關學青龍斬';
+ if(key==='liubei')return '仁心自動回復・仁德回春手動施放';
+ if(key==='zhangfei')return '耐打前鋒・怒吼手動震退近敵';
+ return '強力斬擊・青龍斬手動施放';
 }
 

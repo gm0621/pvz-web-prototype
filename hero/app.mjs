@@ -1,28 +1,29 @@
-import {beginReading,installStoryReader} from './story-reader.mjs?v=story-reader-1';
-import {shortPages} from './story-pages.mjs?v=story-reader-1';
-import {configureRoster,awardExperience,SLOTS,GENERALS} from './roster.mjs?v=story-reader-1';
-import {openDeployment,mountActiveSkills} from './roster-view.mjs?v=story-reader-1';
-import {castActive,lanesFor,laneLabel} from './engine.mjs?v=story-reader-1';
-import {mountSkillGuide} from './skill-guide.mjs?v=story-reader-1';
-import {renderPeople,STORY_PEOPLE} from './characters.mjs?v=story-reader-1';
-import {FACTIONS,factionFor,enemyPortrait,paintPortrait} from './factions.mjs?v=story-reader-1';
-import {mountHistoryLesson} from './history-view.mjs?v=story-reader-1';
-import {renderBossCutin} from './boss-cutin.mjs?v=story-reader-1';
-import {mountBattleKeys} from './battle-keys.mjs?v=story-reader-1';
-import {mountJourney} from './journey-view.mjs?v=story-reader-1';
-import {renderMission} from './chapter-mission-view.mjs?v=story-reader-1';
-import {mountCampaignMap} from './campaign-map.mjs?v=story-reader-1';
-import {advanceBattleFrame,normalizeBattleSpeed} from './battle-speed.mjs?v=story-reader-1';
-import {mountNovel} from './novel.mjs?v=story-reader-1';
-import {mountCamp} from './camp-view.mjs?v=story-reader-1';
-import {rewardVictory,useSupply,weaponsForLevel} from './campaign.mjs?v=story-reader-1';
-import {createFirstGuide} from './first-guide.mjs?v=story-reader-1';
-import {mountStoryTask} from './story-play.mjs?v=story-reader-1';
-import {CHAPTER_BACKGROUNDS,STAGE_LEADS} from './prologue.mjs?v=story-reader-1';
-import {setMusic,setMusicMode,setMusicHome,musicTheme,musicOn,setSfx,unlockAudio,hitSound} from './audio.mjs?v=story-reader-1';
-import {renderDuel} from './duel-view.mjs?v=story-reader-1';
-import {chapterInfo,enemyArt,HEROES as BASE_HEROES,heroesForLevel,STAGES,ENEMY_ART,SHIELD_ART,FEATURES,heroDescription} from './story.mjs?v=story-reader-1';
-import {bossProfile,LANE_CAPACITY,laneCount,ENEMY_SWING,enemyAttackFrame,skipDuelEntrance,positionHero,commandHero,moveHero,BOSS_SKILLS,SAVE_KEY,normalizeProgress,createBattle,deploy,canDeploy,attackFrame,SWING} from './engine.mjs?v=story-reader-1';
+import {mountSkillIntro} from './skill-intro.mjs?v=peach-growth-1';
+import {beginReading,installStoryReader} from './story-reader.mjs?v=peach-growth-1';
+import {shortPages} from './story-pages.mjs?v=peach-growth-1';
+import {configureRoster,configurePeachRoster,awardExperience,SLOTS,ALL_GENERALS as GENERALS} from './roster.mjs?v=peach-growth-1';
+import {openDeployment,mountActiveSkills} from './roster-view.mjs?v=peach-growth-1';
+import {castActive,lanesFor,laneLabel} from './engine.mjs?v=peach-growth-1';
+import {mountSkillGuide} from './skill-guide.mjs?v=peach-growth-1';
+import {renderPeople,STORY_PEOPLE} from './characters.mjs?v=peach-growth-1';
+import {FACTIONS,factionFor,enemyPortrait,paintPortrait} from './factions.mjs?v=peach-growth-1';
+import {mountHistoryLesson} from './history-view.mjs?v=peach-growth-1';
+import {renderBossCutin} from './boss-cutin.mjs?v=peach-growth-1';
+import {mountBattleKeys} from './battle-keys.mjs?v=peach-growth-1';
+import {mountJourney} from './journey-view.mjs?v=peach-growth-1';
+import {renderMission} from './chapter-mission-view.mjs?v=peach-growth-1';
+import {mountCampaignMap} from './campaign-map.mjs?v=peach-growth-1';
+import {advanceBattleFrame,normalizeBattleSpeed} from './battle-speed.mjs?v=peach-growth-1';
+import {mountNovel} from './novel.mjs?v=peach-growth-1';
+import {mountCamp} from './camp-view.mjs?v=peach-growth-1';
+import {rewardVictory,useSupply,weaponsForLevel} from './campaign.mjs?v=peach-growth-1';
+import {createFirstGuide} from './first-guide.mjs?v=peach-growth-1';
+import {mountStoryTask} from './story-play.mjs?v=peach-growth-1';
+import {CHAPTER_BACKGROUNDS,STAGE_LEADS} from './prologue.mjs?v=peach-growth-1';
+import {setMusic,setMusicMode,setMusicHome,musicTheme,musicOn,setSfx,unlockAudio,hitSound} from './audio.mjs?v=peach-growth-1';
+import {renderDuel} from './duel-view.mjs?v=peach-growth-1';
+import {chapterInfo,enemyArt,HEROES as BASE_HEROES,heroesForLevel,STAGES,ENEMY_ART,SHIELD_ART,FEATURES,heroDescription} from './story.mjs?v=peach-growth-1';
+import {bossProfile,LANE_CAPACITY,laneCount,ENEMY_SWING,enemyAttackFrame,skipDuelEntrance,positionHero,commandHero,moveHero,BOSS_SKILLS,SAVE_KEY,normalizeProgress,createBattle,deploy,canDeploy,attackFrame,SWING} from './engine.mjs?v=peach-growth-1';
 
 const $=id=>document.getElementById(id);
 let HEROES=BASE_HEROES;
@@ -102,7 +103,7 @@ function beginBattle(level,ready=false){if(factionFor(level)==='cao'&&!ready){
  const returnMode=screen==='camp'?'camp':storyPhase==='ending'?'victory':$('storyPrologue').hidden?'prepare':'story';
  setMusicMode('prepare',level);syncMusicButton();
  openDeployment({level,progress,save:saveProgress,onStart:()=>beginBattle(level,true),onCancel:()=>{setMusicMode(returnMode,level);syncMusicButton()}});return
-}useRoster(level);setMusicMode('battle',level);syncMusicButton();battle=createBattle(level,Date.now(),weaponsForLevel(progress,level));if(factionFor(level)==='cao'){configureRoster(battle,progress,HEROES.archer);HEROES=battle.roster;battle.food=Math.min(300,battle.food+60*(lanesFor(battle)-3))}buildDeploymentControls();firstGuide=createFirstGuide(level);selected=null;selectedUnitId=null;resultShown=false;duelShown=false;show('battle');$('battleChapter').textContent=`第${['','一','二','三','四','五','六','七','八','九','十','十一'][chapterInfo(level).chapter]}章 · ${chapterInfo(level).number}`;$('battleTitle').textContent=STAGES[level-1].name+(factionFor(level)?` · ${FACTIONS[factionFor(level)].title}`:'');$('featureBadge').textContent=FEATURES[level-1].name;$('field').style.backgroundImage=`linear-gradient(#d4dfb655,#b9cda588),url("${STAGES[level-1].scene}")`;renderBattle();$('cards').querySelector('button')?.focus({preventScroll:true})}
+}useRoster(level);setMusicMode('battle',level);syncMusicButton();battle=createBattle(level,Date.now(),weaponsForLevel(progress,level));if(factionFor(level)==='cao'){configureRoster(battle,progress,HEROES.archer);HEROES=battle.roster;battle.food=Math.min(300,battle.food+60*(lanesFor(battle)-3))}else if(!factionFor(level)){configurePeachRoster(battle,progress);HEROES=battle.roster}buildDeploymentControls();firstGuide=createFirstGuide(level);selected=null;selectedUnitId=null;resultShown=false;duelShown=false;show('battle');$('battleChapter').textContent=`第${['','一','二','三','四','五','六','七','八','九','十','十一'][chapterInfo(level).chapter]}章 · ${chapterInfo(level).number}`;$('battleTitle').textContent=STAGES[level-1].name+(factionFor(level)?` · ${FACTIONS[factionFor(level)].title}`:'');$('featureBadge').textContent=FEATURES[level-1].name;$('field').style.backgroundImage=`linear-gradient(#d4dfb655,#b9cda588),url("${STAGES[level-1].scene}")`;renderBattle();$('cards').querySelector('button')?.focus({preventScroll:true})}
 function selectedUnit(){return battle?.allies.find(u=>u.hp>0&&(selectedUnitId!==null?u.id===selectedUnitId:selected!=='archer'&&!HEROES[selected]?.troop&&u.key===selected))}
 function syncPause(){if(!battle)return;$('field').classList.toggle('is-paused',battle.paused||!!battle.duel||!!battle.introPending);$('pauseOverlay').hidden=!battle.paused;$('pauseBtn').textContent=battle.paused?'▶ 繼續':'Ⅱ 暫停';$('pauseBtn').setAttribute('aria-pressed',String(battle.paused))}
 function setPause(value){if(!battle||battle.over)return;battle.paused=value;syncPause()}
@@ -194,7 +195,7 @@ function renderBattle(){
  if(battle.duel&&!duelShown){const d=battle.duel;setMusicMode('duel',battle.level);syncMusicButton();$('duelTitle').textContent=`${HEROES[d.heroKey].short}${d.partnerKey?' ＋ '+HEROES[d.partnerKey].short:''} 對 ${d.bossName}`;$('duelHero').src=HEROES[d.heroKey].asset;$('duelHero').alt=HEROES[d.heroKey].name;$('duelEnemy').src=enemyArt(d.bossName);$('duelDialog').showModal();duelShown=true}
  if(battle.duel)renderDuel(battle);
  if(!battle.duel&&duelShown){$('duelDialog').close();duelShown=false;setMusicMode('battle',battle.level);syncMusicButton()}
- if(battle.over&&!resultShown)showResult();
+ if(battle.over&&!resultShown)showResult();else if(screen==='battle')skillIntro.check();
 }
 function showResult(){
  resultShown=true;selected=null;selectedUnitId=null;setMusicMode(battle.won?'victory':'prepare',battle.level);syncMusicButton();const stage=STAGES[battle.level-1];
@@ -210,7 +211,7 @@ function showResult(){
  $('resultRewardReason').textContent=!battle.won?'這次未能守住防線，沒有獲得軍資；已有軍資不扣除。':!earned?'本關首次通關獎勵已領取，重玩不重複發放。':progress.coins-balanceBefore<earned?'首次通關！軍資已補至持有上限 99,999。':'首次通關獎勵・80 軍資';
  $('resultSaved').textContent=!saved?'進度、經驗與軍資僅暫存於本頁，尚未保存；關閉或重新整理後可能遺失。':battle.won&&earned?'軍資、經驗與進度已保存，可在營地使用':'保留目前軍資，可到營地整備';
  $('resultRetrySave').hidden=saved||storageReadFailed;
- $('resultNext').textContent='前往戰後營地 →';show('result');$('resultTitle').focus({preventScroll:true});
+ $('resultNext').textContent='前往戰後營地 →';show('result');$('resultTitle').focus({preventScroll:true});skillIntro.upgrades(xp);
 }
 function openCamp(level,won){useRoster(level);setMusicMode('camp',level);syncMusicButton();show('camp');mountCamp({progress,level,won,heroes:HEROES,stage:STAGES[level-1],onSave:saveProgress,onContinue:()=>won?startStory(level,'ending'):beginBattle(level)});$('campTitle').tabIndex=-1;$('campTitle').focus({preventScroll:true})}
 function frame(now){
@@ -247,4 +248,5 @@ $('duelPause').onclick=()=>{setPause(!battle.paused);renderBattle()};
 const campaignMap=mountCampaignMap({stages:STAGES,getBattle:()=>battle,setPaused:setPause});
 installStoryReader();buildControls();const renderActiveSkills=mountActiveSkills({getBattle:()=>battle,cast:castActive,refresh:renderBattle,getSelected:selectedUnit});mountBattleKeys({getBattle:()=>battle,getSelected:selectedUnit,isBattle:()=>screen==='battle',refresh:renderBattle,onOrder:(b,id,order)=>{if(commandHero(b,id,order))firstGuide?.event(order==='hold'?'hold':order==='forward'?'move':'')}});updateHome();requestAnimationFrame(frame);
 
-mountSkillGuide({getBattle:()=>battle,setPaused:setPause});
+mountSkillGuide({getBattle:()=>battle,getProgress:()=>progress,setPaused:setPause});
+const skillIntro=mountSkillIntro({getBattle:()=>battle,getProgress:()=>progress,save:()=>{const saved=saveProgress();if(saved&&battle?.over)$('resultSaved').textContent='軍資、經驗與進度已保存，可在營地使用';return saved},setPaused:setPause});

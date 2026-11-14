@@ -1,4 +1,4 @@
-import {FACTIONS,paintPortrait} from './factions.mjs?v=story-reader-1';
+import {FACTIONS,paintPortrait} from './factions.mjs?v=peach-growth-1';
 export function mountHistoryLesson(stage,heroes){
  let root=document.getElementById('historyLesson');if(!root){root=document.createElement('details');root.id='historyLesson';document.getElementById('storyPrologue').prepend(root)}root.hidden=!stage.year;if(!stage.year)return;root.open=false;
  root.innerHTML='<summary class="history-toggle"></summary><div class="history-timeline"></div><h3></h3><div class="history-roster"></div><div class="history-tabs"><button type="button">史書記了什麼？</button><button type="button">哪些是遊戲改編？</button></div><p class="history-fact"></p><details><summary>查看史料出處</summary><div class="history-sources"></div></details>';

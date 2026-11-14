@@ -1,0 +1,1 @@
+const base=require('./playwright.hero-reader.config');module.exports={...base,testMatch:'hero-peach-growth.spec.js',outputDir:'test-results/peach-growth',timeout:60000,webServer:{...base.webServer,command:'PORT=4195 node tests/support/static-server.js',url:'http://127.0.0.1:4195'},use:{...base.use,baseURL:'http://127.0.0.1:4195'}};
