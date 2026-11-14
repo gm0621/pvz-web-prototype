@@ -1,4 +1,4 @@
-import {createHistoryMission,stepHistoryMission,protectHistoricalOutcome,historyMissionText} from './history-missions.mjs?v=dispatch-score-1';
+import {createHistoryMission,stepHistoryMission,protectHistoricalOutcome,historyMissionText} from './history-missions.mjs?v=dispatch-supply-1';
 // All objectives share the paused battle clock; story choices never spend resources.
 export function createMission(level){
  if(level>=17)return createHistoryMission(level);

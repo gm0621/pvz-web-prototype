@@ -1,4 +1,4 @@
-import {STAGES,chapterInfo} from './story.mjs?v=dispatch-score-1';
+import {STAGES,chapterInfo} from './story.mjs?v=dispatch-supply-1';
 // Recorded interludes, stage scores and chapter codas share one switchable music bus.
 let context,musicBus,sfxBus,timer=null,step=0,enabled=false,sfx=true,revision=0,scene=0,recordedMode='home',chapterEnding=false,pageInactive=false,backgroundPaused=false;
 const recordedTracks=new Map(),recordedSources=[];

@@ -83,3 +83,7 @@
 story.mjs 組合兩章；chapter-two.mjs 與 chapter-bosses.mjs 提供第二章資料；engine.mjs 管規則；duel-patterns.mjs 管單挑編排；duel-view.mjs／duel-entrance.mjs 管單挑呈現；app.mjs 管畫面與保存；campaign.mjs／camp-view.mjs 管營地；audio.mjs 管配樂。
 
 執行 `npm run test:hero:engine` 及相關 `tests/hero-*.spec.js`。引擎十關各三種子通關是指定策略樣本；受控單挑／結算測試不是自然通關或真人平衡驗證。實際測試結果與尚未完成項目見交接頂部。
+
+### 選將配樂與觸控（2026-11-14）
+
+曹操軍進入選將時播放整軍曲，按出發才切換當關行軍曲；點「返回上頁」或 Escape，恢復原本故事／整備／營地配樂。音樂關閉時不因切換畫面自動開啟；重新整理仍預設關閉音樂。劇情頂部音樂與音效按鈕最低高度 44px。
