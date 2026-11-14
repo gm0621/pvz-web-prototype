@@ -1,6 +1,6 @@
-import {skillPresentation} from './skill-presentation.mjs?v=skill-tiers-1';
-import {MASTER_STYLES} from './master-style.mjs?v=skill-tiers-1';
-import {STAGES,chapterInfo} from './story.mjs?v=skill-tiers-1';
+import {skillPresentation} from './skill-presentation.mjs?v=passive-feedback-1';
+import {MASTER_STYLES} from './master-style.mjs?v=passive-feedback-1';
+import {STAGES,chapterInfo} from './story.mjs?v=passive-feedback-1';
 // Recorded interludes, stage scores and chapter codas share one switchable music bus.
 let context,musicBus,sfxBus,timer=null,step=0,enabled=false,sfx=true,revision=0,scene=0,recordedMode='home',chapterEnding=false,pageInactive=false,backgroundPaused=false;
 const recordedTracks=new Map(),recordedSources=[];

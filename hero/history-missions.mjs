@@ -1,5 +1,5 @@
-import {HISTORICAL_STAGES} from './history-stages.mjs?v=skill-tiers-1';
-import {FACTIONS,factionFor} from './factions.mjs?v=skill-tiers-1';
+import {HISTORICAL_STAGES} from './history-stages.mjs?v=passive-feedback-1';
+import {FACTIONS,factionFor} from './factions.mjs?v=passive-feedback-1';
 const laneList=b=>Array.from({length:b.laneTotal||3},(_,i)=>i);
 const routeName=(b,l)=>(b.laneTotal||3)>3?`第 ${l+1}`:['上','中','下'][l];
 const siteNames=['道路','水井','宗廟'],laneNames=['上','中','下'];

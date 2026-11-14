@@ -1,4 +1,4 @@
-import {MASTER_STYLES} from './master-style.mjs?v=skill-tiers-1';
+import {MASTER_STYLES} from './master-style.mjs?v=passive-feedback-1';
 // Each entry follows the general's two early skills, not their weapon alone.
 const motifs={liubei:['petal','bloom'],guanyu:['cut','cross'],zhangfei:['pulse','shield'],caocao:['flag','supply'],xiahoudun:['thrust','sweep'],caohong:['push','guard'],caoren:['shield','rampart'],xiahouyuan:['arrow','volley'],yujin:['stop','formation'],sunjian:['claw','double-claw'],chengpu:['bind','chain-shield'],huanggai:['bash','bulwark']};
 export function skillPresentation(id,index){const base=MASTER_STYLES[id],motif=motifs[id]?.[index];if(!base||!motif)return null;return {color:base.color,motif,tier:index?3:1,duration:index?1.05:.65,notes:base.notes.slice(0,index?2:1).map(f=>f*(index?1.12:1.4)),wave:base.wave,slide:index?.85:1.1,noise:base.noise,weight:base.weight*(index?.5:.25),volume:index?.11:.08,soundDuration:index?.42:.25}}
