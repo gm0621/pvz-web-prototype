@@ -1,26 +1,28 @@
-import {configureRoster,awardExperience,SLOTS,GENERALS} from './roster.mjs?v=dispatch-supply-1';
-import {openDeployment,mountActiveSkills} from './roster-view.mjs?v=dispatch-supply-1';
-import {castActive,lanesFor,laneLabel} from './engine.mjs?v=dispatch-supply-1';
-import {mountSkillGuide} from './skill-guide.mjs?v=dispatch-supply-1';
-import {renderPeople,STORY_PEOPLE} from './characters.mjs?v=dispatch-supply-1';
-import {FACTIONS,factionFor,enemyPortrait,paintPortrait} from './factions.mjs?v=dispatch-supply-1';
-import {mountHistoryLesson} from './history-view.mjs?v=dispatch-supply-1';
-import {renderBossCutin} from './boss-cutin.mjs?v=dispatch-supply-1';
-import {mountBattleKeys} from './battle-keys.mjs?v=dispatch-supply-1';
-import {mountJourney} from './journey-view.mjs?v=dispatch-supply-1';
-import {renderMission} from './chapter-mission-view.mjs?v=dispatch-supply-1';
-import {mountCampaignMap} from './campaign-map.mjs?v=dispatch-supply-1';
-import {advanceBattleFrame,normalizeBattleSpeed} from './battle-speed.mjs?v=dispatch-supply-1';
-import {mountNovel} from './novel.mjs?v=dispatch-supply-1';
-import {mountCamp} from './camp-view.mjs?v=dispatch-supply-1';
-import {rewardVictory,useSupply,weaponsForLevel} from './campaign.mjs?v=dispatch-supply-1';
-import {createFirstGuide} from './first-guide.mjs?v=dispatch-supply-1';
-import {mountStoryTask} from './story-play.mjs?v=dispatch-supply-1';
-import {CHAPTER_BACKGROUNDS,STAGE_LEADS} from './prologue.mjs?v=dispatch-supply-1';
-import {setMusic,setMusicMode,setMusicHome,musicTheme,musicOn,setSfx,unlockAudio,hitSound} from './audio.mjs?v=dispatch-supply-1';
-import {renderDuel} from './duel-view.mjs?v=dispatch-supply-1';
-import {chapterInfo,enemyArt,HEROES as BASE_HEROES,heroesForLevel,STAGES,ENEMY_ART,SHIELD_ART,FEATURES,heroDescription} from './story.mjs?v=dispatch-supply-1';
-import {bossProfile,LANE_CAPACITY,laneCount,ENEMY_SWING,enemyAttackFrame,skipDuelEntrance,positionHero,commandHero,moveHero,BOSS_SKILLS,SAVE_KEY,normalizeProgress,createBattle,deploy,canDeploy,attackFrame,SWING} from './engine.mjs?v=dispatch-supply-1';
+import {beginReading,installStoryReader} from './story-reader.mjs?v=story-reader-1';
+import {shortPages} from './story-pages.mjs?v=story-reader-1';
+import {configureRoster,awardExperience,SLOTS,GENERALS} from './roster.mjs?v=story-reader-1';
+import {openDeployment,mountActiveSkills} from './roster-view.mjs?v=story-reader-1';
+import {castActive,lanesFor,laneLabel} from './engine.mjs?v=story-reader-1';
+import {mountSkillGuide} from './skill-guide.mjs?v=story-reader-1';
+import {renderPeople,STORY_PEOPLE} from './characters.mjs?v=story-reader-1';
+import {FACTIONS,factionFor,enemyPortrait,paintPortrait} from './factions.mjs?v=story-reader-1';
+import {mountHistoryLesson} from './history-view.mjs?v=story-reader-1';
+import {renderBossCutin} from './boss-cutin.mjs?v=story-reader-1';
+import {mountBattleKeys} from './battle-keys.mjs?v=story-reader-1';
+import {mountJourney} from './journey-view.mjs?v=story-reader-1';
+import {renderMission} from './chapter-mission-view.mjs?v=story-reader-1';
+import {mountCampaignMap} from './campaign-map.mjs?v=story-reader-1';
+import {advanceBattleFrame,normalizeBattleSpeed} from './battle-speed.mjs?v=story-reader-1';
+import {mountNovel} from './novel.mjs?v=story-reader-1';
+import {mountCamp} from './camp-view.mjs?v=story-reader-1';
+import {rewardVictory,useSupply,weaponsForLevel} from './campaign.mjs?v=story-reader-1';
+import {createFirstGuide} from './first-guide.mjs?v=story-reader-1';
+import {mountStoryTask} from './story-play.mjs?v=story-reader-1';
+import {CHAPTER_BACKGROUNDS,STAGE_LEADS} from './prologue.mjs?v=story-reader-1';
+import {setMusic,setMusicMode,setMusicHome,musicTheme,musicOn,setSfx,unlockAudio,hitSound} from './audio.mjs?v=story-reader-1';
+import {renderDuel} from './duel-view.mjs?v=story-reader-1';
+import {chapterInfo,enemyArt,HEROES as BASE_HEROES,heroesForLevel,STAGES,ENEMY_ART,SHIELD_ART,FEATURES,heroDescription} from './story.mjs?v=story-reader-1';
+import {bossProfile,LANE_CAPACITY,laneCount,ENEMY_SWING,enemyAttackFrame,skipDuelEntrance,positionHero,commandHero,moveHero,BOSS_SKILLS,SAVE_KEY,normalizeProgress,createBattle,deploy,canDeploy,attackFrame,SWING} from './engine.mjs?v=story-reader-1';
 
 const $=id=>document.getElementById(id);
 let HEROES=BASE_HEROES;
@@ -68,7 +70,7 @@ function goHome(){
 }
 function startStory(level,phase='opening'){useRoster(level);mountHistoryLesson(STAGES[level-1],HEROES);
  setMusicMode(phase==='ending'?'victory':'story',level);syncMusicButton();storyLevel=level;storyPhase=phase;lineIndex=0;battle=null;selected=null;selectedUnitId=null;show('story');
- const stage=STAGES[level-1];$('sceneBackdrop').src=stage.scene;$('sceneBackdrop').alt=stage.place+'，'+stage.name+'的故事場景';renderStory();setPrologue(phase==='opening');
+ const stage=STAGES[level-1];$('sceneBackdrop').src=stage.scene;$('sceneBackdrop').alt=stage.place+'，'+stage.name+'的故事場景';renderStory();setPrologue(phase==='opening');beginReading(phase==='ending');
 }
 function setPrologue(visible){
  if(visible){mountStoryTask(storyLevel,HEROES,()=>hitSound('heal'));$('storyPrologue').scrollTop=0;mountNovel(storyLevel,HEROES,CHAPTER_BACKGROUNDS[chapterInfo(storyLevel).chapter],STAGE_LEADS[storyLevel-1]);mountJourney(storyLevel,STAGES[storyLevel-1])}
@@ -79,7 +81,7 @@ function setPrologue(visible){
  if(!visible&&storyPhase==='opening'){setMusicMode('prepare',storyLevel);syncMusicButton()}
  (visible?$('prologueContinue'):$('storyNext')).focus({preventScroll:true});
 }
-function storyLines(){const stage=STAGES[storyLevel-1];return storyPhase==='ending'?stage.ending:stage.opening}
+function storyLines(){const stage=STAGES[storyLevel-1];return shortPages(storyPhase==='ending'?stage.ending:stage.opening,40)}
 function finishStory(){if(storyPhase==='opening')beginBattle(storyLevel);else if(storyLevel<STAGES.length)startStory(storyLevel+1);else goHome()}
 function renderStory(){
  const stage=STAGES[storyLevel-1],lines=storyLines(),[speaker,text]=lines[lineIndex],last=lineIndex===lines.length-1;
@@ -243,6 +245,6 @@ $('replayLevel').onclick=()=>startStory(battle.level);
 $('duelEnter').onclick=()=>{if(skipDuelEntrance(battle))renderBattle()};
 $('duelPause').onclick=()=>{setPause(!battle.paused);renderBattle()};
 const campaignMap=mountCampaignMap({stages:STAGES,getBattle:()=>battle,setPaused:setPause});
-buildControls();const renderActiveSkills=mountActiveSkills({getBattle:()=>battle,cast:castActive,refresh:renderBattle,getSelected:selectedUnit});mountBattleKeys({getBattle:()=>battle,getSelected:selectedUnit,isBattle:()=>screen==='battle',refresh:renderBattle,onOrder:(b,id,order)=>{if(commandHero(b,id,order))firstGuide?.event(order==='hold'?'hold':order==='forward'?'move':'')}});updateHome();requestAnimationFrame(frame);
+installStoryReader();buildControls();const renderActiveSkills=mountActiveSkills({getBattle:()=>battle,cast:castActive,refresh:renderBattle,getSelected:selectedUnit});mountBattleKeys({getBattle:()=>battle,getSelected:selectedUnit,isBattle:()=>screen==='battle',refresh:renderBattle,onOrder:(b,id,order)=>{if(commandHero(b,id,order))firstGuide?.event(order==='hold'?'hold':order==='forward'?'move':'')}});updateHome();requestAnimationFrame(frame);
 
 mountSkillGuide({getBattle:()=>battle,setPaused:setPause});

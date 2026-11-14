@@ -61,7 +61,7 @@ test('a full first chapter battle can be won through real UI deployments and sav
 });
 
 test('story opens in a real scene with conversations, speaker emphasis and previous-line navigation',async({page})=>{
- await open(page);await page.locator('#startBtn').click();await page.locator('#prologueContinue').click();
+ await open(page);await page.locator('#startBtn').click();for(let i=0;i<20&&await page.locator('#story').getAttribute('data-reader-phase')!=='dialogue';i++)await page.locator('#storyNext').click();
  await expect(page.locator('#sceneBackdrop')).toHaveAttribute('src',/peach-garden/);
  await expect(page.locator('#storySpeaker')).toHaveText('張飛');await expect(page.locator('[data-actor="zhangfei"]')).toHaveClass(/speaking/);
  await expect(page.locator('#storyPrevious')).toBeDisabled();const first=await page.locator('#storyLine').textContent();
