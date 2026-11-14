@@ -1,5 +1,7 @@
-import {PEACH_HEROES} from './hero-base.mjs?v=sun-growth-1';
-import {FACTIONS,BLANK_PORTRAIT} from './factions.mjs?v=sun-growth-1';
+import {ADVANCED_GROWTH,growthBonuses,learningLevels} from './skill-growth.mjs?v=hero-milestones-1';
+export {growthBonuses,learningLevels,activeText} from './skill-growth.mjs?v=hero-milestones-1';
+import {PEACH_HEROES} from './hero-base.mjs?v=hero-milestones-1';
+import {FACTIONS,BLANK_PORTRAIT} from './factions.mjs?v=hero-milestones-1';
 export const SLOTS=['liubei','guanyu','zhangfei','hero4','hero5'];
 export const DEFAULT_TEAM=['caocao','xiahoudun','caohong'];
 const skill=(id,name,text,mp,cooldown,level=1)=>({id,name,text,mp,cooldown,level});
@@ -25,6 +27,9 @@ export const SUN_GENERALS={
 };
 export const ALL_GENERALS={...GENERALS,...PEACH_GENERALS,...SUN_GENERALS};
 for(const g of Object.values({...PEACH_GENERALS,...SUN_GENERALS}))g.description=g.role+' · '+g.skills[0].text;
+for(const [id,g] of Object.entries(ALL_GENERALS)){g.passives=[{level:1,name:'天賦',text:g.passive,type:'passive'},...ADVANCED_GROWTH[id].filter(s=>s.type==='passive')];g.skills.push(...ADVANCED_GROWTH[id].filter(s=>s.type==='active'))}
+export function nextLesson(g,level){return learningLevels(g).find(n=>n>level)}
+export function growthHint(g,xp){const next=nextLesson(g,heroLevel(xp));return next?`下一招 Lv.${next} · 還差 ${LEVEL_XP[next-1]-xp} 經驗`:'全部招式已學會'}
 export function configurePeachRoster(b,progress){b.heroMode=true;b.peachMode=true;b.laneTotal=3;b.team=Object.keys(PEACH_GENERALS);b.roster={...rosterFor(b.team,progress.heroGrowth),archer:PEACH_HEROES.archer};b.weapons={...progress.weapons};b.participants=[];b.heroResources={};return b}
 export function configureSunRoster(b,progress,archer){b.heroMode=true;b.sunMode=true;b.laneTotal=3;b.team=Object.keys(SUN_GENERALS);b.roster={...rosterFor(b.team,progress.heroGrowth),archer};b.weapons={...progress.armyWeapons.sun};b.participants=[];b.heroResources={};return b}
 export const LEVEL_XP=[0,30,75,135,210,300,405,525,660,810];
@@ -33,7 +38,7 @@ const number=(v,max)=>Number.isFinite(Number(v))?Math.max(0,Math.min(max,Math.fl
 export function growthState(raw){return Object.fromEntries(Object.keys(ALL_GENERALS).map(id=>[id,{xp:number(raw?.[id]?.xp,810),weapon:number(raw?.[id]?.weapon,3)}]))}
 export function validTeam(team){return Array.isArray(team)&&team.length>=3&&team.length<=5&&new Set(team).size===team.length&&team.every(id=>Object.hasOwn(GENERALS,id))}
 export function selectedTeam(raw){return validTeam(raw)?[...raw]:[...DEFAULT_TEAM]}
-export function rosterFor(team,growth){return Object.fromEntries(SLOTS.slice(0,team.length).map((slot,i)=>{const id=team[i],g=ALL_GENERALS[id],level=heroLevel(growth[id].xp);return [slot,{...g,heroId:id,heroLevel:level,hp:g.hp+(level-1)*5+(id==='caoren'?35:['caohong','zhangfei','huanggai'].includes(id)?25:0),damage:g.damage+(level-1)+(['xiahoudun','guanyu','sunjian'].includes(id)?2:0),heal:undefined}]}))}
+export function rosterFor(team,growth){return Object.fromEntries(SLOTS.slice(0,team.length).map((slot,i)=>{const id=team[i],g=ALL_GENERALS[id],level=heroLevel(growth[id].xp),bonus=growthBonuses(g,level);return [slot,{...g,heroId:id,heroLevel:level,...bonus,rate:Math.max(.45,g.rate-(bonus.rateReduction||0)),hp:g.hp+(level-1)*5+(bonus.hp||0)+(id==='caoren'?35:['caohong','zhangfei','huanggai'].includes(id)?25:0),damage:g.damage+(level-1)+(bonus.damage||0)+(['xiahoudun','guanyu','sunjian'].includes(id)?2:0),heal:undefined}]}))}
 export function configureRoster(b,progress,archer){b.heroMode=true;b.laneTotal=Math.min(maxLanes(b.level),[3,4,5].includes(progress.battleLanes)?progress.battleLanes:3);b.team=selectedTeam(progress.caoTeam).slice(0,b.laneTotal);for(const id of Object.keys(GENERALS))if(b.team.length<b.laneTotal&&!b.team.includes(id))b.team.push(id);b.roster={...rosterFor(b.team,progress.heroGrowth),archer,...TROOPS};b.weapons=Object.fromEntries(SLOTS.slice(0,b.team.length).map((key,i)=>[key,progress.heroGrowth[b.team[i]].weapon]));b.participants=[];b.heroResources={};return b}
 export function awardExperience(progress,b){if(!b.heroMode||b.experienceAwarded)return [];b.experienceAwarded=true;if(!b.won&&b.time<10)return [];return (b.participants||[]).map(id=>{const hero=progress.heroGrowth[id],before=heroLevel(hero.xp),amount=Math.min(b.won?20:5,810-hero.xp);hero.xp+=amount;return {id,amount,before,level:heroLevel(hero.xp)}})}
 export function buyHeroWeapon(progress,id,save){if(!Object.hasOwn(GENERALS,id))return '找不到武將';const h=progress.heroGrowth[id];if(h.weapon>=3)return '已強化到最高級';const price=(h.weapon+1)*60;if(progress.coins<price)return '軍資不足';progress.coins-=price;h.weapon++;const oldKey=SLOTS[DEFAULT_TEAM.indexOf(id)],oldRank=oldKey?progress.armyWeapons.cao[oldKey]:null;if(oldKey)progress.armyWeapons.cao[oldKey]=h.weapon;let ok=false;try{ok=save(progress)!==false}catch{}if(!ok){progress.coins+=price;h.weapon--;if(oldKey)progress.armyWeapons.cao[oldKey]=oldRank;return '無法保存，這次未購買；軍資與強化未變動。'}return ''}

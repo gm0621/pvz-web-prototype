@@ -1,0 +1,1 @@
+const base=require('./playwright.hero-sun-regression.config');module.exports={...base,testMatch:['hero-peach-growth.spec.js','hero-sun-growth.spec.js','hero-roster-growth.spec.js'],outputDir:'test-results/milestones-regression'};

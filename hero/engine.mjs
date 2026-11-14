@@ -1,11 +1,11 @@
-import {extracted} from './history-missions.mjs?v=sun-growth-1';
-import {createMission,stepMission,protectBarrier,missionReady,missionDuelReady} from './chapter-missions.mjs?v=sun-growth-1';
-import {duelBeats} from './duel-patterns.mjs?v=sun-growth-1';
-export {duelBeats} from './duel-patterns.mjs?v=sun-growth-1';
-import {WEATHER_GENERALS} from './weather-generals.mjs?v=sun-growth-1';
-import {campaignState,weaponBonus} from './campaign.mjs?v=sun-growth-1';
-import {heroSkill} from './skills.mjs?v=sun-growth-1';
-import {heroesForLevel,STAGES,UNLOCKS,FEATURES} from './story.mjs?v=sun-growth-1';
+import {extracted} from './history-missions.mjs?v=hero-milestones-1';
+import {createMission,stepMission,protectBarrier,missionReady,missionDuelReady} from './chapter-missions.mjs?v=hero-milestones-1';
+import {duelBeats} from './duel-patterns.mjs?v=hero-milestones-1';
+export {duelBeats} from './duel-patterns.mjs?v=hero-milestones-1';
+import {WEATHER_GENERALS} from './weather-generals.mjs?v=hero-milestones-1';
+import {campaignState,weaponBonus} from './campaign.mjs?v=hero-milestones-1';
+import {heroSkill} from './skills.mjs?v=hero-milestones-1';
+import {heroesForLevel,STAGES,UNLOCKS,FEATURES} from './story.mjs?v=hero-milestones-1';
 
 export const SWING={duration:.58,impact:.24,frameTime:.08,frames:6};
 export const DUEL_DURATION=19;
@@ -89,7 +89,7 @@ export function deploy(b,key,lane){
  const reason=canDeploy(b,key,lane);if(reason){if(b){b.notice=reason;b.noticeUntil=b.time+2}return false}
  const d=battleHeroes(b)[key];b.food-=d.cost;b.cooldowns[key]=troop(b,key)?b.time+d.cooldown:0;
  if(b.heroMode&&d.heroId){if(!b.participants.includes(d.heroId))b.participants.push(d.heroId);b.heroResources[d.heroId]??={mp:60,ready:{}}}
- b.allies.push({heroId:d.heroId,shield:0,passiveAt:b.time+5,id:b.nextId++,key,lane,x:.1,hp:d.hp,maxHp:d.hp,lastAttack:-10,lastHeal:b.time,lastSkill:b.time,flash:0,order:'hold',targetX:.1,action:'holding'});
+ b.allies.push({heroId:d.heroId,shield:0,damageReduction:d.damageReduction||0,regenAt:b.time+5,passiveAt:b.time+5,id:b.nextId++,key,lane,x:.1,hp:d.hp,maxHp:d.hp,lastAttack:-10,lastHeal:b.time,lastSkill:b.time,flash:0,order:'hold',targetX:.1,action:'holding'});
  b.notice=`${d.name}出陣駐守！${key==='archer'?'點場上弓兵可調動，駐守時自動射擊':'點選武將，再點前方才會前進'}`;b.noticeUntil=b.time+1.8;return true;
 }
 function effect(b,type,lane,from,to=from,details={}){const duration=['roar','cleave','oath','heal','boss','rally','hook','thunder'].includes(type)?1:['retreat','capture'].includes(type)?.9:type==='breach'?.7:type==='defeat'?.55:.4;const bossName=b.enemies.find(e=>e.boss&&e.lane===lane)?.name;b.effects.push({id:b.nextId++,type,lane,from,to,remaining:duration,duration,bossName,...details})}
@@ -151,7 +151,7 @@ export function stepBattle(b,seconds){
  if(!b.bossSpawned&&b.time>=b.nextSpawn)spawn(b);
  if(b.introPending)return;
  for(const u of b.allies){
-  if(u.hp<=0)continue;const d=battleHeroes(b)[u.key];if(b.heroMode&&d.heroId){const r=b.heroResources[d.heroId];r.mp=Math.min(60,r.mp+dt*(['yujin','chengpu'].includes(d.heroId)?4:3));if(d.heroId==='liubei'&&b.time>=u.passiveAt){for(const a of b.allies)if(a.hp>0&&a.lane===u.lane)a.hp=Math.min(a.maxHp,a.hp+5);u.passiveAt=b.time+5}if(d.heroId==='caocao'&&b.time>=u.passiveAt){b.food=Math.min(300,b.food+4);u.passiveAt=b.time+5}}if(b.time>=(u.shieldUntil||0))u.shield=0;u.action='guarding';u.flash=Math.max(0,u.flash-dt);
+  if(u.hp<=0)continue;const d=battleHeroes(b)[u.key];if(b.heroMode&&d.heroId){const r=b.heroResources[d.heroId];r.mp=Math.min(60,r.mp+dt*((['yujin','chengpu'].includes(d.heroId)?4:3)+(d.mpRegen||0)));if(d.selfRegen&&b.time>=u.regenAt){u.hp=Math.min(u.maxHp,u.hp+d.selfRegen);u.regenAt=b.time+5}if(d.heroId==='liubei'&&b.time>=u.passiveAt){for(const a of b.allies)if(a.hp>0&&a.lane===u.lane)a.hp=Math.min(a.maxHp,a.hp+5);u.passiveAt=b.time+5}if(d.heroId==='caocao'&&b.time>=u.passiveAt){b.food=Math.min(300,b.food+4+(d.foodBonus||0));u.passiveAt=b.time+5}}if(b.time>=(u.shieldUntil||0))u.shield=0;u.action='guarding';u.flash=Math.max(0,u.flash-dt);
   if(u.order==='back'){
    u.x=Math.max(u.targetX,u.x-d.speed*2*dt*(b.time<(u.slowUntil||0)?.6:1));u.action='retreating';
    if(u.x<=u.targetX+.0001){u.order='hold';u.action='holding'}
@@ -278,15 +278,24 @@ export function stepBattle(b,seconds){
  else if(extracted(b)||b.bossSpawned&&!b.enemies.length&&missionReady(b)){b.over=true;b.won=true}
 }
 
-function damageAlly(u,amount){const blocked=Math.min(u.shield||0,amount);u.shield=Math.max(0,(u.shield||0)-blocked);u.hp-=amount-blocked}
+function damageAlly(u,amount){amount=amount>0?Math.max(1,amount-(u.damageReduction||0)):0;const blocked=Math.min(u.shield||0,amount);u.shield=Math.max(0,(u.shield||0)-blocked);u.hp-=amount-blocked}
 export function castActive(b,key,index){
  if(!b?.heroMode||b.paused||b.over||b.duel||b.introPending)return false;const u=b.allies.find(a=>a.key===key&&a.hp>0),d=battleHeroes(b)[key],s=d?.skills?.[index];if(!u||!s||d.heroLevel<s.level)return false;const r=b.heroResources[d.heroId];if(r.mp<s.mp||b.time<(r.ready[index]||0))return false;
- const near=b.enemies.filter(e=>e.hp>0&&e.lane===u.lane&&e.x>=u.x-.03&&e.x-u.x<=((b.peachMode||b.sunMode)?.17:d.ranged?.4:.28));const offensive=['pierce','sweep','push','volley','rain','halt','lock'].includes(s.id);if(offensive&&!near.length){b.notice='這一路射程內還沒有敵人，MP 未扣除。';b.noticeUntil=b.time+2;return false}
+ const near=b.enemies.filter(e=>e.hp>0&&e.lane===u.lane&&e.x>=u.x-.03&&e.x-u.x<=((b.peachMode||b.sunMode)?.17:d.ranged?.4:.28));const offensive=!!s.effects?.damage||['pierce','sweep','push','volley','rain','halt','lock'].includes(s.id);if(offensive&&!near.length){b.notice='這一路射程內還沒有敵人，MP 未扣除。';b.noticeUntil=b.time+2;return false}
  if(['heal','rally'].includes(s.id)&&!b.allies.some(a=>a.hp>0&&a.hp<a.maxHp&&(s.id==='rally'||a.lane===u.lane))){b.notice='夥伴都很健康，等受傷再用，MP 未扣除。';b.noticeUntil=b.time+2;return false}
- r.mp-=s.mp;r.ready[index]=b.time+s.cooldown;
+ r.mp-=s.mp;r.ready[index]=b.time+Math.max(1,s.cooldown-(d.cooldownReduction||0));
+ if(s.effects){applyMaster(b,u,d,s,near);protectBarrier(b);b.skillNotice={key,text:d.name+'・'+s.name,until:b.time+2};return true}
  const allies=b.allies.filter(a=>a.hp>0&&(s.id==='fort'||s.id==='supply'||s.id==='rally'||a.lane===u.lane));
- if(['heal','supply','rally'].includes(s.id)){for(const a of allies){a.hp=Math.min(a.maxHp,a.hp+(s.id==='supply'?15:35));effect(b,'heal',a.lane,a.x)}if(s.id==='supply')b.food=Math.min(300,b.food+60)}
- if(['shield','escape','fort','lock'].includes(s.id))for(const a of allies){a.shield=Math.max(a.shield||0,s.id==='shield'?35:s.id==='lock'?30:45);a.shieldUntil=b.time+6;effect(b,'block',a.lane,a.x)}
- if(offensive){for(const e of s.id==='volley'?[...near].sort((a,c)=>Math.abs(a.x-u.x)-Math.abs(c.x-u.x)).slice(0,1):near){hurtEnemy(b,e,({pierce:45,sweep:65,push:20,volley:60,rain:45,halt:15,lock:0})[s.id]);if(['sweep','push','halt','lock'].includes(s.id))e.stunnedUntil=b.time+(s.id==='push'?1:s.id==='lock'?3:2);if(s.id==='push'&&!e.boss)e.x=Math.min(.95,e.x+.065);e.flash=.3}effect(b,d.ranged?'arrow':'roar',u.lane,u.x)}
- b.skillNotice={key,text:d.name+'・'+s.name,until:b.time+2};return true;
+ if(['heal','supply','rally'].includes(s.id)){for(const a of allies){a.hp=Math.min(a.maxHp,a.hp+((s.id==='supply'?15:35)+(d.healBonus||0)));effect(b,'heal',a.lane,a.x);if(d.healShield)grantShield(b,a,d.healShield,d)}if(s.id==='supply')b.food=Math.min(300,b.food+60)}
+ if(['shield','escape','fort','lock'].includes(s.id))for(const a of allies){grantShield(b,a,s.id==='shield'?35:s.id==='lock'?30:45,d)}
+ if(offensive){for(const e of s.id==='volley'?[...near].sort((a,c)=>Math.abs(a.x-u.x)-Math.abs(c.x-u.x)).slice(0,1):near){hurtEnemy(b,e,({pierce:45,sweep:65,push:20,volley:60,rain:45,halt:15,lock:0})[s.id]+(s.id==='lock'?0:(d.skillDamage||0)));if(['sweep','push','halt','lock'].includes(s.id))e.stunnedUntil=b.time+(s.id==='push'?1:s.id==='lock'?3:2);if(s.id==='push'&&!e.boss)e.x=Math.min(.95,e.x+.065);e.flash=.3}effect(b,d.ranged?'arrow':'roar',u.lane,u.x)}
+ protectBarrier(b);b.skillNotice={key,text:d.name+'・'+s.name,until:b.time+2};return true;
+}
+
+function grantShield(b,ally,amount,caster){ally.shield=Math.max(ally.shield||0,amount+(caster.shieldBonus||0));ally.shieldUntil=Math.max(ally.shieldUntil||0,b.time+6+(caster.shieldDuration||0));effect(b,'block',ally.lane,ally.x)}
+function applyMaster(b,u,d,s,near){const spec=s.effects;
+ const allies=b.allies.filter(a=>a.hp>0&&(spec.allies==='all'||(spec.allies==='self'?a.id===u.id:a.lane===u.lane)));
+ if(spec.food)b.food=Math.min(300,b.food+spec.food);
+ for(const a of allies){if(spec.heal){a.hp=Math.min(a.maxHp,a.hp+spec.heal+(d.healBonus||0));effect(b,'heal',a.lane,a.x)}const shield=Math.max(spec.shield||0,spec.heal?d.healShield||0:0);if(shield)grantShield(b,a,shield,d)}
+ if(spec.damage){const targets=spec.nearest?[...near].sort((a,c)=>Math.abs(a.x-u.x)-Math.abs(c.x-u.x)).slice(0,1):near;for(const enemy of targets){hurtEnemy(b,enemy,spec.damage+(d.skillDamage||0));if(spec.stun)enemy.stunnedUntil=Math.max(enemy.stunnedUntil||0,b.time+spec.stun);if(spec.push&&!enemy.boss)enemy.x=Math.min(.95,enemy.x+spec.push);enemy.flash=.3}effect(b,d.ranged?'arrow':'roar',u.lane,u.x,targets[0]?.x||u.x)}
 }
