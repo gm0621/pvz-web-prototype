@@ -1,11 +1,11 @@
-import {extracted} from './history-missions.mjs?v=master-cinema-1';
-import {createMission,stepMission,protectBarrier,missionReady,missionDuelReady} from './chapter-missions.mjs?v=master-cinema-1';
-import {duelBeats} from './duel-patterns.mjs?v=master-cinema-1';
-export {duelBeats} from './duel-patterns.mjs?v=master-cinema-1';
-import {WEATHER_GENERALS} from './weather-generals.mjs?v=master-cinema-1';
-import {campaignState,weaponBonus} from './campaign.mjs?v=master-cinema-1';
-import {heroSkill} from './skills.mjs?v=master-cinema-1';
-import {heroesForLevel,STAGES,UNLOCKS,FEATURES} from './story.mjs?v=master-cinema-1';
+import {extracted} from './history-missions.mjs?v=skill-tiers-1';
+import {createMission,stepMission,protectBarrier,missionReady,missionDuelReady} from './chapter-missions.mjs?v=skill-tiers-1';
+import {duelBeats} from './duel-patterns.mjs?v=skill-tiers-1';
+export {duelBeats} from './duel-patterns.mjs?v=skill-tiers-1';
+import {WEATHER_GENERALS} from './weather-generals.mjs?v=skill-tiers-1';
+import {campaignState,weaponBonus} from './campaign.mjs?v=skill-tiers-1';
+import {heroSkill} from './skills.mjs?v=skill-tiers-1';
+import {heroesForLevel,STAGES,UNLOCKS,FEATURES} from './story.mjs?v=skill-tiers-1';
 
 export const SWING={duration:.58,impact:.24,frameTime:.08,frames:6};
 export const DUEL_DURATION=19;
@@ -285,10 +285,12 @@ export function castActive(b,key,index){
  if(['heal','rally'].includes(s.id)&&!b.allies.some(a=>a.hp>0&&a.hp<a.maxHp&&(s.id==='rally'||a.lane===u.lane))){b.notice='夥伴都很健康，等受傷再用，MP 未扣除。';b.noticeUntil=b.time+2;return false}
  r.mp-=s.mp;r.ready[index]=b.time+Math.max(1,s.cooldown-(d.cooldownReduction||0));
  if(s.effects){const firstEffect=b.effects.length;applyMaster(b,u,d,s,near);for(const e of b.effects.slice(firstEffect))e.master=true;b.masterCast={heroId:d.heroId,level:d.heroLevel,name:s.name,lane:u.lane,at:b.time};protectBarrier(b);b.skillNotice={key,text:d.name+'・'+s.name,until:b.time+2};return true}
+ const firstEffect=b.effects.length;
  const allies=b.allies.filter(a=>a.hp>0&&(s.id==='fort'||s.id==='supply'||s.id==='rally'||a.lane===u.lane));
  if(['heal','supply','rally'].includes(s.id)){for(const a of allies){a.hp=Math.min(a.maxHp,a.hp+((s.id==='supply'?15:35)+(d.healBonus||0)));effect(b,'heal',a.lane,a.x);if(d.healShield)grantShield(b,a,d.healShield,d)}if(s.id==='supply')b.food=Math.min(300,b.food+60)}
  if(['shield','escape','fort','lock'].includes(s.id))for(const a of allies){grantShield(b,a,s.id==='shield'?35:s.id==='lock'?30:45,d)}
  if(offensive){for(const e of s.id==='volley'?[...near].sort((a,c)=>Math.abs(a.x-u.x)-Math.abs(c.x-u.x)).slice(0,1):near){hurtEnemy(b,e,({pierce:45,sweep:65,push:20,volley:60,rain:45,halt:15,lock:0})[s.id]+(s.id==='lock'?0:(d.skillDamage||0)));if(['sweep','push','halt','lock'].includes(s.id))e.stunnedUntil=b.time+(s.id==='push'?1:s.id==='lock'?3:2);if(s.id==='push'&&!e.boss)e.x=Math.min(.95,e.x+.065);e.flash=.3}effect(b,d.ranged?'arrow':'roar',u.lane,u.x)}
+ for(const e of b.effects.slice(firstEffect))e.master=true;b.skillCast={heroId:d.heroId,index,name:s.name,lane:u.lane,x:u.x,at:b.time};
  protectBarrier(b);b.skillNotice={key,text:d.name+'・'+s.name,until:b.time+2};return true;
 }
 

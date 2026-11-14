@@ -1,5 +1,6 @@
-import {MASTER_STYLES} from './master-style.mjs?v=master-cinema-1';
-import {STAGES,chapterInfo} from './story.mjs?v=master-cinema-1';
+import {skillPresentation} from './skill-presentation.mjs?v=skill-tiers-1';
+import {MASTER_STYLES} from './master-style.mjs?v=skill-tiers-1';
+import {STAGES,chapterInfo} from './story.mjs?v=skill-tiers-1';
 // Recorded interludes, stage scores and chapter codas share one switchable music bus.
 let context,musicBus,sfxBus,timer=null,step=0,enabled=false,sfx=true,revision=0,scene=0,recordedMode='home',chapterEnding=false,pageInactive=false,backgroundPaused=false;
 const recordedTracks=new Map(),recordedSources=[];
@@ -121,6 +122,8 @@ export async function hitSound(kind='slash'){
  // Retry browser audio unlocking instead of silently discarding the first strike.
  if(init().state!=='running'&&!await unlockAudio())return false;
  if(!sfx||isBackground()||backgroundPaused)return false;
+ const early=/^skill-([a-z]+)-([01])$/.exec(kind),small=early&&skillPresentation(early[1],Number(early[2]));
+ if(small){for(const f of small.notes)tone(sfxBus,f,small.soundDuration,small.volume,small.wave,f*small.slide);noise(sfxBus,small.soundDuration,small.weight,small.noise);return true}
  const master=kind.startsWith('master-')&&MASTER_STYLES[kind.slice(7)];
  if(master){for(const f of master.notes)tone(sfxBus,f,.65,.18,master.wave,f*master.slide);noise(sfxBus,.4,master.weight,master.noise);return true}
  if(kind.startsWith('warning-')){

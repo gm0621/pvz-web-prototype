@@ -1,7 +1,7 @@
-import {ADVANCED_GROWTH,growthBonuses,learningLevels} from './skill-growth.mjs?v=master-cinema-1';
-export {growthBonuses,learningLevels,activeText} from './skill-growth.mjs?v=master-cinema-1';
-import {PEACH_HEROES} from './hero-base.mjs?v=master-cinema-1';
-import {FACTIONS,BLANK_PORTRAIT} from './factions.mjs?v=master-cinema-1';
+import {ADVANCED_GROWTH,growthBonuses,learningLevels} from './skill-growth.mjs?v=skill-tiers-1';
+export {growthBonuses,learningLevels,activeText} from './skill-growth.mjs?v=skill-tiers-1';
+import {PEACH_HEROES} from './hero-base.mjs?v=skill-tiers-1';
+import {FACTIONS,BLANK_PORTRAIT} from './factions.mjs?v=skill-tiers-1';
 export const SLOTS=['liubei','guanyu','zhangfei','hero4','hero5'];
 export const DEFAULT_TEAM=['caocao','xiahoudun','caohong'];
 const skill=(id,name,text,mp,cooldown,level=1)=>({id,name,text,mp,cooldown,level});

@@ -1,7 +1,7 @@
-import {enemyPortrait,paintPortrait} from './factions.mjs?v=master-cinema-1';
-import {bossProfile,laneLabel} from './engine.mjs?v=master-cinema-1';
-import {enemyArt} from './story.mjs?v=master-cinema-1';
-import {hitSound} from './audio.mjs?v=master-cinema-1';
+import {enemyPortrait,paintPortrait} from './factions.mjs?v=skill-tiers-1';
+import {bossProfile,laneLabel} from './engine.mjs?v=skill-tiers-1';
+import {enemyArt} from './story.mjs?v=skill-tiers-1';
+import {hitSound} from './audio.mjs?v=skill-tiers-1';
 const seen=new WeakMap();
 const label=(root,selector,text)=>{const node=root.querySelector(selector);if(node.textContent!==text)node.textContent=text};
 const clamp=n=>Math.max(0,Math.min(1,n));

@@ -1,0 +1,9 @@
+const {test}=require('node:test'),assert=require('node:assert/strict');
+test('all 24 early skills emit one correctly identified event only on success, respecting pause and MP',async()=>{
+ const e=await import('../../hero/engine.mjs'),r=await import('../../hero/roster.mjs'),s=await import('../../hero/story.mjs'),v=await import('../../hero/skill-presentation.mjs');
+ for(const [id,g] of Object.entries(r.ALL_GENERALS))for(const index of [0,1]){
+ const p=e.normalizeProgress({heroGrowth:{[id]:{xp:index?75:0}},caoTeam:[id,...Object.keys(r.GENERALS).filter(x=>x!==id).slice(0,2)]});const sun=!!r.SUN_GENERALS[id],cao=!!r.GENERALS[id],b=e.createBattle(sun?20:cao?17:1,42);if(sun)r.configureSunRoster(b,p,s.heroesForLevel(20).archer);else if(cao)r.configureRoster(b,p,s.heroesForLevel(17).archer);else r.configurePeachRoster(b,p);
+ const key=Object.keys(b.roster).find(k=>b.roster[k].heroId===id);b.food=999;e.deploy(b,key,0);b.allies[0].hp-=80;b.enemies=[{id:100,lane:0,x:.2,hp:500,maxHp:500,damage:0}];b.paused=true;assert.equal(e.castActive(b,key,index),false);assert.equal(b.skillCast,undefined);b.paused=false;b.heroResources[id].mp=0;assert.equal(e.castActive(b,key,index),false);assert.equal(b.skillCast,undefined);b.heroResources[id].mp=60;
+ assert.equal(e.castActive(b,key,index),true,id);assert.equal(b.skillCast.heroId,id);assert.equal(b.skillCast.index,index);assert.equal(b.skillCast.name,g.skills[index].name);assert.equal(b.heroResources[id].mp,60-g.skills[index].mp);const event=b.skillCast;assert.equal(e.castActive(b,key,index),false);assert.equal(b.skillCast,event);assert.ok(b.effects.every(x=>x.master));const style=v.skillPresentation(id,index);assert.ok(v.skillArtwork(style.motif));assert.equal(style.tier,index?3:1);assert.ok(style.duration<1.65);assert.ok(style.soundDuration<.65);
+ }
+});

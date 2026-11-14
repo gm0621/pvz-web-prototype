@@ -1,0 +1,1 @@
+const base=require('./playwright.hero-master.config');module.exports={...base,testMatch:'hero-skill-tiers.spec.js',outputDir:'test-results/skill-tiers',projects:base.projects.filter(p=>p.name!=='chromium-667x375')};

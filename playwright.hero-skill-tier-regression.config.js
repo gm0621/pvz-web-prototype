@@ -1,0 +1,1 @@
+const base=require('./playwright.hero-master.config');module.exports={...base,outputDir:'test-results/master-tier-regression',webServer:{...base.webServer,command:'PORT=4196 node tests/support/static-server.js',url:'http://127.0.0.1:4196'},use:{...base.use,baseURL:'http://127.0.0.1:4196'},projects:base.projects.filter(p=>p.name==='chromium-667x375')};

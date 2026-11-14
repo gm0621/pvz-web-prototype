@@ -1,30 +1,31 @@
-import {mountSkillIntro} from './skill-intro.mjs?v=master-cinema-1';
-import {beginReading,installStoryReader} from './story-reader.mjs?v=master-cinema-1';
-import {shortPages} from './story-pages.mjs?v=master-cinema-1';
-import {configureRoster,configurePeachRoster,configureSunRoster,awardExperience,SLOTS,ALL_GENERALS as GENERALS} from './roster.mjs?v=master-cinema-1';
-import {openDeployment,mountActiveSkills} from './roster-view.mjs?v=master-cinema-1';
-import {castActive,lanesFor,laneLabel} from './engine.mjs?v=master-cinema-1';
-import {mountSkillGuide} from './skill-guide.mjs?v=master-cinema-1';
-import {renderPeople,STORY_PEOPLE} from './characters.mjs?v=master-cinema-1';
-import {FACTIONS,factionFor,enemyPortrait,paintPortrait} from './factions.mjs?v=master-cinema-1';
-import {mountHistoryLesson} from './history-view.mjs?v=master-cinema-1';
-import {renderMasterCutin} from './master-cutin.mjs?v=master-cinema-1';
-import {renderBossCutin} from './boss-cutin.mjs?v=master-cinema-1';
-import {mountBattleKeys} from './battle-keys.mjs?v=master-cinema-1';
-import {mountJourney} from './journey-view.mjs?v=master-cinema-1';
-import {renderMission} from './chapter-mission-view.mjs?v=master-cinema-1';
-import {mountCampaignMap} from './campaign-map.mjs?v=master-cinema-1';
-import {advanceBattleFrame,normalizeBattleSpeed} from './battle-speed.mjs?v=master-cinema-1';
-import {mountNovel} from './novel.mjs?v=master-cinema-1';
-import {mountCamp} from './camp-view.mjs?v=master-cinema-1';
-import {rewardVictory,useSupply,weaponsForLevel} from './campaign.mjs?v=master-cinema-1';
-import {createFirstGuide} from './first-guide.mjs?v=master-cinema-1';
-import {mountStoryTask} from './story-play.mjs?v=master-cinema-1';
-import {CHAPTER_BACKGROUNDS,STAGE_LEADS} from './prologue.mjs?v=master-cinema-1';
-import {setMusic,setMusicMode,setMusicHome,musicTheme,musicOn,setSfx,unlockAudio,hitSound} from './audio.mjs?v=master-cinema-1';
-import {renderDuel} from './duel-view.mjs?v=master-cinema-1';
-import {chapterInfo,enemyArt,HEROES as BASE_HEROES,heroesForLevel,STAGES,ENEMY_ART,SHIELD_ART,FEATURES,heroDescription} from './story.mjs?v=master-cinema-1';
-import {bossProfile,LANE_CAPACITY,laneCount,ENEMY_SWING,enemyAttackFrame,skipDuelEntrance,positionHero,commandHero,moveHero,BOSS_SKILLS,SAVE_KEY,normalizeProgress,createBattle,deploy,canDeploy,attackFrame,SWING} from './engine.mjs?v=master-cinema-1';
+import {mountSkillIntro} from './skill-intro.mjs?v=skill-tiers-1';
+import {beginReading,installStoryReader} from './story-reader.mjs?v=skill-tiers-1';
+import {shortPages} from './story-pages.mjs?v=skill-tiers-1';
+import {configureRoster,configurePeachRoster,configureSunRoster,awardExperience,SLOTS,ALL_GENERALS as GENERALS} from './roster.mjs?v=skill-tiers-1';
+import {openDeployment,mountActiveSkills} from './roster-view.mjs?v=skill-tiers-1';
+import {castActive,lanesFor,laneLabel} from './engine.mjs?v=skill-tiers-1';
+import {mountSkillGuide} from './skill-guide.mjs?v=skill-tiers-1';
+import {renderPeople,STORY_PEOPLE} from './characters.mjs?v=skill-tiers-1';
+import {FACTIONS,factionFor,enemyPortrait,paintPortrait} from './factions.mjs?v=skill-tiers-1';
+import {mountHistoryLesson} from './history-view.mjs?v=skill-tiers-1';
+import {renderSkillCutin} from './skill-cutin.mjs?v=skill-tiers-1';
+import {renderMasterCutin} from './master-cutin.mjs?v=skill-tiers-1';
+import {renderBossCutin} from './boss-cutin.mjs?v=skill-tiers-1';
+import {mountBattleKeys} from './battle-keys.mjs?v=skill-tiers-1';
+import {mountJourney} from './journey-view.mjs?v=skill-tiers-1';
+import {renderMission} from './chapter-mission-view.mjs?v=skill-tiers-1';
+import {mountCampaignMap} from './campaign-map.mjs?v=skill-tiers-1';
+import {advanceBattleFrame,normalizeBattleSpeed} from './battle-speed.mjs?v=skill-tiers-1';
+import {mountNovel} from './novel.mjs?v=skill-tiers-1';
+import {mountCamp} from './camp-view.mjs?v=skill-tiers-1';
+import {rewardVictory,useSupply,weaponsForLevel} from './campaign.mjs?v=skill-tiers-1';
+import {createFirstGuide} from './first-guide.mjs?v=skill-tiers-1';
+import {mountStoryTask} from './story-play.mjs?v=skill-tiers-1';
+import {CHAPTER_BACKGROUNDS,STAGE_LEADS} from './prologue.mjs?v=skill-tiers-1';
+import {setMusic,setMusicMode,setMusicHome,musicTheme,musicOn,setSfx,unlockAudio,hitSound} from './audio.mjs?v=skill-tiers-1';
+import {renderDuel} from './duel-view.mjs?v=skill-tiers-1';
+import {chapterInfo,enemyArt,HEROES as BASE_HEROES,heroesForLevel,STAGES,ENEMY_ART,SHIELD_ART,FEATURES,heroDescription} from './story.mjs?v=skill-tiers-1';
+import {bossProfile,LANE_CAPACITY,laneCount,ENEMY_SWING,enemyAttackFrame,skipDuelEntrance,positionHero,commandHero,moveHero,BOSS_SKILLS,SAVE_KEY,normalizeProgress,createBattle,deploy,canDeploy,attackFrame,SWING} from './engine.mjs?v=skill-tiers-1';
 
 const $=id=>document.getElementById(id);
 let HEROES=BASE_HEROES;
@@ -156,7 +157,7 @@ function renderEffects(){
  for(const [id,el] of existing)if(!ids.has(id))el.remove();
 }
 function renderBattle(){
- if(!battle)return;renderBossCutin(battle);renderMasterCutin(battle);renderMission(battle,renderBattle);campaignMap.update(battle);
+ if(!battle)return;renderBossCutin(battle);renderMasterCutin(battle);renderSkillCutin(battle);renderMission(battle,renderBattle);campaignMap.update(battle);
  const boss=battle.enemies.find(e=>e.boss&&e.hp>0&&e.castAt)||battle.enemies.find(e=>e.boss&&e.hp>0),stage=STAGES[battle.level-1];
  $('bossHud').hidden=!boss;
  if(boss){$('bossHudName').textContent=`${bossProfile(battle,boss).title}・${boss.name}`;$('bossHudHp').style.width=`${boss.hp/boss.maxHp*100}%`;$('bossHudState').textContent=boss.castAt?`${bossProfile(battle,boss).skillName}蓄力！${stage.skillType==='rally'?'敵兵即將加速':'換路閃避'}`:boss.support?`${bossProfile(battle,boss).skillName}・預警後換路閃避`:stage.skillType?`${bossProfile(battle,boss).skillName}・${boss.hp/boss.maxHp>stage.duelHpRatio?'先削弱主將':(stage.duelHero?HEROES[stage.duelHero].short+'近身單挑':'避開大招，趁破綻反擊')}`:boss.enraged?'狂攻・兩路重擊':battle.level===5?(boss.hp/boss.maxHp>.65?`先破盾：生命 ${Math.ceil(boss.hp/boss.maxHp*100)}% → 65% 以下，劉備才可單挑`:'盾勢已破！劉備同路近身 → 自動單挑'):'大將出陣';}
@@ -247,7 +248,7 @@ $('replayLevel').onclick=()=>startStory(battle.level);
 $('duelEnter').onclick=()=>{if(skipDuelEntrance(battle))renderBattle()};
 $('duelPause').onclick=()=>{setPause(!battle.paused);renderBattle()};
 const campaignMap=mountCampaignMap({stages:STAGES,getBattle:()=>battle,setPaused:setPause});
-installStoryReader();buildControls();const renderActiveSkills=mountActiveSkills({getBattle:()=>battle,cast:(b,key,index)=>{const ok=castActive(b,key,index);if(ok&&b.roster[key].skills[index].id==='master'){const rect=$('field').getBoundingClientRect();if(rect.bottom<80||rect.top>innerHeight*.65)$('field').scrollIntoView({block:'center',behavior:'instant'})}return ok},refresh:renderBattle,getSelected:selectedUnit});mountBattleKeys({getBattle:()=>battle,getSelected:selectedUnit,isBattle:()=>screen==='battle',refresh:renderBattle,onOrder:(b,id,order)=>{if(commandHero(b,id,order))firstGuide?.event(order==='hold'?'hold':order==='forward'?'move':'')}});updateHome();requestAnimationFrame(frame);
+installStoryReader();buildControls();const renderActiveSkills=mountActiveSkills({getBattle:()=>battle,cast:(b,key,index)=>{const ok=castActive(b,key,index);if(ok){const rect=$('field').getBoundingClientRect();if(rect.bottom<80||rect.top>innerHeight*.65)$('field').scrollIntoView({block:'center',behavior:'instant'})}return ok},refresh:renderBattle,getSelected:selectedUnit});mountBattleKeys({getBattle:()=>battle,getSelected:selectedUnit,isBattle:()=>screen==='battle',refresh:renderBattle,onOrder:(b,id,order)=>{if(commandHero(b,id,order))firstGuide?.event(order==='hold'?'hold':order==='forward'?'move':'')}});updateHome();requestAnimationFrame(frame);
 
 mountSkillGuide({getBattle:()=>battle,getProgress:()=>progress,setPaused:setPause});
 const skillIntro=mountSkillIntro({getBattle:()=>battle,getProgress:()=>progress,save:()=>{const saved=saveProgress();if(saved&&battle?.over)$('resultSaved').textContent='軍資、經驗與進度已保存，可在營地使用';return saved},setPaused:setPause});
