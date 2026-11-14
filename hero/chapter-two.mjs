@@ -1,4 +1,4 @@
-import {CHAPTER_BOSSES} from './chapter-bosses.mjs?v=multilane-controls-1';
+import {CHAPTER_BOSSES} from './chapter-bosses.mjs?v=dispatch-score-1';
 // 主線依《三國演義》第一回；場間小戰及無名頭目為遊戲補寫。
 export const SECOND_CHAPTER=[
  {chapter:2,number:1,name:'廣宗拜師',place:'廣宗・盧植軍前',enemyCount:16,interval:3.4,bossName:'黃巾督戰頭目',bossTitle:'廣宗外圍',bossHp:310,scene:'./assets/scenes/mountain-front.jpg',

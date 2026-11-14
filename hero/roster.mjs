@@ -1,4 +1,4 @@
-import {FACTIONS,BLANK_PORTRAIT} from './factions.mjs?v=multilane-controls-1';
+import {FACTIONS,BLANK_PORTRAIT} from './factions.mjs?v=dispatch-score-1';
 export const SLOTS=['liubei','guanyu','zhangfei','hero4','hero5'];
 export const DEFAULT_TEAM=['caocao','xiahoudun','caohong'];
 const skill=(id,name,text,mp,cooldown,level=1)=>({id,name,text,mp,cooldown,level});

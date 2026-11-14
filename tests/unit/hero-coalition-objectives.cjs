@@ -10,3 +10,13 @@ for(const level of [17,18,22])test(`objective ${level} freezes under pause, stor
 for(const level of [17,18,22])test(`objective ${level} must finish AND clear every wave; completion text stays truthful`,async()=>{const {e,h,b}=await fixture(level);b.bossSpawned=true;e.stepBattle(b,.01);assert.equal(b.over,false);b.bossSpawned=false;Object.assign(b.mission,{rescued:3,delivered:3,sites:[8,8,8]});e.stepBattle(b,.01);assert.equal(b.mission.done,true);assert.equal(b.over,false);assert.match(h.historyMissionText(b),/任務已完成/);assert.match(h.historyMissionText(b),/後續敵軍/);b.bossSpawned=true;b.enemies=[enemy()];e.stepBattle(b,.01);assert.equal(b.over,false);assert.match(h.historyMissionText(b),/剩餘敵軍/);assert.equal(h.historyAction(b,level===17?'route':level===18?'supply':'site',0),false);b.enemies=[];e.stepBattle(b,.01);assert.equal(b.won,true)});
 for(const level of [17,18,22])test(`objective ${level} cannot turn a simultaneous final breach into victory`,async()=>{const {e,b}=await fixture(level);b.bossSpawned=true;b.lives=1;b.enemies=[{...enemy(),x:.024,lane:2}];Object.assign(b.mission,{rescued:3,delivered:3,sites:[8,8,8]});e.stepBattle(b,.01);assert.equal(b.over,true);assert.equal(b.won,false)});
 test('restoration text identifies selected site, lane and stalled progress',async()=>{const {h,b}=await fixture(22);h.historyAction(b,'site',1);assert.match(h.historyMissionText(b),/水井.*中路/);b.enemies=[enemy()];assert.match(h.historyMissionText(b),/敵軍逼近/)});
+
+test('level 17 cleared battlefield reroutes stranded messengers to a surviving escort and finishes normally',async()=>{
+ const {e,h,b}=await fixture(17);b.bossSpawned=true;b.allies=b.allies.filter(u=>u.lane===0);b.mission.travel=.4;
+ tick(e,b,.1);assert.equal(b.mission.lane,0);assert.ok(b.mission.travel>.4);assert.match(h.historyMissionText(b),/敵軍已清退/);
+ b.paused=true;const frozen=JSON.stringify(b.mission);tick(e,b,2);assert.equal(JSON.stringify(b.mission),frozen);b.paused=false;
+ tick(e,b,25);assert.equal(b.mission.rescued,3);assert.equal(b.won,true);
+});
+test('cleared dispatch without survivors asks for an escort and never grants an empty-field victory',async()=>{
+ const {e,h,b}=await fixture(17);b.bossSpawned=true;b.allies=[];tick(e,b,30);assert.equal(b.won,false);assert.equal(b.mission.travel,0);assert.match(h.historyMissionText(b),/派.*友軍/);
+});

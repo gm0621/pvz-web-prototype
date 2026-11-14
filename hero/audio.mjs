@@ -1,5 +1,6 @@
-// Recorded scene themes use one music bus; the per-stage synth remains the fallback when media playback is unavailable.
-let context,musicBus,sfxBus,timer=null,step=0,enabled=false,sfx=true,revision=0,scene=0,recordedMode='home',pageInactive=false,backgroundPaused=false;
+import {STAGES,chapterInfo} from './story.mjs?v=dispatch-score-1';
+// Recorded interludes, stage scores and chapter codas share one switchable music bus.
+let context,musicBus,sfxBus,timer=null,step=0,enabled=false,sfx=true,revision=0,scene=0,recordedMode='home',chapterEnding=false,pageInactive=false,backgroundPaused=false;
 const recordedTracks=new Map(),recordedSources=[];
 export const RECORDED_THEMES={
  home:{name:'桃園歡宴',instrument:'笛、琵琶與揚琴'},
@@ -11,7 +12,7 @@ export const RECORDED_THEMES={
  victory:{name:'凱歌同樂',instrument:'揚琴與節慶鼓'}
 };
 export const MENU_THEME=RECORDED_THEMES.home;
-export const THEMES=[
+const MOTIFS=[
  {name:'桃園出陣',instrument:'撥弦、戰鼓與號角',root:62,beat:250,drum:8,notes:[0,4,7,9,12,9,7,null,4,7,4,2,0,null,2,4]},
  {name:'山道交鋒',instrument:'撥弦、戰鼓與號角',root:69,beat:240,drum:4,notes:[7,9,12,null,9,7,4,2,4,null,7,4,2,0,null,0]},
  {name:'大興戰鼓',instrument:'撥弦、戰鼓與號角',root:50,beat:220,drum:2,notes:[0,null,0,7,null,7,4,null,0,0,null,12,9,null,7,0]},
@@ -23,10 +24,28 @@ export const THEMES=[
  {name:'驛道突圍',instrument:'撥弦、戰鼓與號角',root:50,beat:235,drum:8,notes:[12,null,9,7,4,null,2,0,2,null,4,7,4,2,0,null]},
  {name:'天公雷陣',instrument:'撥弦、戰鼓與號角',root:55,beat:210,drum:2,notes:[0,7,0,12,7,null,9,7,0,4,7,14,12,9,7,0]}
 ];
+// Reuse a small instrumental vocabulary, but give all 64 stages their own
+// melodic phrase, register and pulse. Chapter codas are slower and drum-free.
+export const THEMES=STAGES.map((stage,i)=>{
+ const info=chapterInfo(i+1),base=MOTIFS[i%MOTIFS.length],shift=(info.chapter-1)%5,rotation=(info.number-1)*2;
+ return {...base,name:`${stage.name}・行軍`,root:base.root+shift,beat:base.beat+info.chapter*3,
+  notes:base.notes.map((_,n)=>{const note=base.notes[(n+rotation)%16];return n===14?(note??0)+info.chapter:note})};
+});
+export const CHAPTER_THEMES=Array.from({length:11},(_,i)=>{
+ const base=MOTIFS[i%MOTIFS.length];return {...base,name:`${chapterInfo(STAGES.findIndex(s=>(s.chapter||1)===i+1)+1).title}・章末`,root:60+i%5,beat:370+i*7,calm:true,
+ notes:[0,4,7,null,9,7,4,null,2,4,7,9+i,7,4,0,null]};
+});
+function synthTheme(){return chapterEnding?CHAPTER_THEMES[chapterInfo(scene+1).chapter-1]:THEMES[scene]}
 const hz=n=>440*2**((n-69)/12);
-export function musicTheme(){return RECORDED_THEMES[recordedMode]||THEMES[scene]}
-export function audioStatus(){return {backgroundPaused,state:context?.state||'locked',music:enabled,sfx,theme:musicTheme().name,source:recordedMode?`${recordedMode}-recording`:'stage-synth'}}
-export function setMusicMode(mode,level=scene+1){const next=Math.max(0,Math.min(THEMES.length-1,Math.trunc(Number(level)||1)-1)),nextMode=RECORDED_THEMES[mode]?mode:null,changed=nextMode!==recordedMode||next!==scene;recordedMode=nextMode;scene=next;if(!changed)return;step=0;if(enabled)void setMusic(true)}
+export function musicTheme(){return RECORDED_THEMES[recordedMode]||synthTheme()}
+export function audioStatus(){return {backgroundPaused,state:context?.state||'locked',music:enabled,sfx,theme:musicTheme().name,source:recordedMode?`${recordedMode}-recording`:chapterEnding?'chapter-synth':'stage-synth'}}
+export function setMusicMode(mode,level=scene+1){
+ const next=Math.max(0,Math.min(THEMES.length-1,Math.trunc(Number(level)||1)-1)),info=chapterInfo(next+1);
+ const ending=mode==='victory'&&info.number===info.count;
+ const nextMode=mode!=='battle'&&!ending&&RECORDED_THEMES[mode]?mode:null;
+ const changed=nextMode!==recordedMode||next!==scene||ending!==chapterEnding;
+ recordedMode=nextMode;chapterEnding=ending;scene=next;if(!changed)return;step=0;if(enabled)void setMusic(true);
+}
 export function setMusicScene(level){setMusicMode(null,level)}
 export function setMusicHome(){setMusicMode('home',1)}
 function init(){if(!context){context=new AudioContext();musicBus=context.createGain();sfxBus=context.createGain();musicBus.gain.value=0;musicBus.connect(context.destination);sfxBus.gain.value=sfx?.7:0;const limiter=context.createDynamicsCompressor();limiter.threshold.value=-10;limiter.knee.value=12;limiter.ratio.value=6;limiter.attack.value=.003;limiter.release.value=.15;sfxBus.connect(limiter);limiter.connect(context.destination);for(const track of document.querySelectorAll('audio[data-music-mode]')){recordedTracks.set(track.dataset.musicMode,track);const source=context.createMediaElementSource(track);source.connect(musicBus);recordedSources.push(source)}}return context}
@@ -35,7 +54,12 @@ function noise(bus,duration,volume,freq=1800){const c=init(),buffer=c.createBuff
 function pluck(freq,volume=.32){const c=init(),buffer=c.createBuffer(1,Math.ceil(c.sampleRate*2.2),c.sampleRate),data=buffer.getChannelData(0),period=Math.max(2,Math.round(c.sampleRate/freq));for(let i=0;i<data.length;i++)data[i]=i<period?(Math.random()*2-1)*volume:.496*(data[i-period]+data[i-period+1]);const source=c.createBufferSource();source.buffer=buffer;source.connect(musicBus);source.start();source.onended=()=>source.disconnect()}
 function tick(){
  if(!enabled||isBackground()||backgroundPaused)return;
- const theme=THEMES[recordedMode==='home'?0:scene],pulse=step%16,phrase=Math.floor(step/16)%4,note=theme.notes[pulse],root=hz(theme.root-12);
+ const theme=synthTheme(),pulse=step%16,phrase=Math.floor(step/16)%4,note=theme.notes[pulse],root=hz(theme.root-12);
+ if(theme.calm){
+  if(note!==null)pluck(hz(theme.root+note),.16);
+  if(pulse%4===0){tone(musicBus,root,.95,.045,'sine');tone(musicBus,root*1.5,.8,.025,'triangle')}
+  step++;return;
+ }
  // Eighth-note pulse: low marching ostinato, alternating drum hands and a bar-end fill.
  if(note!==null)pluck(hz(theme.root+note+(phrase===3?-12:0)),phrase%2?.28:.18);
  tone(musicBus,root*([0,4,8,12].includes(pulse)?1:1.5),.19,.085,'triangle');
@@ -73,8 +97,8 @@ export async function setMusic(on){
    let recorded=true;try{await track.play()}catch{recorded=false}
    if(isBackground()||backgroundPaused){pauseBackgroundAudio();return enabled}
    if(!enabled||request!==revision){if(!enabled||track!==recordedTracks.get(recordedMode))track.pause();return enabled}
-   if(!recorded){tick();timer=setInterval(tick,THEMES[scene].beat)}
-  }else{tick();timer=setInterval(tick,THEMES[scene].beat)}
+   if(!recorded){tick();timer=setInterval(tick,synthTheme().beat)}
+  }else{tick();timer=setInterval(tick,synthTheme().beat)}
   return enabled;
  }catch{if(request===revision&&!isBackground()&&!backgroundPaused)enabled=false;return enabled}
 }

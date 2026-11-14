@@ -50,7 +50,7 @@ test('late context resume cannot start music after switching apps',async t=>{
  assert.equal(f.tracks[0].plays,0);assert.equal(f.ctx.state,'suspended');assert.ok(f.tracks.every(x=>x.paused));
 });
 test('hidden scene changes never play; foreground interaction resumes only the selected scene',async t=>{
- const f=await setup(t);await f.audio.setMusic(true);f.hide();f.audio.setMusicMode('battle');await Promise.resolve();assert.equal(f.tracks[1].plays,0);f.show();await f.audio.unlockAudio();assert.equal(f.tracks[0].paused,true);assert.equal(f.tracks[1].paused,false);
+ const f=await setup(t);await f.audio.setMusic(true);f.hide();f.audio.setMusicMode('battle');await Promise.resolve();assert.equal(f.tracks[1].plays,0);f.show();await f.audio.unlockAudio();assert.equal(f.tracks[0].paused,true);assert.equal(f.tracks[1].paused,true);assert.equal(f.timers.size,1);assert.equal(f.audio.audioStatus().source,'stage-synth');
 });
 test('background events before audio initialization do not create an audio context',async t=>{
  const f=await setup(t);f.hide();assert.equal(f.ctx,undefined);await f.audio.setMusic(true);assert.equal(f.ctx,undefined);assert.equal(f.audio.musicOn(),true);f.show();assert.equal(f.ctx,undefined);
@@ -59,4 +59,16 @@ test('background events before audio initialization do not create an audio conte
 test('fallback synth timer is cleared on background and not restarted by foregrounding alone',async t=>{
  const f=await setup(t);f.tracks[0].play=async()=>{throw new Error('media unavailable')};await f.audio.setMusic(true);assert.equal(f.timers.size,1);
  f.hide();assert.equal(f.timers.size,0);assert.equal(f.ctx.gains[0].gain.value,0);f.show();assert.equal(f.timers.size,0);await f.audio.unlockAudio();assert.equal(f.timers.size,1);await f.audio.setMusic(false);assert.equal(f.timers.size,0);
+});
+
+for(const level of [6,10,16,22,28,34,40,46,52,58,64])test(`chapter ending ${level} switches to a distinct coda and next stage switches back`,async t=>{
+ const f=await setup(t);f.audio.setMusicMode('victory',level);assert.equal(f.audio.audioStatus().source,'chapter-synth');assert.match(f.audio.musicTheme().name,/章末/);assert.equal(f.audio.musicTheme().calm,true);
+ await f.audio.setMusic(true);assert.equal(f.timers.size,1);f.hide();assert.equal(f.timers.size,0);f.show();await f.audio.unlockAudio();assert.equal(f.timers.size,1);
+ f.audio.setMusicMode('battle',Math.min(64,level+1));await Promise.resolve();assert.equal(f.audio.audioStatus().source,'stage-synth');assert.match(f.audio.musicTheme().name,/行軍/);await f.audio.setMusic(false);
+});
+test('all 64 stages and 11 chapter codas have distinct musical scores',async t=>{
+ const {audio}=await setup(t);assert.equal(audio.THEMES.length,64);assert.equal(audio.CHAPTER_THEMES.length,11);
+ assert.equal(new Set(audio.THEMES.map(t=>JSON.stringify(t.notes))).size,64);
+ assert.equal(new Set(audio.CHAPTER_THEMES.map(t=>JSON.stringify(t.notes))).size,11);
+ audio.setMusicMode('victory',17);assert.equal(audio.audioStatus().source,'victory-recording');
 });

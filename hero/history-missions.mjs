@@ -1,5 +1,5 @@
-import {HISTORICAL_STAGES} from './history-stages.mjs?v=multilane-controls-1';
-import {FACTIONS,factionFor} from './factions.mjs?v=multilane-controls-1';
+import {HISTORICAL_STAGES} from './history-stages.mjs?v=dispatch-score-1';
+import {FACTIONS,factionFor} from './factions.mjs?v=dispatch-score-1';
 const laneList=b=>Array.from({length:b.laneTotal||3},(_,i)=>i);
 const routeName=(b,l)=>(b.laneTotal||3)>3?`第 ${l+1}`:['上','中','下'][l];
 const siteNames=['道路','水井','宗廟'],laneNames=['上','中','下'];
@@ -21,7 +21,14 @@ export function stepHistoryMission(b,dt){
  const m=b.mission;
  // Completed logistics stay complete; withdrawal is rechecked after damage each tick.
  if(m.done&&['dispatch','supply','restoration','holdout'].includes(m.kind))return;
- if(m.kind==='dispatch'){if(m.rescued<3&&safe(b,m.lane)){m.travel+=dt/8;if(m.travel>=1){m.travel=0;m.rescued++;m.lane=(m.lane+1)%(b.laneTotal||3);m.message=`第 ${m.rescued} 隊聯絡使者平安回營。`}}m.done=m.rescued>=3}
+ if(m.kind==='dispatch'){
+  // Once every wave is cleared, guide the remaining messengers to a living escort.
+  // During combat route choice remains manual; partial travel is never discarded.
+  if(b.bossSpawned&&!b.enemies.some(e=>e.hp>0)&&!safe(b,m.lane)){
+   const lane=laneList(b).find(l=>safe(b,l));
+   if(lane!==undefined){m.lane=lane;m.message=`敵軍已清退，使者改走${routeName(b,lane)}路，請友軍繼續接應。`}
+  }
+  if(m.rescued<3&&safe(b,m.lane)){m.travel+=dt/8;if(m.travel>=1){m.travel=0;m.rescued++;m.lane=(m.lane+1)%(b.laneTotal||3);m.message=`第 ${m.rescued} 隊聯絡使者平安回營。`}}m.done=m.rescued>=3}
  if(m.kind==='supply'){if(laneList(b).every(l=>safe(b,l)))m.charge=Math.min(10,m.charge+dt);m.done=m.delivered>=3}
  if(['withdraw','decoy'].includes(m.kind)){
   if(b.bossSpawned&&m.withdrawAt===null)m.withdrawAt=b.time+18;
@@ -38,7 +45,11 @@ export function historyMissionText(b){const fronts=['','','','三','四','五'][
   const title={dispatch:'接應 3／3 隊使者',supply:'軍糧 3／3 批',restoration:'城內整備 3／3',holdout:holdTitle+' 24／24 秒'}[m.kind];
   return `${title} · 任務已完成`+(b.won?'':b.bossSpawned?'，清退剩餘敵軍後過關':'，守住防線並清退後續敵軍');
  }
- if(m.kind==='dispatch')return `接應 ${m.rescued}／3 隊使者 · ${routeName(b,m.lane)}路 ${Math.floor(m.travel*100)}% · 守住道路才能前進`;
+ if(m.kind==='dispatch'){
+  const guarded=b.allies.some(u=>u.hp>0&&u.lane===m.lane),blocked=b.enemies.some(e=>e.hp>0&&e.lane===m.lane&&e.x<.48);
+  const next=!guarded?`請派一名友軍到${routeName(b,m.lane)}路，或按下方按鈕改走有友軍的路線`:blocked?'敵軍逼近，使者暫停；清退後會繼續前進':'友軍正在接應，請等使者回營';
+  return `${b.bossSpawned&&!b.enemies.some(e=>e.hp>0)?'敵軍已清退，正在接回使者！ · ':''}接應 ${m.rescued}／3 隊使者 · ${routeName(b,m.lane)}路 ${Math.floor(m.travel*100)}% · ${next}`;
+ }
  if(m.kind==='supply'){
   const missing=laneList(b).filter(l=>!b.allies.some(u=>u.hp>0&&u.lane===l)).map(l=>((b.laneTotal||3)>3?`第 ${l+1}`:laneNames[l])+'路');
   const blocked=laneList(b).filter(l=>b.enemies.some(e=>e.hp>0&&e.lane===l&&e.x<.48)).map(l=>((b.laneTotal||3)>3?`第 ${l+1}`:laneNames[l])+'路');

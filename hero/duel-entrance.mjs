@@ -1,6 +1,6 @@
-import {DUEL_ENTRANCE_DURATION} from './engine.mjs?v=multilane-controls-1';
-import {HEROES,STAGES,enemyArt} from './story.mjs?v=multilane-controls-1';
-import {hitSound} from './audio.mjs?v=multilane-controls-1';
+import {DUEL_ENTRANCE_DURATION} from './engine.mjs?v=dispatch-score-1';
+import {HEROES,STAGES,enemyArt} from './story.mjs?v=dispatch-score-1';
+import {hitSound} from './audio.mjs?v=dispatch-score-1';
 const HERO_LABELS={liubei:['仁義之將','雌雄雙劍','為了身後的百姓，出戰！'],guanyu:['美髯公','青龍偃月刀','關雲長在此，請賜教！'],zhangfei:['燕人翼德','丈八蛇矛','燕人張翼德在此！']};
 const ENEMY_WEAPONS={'張寶':'符杖與雨鈴','張梁':'環刀與風旗','鄧茂':'山賊大刀','程遠志':'旋風大刀','石魁':'巨盾・重錘','韓旌':'黃旗長矛','焦魯':'餘燼雙刀','杜衡':'鉤鐮雙刃','張角':'黃天符杖'};
 const clamp=n=>Math.max(0,Math.min(1,n));
