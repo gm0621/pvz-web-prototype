@@ -1,5 +1,5 @@
-import {renderHistoryMission} from './history-missions.mjs?v=hero-milestones-1';
-import {chooseMissionFlag,routeCivilians,missionText} from './chapter-missions.mjs?v=hero-milestones-1';
+import {renderHistoryMission} from './history-missions.mjs?v=master-cinema-1';
+import {chooseMissionFlag,routeCivilians,missionText} from './chapter-missions.mjs?v=master-cinema-1';
 export function renderMission(b,refresh){
  let panel=document.getElementById('chapterMission'),scene=document.getElementById('missionScene');
  if(!panel){panel=document.createElement('section');panel.id='chapterMission';panel.className='chapter-mission';panel.setAttribute('aria-label','本關任務');panel.innerHTML='<strong id="missionObjective"></strong><div id="missionChoices"></div><small id="missionMessage" role="status"></small>';document.getElementById('field').before(panel);scene=document.createElement('div');scene.id='missionScene';scene.setAttribute('aria-hidden','true');scene.innerHTML='<div class="mission-fog"></div><div class="civilian-group"><svg viewBox="0 0 90 64"><g fill="#fff5d8" stroke="#654c30" stroke-width="2"><circle cx="25" cy="12" r="7"/><path d="M25 21l-12 25h24zM20 46l-5 14m16-14 5 14"/><circle cx="57" cy="14" r="7"/><path d="M57 23l-11 23h22zM52 46l-4 14m14-14 5 14"/><circle cx="41" cy="32" r="5"/><path d="M41 38l-7 15h14z"/></g></svg><span>鄉民隊伍</span></div>';document.getElementById('field').append(scene)}

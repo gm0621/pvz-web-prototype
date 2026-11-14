@@ -1,13 +1,13 @@
-import {PEACH_GENERALS,SUN_GENERALS,SLOTS,heroLevel,growthHint} from './roster.mjs?v=hero-milestones-1';
-import {skillSummary} from './roster-view.mjs?v=hero-milestones-1';
-import {renderHeroCamp} from './roster-view.mjs?v=hero-milestones-1';
-import {STORY_PEOPLE,renderPeople} from './characters.mjs?v=hero-milestones-1';
-import {STAGES,chapterInfo} from './story.mjs?v=hero-milestones-1';
-import {FACTION_SKILLS,factionFor,paintPortrait} from './factions.mjs?v=hero-milestones-1';
-import {campConversation} from './camp-talk.mjs?v=hero-milestones-1';
-import {GOODS,purchase,weaponsForLevel} from './campaign.mjs?v=hero-milestones-1';
-import {CAMP_LINES} from './novel.mjs?v=hero-milestones-1';
-import {HERO_SKILLS} from './skills.mjs?v=hero-milestones-1';
+import {PEACH_GENERALS,SUN_GENERALS,SLOTS,heroLevel,growthHint} from './roster.mjs?v=master-cinema-1';
+import {skillSummary} from './roster-view.mjs?v=master-cinema-1';
+import {renderHeroCamp} from './roster-view.mjs?v=master-cinema-1';
+import {STORY_PEOPLE,renderPeople} from './characters.mjs?v=master-cinema-1';
+import {STAGES,chapterInfo} from './story.mjs?v=master-cinema-1';
+import {FACTION_SKILLS,factionFor,paintPortrait} from './factions.mjs?v=master-cinema-1';
+import {campConversation} from './camp-talk.mjs?v=master-cinema-1';
+import {GOODS,purchase,weaponsForLevel} from './campaign.mjs?v=master-cinema-1';
+import {CAMP_LINES} from './novel.mjs?v=master-cinema-1';
+import {HERO_SKILLS} from './skills.mjs?v=master-cinema-1';
 export function mountCamp({progress,level,heroes,stage,onSave,onContinue,won=true}){
  const $=id=>document.getElementById(id);let shop='items';
  let people=$('campTalkPeople');if(!people){people=document.createElement('aside');people.id='campTalkPeople';people.className='story-people';people.setAttribute('aria-label','對話提及人物');$('campTalkText').after(people)}people.hidden=true;

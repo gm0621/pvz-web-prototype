@@ -1,0 +1,21 @@
+const {test,expect}=require('@playwright/test');
+const ids=['liubei','guanyu','zhangfei','caocao','xiahoudun','caohong','caoren','xiahouyuan','yujin','sunjian','chengpu','huanggai'];
+for(const [i,id] of ids.entries())test(`${id} master identity, portrait, frozen animation and one sound`,async({page},info)=>{
+ const errors=[];page.on('pageerror',e=>errors.push(e.message));await page.clock.install();
+ const cao=i>=3&&i<9,sun=i>=9;
+ await page.addInitScript(({id,cao,sun})=>localStorage.setItem('heroLegendProgress_v1',JSON.stringify({completed:sun?19:cao?16:0,coins:500,caoTeam:cao?[id,...['caocao','xiahoudun','caohong'].filter(x=>x!==id).slice(0,2)]:undefined,heroGrowth:{[id]:{xp:405}},skillSeen:[1,3,5,7].map(n=>id+':'+n)})),{id,cao,sun});
+ await page.route('**/hero/engine.mjs?*',async route=>{const r=await route.fetch();await route.fulfill({response:r,body:(await r.text()).replace('return {level,mission:','return window.testBattle={level,mission:')})});
+ await page.route('**/hero/audio.mjs?*',async route=>{const r=await route.fetch();await route.fulfill({response:r,body:(await r.text()).replace("export async function hitSound(kind='slash'){","export async function hitSound(kind='slash'){ if(kind.startsWith('master-'))(window.masterSounds||=[]).push(kind);")})});
+ await page.goto('/hero/');await page.clock.pauseAt(await page.evaluate(()=>Date.now()+500));await page.locator('#startBtn').tap();await page.locator('#storySkip').tap();if(cao)await page.locator('#deploymentStart').tap();
+ const slot=cao?'liubei':sun?['liubei','guanyu','zhangfei'][i-9]:id;await page.locator(`[data-hero=${slot}]`).tap();await page.locator('.lane').first().tap();
+ await page.evaluate(()=>{const b=window.testBattle;b.nextSpawn=Infinity;b.enemies=[{id:90,lane:0,name:'測試敵軍',x:.2,hp:900,maxHp:900,damage:0,rate:999,lastAttack:999,speed:0}];b.allies.forEach(a=>a.lastAttack=999)});await page.clock.runFor(100);
+ await page.locator('#activeSkills select').selectOption(id);await page.locator(`[data-skill-hero=${id}] [data-skill="2"]`).tap();await page.clock.runFor(180);
+ const cut=page.locator('#masterCutin');await expect(cut).toBeVisible();await expect(cut).toHaveAttribute('data-hero',id);await expect(cut).toContainText('Lv.7');await expect(cut.locator('strong')).not.toBeEmpty();await expect(cut).toBeInViewport({ratio:1});expect(await cut.locator('img').evaluate(n=>n.complete&&n.naturalWidth>0)).toBe(true);
+ expect(await page.locator('#masterBurst svg').innerHTML()).not.toBe('');expect(await page.evaluate(()=>window.masterSounds)).toEqual(['master-'+id]);
+ await page.evaluate(()=>window.testBattle.paused=true);await page.clock.runFor(100);const before=await page.locator('#masterBurst').getAttribute('style');await page.clock.runFor(900);expect(await page.locator('#masterBurst').getAttribute('style')).toBe(before);expect(await page.evaluate(()=>window.masterSounds)).toHaveLength(1);
+ await page.screenshot({path:info.outputPath(id+'.png')});await page.evaluate(()=>window.testBattle.paused=false);await page.clock.runFor(3000);await expect(cut).toBeHidden();expect(await page.evaluate(()=>window.masterSounds)).toHaveLength(1);expect(errors).toEqual([]);
+});
+test('all twelve master sounds produce audio and obey mute',async({page})=>{
+ await page.addInitScript(()=>{window.buses=[];const make=AudioContext.prototype.createGain;AudioContext.prototype.createGain=function(){window.ctx=this;const g=make.call(this);window.buses.push(g);return g}});await page.goto('/hero/');await page.locator('#soundTest').tap();
+ const peaks=await page.evaluate(async ids=>{const a=await import('./audio.mjs?v=master-cinema-1');a.setMusic(false);const analyser=window.ctx.createAnalyser();analyser.fftSize=2048;window.buses[1].connect(analyser);const sample=async()=>{let peak=0;for(let i=0;i<4;i++){await new Promise(r=>setTimeout(r,40));const data=new Float32Array(2048);analyser.getFloatTimeDomainData(data);peak=Math.max(peak,...data.map(Math.abs))}return peak};const values=[];for(const id of ids){await a.hitSound('master-'+id);values.push(await sample());await new Promise(r=>setTimeout(r,650))}a.setSfx(false);const rejected=await a.hitSound('master-guanyu'),muted=await sample();return {values,rejected,muted}},ids);for(const p of peaks.values)expect(p).toBeGreaterThan(.005);expect(peaks.rejected).toBe(false);expect(peaks.muted).toBeLessThan(.001);
+});

@@ -1,4 +1,4 @@
-import {TEAM_BEATS} from './team-duel-beats.mjs?v=hero-milestones-1';
+import {TEAM_BEATS} from './team-duel-beats.mjs?v=master-cinema-1';
 // Matchup-specific choreography. Every beat uses the engine's paused duel clock.
 const patterns={
  '鄧茂':{style:'spear',name:'猛攻搶先',beats:[[3,'hero','蛇矛搶先',.12],[4.8,'enemy','橫刀反擊',0,.03],[6.2,'block','架矛震刀'],[8,'hero','連環突刺',.18],[9.1,'enemy','回身劈斬',0,.03],[10,'charge','挺矛決勝']]},

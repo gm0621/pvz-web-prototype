@@ -1,0 +1,1 @@
+const base=require('./playwright.hero-growth.config');module.exports={...base,testMatch:'hero-master-cutin.spec.js',outputDir:'test-results/master-cutin',projects:base.projects.filter(p=>['chromium-320x568','chromium-667x375','webkit-820x1180'].includes(p.name))};

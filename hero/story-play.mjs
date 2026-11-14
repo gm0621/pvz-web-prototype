@@ -1,6 +1,6 @@
-import {HISTORICAL_STAGES} from './history-stages.mjs?v=hero-milestones-1';
-import {paintPortrait} from './factions.mjs?v=hero-milestones-1';
-import {THIRD_CHAPTER} from './chapter-three.mjs?v=hero-milestones-1';
+import {HISTORICAL_STAGES} from './history-stages.mjs?v=master-cinema-1';
+import {paintPortrait} from './factions.mjs?v=master-cinema-1';
+import {THIRD_CHAPTER} from './chapter-three.mjs?v=master-cinema-1';
 // Small, optional story choices. Facts, novel episodes and invented encounters stay labelled.
 export const STORY_TASKS=[
  {kind:'演義故事',hero:'zhangfei',title:'桃園缺一位好朋友',scene:'劉備想幫助鄉親，卻沒有招募義勇的錢。',question:'誰願意拿出家財，幫忙招募義勇？',choices:['張飛','關羽','張角'],answer:0,hint:'找找那位嗓門大、家中有莊田的朋友。',reply:'張飛：「俺願出資！」有了朋友相助，理想才能開始。桃園結義是《三國演義》的故事。'},
