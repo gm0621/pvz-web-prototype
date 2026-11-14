@@ -1,9 +1,9 @@
-import {HISTORICAL_STAGES} from './history-stages.mjs?v=peach-growth-1';
-import {FACTIONS,factionFor} from './factions.mjs?v=peach-growth-1';
-import {THIRD_CHAPTER} from './chapter-three.mjs?v=peach-growth-1';
-import {WEATHER_GENERALS} from './weather-generals.mjs?v=peach-growth-1';
-import {SECOND_CHAPTER} from './chapter-two.mjs?v=peach-growth-1';
-import {PEACH_HEROES} from './hero-base.mjs?v=peach-growth-1';
+import {HISTORICAL_STAGES} from './history-stages.mjs?v=sun-growth-1';
+import {FACTIONS,factionFor} from './factions.mjs?v=sun-growth-1';
+import {THIRD_CHAPTER} from './chapter-three.mjs?v=sun-growth-1';
+import {WEATHER_GENERALS} from './weather-generals.mjs?v=sun-growth-1';
+import {SECOND_CHAPTER} from './chapter-two.mjs?v=sun-growth-1';
+import {PEACH_HEROES} from './hero-base.mjs?v=sun-growth-1';
 export const HEROES=PEACH_HEROES;
 const ROSTERS=Object.fromEntries(Object.entries(FACTIONS).map(([f,data])=>[f,Object.fromEntries(Object.entries(HEROES).map(([key,hero])=>[key,{...hero,...data.heroes[key],...(key==='archer'?{name:data.title+'弓兵'}:{})}]))]));
 export const heroesForLevel=level=>ROSTERS[factionFor(level)]||HEROES;

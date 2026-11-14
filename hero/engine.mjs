@@ -1,11 +1,11 @@
-import {extracted} from './history-missions.mjs?v=peach-growth-1';
-import {createMission,stepMission,protectBarrier,missionReady,missionDuelReady} from './chapter-missions.mjs?v=peach-growth-1';
-import {duelBeats} from './duel-patterns.mjs?v=peach-growth-1';
-export {duelBeats} from './duel-patterns.mjs?v=peach-growth-1';
-import {WEATHER_GENERALS} from './weather-generals.mjs?v=peach-growth-1';
-import {campaignState,weaponBonus} from './campaign.mjs?v=peach-growth-1';
-import {heroSkill} from './skills.mjs?v=peach-growth-1';
-import {heroesForLevel,STAGES,UNLOCKS,FEATURES} from './story.mjs?v=peach-growth-1';
+import {extracted} from './history-missions.mjs?v=sun-growth-1';
+import {createMission,stepMission,protectBarrier,missionReady,missionDuelReady} from './chapter-missions.mjs?v=sun-growth-1';
+import {duelBeats} from './duel-patterns.mjs?v=sun-growth-1';
+export {duelBeats} from './duel-patterns.mjs?v=sun-growth-1';
+import {WEATHER_GENERALS} from './weather-generals.mjs?v=sun-growth-1';
+import {campaignState,weaponBonus} from './campaign.mjs?v=sun-growth-1';
+import {heroSkill} from './skills.mjs?v=sun-growth-1';
+import {heroesForLevel,STAGES,UNLOCKS,FEATURES} from './story.mjs?v=sun-growth-1';
 
 export const SWING={duration:.58,impact:.24,frameTime:.08,frames:6};
 export const DUEL_DURATION=19;
@@ -151,7 +151,7 @@ export function stepBattle(b,seconds){
  if(!b.bossSpawned&&b.time>=b.nextSpawn)spawn(b);
  if(b.introPending)return;
  for(const u of b.allies){
-  if(u.hp<=0)continue;const d=battleHeroes(b)[u.key];if(b.heroMode&&d.heroId){const r=b.heroResources[d.heroId];r.mp=Math.min(60,r.mp+dt*(d.heroId==='yujin'?4:3));if(d.heroId==='liubei'&&b.time>=u.passiveAt){for(const a of b.allies)if(a.hp>0&&a.lane===u.lane)a.hp=Math.min(a.maxHp,a.hp+5);u.passiveAt=b.time+5}if(d.heroId==='caocao'&&b.time>=u.passiveAt){b.food=Math.min(300,b.food+4);u.passiveAt=b.time+5}}if(b.time>=(u.shieldUntil||0))u.shield=0;u.action='guarding';u.flash=Math.max(0,u.flash-dt);
+  if(u.hp<=0)continue;const d=battleHeroes(b)[u.key];if(b.heroMode&&d.heroId){const r=b.heroResources[d.heroId];r.mp=Math.min(60,r.mp+dt*(['yujin','chengpu'].includes(d.heroId)?4:3));if(d.heroId==='liubei'&&b.time>=u.passiveAt){for(const a of b.allies)if(a.hp>0&&a.lane===u.lane)a.hp=Math.min(a.maxHp,a.hp+5);u.passiveAt=b.time+5}if(d.heroId==='caocao'&&b.time>=u.passiveAt){b.food=Math.min(300,b.food+4);u.passiveAt=b.time+5}}if(b.time>=(u.shieldUntil||0))u.shield=0;u.action='guarding';u.flash=Math.max(0,u.flash-dt);
   if(u.order==='back'){
    u.x=Math.max(u.targetX,u.x-d.speed*2*dt*(b.time<(u.slowUntil||0)?.6:1));u.action='retreating';
    if(u.x<=u.targetX+.0001){u.order='hold';u.action='holding'}
@@ -183,7 +183,7 @@ export function stepBattle(b,seconds){
     b.duelHint=null;b.duelSeen=true;b.duel={...(partner?{format:'two-v-one',partnerId:partner.id,partnerKey:partner.key}:{}),heroId:u.id,bossId:target.id,heroKey:u.key,bossName:target.name,outcome:stage.duelOutcome||'defeat',remaining:DUEL_DURATION,elapsed:0,entranceElapsed:0,nextBeat:0,startHp:target.hp};return;
    }
    if(b.time-u.lastAttack>=d.rate&&!u.pendingCleave&&b.time-(u.swingStartedAt??-100)>=SWING.duration){
-    u.lastAttack=b.time;const damage=(d.damage+(b.heroMode&&!b.peachMode?(b.weapons?.[u.key]||0)*4:weaponBonus(u.key,b.weapons?.[u.key]))+(u.key==='ambush'&&!u.ambushUsed?35:0))*(b.time<(b.oathBuffUntil||0)?1.2:1)*(target.shielded&&u.key==='archer'?.5:1);
+    u.lastAttack=b.time;const damage=(d.damage+(b.heroMode&&!b.peachMode&&!b.sunMode?(b.weapons?.[u.key]||0)*4:weaponBonus(u.key,b.weapons?.[u.key]))+(u.key==='ambush'&&!u.ambushUsed?35:0))*(b.time<(b.oathBuffUntil||0)?1.2:1)*(target.shielded&&u.key==='archer'?.5:1);
     u.ambushUsed=true;if(u.key==='archer'||d.ranged){if(d.ranged)u.swingStartedAt=b.time;u.flash=.32;effect(b,'arrow',u.lane,u.x,target.x);hurtEnemy(b,target,damage);target.flash=.2}
     else {u.swingStartedAt=b.time;u.pendingStrike={targetId:target.id,impactAt:b.time+SWING.impact,damage}}
    }
@@ -281,7 +281,7 @@ export function stepBattle(b,seconds){
 function damageAlly(u,amount){const blocked=Math.min(u.shield||0,amount);u.shield=Math.max(0,(u.shield||0)-blocked);u.hp-=amount-blocked}
 export function castActive(b,key,index){
  if(!b?.heroMode||b.paused||b.over||b.duel||b.introPending)return false;const u=b.allies.find(a=>a.key===key&&a.hp>0),d=battleHeroes(b)[key],s=d?.skills?.[index];if(!u||!s||d.heroLevel<s.level)return false;const r=b.heroResources[d.heroId];if(r.mp<s.mp||b.time<(r.ready[index]||0))return false;
- const near=b.enemies.filter(e=>e.hp>0&&e.lane===u.lane&&e.x>=u.x-.03&&e.x-u.x<=(b.peachMode?.17:d.ranged?.4:.28));const offensive=['pierce','sweep','push','volley','rain','halt','lock'].includes(s.id);if(offensive&&!near.length){b.notice='這一路射程內還沒有敵人，MP 未扣除。';b.noticeUntil=b.time+2;return false}
+ const near=b.enemies.filter(e=>e.hp>0&&e.lane===u.lane&&e.x>=u.x-.03&&e.x-u.x<=((b.peachMode||b.sunMode)?.17:d.ranged?.4:.28));const offensive=['pierce','sweep','push','volley','rain','halt','lock'].includes(s.id);if(offensive&&!near.length){b.notice='這一路射程內還沒有敵人，MP 未扣除。';b.noticeUntil=b.time+2;return false}
  if(['heal','rally'].includes(s.id)&&!b.allies.some(a=>a.hp>0&&a.hp<a.maxHp&&(s.id==='rally'||a.lane===u.lane))){b.notice='夥伴都很健康，等受傷再用，MP 未扣除。';b.noticeUntil=b.time+2;return false}
  r.mp-=s.mp;r.ready[index]=b.time+s.cooldown;
  const allies=b.allies.filter(a=>a.hp>0&&(s.id==='fort'||s.id==='supply'||s.id==='rally'||a.lane===u.lane));

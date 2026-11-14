@@ -1,13 +1,13 @@
-import {PEACH_GENERALS,heroLevel} from './roster.mjs?v=peach-growth-1';
-import {skillSummary} from './roster-view.mjs?v=peach-growth-1';
-import {renderHeroCamp} from './roster-view.mjs?v=peach-growth-1';
-import {STORY_PEOPLE,renderPeople} from './characters.mjs?v=peach-growth-1';
-import {STAGES,chapterInfo} from './story.mjs?v=peach-growth-1';
-import {FACTION_SKILLS,factionFor,paintPortrait} from './factions.mjs?v=peach-growth-1';
-import {campConversation} from './camp-talk.mjs?v=peach-growth-1';
-import {GOODS,purchase,weaponsForLevel} from './campaign.mjs?v=peach-growth-1';
-import {CAMP_LINES} from './novel.mjs?v=peach-growth-1';
-import {HERO_SKILLS} from './skills.mjs?v=peach-growth-1';
+import {PEACH_GENERALS,SUN_GENERALS,SLOTS,heroLevel} from './roster.mjs?v=sun-growth-1';
+import {skillSummary} from './roster-view.mjs?v=sun-growth-1';
+import {renderHeroCamp} from './roster-view.mjs?v=sun-growth-1';
+import {STORY_PEOPLE,renderPeople} from './characters.mjs?v=sun-growth-1';
+import {STAGES,chapterInfo} from './story.mjs?v=sun-growth-1';
+import {FACTION_SKILLS,factionFor,paintPortrait} from './factions.mjs?v=sun-growth-1';
+import {campConversation} from './camp-talk.mjs?v=sun-growth-1';
+import {GOODS,purchase,weaponsForLevel} from './campaign.mjs?v=sun-growth-1';
+import {CAMP_LINES} from './novel.mjs?v=sun-growth-1';
+import {HERO_SKILLS} from './skills.mjs?v=sun-growth-1';
 export function mountCamp({progress,level,heroes,stage,onSave,onContinue,won=true}){
  const $=id=>document.getElementById(id);let shop='items';
  let people=$('campTalkPeople');if(!people){people=document.createElement('aside');people.id='campTalkPeople';people.className='story-people';people.setAttribute('aria-label','對話提及人物');$('campTalkText').after(people)}people.hidden=true;
@@ -30,7 +30,7 @@ export function mountCamp({progress,level,heroes,stage,onSave,onContinue,won=tru
    card.className='goods-card';const icon=document.createElement('span');icon.className='goods-icon';icon.textContent=weapon&&level>=17?heroes[id].weapon.split('／')[0]:g.icon;const title=document.createElement('h4');title.textContent=weapon&&level>=17?heroes[id].name+'・兵器整備':g.name;const description=document.createElement('p');description.textContent=weapon&&level>=17?`${heroes[id].name}普攻每級 +${id==='liubei'?3:4}；最多三次，只強化這位武將。`:g.description;const stock=document.createElement('small');stock.textContent=weapon?`已強化 ${owned} / 3 次 · 購買後自動裝備`:`行囊 ${owned} / 9`;
    const button=document.createElement('button');button.className='gold-button';button.dataset.buy=id;button.textContent=max?'已滿':`購買 · ${price} 軍資`;button.disabled=max||progress.coins<price;button.onclick=()=>{const error=purchase(progress,id,onSave,level);$('campMessage').textContent=error||`${weapon&&level>=17?heroes[id].name+'兵器':g.name}已${weapon?'強化並裝備':'放入行囊'}！`;render()};card.append(icon,title,description,stock,button);return card;
   }));
-  $('campHeroes').replaceChildren(...['liubei','guanyu','zhangfei'].map(key=>{const card=document.createElement('article');card.className='camp-hero';const img=document.createElement('img');paintPortrait(img,heroes[key]);img.alt=heroes[key].name;const text=document.createElement('div'),title=document.createElement('strong');title.textContent=`${heroes[key].name} · 兵器強化 ${weaponsForLevel(progress,level)[key]} / 3 · ${heroes[key].weapon||{liubei:'雙劍／近',guanyu:'大刀／近戰',zhangfei:'長矛／稍長'}[key]}`;const skills=document.createElement('p');skills.textContent='本關招式：'+(FACTION_SKILLS[factionFor(level)]?.[key]||HERO_SKILLS[key]).map(s=>`${s.level<=level?'✦':'🔒'} ${s.name}${s.level>level?`（第 ${s.level} 關）`:''}：${s.text}`).join(' ');if(!factionFor(level)){const lv=heroLevel(progress.heroGrowth[key].xp);title.textContent=`${heroes[key].name} · Lv.${lv} · 經驗 ${progress.heroGrowth[key].xp} · 兵器 ${progress.weapons[key]} / 3`;skills.textContent=skillSummary(PEACH_GENERALS[key],lv)}text.append(title,skills);card.append(img,text);return card}));
+  $('campHeroes').replaceChildren(...['liubei','guanyu','zhangfei'].map(key=>{const card=document.createElement('article');card.className='camp-hero';const img=document.createElement('img');paintPortrait(img,heroes[key]);img.alt=heroes[key].name;const text=document.createElement('div'),title=document.createElement('strong');title.textContent=`${heroes[key].name} · 兵器強化 ${weaponsForLevel(progress,level)[key]} / 3 · ${heroes[key].weapon||{liubei:'雙劍／近',guanyu:'大刀／近戰',zhangfei:'長矛／稍長'}[key]}`;const skills=document.createElement('p');skills.textContent='本關招式：'+(FACTION_SKILLS[factionFor(level)]?.[key]||HERO_SKILLS[key]).map(s=>`${s.level<=level?'✦':'🔒'} ${s.name}${s.level>level?`（第 ${s.level} 關）`:''}：${s.text}`).join(' ');if(factionFor(level)!=='cao'){const generals=factionFor(level)==='sun'?SUN_GENERALS:PEACH_GENERALS,id=Object.keys(generals)[SLOTS.indexOf(key)],lv=heroLevel(progress.heroGrowth[id].xp);title.textContent=`${heroes[key].name} · Lv.${lv} · 經驗 ${progress.heroGrowth[id].xp} · 兵器 ${weaponsForLevel(progress,level)[key]} / 3`;skills.textContent=skillSummary(generals[id],lv)}text.append(title,skills);card.append(img,text);return card}));
   if(factionFor(level)==='cao')renderHeroCamp({progress,save:onSave,shop,refresh:render});
  }
  for(const button of document.querySelectorAll('[data-shop]'))button.onclick=()=>{shop=button.dataset.shop;openPanel('campShop');render();$('shopTitle').focus({preventScroll:true});$('campShop').scrollIntoView({block:'nearest'})};

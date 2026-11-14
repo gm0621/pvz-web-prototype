@@ -1,4 +1,4 @@
-import {createHistoryMission,stepHistoryMission,protectHistoricalOutcome,historyMissionText} from './history-missions.mjs?v=peach-growth-1';
+import {createHistoryMission,stepHistoryMission,protectHistoricalOutcome,historyMissionText} from './history-missions.mjs?v=sun-growth-1';
 // All objectives share the paused battle clock; story choices never spend resources.
 export function createMission(level){
  if(level>=17)return createHistoryMission(level);
