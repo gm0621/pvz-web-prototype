@@ -13,7 +13,7 @@ export function mountBattleFocus({getBattle,getSelected,toggleAutoSkill}){
  function drawer(id,title,triggerParent){
   const trigger=button(id+'Button',title,triggerParent),panel=create('section',id);panel.hidden=true;panel.className='battle-drawer';panel.setAttribute('aria-label',title);trigger.setAttribute('aria-expanded','false');trigger.setAttribute('aria-controls',id);
   const header=create('header'),heading=create('strong',null,title);header.append(heading);const dismiss=button(id+'Close','收起 ✕',header);panel.append(header);panels.append(panel);
-  trigger.onclick=()=>{const was=current?.panel===panel;close();if(!was){panel.hidden=false;trigger.setAttribute('aria-expanded','true');current={panel,button:trigger}}};dismiss.onclick=()=>{close();trigger.focus({preventScroll:true})};buttons[id]=trigger;return panel;
+  trigger.onclick=()=>{const was=current?.panel===panel;close();if(!was){panel.hidden=false;trigger.setAttribute('aria-expanded','true');current={panel,button:trigger}}};dismiss.onclick=()=>{close();(trigger.getClientRects().length?trigger:buttons.battleMenu).focus({preventScroll:true})};buttons[id]=trigger;return panel;
  }
  const orders=drawer('commandDrawer','調動',bar);orders.append($('orders'));
  const details=button('selectedDetails','詳情',bar);details.onclick=()=>{close();$('skillGuideButton').click()};
@@ -28,7 +28,7 @@ export function mountBattleFocus({getBattle,getSelected,toggleAutoSkill}){
  const toast=create('p','battleToast');toast.setAttribute('role','status');toast.hidden=true;field.append(toast);
  // All frequently used controls stay on the stage; informational copy is on demand.
  $('battleNotice').hidden=true;battle.querySelector('.deploy-caption').hidden=true;
- document.addEventListener('keydown',e=>{if(e.key==='Escape'&&current&&!document.querySelector('dialog[open]')){const trigger=current.button;close();trigger.focus({preventScroll:true})}});
+ document.addEventListener('keydown',e=>{if(e.key==='Escape'&&current&&!document.querySelector('dialog[open]')){const trigger=current.button;close();(trigger.getClientRects().length?trigger:buttons.battleMenu).focus({preventScroll:true})}});
  document.addEventListener('keydown',e=>{if(e.code==='KeyT'&&!e.repeat&&!e.ctrlKey&&!e.metaKey&&!e.altKey&&!/INPUT|TEXTAREA|SELECT/.test(e.target.tagName)&&!document.querySelector('dialog[open]')){const b=getBattle();if(b&&!b.over&&!b.duel&&!b.introPending&&document.body.classList.contains('battle-focus')){e.preventDefault();buttons.tacticDrawer.click()}}});
  let lastBattle=null,lastNotice='',noticeAt=0;
  return {close,update(b){
