@@ -1,5 +1,5 @@
 /* Scoped cover design: battle, story and progress behavior remain independent. */
-#home.active{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.2fr);grid-template-areas:"intro art" "journey art" "chapters chapters" "foot foot";gap:0 42px;align-items:center;min-height:0;margin:12px auto 36px;padding:56px 56px 24px;max-width:1120px;border:1px solid #c5b79770;border-radius:24px;background:linear-gradient(90deg,#f7f2e7 0%,#f7f2e7ed 38%,#f7f2e738 100%),url('./assets/scenes/peach-garden.jpg') center/cover;box-shadow:0 18px 70px #2b3d2810;overflow:hidden;isolation:isolate}
+#home.active{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.2fr);grid-template-areas:"intro art" "journey art" "chapters chapters" "foot foot";gap:0 42px;align-items:center;min-height:0;margin:12px auto 36px;padding:56px 56px 24px;max-width:1120px;border:1px solid #c5b79770;border-radius:24px;background:linear-gradient(90deg,#f7f2e7 0%,#f7f2e7ed 38%,#f7f2e738 100%),url('./assets/home/peach-1440.webp') center/cover;box-shadow:0 18px 70px #2b3d2810;overflow:hidden;isolation:isolate}
 #home .home-copy{grid-area:intro;text-align:left;align-self:end;padding-bottom:26px}
 #home .eyebrow{color:#8e6b40;font-size:11px;letter-spacing:.24em;font-weight:600;display:flex;align-items:center;gap:12px}
 #home .eyebrow:before{content:'';width:26px;height:1px;background:#ad8753}
@@ -35,7 +35,7 @@
 #home .chapter-book summary:after{font-size:19px;color:#a18555}
 #home .home-foot{grid-area:foot;position:static;width:auto;margin:24px 0 0;font-size:10px;letter-spacing:.16em;color:#879080;text-shadow:none}
 @media(max-width:700px){
- #home.active{grid-template-columns:minmax(0,1fr);grid-template-areas:"intro" "art" "journey" "chapters" "foot";gap:0;max-width:520px;margin:0 auto 16px;padding:26px 24px 20px;border:0;border-radius:0;box-shadow:none;background:linear-gradient(#f7f2e7 0%,#f7f2e7cc 25%,#f7f2e752 42%,#f7f2e7 67%),url('./assets/scenes/peach-garden.jpg') center top/auto 600px no-repeat}
+ #home.active{grid-template-columns:minmax(0,1fr);grid-template-areas:"intro" "art" "journey" "chapters" "foot";gap:0;max-width:520px;margin:0 auto 16px;padding:26px 24px 20px;border:0;border-radius:0;box-shadow:none;background:linear-gradient(#f7f2e7 0%,#f7f2e7cc 25%,#f7f2e752 42%,#f7f2e7 67%),url('./assets/home/peach-720.webp') center top/auto 600px no-repeat}
  #home .home-copy{text-align:center;padding:0}
  #home .eyebrow{justify-content:center;font-size:9px;letter-spacing:.2em}
  #home .eyebrow:before{width:16px}
