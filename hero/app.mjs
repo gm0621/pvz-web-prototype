@@ -1,4 +1,4 @@
-import {mountBattleFocus} from './battle-focus.mjs?v=battle-focus-1';
+import {mountBattleFocus} from './battle-focus.mjs?v=army-1';
 import {advanceAutoSkills} from './auto-skills.mjs?v=battle-focus-1';
 import {renderPassiveFeedback} from './passive-view.mjs?v=passive-feedback-1';
 import {mountSkillIntro} from './skill-intro.mjs?v=passive-feedback-1';
@@ -6,7 +6,7 @@ import {beginReading,installStoryReader} from './story-reader.mjs?v=passive-feed
 import {shortPages} from './story-pages.mjs?v=passive-feedback-1';
 import {configureRoster,configurePeachRoster,configureSunRoster,awardExperience,SLOTS,ALL_GENERALS as GENERALS} from './roster.mjs?v=passive-feedback-1';
 import {openDeployment,mountActiveSkills} from './roster-view.mjs?v=battle-focus-1';
-import {castActive,lanesFor,laneLabel} from './engine.mjs?v=passive-feedback-1';
+import {castActive,lanesFor,laneLabel} from './engine.mjs?v=army-1';
 import {mountSkillGuide} from './skill-guide.mjs?v=battle-focus-1';
 import {renderPeople,STORY_PEOPLE} from './characters.mjs?v=passive-feedback-1';
 import {FACTIONS,factionFor,enemyPortrait,paintPortrait} from './factions.mjs?v=passive-feedback-1';
@@ -28,7 +28,7 @@ import {CHAPTER_BACKGROUNDS,STAGE_LEADS} from './prologue.mjs?v=passive-feedback
 import {setMusic,setMusicMode,setMusicHome,musicTheme,musicOn,setSfx,unlockAudio,hitSound} from './audio.mjs?v=passive-feedback-1';
 import {renderDuel} from './duel-view.mjs?v=passive-feedback-1';
 import {chapterInfo,enemyArt,HEROES as BASE_HEROES,heroesForLevel,STAGES,ENEMY_ART,SHIELD_ART,FEATURES,heroDescription} from './story.mjs?v=passive-feedback-1';
-import {bossProfile,LANE_CAPACITY,laneCount,ENEMY_SWING,enemyAttackFrame,skipDuelEntrance,positionHero,commandHero,moveHero,BOSS_SKILLS,SAVE_KEY,normalizeProgress,createBattle,deploy,canDeploy,attackFrame,SWING} from './engine.mjs?v=passive-feedback-1';
+import {bossProfile,LANE_CAPACITY,laneCount,ENEMY_SWING,enemyAttackFrame,skipDuelEntrance,positionHero,commandHero,moveHero,BOSS_SKILLS,SAVE_KEY,normalizeProgress,createBattle,deploy,canDeploy,attackFrame,SWING} from './engine.mjs?v=army-1';
 
 const $=id=>document.getElementById(id);
 let HEROES=BASE_HEROES;
