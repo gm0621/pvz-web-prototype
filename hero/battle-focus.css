@@ -36,10 +36,9 @@ body.battle-focus .deploy-caption,body.battle-focus #battleNotice{display:none}
 body.battle-focus .battle-drawer .orders{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
 body.battle-focus .battle-drawer .orders span{display:block;grid-column:1/-1;font-size:12px}
 body.battle-focus .battle-drawer #chapterMission{margin:0;padding:6px;border:0;background:none}
-body.battle-focus #missionSummary{position:absolute;top:4px;left:5px;max-width:calc(100% - 10px);min-height:32px;padding:4px 8px;white-space:nowrap;text-overflow:ellipsis;overflow:hidden;font-size:11px;background:#163d32de;color:#fff1cc;border:1px solid #d3b674;border-radius:6px;z-index:6;text-align:left}
 body.battle-focus #bossHud{position:absolute;top:42px;left:20%;right:5px;z-index:5;pointer-events:none;padding:3px 7px;font-size:10px;gap:2px 6px;background:#542c22df}
 body.battle-focus #bossHudState{white-space:nowrap;text-overflow:ellipsis;overflow:hidden;font-size:10px}
-body.battle-focus #bossHudTrack{height:4px}
+body.battle-focus .boss-hud-track{height:4px}
 body.battle-focus #firstGuide{position:absolute;left:8px;right:8px;bottom:8px;z-index:7;padding:6px 8px;margin:0;background:#fff6dcf0;border-radius:10px;box-shadow:0 3px 14px #183b3233;display:flex;align-items:center;gap:8px}
 body.battle-focus #firstGuide strong{font-size:12px}body.battle-focus #firstGuide p{font-size:11px;margin:2px 0;line-height:1.4}body.battle-focus #guideDismiss{min-height:44px;flex-shrink:0;font-size:11px;padding:4px}
 body.battle-focus #firstGuide.guide-quiet{display:none}
@@ -64,3 +63,8 @@ body.battle-focus .unit{--focus-scale:1;scale:var(--focus-scale)}
  body.battle-focus #field[data-lanes="4"] .unit{--focus-scale:.65}
  .battle-drawer{bottom:8px;max-height:calc(100% - 64px)}
 }
+
+@media(max-height:700px) and (max-width:549px){body.battle-focus #field[data-lanes="5"] .unit{--focus-scale:.6}body.battle-focus #field[data-lanes="4"] .unit{--focus-scale:.75}}
+
+body.battle-focus #firstGuide{pointer-events:none}body.battle-focus #guideDismiss{pointer-events:auto}
+body.battle-focus #cards .card-status{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}body.battle-focus #cards .card>div{min-width:0}
