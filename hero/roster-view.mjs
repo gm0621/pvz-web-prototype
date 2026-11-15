@@ -16,9 +16,22 @@ export function renderHeroCamp({progress,save,shop,refresh}){
  if(shop!=='weapons')return;document.getElementById('shopGoods').replaceChildren(...Object.entries(GENERALS).map(([id,g])=>{const card=el('article');card.className='goods-card';const rank=progress.heroGrowth[id].weapon,button=el('button',rank===3?'已滿':`購買 · ${(rank+1)*60} 軍資`);button.className='gold-button';button.dataset.buyHero=id;if(DEFAULT_TEAM.includes(id))button.dataset.buy=SLOTS[DEFAULT_TEAM.indexOf(id)];button.disabled=rank===3||progress.coins<(rank+1)*60;button.onclick=()=>{const message=buyHeroWeapon(progress,id,save);document.getElementById('campMessage').textContent=message||g.name+'兵器已強化並裝備！';refresh()};card.append(el('h4',g.name+'・兵器整備'),el('p',`只強化${g.name}的普通攻擊，每級 +4；不提升技能傷害。`),el('small',`已強化 ${rank} / 3`),button);return card}))
 }
 export function mountActiveSkills({getBattle,cast,refresh,getSelected}){
- const root=el('section');root.id='activeSkills';root.setAttribute('aria-label','武將主動技能');document.getElementById('cards').before(root);let signature='',shown='',lastSelected=null,mountedBattle=null;
- return ()=>{const b=getBattle();root.hidden=!b?.heroMode;if(root.hidden)return;const sig=b.team.map((id,i)=>id+':'+b.roster[SLOTS[i]].heroLevel).join(',');if(b!==mountedBattle||sig!==signature){mountedBattle=b;lastSelected=null;signature=sig;shown=b.team[0];root.replaceChildren(...b.team.map((id,i)=>{const g=b.roster[SLOTS[i]],card=el('article');card.dataset.skillHero=id;card.append(el('strong',`${g.name} · ${g.role} · Lv.${g.heroLevel}`),el('small'));const goal=el('p');goal.className='skill-goal';goal.textContent=nextLesson(g,g.heroLevel)?`下一招 Lv.${nextLesson(g,g.heroLevel)} · 到營地查看成長`:'全部招式已學會';card.append(goal);const passives=learnedPassives(g),details=el('details');details.className='passive-status';details.append(el('summary',`被動 ${passives.length} 項 · 自動生效`));for(const p of passives)details.append(el('p',p.level===1?p.text:`${passiveName(p)}：${p.text}`));card.append(details);g.skills.forEach((s,index)=>{const btn=el('button');btn.dataset.skill=index;btn.title=activeText(g,s,g.heroLevel);btn.onclick=()=>{cast(b,SLOTS[i],index);refresh()};card.append(btn)});return card}));const label=el('label','使用哪位武將的技能？ '),picker=el('select');picker.setAttribute('aria-label','主動技能武將');b.team.forEach(id=>{const o=el('option',ALL_GENERALS[id].name);o.value=id;picker.append(o)});picker.onchange=()=>{shown=picker.value;refresh()};label.append(picker);root.prepend(label)}
- const selected=getSelected?.();if(selected?.heroId&&selected.id!==lastSelected){shown=selected.heroId;lastSelected=selected.id}root.querySelector('select').value=shown;
- b.team.forEach((id,i)=>{const g=b.roster[SLOTS[i]],u=b.allies.find(a=>a.heroId===id&&a.hp>0),r=b.heroResources[id],card=root.querySelector(`[data-skill-hero=${id}]`);card.hidden=id!==shown;card.querySelector('small').textContent=u?`MP ${Math.floor(r.mp)} / 60 · 護盾 ${Math.ceil(u.shield||0)}`:'尚未出戰';for(const [n,button] of [...card.querySelectorAll('button')].entries()){const s=g.skills[n],locked=g.heroLevel<s.level,cool=Math.max(0,Math.ceil((r?.ready[n]||0)-b.time));button.disabled=locked||!u||b.paused||b.over||!!b.duel||!!b.introPending||cool>0||(r?.mp||0)<s.mp;button.textContent=locked?`${s.name} · Lv.${s.level} 解鎖`:`${s.name} · ${s.mp} MP${cool?' · '+cool+'秒':''}\n${activeText(g,s,g.heroLevel)}`}})
+ const root=el('section');root.id='activeSkills';root.setAttribute('aria-label','目前武將技能');document.getElementById('cards').before(root);
+ let signature='';
+ return ()=>{
+  const b=getBattle(),u=getSelected?.(),g=u?.heroId&&b?.roster[u.key];
+  root.hidden=!g;if(!g){signature='';return}
+  const sig=u.id+':'+g.heroLevel;
+  if(sig!==signature){signature=sig;root.replaceChildren();const card=el('article');card.dataset.skillHero=u.heroId;
+   card.append(el('strong'),el('small'));
+   g.skills.forEach((s,index)=>{const button=el('button');button.dataset.skill=index;button.title=activeText(g,s,g.heroLevel);button.onclick=()=>{cast(getBattle(),u.key,index);refresh()};card.append(button)});root.append(card);
+  }
+  const card=root.firstElementChild,r=b.heroResources[u.heroId];
+  card.querySelector('strong').textContent=g.name+' · Lv.'+g.heroLevel;
+  card.querySelector('small').textContent='MP '+Math.floor(r.mp)+'/60';
+  for(const button of card.querySelectorAll('[data-skill]')){const n=Number(button.dataset.skill),s=g.skills[n],locked=g.heroLevel<s.level,cool=Math.max(0,Math.ceil((r.ready[n]||0)-b.time));
+   button.hidden=locked;button.disabled=b.paused||b.over||!!b.duel||!!b.introPending||cool>0||r.mp<s.mp;
+   button.textContent=s.name+' '+(cool?cool+'秒':s.mp+' MP');button.setAttribute('aria-label',`${['Q','W','E'][n]}：${button.textContent}。${activeText(g,s,g.heroLevel)}`);
+  }
  }
 }

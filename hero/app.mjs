@@ -1,18 +1,20 @@
+import {mountBattleFocus} from './battle-focus.mjs?v=battle-focus-1';
+import {advanceAutoSkills} from './auto-skills.mjs?v=battle-focus-1';
 import {renderPassiveFeedback} from './passive-view.mjs?v=passive-feedback-1';
 import {mountSkillIntro} from './skill-intro.mjs?v=passive-feedback-1';
 import {beginReading,installStoryReader} from './story-reader.mjs?v=passive-feedback-1';
 import {shortPages} from './story-pages.mjs?v=passive-feedback-1';
 import {configureRoster,configurePeachRoster,configureSunRoster,awardExperience,SLOTS,ALL_GENERALS as GENERALS} from './roster.mjs?v=passive-feedback-1';
-import {openDeployment,mountActiveSkills} from './roster-view.mjs?v=passive-feedback-1';
+import {openDeployment,mountActiveSkills} from './roster-view.mjs?v=battle-focus-1';
 import {castActive,lanesFor,laneLabel} from './engine.mjs?v=passive-feedback-1';
-import {mountSkillGuide} from './skill-guide.mjs?v=passive-feedback-1';
+import {mountSkillGuide} from './skill-guide.mjs?v=battle-focus-1';
 import {renderPeople,STORY_PEOPLE} from './characters.mjs?v=passive-feedback-1';
 import {FACTIONS,factionFor,enemyPortrait,paintPortrait} from './factions.mjs?v=passive-feedback-1';
 import {mountHistoryLesson} from './history-view.mjs?v=passive-feedback-1';
 import {renderSkillCutin} from './skill-cutin.mjs?v=passive-feedback-1';
 import {renderMasterCutin} from './master-cutin.mjs?v=passive-feedback-1';
 import {renderBossCutin} from './boss-cutin.mjs?v=passive-feedback-1';
-import {mountBattleKeys} from './battle-keys.mjs?v=passive-feedback-1';
+import {mountBattleKeys} from './battle-keys.mjs?v=battle-focus-1';
 import {mountJourney} from './journey-view.mjs?v=passive-feedback-1';
 import {renderMission} from './chapter-mission-view.mjs?v=passive-feedback-1';
 import {mountCampaignMap} from './campaign-map.mjs?v=passive-feedback-1';
@@ -51,7 +53,7 @@ function focusBattle(active){
   document.documentElement.requestFullscreen().then(()=>{ownsFullscreen=true;if(screen==='battle'){for(const dialog of document.querySelectorAll('dialog[open]')){dialog.close();dialog.showModal()}}if(revision!==focusRevision&&screen!=='battle'){ownsFullscreen=false;document.exitFullscreen?.().catch(()=>{})}}).catch(()=>{});
  }else if(!active&&ownsFullscreen){ownsFullscreen=false;if(document.fullscreenElement)document.exitFullscreen?.().catch(()=>{})}
 }
-function show(id){screen=id;document.body.classList.toggle('story-focus',id==='story');focusBattle(id==='battle');for(const s of document.querySelectorAll('.screen')){s.hidden=s.id!==id;s.classList.toggle('active',s.id===id)}window.scrollTo(0,0)}
+function show(id){battleFocus?.close();screen=id;document.body.classList.toggle('story-focus',id==='story');focusBattle(id==='battle');for(const s of document.querySelectorAll('.screen')){s.hidden=s.id!==id;s.classList.toggle('active',s.id===id)}window.scrollTo(0,0)}
 function updateHome(){
  const unfinished=battle&&!battle.over;
  $('startBtn').innerHTML=`${unfinished?'繼續戰鬥':progress.completed===STAGES.length?'重溫故事':progress.completed?'繼續故事':'開始故事'} <span>→</span>`;
@@ -186,7 +188,7 @@ function renderBattle(){
   const key=card.dataset.hero,d=HEROES[key],remaining=Math.max(0,(battle.cooldowns[key]||0)-battle.time),active=key!=='archer'&&!d.troop&&battle.allies.some(u=>u.hp>0&&u.key===key),description=(battle.heroMode?d.description:heroDescription(key,battle.level))+' · '+(d.weapon||({liubei:'雙劍近距離',guanyu:'大刀近戰',zhangfei:'長矛稍長',archer:'弓箭遠程'})[key]);
   card.classList.toggle('selected',selected===key&&(key!=='archer'||selectedUnitId===null));card.classList.toggle('unavailable',active||battle.food<d.cost||remaining>0);card.classList.toggle('in-field',active);card.setAttribute('aria-pressed',String(selected===key&&(key!=='archer'||selectedUnitId===null)));
   card.disabled=(!active&&remaining>0)||battle.paused||!!battle.duel||battle.over;
-  card.querySelector('.card-status').textContent=active?'出戰中 · 點選換路':remaining>0?`整備 ${Math.ceil(remaining)} 秒`:battle.food<d.cost?'等待軍糧':(key==='archer'||d.troop)?'可增援':'可出戰';
+  card.querySelector('.card-status').textContent=active?'出戰中':remaining>0?`整備 ${Math.ceil(remaining)} 秒`:battle.food<d.cost?'等待軍糧':(key==='archer'||d.troop)?'可增援':'可出戰';
   card.querySelector('.ability-description').textContent=description;card.setAttribute('aria-label',`${d.name}，${d.cost} 軍糧，${description}，${card.querySelector('.card-status').textContent}`);
   card.querySelector('.cooldown i').style.width=`${active?100:Math.max(0,100-remaining/((key==='archer'||d.troop)?d.cooldown:12)*100)}%`;
  }
@@ -198,6 +200,7 @@ function renderBattle(){
  if(battle.duel&&!duelShown){const d=battle.duel;setMusicMode('duel',battle.level);syncMusicButton();$('duelTitle').textContent=`${HEROES[d.heroKey].short}${d.partnerKey?' ＋ '+HEROES[d.partnerKey].short:''} 對 ${d.bossName}`;$('duelHero').src=HEROES[d.heroKey].asset;$('duelHero').alt=HEROES[d.heroKey].name;$('duelEnemy').src=enemyArt(d.bossName);$('duelDialog').showModal();duelShown=true}
  if(battle.duel)renderDuel(battle);
  if(!battle.duel&&duelShown){$('duelDialog').close();duelShown=false;setMusicMode('battle',battle.level);syncMusicButton()}
+ battleFocus.update(battle);
  if(battle.over&&!resultShown)showResult();else if(screen==='battle')skillIntro.check();
 }
 function showResult(){
@@ -219,7 +222,7 @@ function showResult(){
 function openCamp(level,won){useRoster(level);setMusicMode('camp',level);syncMusicButton();show('camp');mountCamp({progress,level,won,heroes:HEROES,stage:STAGES[level-1],onSave:saveProgress,onContinue:()=>won?startStory(level,'ending'):beginBattle(level)});$('campTitle').tabIndex=-1;$('campTitle').focus({preventScroll:true})}
 function frame(now){
  const dt=Math.min(.1,Math.max(0,(now-lastFrame)/1000));lastFrame=now;
- if(screen==='battle'&&battle&&!battle.over){advanceBattleFrame(battle,dt,battleSpeed);renderBattle()}
+ if(screen==='battle'&&battle&&!battle.over){advanceBattleFrame(battle,dt,battleSpeed);advanceAutoSkills(battle,castActive);renderBattle()}
  requestAnimationFrame(frame);
 }
 $('startBtn').onclick=()=>{if(battle&&!battle.over){setMusicMode('battle',battle.level);syncMusicButton();show('battle');setPause(false);renderBattle()}else startStory(progress.completed<STAGES.length?progress.completed+1:1)};
@@ -249,7 +252,15 @@ $('replayLevel').onclick=()=>startStory(battle.level);
 $('duelEnter').onclick=()=>{if(skipDuelEntrance(battle))renderBattle()};
 $('duelPause').onclick=()=>{setPause(!battle.paused);renderBattle()};
 const campaignMap=mountCampaignMap({stages:STAGES,getBattle:()=>battle,setPaused:setPause});
-installStoryReader();buildControls();const renderActiveSkills=mountActiveSkills({getBattle:()=>battle,cast:(b,key,index)=>{const ok=castActive(b,key,index);if(ok){const rect=$('field').getBoundingClientRect();if(rect.bottom<80||rect.top>innerHeight*.65)$('field').scrollIntoView({block:'center',behavior:'instant'})}return ok},refresh:renderBattle,getSelected:selectedUnit});mountBattleKeys({getBattle:()=>battle,getSelected:selectedUnit,isBattle:()=>screen==='battle',refresh:renderBattle,onOrder:(b,id,order)=>{if(commandHero(b,id,order))firstGuide?.event(order==='hold'?'hold':order==='forward'?'move':'')}});updateHome();requestAnimationFrame(frame);
+installStoryReader();buildControls();
+function selectBattleUnit(unit){selected=unit?.key||null;selectedUnitId=unit?.id??null;if(unit)firstGuide?.event('select-unit');renderBattle()}
+function toggleAutoSkill(){const u=selectedUnit();if(!u?.heroId||!battle||battle.paused||battle.over||battle.duel||battle.introPending)return;const states=battle.autoSkills||(battle.autoSkills={});states[u.heroId]=!states[u.heroId];renderBattle()}
+const renderActiveSkills=mountActiveSkills({getBattle:()=>battle,cast:castActive,refresh:renderBattle,getSelected:selectedUnit});
+mountBattleKeys({getBattle:()=>battle,getSelected:selectedUnit,isBattle:()=>screen==='battle',refresh:renderBattle,selectUnit:selectBattleUnit,cast:castActive,toggleAutoSkill,togglePause:()=>setPause(!battle.paused),onOrder:(b,id,order)=>{if(commandHero(b,id,order))firstGuide?.event(order==='hold'?'hold':order==='forward'?'move':'')}});
+let battleFocus;
+updateHome();requestAnimationFrame(frame);
 
 mountSkillGuide({getBattle:()=>battle,getProgress:()=>progress,setPaused:setPause});
 const skillIntro=mountSkillIntro({getBattle:()=>battle,getProgress:()=>progress,save:()=>{const saved=saveProgress();if(saved&&battle?.over)$('resultSaved').textContent='軍資、經驗與進度已保存，可在營地使用';return saved},setPaused:setPause});
+
+battleFocus=mountBattleFocus({getBattle:()=>battle,getSelected:selectedUnit,toggleAutoSkill});

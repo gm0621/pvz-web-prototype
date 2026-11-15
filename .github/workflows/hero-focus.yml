@@ -1,0 +1,30 @@
+name: Hero battle focus checks
+on:
+  pull_request:
+    paths:
+      - 'hero/**'
+      - 'tests/hero-battle-focus.spec.js'
+      - 'tests/unit/hero-auto-skills.cjs'
+      - 'playwright.hero-focus.config.js'
+      - '.github/workflows/hero-focus.yml'
+permissions:
+  contents: read
+jobs:
+  battle-focus:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium webkit
+      - run: npm run test:hero:engine
+      - run: npx playwright test --config=playwright.hero-focus.config.js
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: battle-focus-results
+          path: test-results/battle-focus

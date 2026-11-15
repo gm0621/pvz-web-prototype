@@ -1,0 +1,73 @@
+/* Battle owns the viewport. Only explicitly opened drawers may scroll. */
+body.battle-focus{height:100dvh;overflow:hidden;overscroll-behavior:none}
+body.battle-focus .site-bar{display:none}
+body.battle-focus .battle.active{position:relative;max-width:none;height:100dvh;min-height:0;padding:max(4px,env(safe-area-inset-top)) max(6px,env(safe-area-inset-right)) max(5px,env(safe-area-inset-bottom)) max(6px,env(safe-area-inset-left));display:grid;grid-template-columns:minmax(0,1fr);grid-template-rows:44px 28px minmax(0,1fr) auto;gap:4px;overflow:hidden}
+body.battle-focus .battle-top{grid-row:1;display:flex;flex-wrap:nowrap;gap:5px;min-width:0;height:44px}
+body.battle-focus .battle-top button{height:44px;min-height:44px;padding:4px 9px;white-space:nowrap;font-size:12px}
+body.battle-focus .battle-speed{gap:3px;font-size:0}
+body.battle-focus .battle-speed select{min-width:62px;width:62px;padding:5px;font-size:14px}
+body.battle-focus .battle-stats{grid-row:2;display:flex;flex-wrap:nowrap;gap:6px;align-items:center;padding:0 8px;height:28px;font-size:11px}
+body.battle-focus .battle-stats strong{font-size:18px}body.battle-focus #lives{font-size:14px}
+body.battle-focus #field{grid-row:3;min-height:0!important;height:100%!important;width:100%;box-sizing:border-box;flex:initial;border-radius:12px;box-shadow:none}
+body.battle-focus #battleDock{grid-row:4;min-width:0;display:flex;flex-direction:column;gap:4px}
+body.battle-focus #commandBar{display:flex;gap:4px;align-items:center;min-width:0}
+body.battle-focus #commandBar button{min-height:44px;flex-shrink:0;padding:5px 8px;font-size:11px;white-space:nowrap}
+body.battle-focus #autoSkillButton[aria-pressed=true]{background:#245b43;color:#fff4d1;border-color:#c39946}
+body.battle-focus #unitPicker{flex:1;min-width:0;margin:0;font-size:12px}
+body.battle-focus #unitPicker select{width:100%;font-size:12px;padding-left:6px}
+body.battle-focus #cards{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px;margin:0}
+body.battle-focus #cards .card{display:flex;flex-direction:row;justify-content:center;gap:4px;min-height:48px;height:48px;padding:2px;border-radius:8px}
+body.battle-focus #cards .card img{width:32px;height:38px}
+body.battle-focus #cards .card strong{font-size:12px;margin:0}
+body.battle-focus #cards .card .cost{font-size:10px}
+body.battle-focus #cards .card-status{font-size:9px;line-height:1.1;margin:0}
+body.battle-focus #activeSkills{display:block;min-width:0;margin:0}
+body.battle-focus #activeSkills article{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px;padding:0;border:0;background:none}
+body.battle-focus #activeSkills article>strong,body.battle-focus #activeSkills article>small{display:none}
+body.battle-focus #activeSkills button{grid-column:auto;min-width:0;min-height:44px;padding:4px;font-size:12px;border:1px solid #ad925b;border-radius:8px;background:#fff2cc;color:#234e3b;white-space:normal;line-height:1.2}
+body.battle-focus #activeSkills button:disabled{opacity:.5}
+body.battle-focus #activeSkills article:has(button:not([hidden]):only-of-type){grid-template-columns:1fr}
+body.battle-focus #battleDock [hidden],body.battle-focus #battlePanels [hidden],body.battle-focus #field>[hidden],body.battle-focus .battle-top>[hidden]{display:none!important}
+body.battle-focus .deploy-caption,body.battle-focus #battleNotice{display:none}
+#battlePanels{position:absolute;inset:0;pointer-events:none;z-index:20}
+.battle-drawer{pointer-events:auto;position:absolute;right:max(8px,env(safe-area-inset-right));bottom:110px;width:min(420px,calc(100% - 16px));max-height:calc(100% - 170px);overflow:auto;overscroll-behavior:contain;box-sizing:border-box;border:1px solid #b39051;border-radius:14px;padding:12px;background:#fff8e9fa;color:#214739;box-shadow:0 8px 35px #132d3b55}
+.battle-drawer>header{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:8px;position:sticky;top:-12px;background:#fff8e9;z-index:1;padding:4px 0}
+.battle-drawer button{min-height:44px}.battle-drawer p{font-size:13px;line-height:1.6}.battle-drawer #supplies{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0}.battle-drawer #battleMapButton{width:100%;min-height:44px;margin:8px 0}.battle-drawer #battleMapThumb{display:none}
+body.battle-focus .battle-drawer .orders{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+body.battle-focus .battle-drawer .orders span{display:block;grid-column:1/-1;font-size:12px}
+body.battle-focus .battle-drawer #chapterMission{margin:0;padding:6px;border:0;background:none}
+body.battle-focus #bossHud{position:absolute;top:42px;left:20%;right:5px;z-index:5;pointer-events:none;padding:3px 7px;font-size:10px;gap:2px 6px;background:#542c22df}
+body.battle-focus #bossHudState{white-space:nowrap;text-overflow:ellipsis;overflow:hidden;font-size:10px}
+body.battle-focus .boss-hud-track{height:4px}
+body.battle-focus #firstGuide{position:absolute;left:8px;right:8px;bottom:8px;z-index:7;padding:6px 8px;margin:0;background:#fff6dcf0;border-radius:10px;box-shadow:0 3px 14px #183b3233;display:flex;align-items:center;gap:8px}
+body.battle-focus #firstGuide strong{font-size:12px}body.battle-focus #firstGuide p{font-size:11px;margin:2px 0;line-height:1.4}body.battle-focus #guideDismiss{min-height:44px;flex-shrink:0;font-size:11px;padding:4px}
+body.battle-focus #firstGuide.guide-quiet{display:none}
+body.battle-focus #battleToast,body.battle-focus #commandFeedback{position:absolute;left:50%;bottom:10px;transform:translateX(-50%);width:max-content;max-width:85%;box-sizing:border-box;z-index:8;pointer-events:none;background:#193e35ed;color:#fff5d7;border:1px solid #c8ab6d;border-radius:8px;padding:7px 12px;margin:0;font-size:12px;text-align:center}
+body.battle-focus #commandFeedback{display:none}
+body.battle-focus .skill-banner{top:80px;max-width:85%;box-sizing:border-box;white-space:normal;font-size:13px;padding:6px 10px;text-align:center}
+body.battle-focus .unit{--focus-scale:1;scale:var(--focus-scale)}
+@media(min-width:900px) and (min-height:501px){body.battle-focus #cards{grid-template-columns:repeat(auto-fit,minmax(90px,1fr))}body.battle-focus #cards .card{height:58px}body.battle-focus #cards .card img{width:44px;height:48px}body.battle-focus #activeSkills{max-width:700px;width:100%;align-self:center}}
+@media(max-width:360px){body.battle-focus #cards .card img{display:none}body.battle-focus #commandBar button{padding:4px;font-size:10px}body.battle-focus .battle-top{gap:3px}body.battle-focus .battle-top button{padding:4px 6px}body.battle-focus .unit{--focus-scale:.8}}
+@media(max-height:500px) and (min-width:550px){
+ body.battle-focus .battle.active{grid-template-columns:minmax(0,1fr) 240px;grid-template-rows:44px 24px minmax(0,1fr);gap:3px 6px}
+ body.battle-focus .battle-top,body.battle-focus .battle-stats{grid-column:1/-1}
+ body.battle-focus #field{grid-column:1;grid-row:3}
+ body.battle-focus #battleDock{grid-column:2;grid-row:3;justify-content:flex-end;gap:3px}
+ body.battle-focus #commandBar{flex-wrap:wrap;gap:3px}body.battle-focus #unitPicker{flex-basis:100%}
+ body.battle-focus #commandBar button{flex:1;min-height:36px}
+ body.battle-focus #cards{grid-template-columns:repeat(4,minmax(0,1fr))}
+ body.battle-focus #cards .card{height:40px;min-height:40px}body.battle-focus #cards .card img{display:none}
+ body.battle-focus #activeSkills button{min-height:40px;font-size:10px}
+ body.battle-focus #field .unit{--focus-scale:.76}
+ body.battle-focus #field[data-lanes="5"] .unit{--focus-scale:.57}
+ body.battle-focus #field[data-lanes="4"] .unit{--focus-scale:.65}
+ .battle-drawer{bottom:8px;max-height:calc(100% - 64px)}
+}
+
+@media(max-height:700px) and (max-width:549px){body.battle-focus #field[data-lanes="5"] .unit{--focus-scale:.6}body.battle-focus #field[data-lanes="4"] .unit{--focus-scale:.75}}
+
+body.battle-focus #firstGuide{pointer-events:none}body.battle-focus #guideDismiss{pointer-events:auto}
+body.battle-focus #cards .card-status{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}body.battle-focus #cards .card>div{min-width:0}
+@media(min-width:900px) and (min-height:501px){body.battle-focus #battleDock{display:grid;grid-template-columns:minmax(300px,500px) minmax(0,1fr);align-items:center}body.battle-focus #commandBar{grid-column:1}body.battle-focus #activeSkills{grid-column:2;justify-self:end}body.battle-focus #cards{grid-column:1/-1}body.battle-focus #field[data-lanes="3"] .unit{--focus-scale:1.3}}
+@media(max-width:899px){body.battle-focus #cards:has(.card:nth-child(9)){grid-template-columns:repeat(5,minmax(0,1fr))}}
+@media(max-width:420px){body.battle-focus #cards:has(.card:nth-child(9)) .card img{display:none}}
