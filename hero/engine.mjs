@@ -1,3 +1,4 @@
+import {stepDoctrine,duelDoctrine,signature} from './army-doctrine.mjs?v=army-1';
 import {passiveCue,passiveLabel,learnedPassives,passiveName,tickPassives,passiveSnapshot,castPassiveFeedback} from './passive-feedback.mjs?v=passive-feedback-1';
 import {extracted} from './history-missions.mjs?v=passive-feedback-1';
 import {createMission,stepMission,protectBarrier,missionReady,missionDuelReady} from './chapter-missions.mjs?v=passive-feedback-1';
@@ -31,7 +32,7 @@ export const BOSS_SKILLS=['試刀','截糧斬','裂陣重擊','旋風斬','鐵�
 export function hurtEnemy(b,e,damage){
  const guarded=e.boss&&!e.support;
  const factor=!guarded?1:b.time<(e.recoveryUntil||0)?1.25:!e.skillsCast?(b.level<3?.75:.6):b.level<3?1:.8;
- e.hp-=damage*factor;
+ e.hp-=damage*factor*(b.time<(b.armyDoctrine?.chargeUntil||0)?1.2:1)*(b.time<(e.exposedUntil||0)?1.2:1);
 }
 export function bossProfile(b,e){const stage=STAGES[b.level-1];return e.support?WEATHER_GENERALS[e.name]:{title:stage.bossTitle||'敵軍大將',skillType:stage.skillType,skillName:stage.skillName||BOSS_SKILLS[b.level-1]}}
 export function positionHero(b,key,lane,x){
@@ -120,7 +121,7 @@ function spawn(b){
  if(boss){b.notice=`${stage.bossName}出陣！`;b.noticeUntil=b.time+4}
 }
 function resolveDuel(b){
- const duel=b.duel;
+ const duel=b.duel;duelDoctrine(b);
  for(const fighter of b.allies.filter(u=>u.id===duel.heroId||u.id===duel.partnerId)){fighter.pendingStrike=null;fighter.pendingCleave=null;fighter.swingStartedAt=-100;fighter.lastAttack=b.time;}
  b.notice=`${duel.bossName}${duel.outcome==='retreat'?'已撤走':'已被斬殺'}！繼續照應三路。`;b.noticeUntil=b.time+3;b.duel=null;
 }
@@ -267,12 +268,13 @@ export function stepBattle(b,seconds){
   }
   if(e.ranged&&e.pendingShot){e.action='aiming';continue;}
   if(!e.boss&&b.time-(e.swingStartedAt??-100)<ENEMY_SWING.duration){e.action='striking';continue}
-  if(target&&e.x-target.x<=.075){if(b.time-e.lastAttack>=e.rate){e.lastAttack=b.time;const damage=e.damage*(b.time<(e.rallyUntil||0)?1.3:1);if(e.boss){e.flash=.32;effect(b,'enemy-slash',e.lane,e.x,target.x);damageAlly(b,target,damage);target.flash=.2}else{e.swingStartedAt=b.time;e.pendingStrike={targetId:target.id,impactAt:b.time+ENEMY_SWING.impact,damage};e.action='striking'}}}
+  if(target&&e.x-target.x<=.075){if(b.time-e.lastAttack>=e.rate){e.lastAttack=b.time;const damage=e.damage*(b.time<(e.tacticWeakenUntil||0)?.7:1)*(b.time<(e.rallyUntil||0)?1.3:1);if(e.boss){e.flash=.32;effect(b,'enemy-slash',e.lane,e.x,target.x);damageAlly(b,target,damage);target.flash=.2}else{e.swingStartedAt=b.time;e.pendingStrike={targetId:target.id,impactAt:b.time+ENEMY_SWING.impact,damage};e.action='striking'}}}
   else {e.action='marching';e.x-=e.speed*dt*(b.time<(e.rallyUntil||0)?1.35:1);}
   if(e.x<.025){e.hp=0;e.escaped=true;if(e.boss&&!e.support)b.lossReason='commander-breach';effect(b,'breach',e.lane,.025,-.12,{enemy:true,boss:e.boss,shielded:e.shielded,ranged:e.ranged});b.lives--;b.notice='敵軍突破！留意其他路線。';b.noticeUntil=b.time+3}
  }
  if(b.level>=UNLOCKS.oath&&!b.oathUsed&&['liubei','guanyu','zhangfei'].every(key=>b.allies.some(u=>u.key===key&&u.hp>0))){b.oathUsed=true;b.oathBuffUntil=b.time+5;for(const ally of b.allies)if(ally.hp>0){ally.hp=Math.min(ally.maxHp,ally.hp+55);effect(b,'oath',ally.lane,ally.x)}b.skillNotice={key:'liubei',text:b.level>=17?'合擊・同袍合陣':'合擊・桃園同心',until:b.time+2.2};b.notice=(b.level>=17?'同袍合陣':'桃園同心')+'！全軍回復，五秒內攻擊提升。';b.noticeUntil=b.time+5}
  for(const unit of [...b.allies,...b.enemies])if(unit.hp<=0&&!unit.escaped){const captured=unit.boss&&!unit.support&&stage.duelOutcome==='capture',retreat=unit.boss&&(stage.duelOutcome==='retreat'||unit.support);effect(b,captured?'capture':retreat?'retreat':'defeat',unit.lane,unit.x,retreat?1.1:unit.x,{key:unit.key||null,enemy:!unit.key,boss:!!unit.boss,shielded:!!unit.shielded,ranged:!!unit.ranged,bossName:unit.name});if(captured){b.bossCaptured=true;b.notice=unit.name+'已被俘，繼續清退餘兵。';b.noticeUntil=b.time+4}if(retreat)b.bossRetreated=true;if(unit.key&&!troop(b,unit.key))b.cooldowns[unit.key]=b.time+12}
+ stepDoctrine(b,dt);
  b.allies=b.allies.filter(u=>u.hp>0);b.enemies=b.enemies.filter(u=>u.hp>0);
  // Recheck evacuation after this tick's damage and movement, without advancing mission time.
  if(['withdraw','decoy'].includes(b.mission?.kind))stepMission(b,0);
@@ -287,14 +289,14 @@ export function castActive(b,key,index){
  if(['heal','rally'].includes(s.id)&&!b.allies.some(a=>a.hp>0&&a.hp<a.maxHp&&(s.id==='rally'||a.lane===u.lane))){b.notice='夥伴都很健康，等受傷再用，MP 未扣除。';b.noticeUntil=b.time+2;return false}
  const passiveBefore=passiveSnapshot(b);
  r.mp-=s.mp;r.ready[index]=b.time+Math.max(1,s.cooldown-(d.cooldownReduction||0));
- if(s.effects){const firstEffect=b.effects.length;applyMaster(b,u,d,s,near);for(const e of b.effects.slice(firstEffect))e.master=true;b.masterCast={heroId:d.heroId,level:d.heroLevel,name:s.name,lane:u.lane,at:b.time};protectBarrier(b);castPassiveFeedback(b,u,d,s,passiveBefore);b.skillNotice={key,text:d.name+'・'+s.name,until:b.time+2};return true}
+ if(s.effects){const firstEffect=b.effects.length;applyMaster(b,u,d,s,near);for(const e of b.effects.slice(firstEffect))e.master=true;b.masterCast={heroId:d.heroId,level:d.heroLevel,name:s.name,lane:u.lane,at:b.time};signature(b,u,d,near);protectBarrier(b);castPassiveFeedback(b,u,d,s,passiveBefore);b.skillNotice={key,text:d.name+'・'+s.name,until:b.time+2};return true}
  const firstEffect=b.effects.length;
  const allies=b.allies.filter(a=>a.hp>0&&(s.id==='fort'||s.id==='supply'||s.id==='rally'||a.lane===u.lane));
  if(['heal','supply','rally'].includes(s.id)){for(const a of allies){a.hp=Math.min(a.maxHp,a.hp+((s.id==='supply'?15:35)+(d.healBonus||0)));effect(b,'heal',a.lane,a.x);if(d.healShield)grantShield(b,a,d.healShield,d)}if(s.id==='supply')b.food=Math.min(300,b.food+60)}
  if(['shield','escape','fort','lock'].includes(s.id))for(const a of allies){grantShield(b,a,s.id==='shield'?35:s.id==='lock'?30:45,d)}
  if(offensive){for(const e of s.id==='volley'?[...near].sort((a,c)=>Math.abs(a.x-u.x)-Math.abs(c.x-u.x)).slice(0,1):near){hurtEnemy(b,e,({pierce:45,sweep:65,push:20,volley:60,rain:45,halt:15,lock:0})[s.id]+(s.id==='lock'?0:(d.skillDamage||0)));if(['sweep','push','halt','lock'].includes(s.id))e.stunnedUntil=b.time+(s.id==='push'?1:s.id==='lock'?3:2);if(s.id==='push'&&!e.boss)e.x=Math.min(.95,e.x+.065);e.flash=.3}effect(b,d.ranged?'arrow':'roar',u.lane,u.x)}
  for(const e of b.effects.slice(firstEffect))e.master=true;b.skillCast={heroId:d.heroId,index,name:s.name,lane:u.lane,x:u.x,at:b.time};
- protectBarrier(b);castPassiveFeedback(b,u,d,s,passiveBefore);b.skillNotice={key,text:d.name+'・'+s.name,until:b.time+2};return true;
+ signature(b,u,d,near);protectBarrier(b);castPassiveFeedback(b,u,d,s,passiveBefore);b.skillNotice={key,text:d.name+'・'+s.name,until:b.time+2};return true;
 }
 
 function grantShield(b,ally,amount,caster){ally.shield=Math.max(ally.shield||0,amount+(caster.shieldBonus||0));ally.shieldUntil=Math.max(ally.shieldUntil||0,b.time+6+(caster.shieldDuration||0));effect(b,'block',ally.lane,ally.x)}
