@@ -39,3 +39,22 @@ test('home loads responsive cover only; battle sheets start after entering story
 test('failed battle image can retry or cancel without starting combat',async({page})=>{
  await page.route('**/assets/attacks/liubei.png',route=>route.abort());await page.goto('/hero/');await page.locator('#startBtn').click();await page.locator('#storySkip').click();await expect(page.locator('#battleLoading')).toBeVisible();await expect(page.locator('#battleLoading')).toContainText('部分圖片未能載入');await expect(page.locator('#battle')).not.toBeVisible();await page.locator('#battleLoading .quiet-button').click();await expect(page.locator('#battleLoading')).toHaveCount(0);await page.unroute('**/assets/attacks/liubei.png');await page.locator('#storySkip').click();await expect(page.locator('#battle')).toBeVisible();
 });
+
+test('mouse movement and keyboard shortcuts coexist for the same selected unit',async({page},info)=>{
+ const press=locator=>info.project.use.hasTouch?locator.tap():locator.click();
+ const errors=await setup(page,true);await deploy(page);await page.locator('.ally[data-kind=liubei]').click();
+ const direct=page.viewportSize().width>=900&&page.viewportSize().height>500;
+ const order=name=>page.locator(direct?`[data-quick-order=${name}]`:`[data-order=${name}]`);
+ if(!direct)await page.locator('#commandDrawerButton').click();
+ await expect(order('forward')).toBeVisible();await press(order('forward'));expect(await page.evaluate(()=>window.testBattle.allies[0].order)).toBe('forward');await page.clock.runFor(2000);
+ await press(order('back'));expect(await page.evaluate(()=>window.testBattle.allies[0].order)).toBe('back');
+ await press(order('down'));expect(await page.evaluate(()=>window.testBattle.allies[0].lane)).toBe(1);await expect(order('up')).toBeDisabled();await page.clock.runFor(3100);
+ await press(order('up'));expect(await page.evaluate(()=>window.testBattle.allies[0].lane)).toBe(0);await expect(order('up')).toBeDisabled();
+ if(!direct)await page.locator('#commandDrawerClose').click();
+ await page.keyboard.press('ArrowRight');expect(await page.evaluate(()=>window.testBattle.allies[0].order)).toBe('forward');await page.keyboard.press('s');expect(await page.evaluate(()=>window.testBattle.allies[0].order)).toBe('hold');await page.clock.runFor(3100);
+ // Click a destination in another lane, then resume mouse button commands.
+ const lane=await page.locator('.lane').nth(1).boundingBox();if(info.project.use.hasTouch)await page.touchscreen.tap(lane.x+lane.width*.55,lane.y+lane.height*.5);else await page.mouse.click(lane.x+lane.width*.55,lane.y+lane.height*.5);expect(await page.evaluate(()=>window.testBattle.allies[0].lane)).toBe(1);
+ if(!direct)await page.locator('#commandDrawerButton').click();await press(order('hold'));expect(await page.evaluate(()=>window.testBattle.allies[0].order)).toBe('hold');
+ await page.locator('#pauseBtn').click();await page.clock.runFor(100);await expect(order('forward')).toBeDisabled();const snap=await page.evaluate(()=>JSON.stringify(window.testBattle.allies));await page.keyboard.press('ArrowRight');expect(await page.evaluate(()=>JSON.stringify(window.testBattle.allies))).toBe(snap);await page.locator('#resumeBtn').click();await page.clock.runFor(100);await expect(order('forward')).toBeEnabled();
+ if(!direct)await page.locator('#commandDrawerClose').click();const layout=await fits(page);expect(layout.scroll).toBeLessThanOrEqual(1);expect(layout.wide).toBeLessThanOrEqual(1);await page.screenshot({path:info.outputPath('mouse-and-keyboard.png')});expect(errors).toEqual([]);
+});

@@ -1,5 +1,5 @@
 import {preloadBattleAssets,battleAssetsReady,prepareBattleAssets} from './battle-assets.mjs?v=images-1';
-import {mountBattleFocus} from './battle-focus.mjs?v=army-1';
+import {mountBattleFocus} from './battle-focus.mjs?v=mouse-orders-1';
 import {advanceAutoSkills} from './auto-skills.mjs?v=battle-focus-1';
 import {renderPassiveFeedback} from './passive-view.mjs?v=passive-feedback-1';
 import {mountSkillIntro} from './skill-intro.mjs?v=passive-feedback-1';

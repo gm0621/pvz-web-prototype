@@ -1,0 +1,1 @@
+const base=require('./playwright.hero-focus.config');module.exports={...base,grep:/mouse movement/,projects:base.projects.map(p=>p.name==='desktop'?p:{...p,use:{...p.use,isMobile:true,hasTouch:true}})};
