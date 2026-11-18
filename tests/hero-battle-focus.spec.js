@@ -1,9 +1,9 @@
 const {test,expect}=require('@playwright/test');
-async function setup(page,late=false){
+async function setup(page,late=false,lanes=5){
  const errors=[];page.on('pageerror',e=>errors.push(e.message));await page.clock.install();
  await page.addInitScript(late=>{localStorage.setItem('heroLegendProgress_v1',JSON.stringify({completed:late?46:0,coins:500,battleLanes:5,caoTeam:['caocao','xiahoudun','caohong','caoren','xiahouyuan'],heroGrowth:{liubei:{xp:810},caocao:{xp:810}},skillSeen:['liubei','caocao'].flatMap(id=>[1,3,5,7,10].map(n=>id+':'+n))}));Element.prototype.requestFullscreen=undefined},late);
  await page.route('**/hero/engine.mjs?*',async route=>{const r=await route.fetch();await route.fulfill({response:r,body:(await r.text()).replace('return {level,mission:','return window.testBattle={level,mission:')})});
- await page.goto('/hero/');await page.clock.pauseAt(await page.evaluate(()=>Date.now()+500));await page.locator('#startBtn').click();await page.locator('#storySkip').click();if(late)await page.locator('#deploymentStart').click();await expect(page.locator('#battle')).toBeVisible();
+ await page.goto('/hero/');await page.clock.pauseAt(await page.evaluate(()=>Date.now()+500));await page.locator('#startBtn').click();await page.locator('#storySkip').click();if(late){await page.locator('#deployment select').selectOption(String(lanes));await page.locator('#deploymentStart').click()}await expect(page.locator('#battle')).toBeVisible({timeout:25000});
  await page.evaluate(()=>{window.testBattle.nextSpawn=Infinity;window.testBattle.food=300});await page.clock.runFor(100);return errors;
 }
 async function deploy(page,key='liubei'){await page.locator(`[data-hero=${key}]`).click();await page.locator('.lane').first().click();await page.clock.runFor(100);await page.locator('#unitSelect').selectOption({index:1});await page.clock.runFor(100)}
@@ -40,21 +40,73 @@ test('failed battle image can retry or cancel without starting combat',async({pa
  await page.route('**/assets/attacks/liubei.png',route=>route.abort());await page.goto('/hero/');await page.locator('#startBtn').click();await page.locator('#storySkip').click();await expect(page.locator('#battleLoading')).toBeVisible();await expect(page.locator('#battleLoading')).toContainText('部分圖片未能載入');await expect(page.locator('#battle')).not.toBeVisible();await page.locator('#battleLoading .quiet-button').click();await expect(page.locator('#battleLoading')).toHaveCount(0);await page.unroute('**/assets/attacks/liubei.png');await page.locator('#storySkip').click();await expect(page.locator('#battle')).toBeVisible();
 });
 
-test('mouse movement and keyboard shortcuts coexist for the same selected unit',async({page},info)=>{
- const press=locator=>info.project.use.hasTouch?locator.tap():locator.click();
- const errors=await setup(page,true);await deploy(page);await page.locator('.ally[data-kind=liubei]').click();
+for(const lanes of [4,5])test(`mouse movement and keyboard skills alternate on ${lanes} lanes`,async({page},info)=>{
+ const touch=info.project.use.hasTouch;
+ const press=locator=>touch?locator.tap():locator.click();
+ const errors=await setup(page,true,lanes);
+ const lane=page.locator('.lane');
+ await expect(lane).toHaveCount(lanes);
+ await press(page.locator('[data-hero=liubei]'));
+ await press(lane.nth(lanes-2));
+ await press(page.locator('.ally[data-kind=liubei]'));
+ const selected=page.locator('.ally[data-kind=liubei]');
+ const unit=()=>page.evaluate(()=>window.testBattle.allies[0]);
+ const mp=()=>page.evaluate(()=>window.testBattle.heroResources.caocao.mp);
+ const skill=index=>page.locator(`[data-skill-hero=caocao] [data-skill="${index}"]`);
  const direct=page.viewportSize().width>=900&&page.viewportSize().height>500;
  const order=name=>page.locator(direct?`[data-quick-order=${name}]`:`[data-order=${name}]`);
- if(!direct)await page.locator('#commandDrawerButton').click();
- await expect(order('forward')).toBeVisible();await press(order('forward'));expect(await page.evaluate(()=>window.testBattle.allies[0].order)).toBe('forward');await page.clock.runFor(2000);
- await press(order('back'));expect(await page.evaluate(()=>window.testBattle.allies[0].order)).toBe('back');
- await press(order('down'));expect(await page.evaluate(()=>window.testBattle.allies[0].lane)).toBe(1);await expect(order('up')).toBeDisabled();await page.clock.runFor(3100);
- await press(order('up'));expect(await page.evaluate(()=>window.testBattle.allies[0].lane)).toBe(0);await expect(order('up')).toBeDisabled();
- if(!direct)await page.locator('#commandDrawerClose').click();
- await page.keyboard.press('ArrowRight');expect(await page.evaluate(()=>window.testBattle.allies[0].order)).toBe('forward');await page.keyboard.press('s');expect(await page.evaluate(()=>window.testBattle.allies[0].order)).toBe('hold');await page.clock.runFor(3100);
- // Click a destination in another lane, then resume mouse button commands.
- const lane=await page.locator('.lane').nth(1).boundingBox();if(info.project.use.hasTouch)await page.touchscreen.tap(lane.x+lane.width*.55,lane.y+lane.height*.5);else await page.mouse.click(lane.x+lane.width*.55,lane.y+lane.height*.5);expect(await page.evaluate(()=>window.testBattle.allies[0].lane)).toBe(1);
- if(!direct)await page.locator('#commandDrawerButton').click();await press(order('hold'));expect(await page.evaluate(()=>window.testBattle.allies[0].order)).toBe('hold');
- await page.locator('#pauseBtn').click();await page.clock.runFor(100);await expect(order('forward')).toBeDisabled();const snap=await page.evaluate(()=>JSON.stringify(window.testBattle.allies));await page.keyboard.press('ArrowRight');expect(await page.evaluate(()=>JSON.stringify(window.testBattle.allies))).toBe(snap);await page.locator('#resumeBtn').click();await page.clock.runFor(100);await expect(order('forward')).toBeEnabled();
- if(!direct)await page.locator('#commandDrawerClose').click();const layout=await fits(page);expect(layout.scroll).toBeLessThanOrEqual(1);expect(layout.wide).toBeLessThanOrEqual(1);await page.screenshot({path:info.outputPath('mouse-and-keyboard.png')});expect(errors).toEqual([]);
+ if(!direct)await press(page.locator('#commandDrawerButton'));
+ await press(order('forward'));
+ expect((await unit()).order).toBe('forward');
+ await page.clock.runFor(2000);
+ await page.keyboard.press('ArrowLeft');
+ expect((await unit()).order).toBe('back');
+ await press(order('down'));
+ expect((await unit()).lane).toBe(lanes-1);
+ await expect(order('down')).toBeDisabled();
+ await expect(order('up')).toBeDisabled();
+ await page.clock.runFor(3100);
+ await page.keyboard.press('ArrowUp');
+ expect((await unit()).lane).toBe(lanes-2);
+ if(!direct)await press(page.locator('#commandDrawerClose'));
+ await page.keyboard.press('1');
+ await expect(selected).toHaveAttribute('aria-pressed','true');
+ await page.evaluate(()=>window.testBattle.allies[0].hp-=100);
+ const beforeHeal=await unit(),beforeMP=await mp();
+ await press(skill(0));
+ expect(await mp()).toBe(beforeMP-20);
+ expect((await unit()).hp).toBeGreaterThan(beforeHeal.hp);
+ await expect(skill(0)).toBeDisabled();
+ await page.keyboard.press('q');
+ expect(await mp()).toBe(beforeMP-20);
+ await page.clock.runFor(3100);
+ const rect=await lane.last().boundingBox();
+ const x=rect.x+rect.width*.55,y=rect.y+rect.height*.5;
+ if(touch)await page.touchscreen.tap(x,y);else await page.mouse.click(x,y);
+ expect((await unit()).lane).toBe(lanes-1);
+ expect((await unit()).order).toBe('forward');
+ await press(page.locator('#pauseBtn'));
+ await page.clock.runFor(100);
+ await expect(skill(1)).toBeDisabled();
+ const frozen=await page.evaluate(()=>JSON.stringify(window.testBattle));
+ await page.keyboard.press('w');
+ await page.keyboard.press('ArrowLeft');
+ await page.clock.runFor(2000);
+ expect(await page.evaluate(()=>JSON.stringify(window.testBattle))).toBe(frozen);
+ await press(page.locator('#resumeBtn'));
+ await page.clock.runFor(100);
+ await expect(skill(1)).toBeEnabled();
+ const resumedMP=await mp();
+ await page.keyboard.press('w');
+ expect(await mp()).toBe(resumedMP-40);
+ await expect(skill(1)).toBeDisabled();
+ if(!direct)await press(page.locator('#commandDrawerButton'));
+ await press(order('back'));
+ expect((await unit()).order).toBe('back');
+ if(!direct)await press(page.locator('#commandDrawerClose'));
+ const layout=await fits(page);
+ expect(layout.scroll).toBeLessThanOrEqual(1);
+ expect(layout.wide).toBeLessThanOrEqual(1);
+ await page.screenshot({path:info.outputPath('mouse-and-keyboard.png')});
+ expect(errors).toEqual([]);
 });
