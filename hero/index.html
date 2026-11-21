@@ -37,6 +37,7 @@
 <link rel="stylesheet" href="battle-focus.css?v=mission-guidance-1">
 <link rel="stylesheet" href="home-cover.css?v=images-1">
 <link rel="stylesheet" href="./experience.css?v=experience-1">
+<link rel="stylesheet" href="./camp-growth.css?v=camp-growth-1">
 </head>
 <body>
  <audio id="menuBgm" data-music-mode="home" loop preload="none" hidden>
@@ -121,7 +122,7 @@
    <div class="camp-scene command-tent"><span class="eyebrow">戰後軍帳 · 歇馬話家常</span><a class="people-link" href="people.html" target="_blank" rel="noopener">人物圖鑑 ↗</a><h2 id="campTitle"></h2><p id="campNarration"></p>
     <div class="tent-floor"><div class="tent-banner" aria-hidden="true">義</div><div class="tent-rug" aria-hidden="true"></div>
      <button data-talk="guanyu" class="camp-person general-guan"><img loading="lazy" decoding="async" src="assets/guanyu.webp" alt=""><strong>關羽</strong><small>聊聊這一戰</small></button>
-     <button id="campPrepare" class="command-table"><span aria-hidden="true">山 川 行 軍 圖</span><strong>整備軍隊</strong><small>兵器・行囊・絕招</small></button>
+     <button id="campPrepare" class="command-table"><span aria-hidden="true">山 川 行 軍 圖</span><strong>整備軍隊</strong><small>等級・經驗・下一招</small></button>
      <button data-talk="zhangfei" class="camp-person general-zhang"><img loading="lazy" decoding="async" src="assets/zhangfei.png" alt=""><strong>張飛</strong><small>聽聽三弟說什麼</small></button>
      <button data-shop="items" class="tent-station supply-station"><span aria-hidden="true">藥</span><strong>道具商</strong><small>補充藥包與糧袋</small></button>
      <button data-shop="weapons" class="tent-station weapon-station"><span aria-hidden="true">鍛</span><strong>武器商</strong><small>強化三將兵器</small></button>
@@ -129,7 +130,7 @@
    </div>
    <section id="campTalk" class="camp-talk" hidden aria-label="營中對話"><img loading="lazy" decoding="async" id="campTalkPortrait" alt=""><div><strong id="campTalkName"></strong><p id="campTalkText" aria-live="polite"></p><button id="campTalkNext" class="quiet-button">接著聽 →</button></div></section>
    <section id="campShop" class="camp-shop" hidden><div class="camp-panel-heading"><h3 id="shopTitle" tabindex="-1"></h3><button id="campShopBack" class="quiet-button">← 返回營地</button></div><p id="campMessage" role="status"></p><div id="shopGoods" class="shop-goods"></div></section>
-   <section id="campRoster" class="camp-roster" hidden><h3 tabindex="-1">出征前，點一點行囊</h3><p id="campInventory"></p><div id="campHeroes"></div></section>
+   <section id="campRoster" class="camp-roster" hidden><h3 tabindex="-1">武將成長 · 下一招，等你學會</h3><p id="campInventory"></p><div id="campHeroes"></div></section>
    <footer class="camp-departure"><div><small>下一步</small><strong>整備好了，就繼續冒險！</strong></div><button id="campContinue" class="gold-button">繼續故事 →</button></footer>
   </section>
   <section id="result" class="screen result" aria-labelledby="resultTitle" hidden><button class="home-button" data-home>← 回主選單</button><div class="result-panel"><span id="resultMark" class="result-mark" aria-hidden="true">勝</span><span id="resultChapter" class="eyebrow"></span><h2 id="resultTitle" tabindex="-1"></h2><div class="result-company" aria-hidden="true"><img loading="lazy" decoding="async" src="assets/guanyu.webp" alt=""><img loading="lazy" decoding="async" src="assets/liubei.png" alt=""><img loading="lazy" decoding="async" src="assets/zhangfei.png" alt=""></div><p id="resultText"></p><div class="victory-ribbon" aria-hidden="true">捷 報 傳 回 ・ 凱 旋 歸 營</div><section class="reward-ledger" aria-label="本場軍資結算"><div class="reward-particles" aria-hidden="true"><i style="--i:0"></i><i style="--i:1"></i><i style="--i:2"></i><i style="--i:3"></i><i style="--i:4"></i><i style="--i:5"></i><i style="--i:6"></i><i style="--i:7"></i><i style="--i:8"></i><i style="--i:9"></i><i style="--i:10"></i><i style="--i:11"></i></div><div class="reward-coins" aria-hidden="true"><i style="--i:0"></i><i style="--i:1"></i><i style="--i:2"></i><i style="--i:3"></i><i style="--i:4"></i><i style="--i:5"></i></div><span class="reward-label">本次獲得軍資</span><strong id="resultEarned">+0</strong><p id="resultRewardReason"></p><div class="reward-balance"><span>目前持有</span><strong><span id="resultBalance">0</span> 軍資</strong></div><small id="resultSaved" aria-live="polite">軍資已存入行囊，可在營地使用</small><button id="resultRetrySave" class="quiet-button" hidden>重試保存</button></section><p class="result-next-step">戰報看完了？回營歇一歇，再聽三兄弟的故事。</p><div class="result-actions"><button id="resultNext" class="gold-button">前往戰後營地 →</button><button id="replayLevel" class="quiet-button">再玩本關</button><button class="quiet-button" data-home>回主選單</button></div></div></section>
@@ -140,7 +141,7 @@
  <button id="storageRetry" class="quiet-button" hidden>重試保存進度與軍資</button>
 
  <dialog id="campaignMapDialog" aria-labelledby="campaignMapTitle"><header><div><small>東漢末年・戰役行程</small><h2 id="campaignMapTitle">三國行軍圖</h2></div><button id="campaignMapClose" class="quiet-button">返回戰場 ✕</button></header><div class="map-location"><h3 id="campaignMapLocation"></h3><span id="campaignMapModern"></span></div><div id="campaignMapMatchup" class="map-matchup"></div><div id="campaignMapCanvas"></div><div class="map-legend"><span>⚑ 目前位置</span><span>● 本關前的行軍地點</span><span>○ 後續地點</span></div><p id="campaignMapDetail"></p><p class="map-route-caption">劇情行軍路線：<span id="campaignMapRoute"></span></p><details><summary>查看所有關卡戰役位置</summary><ol id="campaignMapStages"></ol></details><p class="map-note">本篇戰區方位示意，非精確疆界或實際行軍路徑；山道、山口及驛道按演義與遊戲劇情標示。此時尚未形成魏、蜀、吳三國鼎立。</p></dialog>
- <script type="module" src="app.mjs?v=experience-1"></script>
+ <script type="module" src="app.mjs?v=camp-growth-1"></script>
  <script type="module" src="home-cover.mjs?v=home-cover-1"></script>
 </body>
 </html>

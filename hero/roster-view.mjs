@@ -1,3 +1,4 @@
+import {campGrowthCard} from './camp-growth.mjs?v=camp-growth-1';
 import {learnedPassives,passiveName} from './passive-feedback.mjs?v=passive-feedback-1';
 import {GENERALS,ALL_GENERALS,DEFAULT_TEAM,SLOTS,heroLevel,growthHint,growthBonuses,nextLesson,activeText,selectedTeam,maxLanes,buyHeroWeapon} from './roster.mjs?v=passive-feedback-1';
 import {paintPortrait} from './factions.mjs?v=passive-feedback-1';
@@ -12,7 +13,7 @@ export function openDeployment({level,progress,save,onStart,onCancel}){
  select.onchange=()=>{lanes=Number(select.value);team=team.slice(0,lanes);render()};go.onclick=()=>{if(team.length!==lanes)return;const old=progress.caoTeam,oldLanes=progress.battleLanes;progress.caoTeam=[...team];progress.battleLanes=lanes;if(!save()){progress.caoTeam=old;progress.battleLanes=oldLanes;error.textContent='無法保存選將，請重試；原隊伍未變動。';return}dialog.close();onStart()};dialog.append(title,intro,label,tip,status,grid,error,go,cancel);render();dialog.showModal();dialog.scrollTop=0;
 }
 export function renderHeroCamp({progress,save,shop,refresh}){
- const root=document.getElementById('campHeroes');root.replaceChildren(...Object.entries(GENERALS).map(([id,g])=>{const card=el('article');card.className='camp-hero';const img=el('img');paintPortrait(img,g);img.alt=g.name;const text=el('div'),h=progress.heroGrowth[id];text.append(el('strong',`${g.name} · Lv.${heroLevel(h.xp)} · 經驗 ${h.xp} · ${growthHint(g,h.xp)} · 兵器強化 ${h.weapon} / 3`),el('p',skillSummary(g,heroLevel(h.xp))));card.append(img,text);return card}));
+ const root=document.getElementById('campHeroes');root.replaceChildren(...Object.entries(GENERALS).map(([id,g])=>{const h=progress.heroGrowth[id];return campGrowthCard(id,g,h.xp,h.weapon,skillSummary(g,heroLevel(h.xp)))}));
  if(shop!=='weapons')return;document.getElementById('shopGoods').replaceChildren(...Object.entries(GENERALS).map(([id,g])=>{const card=el('article');card.className='goods-card';const rank=progress.heroGrowth[id].weapon,button=el('button',rank===3?'已滿':`購買 · ${(rank+1)*60} 軍資`);button.className='gold-button';button.dataset.buyHero=id;if(DEFAULT_TEAM.includes(id))button.dataset.buy=SLOTS[DEFAULT_TEAM.indexOf(id)];button.disabled=rank===3||progress.coins<(rank+1)*60;button.onclick=()=>{const message=buyHeroWeapon(progress,id,save);document.getElementById('campMessage').textContent=message||g.name+'兵器已強化並裝備！';refresh()};card.append(el('h4',g.name+'・兵器整備'),el('p',`只強化${g.name}的普通攻擊，每級 +4；不提升技能傷害。`),el('small',`已強化 ${rank} / 3`),button);return card}))
 }
 export function mountActiveSkills({getBattle,cast,refresh,getSelected}){

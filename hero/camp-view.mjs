@@ -1,19 +1,19 @@
-import {PEACH_GENERALS,SUN_GENERALS,SLOTS,heroLevel,growthHint} from './roster.mjs?v=passive-feedback-1';
-import {skillSummary} from './roster-view.mjs?v=passive-feedback-1';
-import {renderHeroCamp} from './roster-view.mjs?v=passive-feedback-1';
+import {campGrowthCard} from './camp-growth.mjs?v=camp-growth-1';
+import {PEACH_GENERALS,SUN_GENERALS,SLOTS,heroLevel} from './roster.mjs?v=passive-feedback-1';
+import {skillSummary} from './roster-view.mjs?v=camp-growth-1';
+import {renderHeroCamp} from './roster-view.mjs?v=camp-growth-1';
 import {STORY_PEOPLE,renderPeople} from './characters.mjs?v=passive-feedback-1';
 import {STAGES,chapterInfo} from './story.mjs?v=passive-feedback-1';
-import {FACTION_SKILLS,factionFor,paintPortrait} from './factions.mjs?v=passive-feedback-1';
+import {factionFor,paintPortrait} from './factions.mjs?v=passive-feedback-1';
 import {campConversation} from './camp-talk.mjs?v=passive-feedback-1';
 import {GOODS,purchase,weaponsForLevel} from './campaign.mjs?v=passive-feedback-1';
 import {CAMP_LINES} from './novel.mjs?v=passive-feedback-1';
-import {HERO_SKILLS} from './skills.mjs?v=passive-feedback-1';
 export function mountCamp({progress,level,heroes,stage,onSave,onContinue,won=true}){
  const $=id=>document.getElementById(id);let shop='items';
  let people=$('campTalkPeople');if(!people){people=document.createElement('aside');people.id='campTalkPeople';people.className='story-people';people.setAttribute('aria-label','對話提及人物');$('campTalkText').after(people)}people.hidden=true;
  const panels=['campTalk','campShop','campRoster'];
  function openPanel(id){for(const panel of panels)$(panel).hidden=panel!==id;for(const button of document.querySelectorAll('.tent-floor button'))button.setAttribute('aria-pressed','false')}
- openPanel(null);for(const button of document.querySelectorAll('[data-talk]')){const d=heroes[button.dataset.talk];paintPortrait(button.querySelector('img'),d);button.querySelector('img').alt=d.name;button.querySelector('strong').textContent=d.name;button.querySelector('small').textContent='聊聊這一戰';}document.querySelector('.tent-banner').textContent=factionFor(level)==='sun'?'孫':factionFor(level)==='cao'?'曹':'義';
+ openPanel('campRoster');$('campPrepare').setAttribute('aria-pressed','true');for(const button of document.querySelectorAll('[data-talk]')){const d=heroes[button.dataset.talk];paintPortrait(button.querySelector('img'),d);button.querySelector('img').alt=d.name;button.querySelector('strong').textContent=d.name;button.querySelector('small').textContent='聊聊這一戰';}document.querySelector('.tent-banner').textContent=factionFor(level)==='sun'?'孫':factionFor(level)==='cao'?'曹':'義';
  let visitors=$('campVisitors');if(!visitors){visitors=document.createElement('button');visitors.id='campVisitors';visitors.className='quiet-button';visitors.textContent='探望鄉民與傷兵';$('campNarration').after(visitors)}visitors.hidden=level<11||!won;visitors.onclick=()=>{openPanel('campTalk');people.hidden=true;$('campTalkName').textContent='鄉民與傷兵';$('campTalkPortrait').hidden=true;$('campTalkText').textContent=level===16?'孩子已吃上熱粥，郎中正在替傷兵包紮。謝謝你們把大家平安帶回來。':'鄉民圍在營火旁，郎中替傷者包紮。先歇一歇，我們會彼此照應。';$('campTalkNext').textContent='回到營帳';$('campTalkNext').onclick=()=>openPanel(null)};
  $('campTitle').textContent=won?`${stage.name} · 歇馬整備`:'重整行裝，再來一次';$('campNarration').textContent=won?CAMP_LINES[level-1]:'先回營歇一歇。將士清點行囊，準備再試一次。';
  const finale=won&&(level===STAGES.length||chapterInfo(level+1).chapter!==chapterInfo(level).chapter),chapterLabel='第'+['','一','二','三','四','五','六','七','八','九','十','十一'][chapterInfo(level).chapter]+'章';
@@ -30,7 +30,7 @@ export function mountCamp({progress,level,heroes,stage,onSave,onContinue,won=tru
    card.className='goods-card';const icon=document.createElement('span');icon.className='goods-icon';icon.textContent=weapon&&level>=17?heroes[id].weapon.split('／')[0]:g.icon;const title=document.createElement('h4');title.textContent=weapon&&level>=17?heroes[id].name+'・兵器整備':g.name;const description=document.createElement('p');description.textContent=weapon&&level>=17?`${heroes[id].name}普攻每級 +${id==='liubei'?3:4}；最多三次，只強化這位武將。`:g.description;const stock=document.createElement('small');stock.textContent=weapon?`已強化 ${owned} / 3 次 · 購買後自動裝備`:`行囊 ${owned} / 9`;
    const button=document.createElement('button');button.className='gold-button';button.dataset.buy=id;button.textContent=max?'已滿':`購買 · ${price} 軍資`;button.disabled=max||progress.coins<price;button.onclick=()=>{const error=purchase(progress,id,onSave,level);$('campMessage').textContent=error||`${weapon&&level>=17?heroes[id].name+'兵器':g.name}已${weapon?'強化並裝備':'放入行囊'}！`;render()};card.append(icon,title,description,stock,button);return card;
   }));
-  $('campHeroes').replaceChildren(...['liubei','guanyu','zhangfei'].map(key=>{const card=document.createElement('article');card.className='camp-hero';const img=document.createElement('img');paintPortrait(img,heroes[key]);img.alt=heroes[key].name;const text=document.createElement('div'),title=document.createElement('strong');title.textContent=`${heroes[key].name} · 兵器強化 ${weaponsForLevel(progress,level)[key]} / 3 · ${heroes[key].weapon||{liubei:'雙劍／近',guanyu:'大刀／近戰',zhangfei:'長矛／稍長'}[key]}`;const skills=document.createElement('p');skills.textContent='本關招式：'+(FACTION_SKILLS[factionFor(level)]?.[key]||HERO_SKILLS[key]).map(s=>`${s.level<=level?'✦':'🔒'} ${s.name}${s.level>level?`（第 ${s.level} 關）`:''}：${s.text}`).join(' ');if(factionFor(level)!=='cao'){const generals=factionFor(level)==='sun'?SUN_GENERALS:PEACH_GENERALS,id=Object.keys(generals)[SLOTS.indexOf(key)],lv=heroLevel(progress.heroGrowth[id].xp);title.textContent=`${heroes[key].name} · Lv.${lv} · 經驗 ${progress.heroGrowth[id].xp} · ${growthHint(generals[id],progress.heroGrowth[id].xp)} · 兵器 ${weaponsForLevel(progress,level)[key]} / 3`;skills.textContent=skillSummary(generals[id],lv)}text.append(title,skills);card.append(img,text);return card}));
+  if(factionFor(level)!=='cao'){const generals=factionFor(level)==='sun'?SUN_GENERALS:PEACH_GENERALS;$('campHeroes').replaceChildren(...Object.entries(generals).map(([id,g],i)=>campGrowthCard(id,g,progress.heroGrowth[id].xp,weaponsForLevel(progress,level)[SLOTS[i]],skillSummary(g,heroLevel(progress.heroGrowth[id].xp)))))}
   if(factionFor(level)==='cao')renderHeroCamp({progress,save:onSave,shop,refresh:render});
  }
  for(const button of document.querySelectorAll('[data-shop]'))button.onclick=()=>{shop=button.dataset.shop;openPanel('campShop');render();$('shopTitle').focus({preventScroll:true});$('campShop').scrollIntoView({block:'nearest'})};
