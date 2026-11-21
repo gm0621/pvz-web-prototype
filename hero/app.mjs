@@ -1,3 +1,4 @@
+import {mountExperienceView} from './experience-view.mjs?v=experience-1';
 import {preloadBattleAssets,battleAssetsReady,prepareBattleAssets} from './battle-assets.mjs?v=images-1';
 import {mountBattleFocus} from './battle-focus.mjs?v=mission-guidance-1';
 import {advanceAutoSkills} from './auto-skills.mjs?v=battle-focus-1';
@@ -12,9 +13,9 @@ import {mountSkillGuide} from './skill-guide.mjs?v=battle-focus-1';
 import {renderPeople,STORY_PEOPLE} from './characters.mjs?v=passive-feedback-1';
 import {FACTIONS,factionFor,enemyPortrait,paintPortrait} from './factions.mjs?v=passive-feedback-1';
 import {mountHistoryLesson} from './history-view.mjs?v=passive-feedback-1';
-import {renderSkillCutin} from './skill-cutin.mjs?v=passive-feedback-1';
-import {renderMasterCutin} from './master-cutin.mjs?v=passive-feedback-1';
-import {renderBossCutin} from './boss-cutin.mjs?v=army-1';
+import {renderSkillCutin} from './skill-cutin.mjs?v=experience-1';
+import {renderMasterCutin} from './master-cutin.mjs?v=experience-1';
+import {renderBossCutin} from './boss-cutin.mjs?v=experience-1';
 import {mountBattleKeys} from './battle-keys.mjs?v=battle-focus-1';
 import {mountJourney} from './journey-view.mjs?v=passive-feedback-1';
 import {renderMission} from './chapter-mission-view.mjs?v=passive-feedback-1';
@@ -26,8 +27,8 @@ import {rewardVictory,useSupply,weaponsForLevel} from './campaign.mjs?v=passive-
 import {createFirstGuide} from './first-guide.mjs?v=passive-feedback-1';
 import {mountStoryTask} from './story-play.mjs?v=passive-feedback-1';
 import {CHAPTER_BACKGROUNDS,STAGE_LEADS} from './prologue.mjs?v=passive-feedback-1';
-import {setMusic,setMusicMode,setMusicHome,musicTheme,musicOn,setSfx,unlockAudio,hitSound} from './audio.mjs?v=passive-feedback-1';
-import {renderDuel} from './duel-view.mjs?v=army-1';
+import {setMusic,setMusicMode,setMusicHome,musicTheme,musicOn,setSfx,unlockAudio,hitSound} from './audio.mjs?v=experience-1';
+import {renderDuel} from './duel-view.mjs?v=experience-1';
 import {chapterInfo,enemyArt,HEROES as BASE_HEROES,heroesForLevel,STAGES,ENEMY_ART,SHIELD_ART,FEATURES,heroDescription} from './story.mjs?v=passive-feedback-1';
 import {bossProfile,LANE_CAPACITY,laneCount,ENEMY_SWING,enemyAttackFrame,skipDuelEntrance,positionHero,commandHero,moveHero,BOSS_SKILLS,SAVE_KEY,normalizeProgress,createBattle,deploy,canDeploy,attackFrame,SWING} from './engine.mjs?v=army-1';
 
@@ -54,7 +55,7 @@ function focusBattle(active){
   document.documentElement.requestFullscreen().then(()=>{ownsFullscreen=true;if(screen==='battle'){for(const dialog of document.querySelectorAll('dialog[open]')){dialog.close();dialog.showModal()}}if(revision!==focusRevision&&screen!=='battle'){ownsFullscreen=false;document.exitFullscreen?.().catch(()=>{})}}).catch(()=>{});
  }else if(!active&&ownsFullscreen){ownsFullscreen=false;if(document.fullscreenElement)document.exitFullscreen?.().catch(()=>{})}
 }
-function show(id){battleFocus?.close();screen=id;document.body.classList.toggle('story-focus',id==='story');focusBattle(id==='battle');for(const s of document.querySelectorAll('.screen')){s.hidden=s.id!==id;s.classList.toggle('active',s.id===id)}window.scrollTo(0,0)}
+function show(id){if(id!=='result')experienceView?.cancel();battleFocus?.close();screen=id;document.body.classList.toggle('story-focus',id==='story');focusBattle(id==='battle');for(const s of document.querySelectorAll('.screen')){s.hidden=s.id!==id;s.classList.toggle('active',s.id===id)}window.scrollTo(0,0)}
 function updateHome(){
  const unfinished=battle&&!battle.over;
  $('startBtn').innerHTML=`${unfinished?'繼續戰鬥':progress.completed===STAGES.length?'重溫故事':progress.completed?'繼續故事':'開始故事'} <span>→</span>`;
@@ -212,19 +213,19 @@ function renderBattle(){
 }
 function showResult(){
  resultShown=true;selected=null;selectedUnitId=null;setMusicMode(battle.won?'victory':'prepare',battle.level);syncMusicButton();const stage=STAGES[battle.level-1];
- const balanceBefore=progress.coins;let earned=0,saved=true;const xp=awardExperience(progress,battle);if(battle.won)earned=rewardVictory(progress,battle.level);if(battle.won||xp.length)saved=saveProgress();let xpLine=$('resultExperience');if(!xpLine){xpLine=document.createElement('p');xpLine.id='resultExperience';$('resultText').after(xpLine)}xpLine.textContent=xp.map(x=>`${GENERALS[x.id].name} +${x.amount} 經驗${x.level>x.before?' · 升至 Lv.'+x.level:''}`).join('／');
+ const balanceBefore=progress.coins;let earned=0,saved=true;const xp=awardExperience(progress,battle);if(battle.won)earned=rewardVictory(progress,battle.level);if(battle.won||xp.length)saved=saveProgress();
  const resultKeys=battle.heroMode?SLOTS.slice(0,battle.team.length):['guanyu','liubei','zhangfei'];document.querySelector('.result-company').replaceChildren(...resultKeys.map(key=>{const img=document.createElement('img');paintPortrait(img,HEROES[key]);img.alt=HEROES[key].name;return img}));
  document.querySelector('.result-next-step').textContent=battle.level>=17?'戰報看完了？回營整備，再聽同伴說說這一戰。':'戰報看完了？回營歇一歇，再聽三兄弟的故事。';
  document.querySelector('.victory-ribbon').textContent=stage.successTitle?'保 全 隊 伍 ・ 回 營 整 備':'捷 報 傳 回 ・ 凱 旋 歸 營';
  $('resultMark').textContent=battle.won?(stage.successTitle?'全':'勝'):'再起';$('resultChapter').textContent=`第${['','一','二','三','四','五','六','七','八','九','十','十一'][chapterInfo(battle.level).chapter]}章 · ${chapterInfo(battle.level).number}`;
  $('resultTitle').textContent=battle.won?(stage.successTitle||((!STAGES[battle.level]||chapterInfo(battle.level+1).chapter!==chapterInfo(battle.level).chapter)?chapterInfo(battle.level).title:'此戰告捷')):'重整陣形，再來一次';
  $('resultText').textContent=battle.won?stage.victory:battle.lossReason==='commander-breach'?'敵方主將突破防線，本關未完成。調動部隊攔住主將，再挑戰一次。':(battle.level>=17?`先讓友軍照應${['','','','三','四','五'][lanesFor(battle)]}路，閱讀本關任務；撤軍關不必擊倒主將，接應完成後帶隊退回左側。`:'先讓弓兵照應三路，再用張飛頂住前線、關羽斬擊敵軍、劉備回復友軍。軍糧會持續補給，留意空著的路線。');
- $('result').dataset.outcome=battle.won?'victory':'defeat';$('result').dataset.reward=String(progress.coins>balanceBefore);if(battle.won)void hitSound('oath');
+ $('result').dataset.outcome=battle.won?'victory':'defeat';$('result').dataset.reward=String(progress.coins>balanceBefore);if(battle.won&&!xp.some(x=>x.amount>0))void hitSound('oath');
  $('resultEarned').textContent=`+${progress.coins-balanceBefore}`;$('resultBalance').textContent=progress.coins.toLocaleString('en-US');
  $('resultRewardReason').textContent=!battle.won?'這次未能守住防線，沒有獲得軍資；已有軍資不扣除。':!earned?'本關首次通關獎勵已領取，重玩不重複發放。':progress.coins-balanceBefore<earned?'首次通關！軍資已補至持有上限 99,999。':'首次通關獎勵・80 軍資';
  $('resultSaved').textContent=!saved?'進度、經驗與軍資僅暫存於本頁，尚未保存；關閉或重新整理後可能遺失。':battle.won&&earned?'軍資、經驗與進度已保存，可在營地使用':'保留目前軍資，可到營地整備';
  $('resultRetrySave').hidden=saved||storageReadFailed;
- $('resultNext').textContent='前往戰後營地 →';show('result');$('resultTitle').focus({preventScroll:true});skillIntro.upgrades(xp);
+ $('resultNext').textContent='前往戰後營地 →';show('result');$('resultTitle').focus({preventScroll:true});const resultBattle=battle;experienceView.start(xp,progress,()=>{if(screen==='result'&&battle===resultBattle)skillIntro.upgrades(xp)});
 }
 function openCamp(level,won){useRoster(level);setMusicMode('camp',level);syncMusicButton();show('camp');mountCamp({progress,level,won,heroes:HEROES,stage:STAGES[level-1],onSave:saveProgress,onContinue:()=>won?startStory(level,'ending'):beginBattle(level)});$('campTitle').tabIndex=-1;$('campTitle').focus({preventScroll:true})}
 function frame(now){
@@ -264,7 +265,7 @@ function selectBattleUnit(unit){selected=unit?.key||null;selectedUnitId=unit?.id
 function toggleAutoSkill(){const u=selectedUnit();if(!u?.heroId||!battle||battle.paused||battle.over||battle.duel||battle.introPending)return;const states=battle.autoSkills||(battle.autoSkills={});states[u.heroId]=!states[u.heroId];renderBattle()}
 const renderActiveSkills=mountActiveSkills({getBattle:()=>battle,cast:castActive,refresh:renderBattle,getSelected:selectedUnit});
 mountBattleKeys({getBattle:()=>battle,getSelected:selectedUnit,isBattle:()=>screen==='battle',refresh:renderBattle,selectUnit:selectBattleUnit,cast:castActive,toggleAutoSkill,togglePause:()=>setPause(!battle.paused),onOrder:(b,id,order)=>{if(commandHero(b,id,order))firstGuide?.event(order==='hold'?'hold':order==='forward'?'move':'')}});
-let battleFocus;
+let battleFocus;const experienceView=mountExperienceView();
 updateHome();requestAnimationFrame(frame);
 
 mountSkillGuide({getBattle:()=>battle,getProgress:()=>progress,setPaused:setPause});

@@ -122,6 +122,8 @@ export async function hitSound(kind='slash'){
  // Retry browser audio unlocking instead of silently discarding the first strike.
  if(init().state!=='running'&&!await unlockAudio())return false;
  if(!sfx||isBackground()||backgroundPaused)return false;
+ if(kind==='experience'){tone(sfxBus,523,.28,.09,'sine',784);tone(sfxBus,1046,.3,.05);return true}
+ if(kind==='level-up'){for(const f of [523,659,784,1046])tone(sfxBus,f,.85,.12,'sine',f*1.01,.03);tone(sfxBus,196,.4,.14,'triangle',392);return true}
  const early=/^skill-([a-z]+)-([01])$/.exec(kind),small=early&&skillPresentation(early[1],Number(early[2]));
  if(small){for(const f of small.notes)tone(sfxBus,f,small.soundDuration,small.volume,small.wave,f*small.slide);noise(sfxBus,small.soundDuration,small.weight,small.noise);return true}
  const master=kind.startsWith('master-')&&MASTER_STYLES[kind.slice(7)];
