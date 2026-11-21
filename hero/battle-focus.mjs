@@ -1,3 +1,4 @@
+import {mountMissionQuick} from './mission-quick.mjs?v=mission-guidance-1';
 import {ARMY_STYLE,TACTICS,SIGNATURES,doctrine,useTactic} from './army-doctrine.mjs?v=army-1';
 export function mountBattleFocus({getBattle,getSelected,toggleAutoSkill}){
  const $=id=>document.getElementById(id),battle=$('battle'),field=$('field');
@@ -25,6 +26,7 @@ export function mountBattleFocus({getBattle,getSelected,toggleAutoSkill}){
  });
  const details=button('selectedDetails','詳情',bar);details.onclick=()=>{close();$('skillGuideButton').click()};
  const mission=drawer('missionDrawer','任務',top),menu=drawer('battleMenu','更多',top);
+ const updateMissionQuick=mountMissionQuick(field,()=>{if(current?.panel!==mission)buttons.missionDrawer.click()});
  const tactics=drawer('tacticDrawer','戰術（T）',menu),style=create('p'),signatureText=create('p'),meter=create('p');tactics.append(style,signatureText,meter);
  const tacticButtons=TACTICS.map(spec=>{const e=button('tactic-'+spec.id,spec.name+' · '+spec.cost,tactics);e.title=spec.text;e.onclick=()=>{const b=getBattle(),u=getSelected();if(useTactic(b,spec.id,u?.lane))close()};tactics.append(create('p',null,spec.text));return e});
  menu.append($('battleMapButton'),$('supplies'),$('skillGuideButton'),$('battleKeyHint'));
@@ -45,7 +47,7 @@ export function mountBattleFocus({getBattle,getSelected,toggleAutoSkill}){
   const option=$('unitSelect').selectedOptions[0];if(option&&u?.heroId){const r=b.heroResources[u.heroId];option.textContent=option.textContent.split(' · MP')[0]+' · MP '+Math.floor(r.mp)+'/60'}
   if(!u&&current?.panel===orders)close();
   const panel=$('chapterMission');if(panel&&panel.parentElement!==mission)mission.append(panel);
-  buttons.missionDrawer.hidden=!b.mission;if(b.mission)buttons.missionDrawer.title=$('missionObjective')?.textContent||'本關任務';
+  updateMissionQuick(b);buttons.missionDrawer.hidden=!b.mission;if(b.mission)buttons.missionDrawer.title=$('missionObjective')?.textContent||'本關任務';
   for(const lane of $('lanes').children){let marker=lane.querySelector('.tactic-trap');const trap=army.traps.find(t=>t.lane===Number(lane.dataset.lane));if(trap){if(!marker){marker=create('span');marker.className='tactic-trap';lane.append(marker)}marker.textContent='伏';marker.style.left=(trap.x*100)+'%';marker.title='伏兵待命 '+Math.ceil(trap.until-b.time)+' 秒'}else marker?.remove()}
   const guide=$('firstGuide');if(guide&&!guide.hidden){if(guide.dataset.step!==guide.dataset.lastStep){guide.dataset.lastStep=guide.dataset.step;guide.dataset.shownAt=b.time}guide.classList.toggle('guide-quiet',b.time-Number(guide.dataset.shownAt)>7)}
   const text=b.time<b.noticeUntil?b.notice:'';if(text&&text!==lastNotice){lastNotice=text;noticeAt=b.time}if(!text)lastNotice='';toast.textContent=text;toast.hidden=!text||b.time-noticeAt>3||!!b.duel||!!b.introPending;
