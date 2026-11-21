@@ -122,30 +122,33 @@ export async function hitSound(kind='slash'){
  // Retry browser audio unlocking instead of silently discarding the first strike.
  if(init().state!=='running'&&!await unlockAudio())return false;
  if(!sfx||isBackground()||backgroundPaused)return false;
- if(kind==='experience'){tone(sfxBus,523,.28,.09,'sine',784);tone(sfxBus,1046,.3,.05);return true}
- if(kind==='level-up'){for(const f of [523,659,784,1046])tone(sfxBus,f,.85,.12,'sine',f*1.01,.03);tone(sfxBus,196,.4,.14,'triangle',392);return true}
+ return soundRecipe(kind,sfxBus);
+}
+function soundRecipe(kind,bus){
+ if(kind==='experience'){tone(bus,523,.28,.09,'sine',784);tone(bus,1046,.3,.05);return true}
+ if(kind==='level-up'){for(const f of [523,659,784,1046])tone(bus,f,.85,.12,'sine',f*1.01,.03);tone(bus,196,.4,.14,'triangle',392);return true}
  const early=/^skill-([a-z]+)-([01])$/.exec(kind),small=early&&skillPresentation(early[1],Number(early[2]));
- if(small){for(const f of small.notes)tone(sfxBus,f,small.soundDuration,small.volume,small.wave,f*small.slide);noise(sfxBus,small.soundDuration,small.weight,small.noise);return true}
+ if(small){for(const f of small.notes)tone(bus,f,small.soundDuration,small.volume,small.wave,f*small.slide);noise(bus,small.soundDuration,small.weight,small.noise);return true}
  const master=kind.startsWith('master-')&&MASTER_STYLES[kind.slice(7)];
- if(master){for(const f of master.notes)tone(sfxBus,f,.65,.18,master.wave,f*master.slide);noise(sfxBus,.4,master.weight,master.noise);return true}
+ if(master){for(const f of master.notes)tone(bus,f,.65,.18,master.wave,f*master.slide);noise(bus,.4,master.weight,master.noise);return true}
  if(kind.startsWith('warning-')){
   // A short gong + low drum separates the warning from the later impact.
   const spell=/wind|rain|thunder/.test(kind),base=spell?330:220;
-  tone(sfxBus,95,.42,.65,'sine',38);noise(sfxBus,.16,.32,700);
-  for(const [ratio,volume] of [[1,.28],[1.47,.17],[2.13,.1]])tone(sfxBus,base*ratio,.62,volume,'sine',0,.008);
-  if(spell){noise(sfxBus,.45,.2,kind.endsWith('rain')?3200:1100);tone(sfxBus,440,.45,.12,'triangle',880)}else tone(sfxBus,180,.35,.14,'triangle',360);
+  tone(bus,95,.42,.65,'sine',38);noise(bus,.16,.32,700);
+  for(const [ratio,volume] of [[1,.28],[1.47,.17],[2.13,.1]])tone(bus,base*ratio,.62,volume,'sine',0,.008);
+  if(spell){noise(bus,.45,.2,kind.endsWith('rain')?3200:1100);tone(bus,440,.45,.12,'triangle',880)}else tone(bus,180,.35,.14,'triangle',360);
   return true;
  }
- if(kind==='wind'){noise(sfxBus,1.1,.5,800);tone(sfxBus,260,.7,.16,'triangle',90);return true}
- if(kind==='rain'){noise(sfxBus,.9,.35,3500);for(const f of [750,1100,1450])tone(sfxBus,f,.25,.08);return true}
- if(kind==='thunder'){noise(sfxBus,.8,.75,200);tone(sfxBus,90,.9,.55,'sine',28);noise(sfxBus,.12,.45,3000);return true}
- if(kind==='heal'){for(const f of [523,659,784])tone(sfxBus,f,.9,.13);return true}
- if(kind==='oath'){for(const f of [196,294,392,587])tone(sfxBus,f,1.3,.16);noise(sfxBus,.7,.35,1200);tone(sfxBus,110,.7,.6,'sine',35);return true}
- if(kind==='roar'||kind==='boss'){noise(sfxBus,.65,.8,kind==='boss'?350:600);tone(sfxBus,150,.65,.55,'sawtooth',45);tone(sfxBus,80,.8,.6);return true}
- if(kind==='arrow'){noise(sfxBus,.18,.6,3300);tone(sfxBus,950,.16,.3,'triangle',250);return true}
- if(kind==='block'){noise(sfxBus,.12,.5,4000);for(const f of [1600,2310,3490])tone(sfxBus,f,.45,.2,'sine');return true}
- if(kind==='finish'||kind==='cleave'){noise(sfxBus,.45,.9,1500);tone(sfxBus,1500,.35,.4,'triangle',120);tone(sfxBus,110,.7,.7,'sine',35);return true}
- noise(sfxBus,.22,.75,kind==='enemy-slash'||kind==='enemy'?1200:2400);tone(sfxBus,900,.2,.34,'triangle',180);tone(sfxBus,150,.18,.3,'sine',60);return true;
+ if(kind==='wind'){noise(bus,1.1,.5,800);tone(bus,260,.7,.16,'triangle',90);return true}
+ if(kind==='rain'){noise(bus,.9,.35,3500);for(const f of [750,1100,1450])tone(bus,f,.25,.08);return true}
+ if(kind==='thunder'){noise(bus,.8,.75,200);tone(bus,90,.9,.55,'sine',28);noise(bus,.12,.45,3000);return true}
+ if(kind==='heal'){for(const f of [523,659,784])tone(bus,f,.9,.13);return true}
+ if(kind==='oath'){for(const f of [196,294,392,587])tone(bus,f,1.3,.16);noise(bus,.7,.35,1200);tone(bus,110,.7,.6,'sine',35);return true}
+ if(kind==='roar'||kind==='boss'){noise(bus,.65,.8,kind==='boss'?350:600);tone(bus,150,.65,.55,'sawtooth',45);tone(bus,80,.8,.6);return true}
+ if(kind==='arrow'){noise(bus,.18,.6,3300);tone(bus,950,.16,.3,'triangle',250);return true}
+ if(kind==='block'){noise(bus,.12,.5,4000);for(const f of [1600,2310,3490])tone(bus,f,.45,.2,'sine');return true}
+ if(kind==='finish'||kind==='cleave'){noise(bus,.45,.9,1500);tone(bus,1500,.35,.4,'triangle',120);tone(bus,110,.7,.7,'sine',35);return true}
+ noise(bus,.22,.75,kind==='enemy-slash'||kind==='enemy'?1200:2400);tone(bus,900,.2,.34,'triangle',180);tone(bus,150,.18,.3,'sine',60);return true;
 }
 // iOS backgrounding/navigation can emit pagehide separately from visibilitychange.
 // Foregrounding alone stays silent; the existing pointer/key unlock path resumes.
@@ -153,3 +156,9 @@ document.addEventListener('visibilitychange',()=>{if(document.hidden)pauseBackgr
 window.addEventListener('pagehide',()=>{pageInactive=true;pauseBackgroundAudio()});
 window.addEventListener('pageshow',()=>{pageInactive=false});
 document.addEventListener('freeze',pauseBackgroundAudio);
+
+export function createSoundPreview(){
+ let bus,revision=0;
+ function stop(){revision++;if(bus){bus.gain.value=0;bus.disconnect();bus=null}}
+ return {stop,async play(kind){stop();const ticket=revision;if(!sfx||isBackground()||!await unlockAudio()||ticket!==revision||!sfx||isBackground())return false;bus=context.createGain();bus.connect(sfxBus);return soundRecipe(kind,bus)}};
+}

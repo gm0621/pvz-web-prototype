@@ -1,9 +1,9 @@
-import {renderTeamDuel} from './team-duel-view.mjs?v=experience-1';
+import {renderTeamDuel} from './team-duel-view.mjs?v=skill-preview-1';
 import {renderDuelCinematic} from './duel-cinematic.mjs?v=passive-feedback-1';
 import {duelPattern} from './duel-patterns.mjs?v=passive-feedback-1';
-import {renderDuelEntrance} from './duel-entrance.mjs?v=experience-1';
+import {renderDuelEntrance} from './duel-entrance.mjs?v=skill-preview-1';
 import {HEROES,enemyArt,STAGES} from './story.mjs?v=passive-feedback-1';
-import {hitSound} from './audio.mjs?v=experience-1';
+import {hitSound} from './audio.mjs?v=skill-preview-1';
 import {duelBeats,duelBeat} from './engine.mjs?v=army-1';
 export function renderDuel(b){
  const d=b.duel,dialog=document.getElementById('duelDialog');if(!d)return;
