@@ -1,4 +1,4 @@
-import {campGrowthCard} from './camp-growth.mjs?v=skill-preview-1';
+import {campGrowthCard} from './camp-growth.mjs?v=skill-practice-1';
 import {learnedPassives,passiveName} from './passive-feedback.mjs?v=passive-feedback-1';
 import {GENERALS,ALL_GENERALS,DEFAULT_TEAM,SLOTS,heroLevel,growthHint,growthBonuses,nextLesson,activeText,selectedTeam,maxLanes,buyHeroWeapon} from './roster.mjs?v=passive-feedback-1';
 import {paintPortrait} from './factions.mjs?v=passive-feedback-1';

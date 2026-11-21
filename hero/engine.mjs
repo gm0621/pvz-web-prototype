@@ -282,7 +282,7 @@ export function stepBattle(b,seconds){
  else if(extracted(b)||b.bossSpawned&&!b.enemies.length&&missionReady(b)){b.over=true;b.won=true}
 }
 
-function damageAlly(b,u,amount){const incoming=amount;amount=amount>0?Math.max(1,amount-(u.damageReduction||0)):0;if(incoming>amount&&u.heroId){const d=battleHeroes(b)[u.key];passiveCue(b,u,`${passiveLabel(d,'damageReduction','護身')} · 減傷 ${Number((incoming-amount).toFixed(1))}`,'guard')}const blocked=Math.min(u.shield||0,amount);u.shield=Math.max(0,(u.shield||0)-blocked);u.hp-=amount-blocked}
+export function damageAlly(b,u,amount){const incoming=amount;amount=amount>0?Math.max(1,amount-(u.damageReduction||0)):0;if(incoming>amount&&u.heroId){const d=battleHeroes(b)[u.key];passiveCue(b,u,`${passiveLabel(d,'damageReduction','護身')} · 減傷 ${Number((incoming-amount).toFixed(1))}`,'guard')}const blocked=Math.min(u.shield||0,amount);u.shield=Math.max(0,(u.shield||0)-blocked);u.hp-=amount-blocked}
 export function castActive(b,key,index){
  if(!b?.heroMode||b.paused||b.over||b.duel||b.introPending)return false;const u=b.allies.find(a=>a.key===key&&a.hp>0),d=battleHeroes(b)[key],s=d?.skills?.[index];if(!u||!s||d.heroLevel<s.level)return false;const r=b.heroResources[d.heroId];if(r.mp<s.mp||b.time<(r.ready[index]||0))return false;
  const near=b.enemies.filter(e=>e.hp>0&&e.lane===u.lane&&e.x>=u.x-.03&&e.x-u.x<=((b.peachMode||b.sunMode)?.17:d.ranged?.4:.28));const offensive=!!s.effects?.damage||['pierce','sweep','push','volley','rain','halt','lock'].includes(s.id);if(offensive&&!near.length){b.notice='這一路射程內還沒有敵人，MP 未扣除。';b.noticeUntil=b.time+2;return false}

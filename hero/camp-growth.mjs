@@ -1,4 +1,4 @@
-import {previewButton} from './skill-preview.mjs?v=skill-preview-1';
+import {previewButton} from './skill-preview.mjs?v=skill-practice-1';
 import {LEVEL_XP,heroLevel,nextLesson,activeText} from './roster.mjs?v=passive-feedback-1';
 import {paintPortrait} from './factions.mjs?v=passive-feedback-1';
 const el=(tag,text)=>{const e=document.createElement(tag);if(text)e.textContent=text;return e};

@@ -1,5 +1,5 @@
 import {enemyPortrait,paintPortrait} from './factions.mjs?v=passive-feedback-1';
-import {bossProfile,laneLabel} from './engine.mjs?v=army-1';
+import {bossProfile,laneLabel} from './engine.mjs?v=skill-practice-1';
 import {enemyArt} from './story.mjs?v=passive-feedback-1';
 import {hitSound} from './audio.mjs?v=skill-preview-1';
 const seen=new WeakMap();
