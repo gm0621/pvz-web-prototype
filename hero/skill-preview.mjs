@@ -1,4 +1,4 @@
-import {createPractice,castPractice,strikePracticeShield,mountPractice} from './skill-practice.mjs?v=skill-practice-1';
+import {createPractice,castPractice,strikePracticeShield,mountPractice} from './skill-practice.mjs?v=mission-impact-1';
 import {ALL_GENERALS,activeText} from './roster.mjs?v=passive-feedback-1';
 import {paintPortrait} from './factions.mjs?v=passive-feedback-1';
 import {skillPresentation,skillArtwork} from './skill-presentation.mjs?v=passive-feedback-1';
@@ -10,7 +10,7 @@ let dialog,player,frame=0,origin,current,practiceView;
 function stop(){cancelAnimationFrame(frame);player?.stop();if(dialog){dialog.dataset.playing='false';dialog.querySelector('[data-replay]').disabled=false}}
 function mount(){
  if(dialog)return;
- dialog=document.createElement('dialog');dialog.id='skillPreview';dialog.setAttribute('aria-labelledby','previewTitle');dialog.innerHTML='<header><small>營地演武 · 招式預覽</small><h2 id="previewTitle"></h2><p data-state></p></header><div class="preview-scroll"><div class="preview-stage"><img alt=""><div class="preview-art" aria-hidden="true"></div><span class="preview-passive"></span></div><p data-description></p><small data-note></small></div><footer><button data-replay class="gold-button">再看一次 ↻</button><button data-close class="quiet-button">返回營地</button></footer>';
+ dialog=document.createElement('dialog');dialog.id='skillPreview';dialog.setAttribute('aria-labelledby','previewTitle');dialog.innerHTML='<header><small>演武場 · 技能展示</small><h2 id="previewTitle"></h2><p data-state></p></header><div class="preview-scroll"><div class="preview-stage"><img alt=""><div class="preview-art" aria-hidden="true"></div><span class="preview-passive"></span></div><p data-description></p><small data-note></small></div><footer><button data-replay class="gold-button">再看一次 ↻</button><button data-close class="quiet-button">返回營地</button></footer>';
  document.body.append(dialog);player=createSoundPreview();dialog.querySelector('[data-replay]').onclick=play;dialog.querySelector('[data-close]').onclick=()=>dialog.close();dialog.addEventListener('close',()=>{stop();origin?.isConnected&&origin.focus({preventScroll:true})});dialog.addEventListener('cancel',stop);
  const background=()=>{if(dialog.open){stop();dialog.querySelector('[data-note]').textContent='預覽已暫停，按「再看一次」重新播放。'}};document.addEventListener('visibilitychange',()=>{if(document.hidden)background()});window.addEventListener('pagehide',background);
 }
@@ -30,6 +30,8 @@ function play(){
  frame=requestAnimationFrame(draw);
 }
 export function previewSkill(id,s,passive,level,trigger){
- mount();stop();origin=trigger;current={id,s,passive,level};const g=ALL_GENERALS[id];dialog.querySelector('h2').textContent=`${g.name} · ${passive?passiveName(s):s.name}`;dialog.querySelector('[data-state]').textContent=`${passive?'被動 · 自動生效':'主動技能'} · Lv.${s.level} ${level>=s.level?'已學會':'解鎖（尚未學會）'}`;paintPortrait(dialog.querySelector('img'),g);dialog.querySelector('img').alt=g.name;dialog.querySelector('[data-description]').textContent=passive?s.text:activeText(g,s,Math.max(level,s.level));if(!dialog.open)dialog.showModal();dialog.querySelector('[data-close]').focus();play();
+ mount();stop();origin=trigger;current={id,s,passive,level};dialog.querySelector('[data-close]').textContent=trigger?.closest('#deployment')?'返回選將':trigger?.closest('#skillGuide')?'返回技能介紹':'返回營地';const g=ALL_GENERALS[id];dialog.querySelector('h2').textContent=`${g.name} · ${passive?passiveName(s):s.name}`;dialog.querySelector('[data-state]').textContent=`${passive?'被動 · 自動生效':'主動技能'} · Lv.${s.level} ${level>=s.level?'已學會':'解鎖（尚未學會）'}`;paintPortrait(dialog.querySelector('img'),g);dialog.querySelector('img').alt=g.name;dialog.querySelector('[data-description]').textContent=passive?s.text:activeText(g,s,Math.max(level,s.level));if(!dialog.open)dialog.showModal();dialog.querySelector('[data-close]').focus();play();
 }
-export function previewButton(id,s,passive,level){const b=document.createElement('button');b.className='quiet-button skill-preview-button';b.type='button';b.dataset.preview=`${id}:${passive?'passive':'active'}:${s.level}`;b.textContent=`▶ ${passive?'預覽提示':'預覽招式'} · ${passive?passiveName(s):s.name}（Lv.${s.level}）`;b.onclick=()=>previewSkill(id,s,passive,level,b);return b}
+export function previewButton(id,s,passive,level){const b=document.createElement('button');b.className='quiet-button skill-preview-button';b.type='button';b.dataset.preview=`${id}:${passive?'passive':'active'}:${s.level}`;b.textContent=`${passive?'被動':'主動'}｜${passive?passiveName(s):s.name} · Lv.${s.level}${level<s.level?' 🔒':' ✓'}`;b.setAttribute('aria-label',`${passive?passiveName(s):s.name}，Lv.${s.level}，${level<s.level?'尚未學會':'已學會'}，查看介紹與展示`);b.onclick=()=>previewSkill(id,s,passive,level,b);return b}
+
+export function skillButtons(id,g,level){const list=document.createElement('div');list.className='compact-skill-list';for(const s of g.skills)list.append(previewButton(id,s,false,level));for(const s of g.passives)list.append(previewButton(id,s,true,level));return list}

@@ -1,4 +1,4 @@
-import {previewButton} from './skill-preview.mjs?v=skill-practice-1';
+import {previewButton,skillButtons} from './skill-preview.mjs?v=mission-impact-1';
 import {LEVEL_XP,heroLevel,nextLesson,activeText} from './roster.mjs?v=passive-feedback-1';
 import {paintPortrait} from './factions.mjs?v=passive-feedback-1';
 const el=(tag,text)=>{const e=document.createElement(tag);if(text)e.textContent=text;return e};
@@ -14,11 +14,9 @@ export function campGrowthCard(id,g,xp,weapon,summary){
  if(lesson){
   goal.append(el('strong',`下一招 · Lv.${lesson}（還差 ${LEVEL_XP[lesson-1]-xp} 經驗）`));
   if(lesson>level+1)goal.append(el('small',`Lv.${level+1} 先提升體力與普攻，再往新招前進！`));
-  for(const s of g.skills.filter(s=>s.level===lesson))goal.append(el('p',`主動 · ${s.name}`),el('small',`${activeText(g,s,lesson)} 點選施放，消耗 ${s.mp} MP。`));
-  for(const s of g.passives.filter(s=>s.level===lesson))goal.append(el('p',`被動 · ${s.name}`),el('small',`${s.text} 學會後自動生效。`));
   for(const s of g.skills.filter(s=>s.level===lesson))goal.append(previewButton(id,s,false,level));
   for(const s of g.passives.filter(s=>s.level===lesson))goal.append(previewButton(id,s,true,level));
  }else goal.append(el('strong','全部招式已學會！'),el('small','帶著拿手絕招，繼續幫助夥伴吧。'));
  body.append(goal,el('small',`兵器強化 ${weapon}／3`));
- const details=el('details');details.append(el('summary','查看全部主動、被動技能'),el('p',summary));for(const s of g.skills)details.append(previewButton(id,s,false,level));for(const s of g.passives)details.append(previewButton(id,s,true,level));body.append(details);card.append(portrait,body);return card;
+ const details=el('details');details.append(el('summary','點技能，看介紹與展示'),skillButtons(id,g,level));body.append(details);card.append(portrait,body);return card;
 }
