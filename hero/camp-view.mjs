@@ -1,13 +1,13 @@
-import {campGrowthCard} from './camp-growth.mjs?v=mission-impact-1';
-import {PEACH_GENERALS,SUN_GENERALS,SLOTS,heroLevel} from './roster.mjs?v=passive-feedback-1';
-import {skillSummary} from './roster-view.mjs?v=mission-impact-1';
-import {renderHeroCamp} from './roster-view.mjs?v=mission-impact-1';
-import {STORY_PEOPLE,renderPeople} from './characters.mjs?v=passive-feedback-1';
-import {STAGES,chapterInfo} from './story.mjs?v=passive-feedback-1';
-import {factionFor,paintPortrait} from './factions.mjs?v=passive-feedback-1';
-import {campConversation} from './camp-talk.mjs?v=passive-feedback-1';
-import {GOODS,purchase,weaponsForLevel} from './campaign.mjs?v=passive-feedback-1';
-import {CAMP_LINES} from './novel.mjs?v=passive-feedback-1';
+import {campGrowthCard} from './camp-growth.mjs?v=archer-identity-1';
+import {PEACH_GENERALS,SUN_GENERALS,SLOTS,heroLevel} from './roster.mjs?v=archer-identity-1';
+import {skillSummary} from './roster-view.mjs?v=archer-identity-1';
+import {renderHeroCamp} from './roster-view.mjs?v=archer-identity-1';
+import {STORY_PEOPLE,renderPeople} from './characters.mjs?v=archer-identity-1';
+import {STAGES,chapterInfo} from './story.mjs?v=archer-identity-1';
+import {factionFor,paintPortrait} from './factions.mjs?v=archer-identity-1';
+import {campConversation} from './camp-talk.mjs?v=archer-identity-1';
+import {GOODS,purchase,weaponsForLevel} from './campaign.mjs?v=archer-identity-1';
+import {CAMP_LINES} from './novel.mjs?v=archer-identity-1';
 export function mountCamp({progress,level,heroes,stage,onSave,onContinue,won=true}){
  const $=id=>document.getElementById(id);let shop='items';
  let people=$('campTalkPeople');if(!people){people=document.createElement('aside');people.id='campTalkPeople';people.className='story-people';people.setAttribute('aria-label','對話提及人物');$('campTalkText').after(people)}people.hidden=true;

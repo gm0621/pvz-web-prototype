@@ -1,4 +1,4 @@
-import {stagePeople,mapPersonSvg,renderMatchup} from './characters.mjs?v=passive-feedback-1';
+import {stagePeople,mapPersonSvg,renderMatchup} from './characters.mjs?v=archer-identity-1';
 import {HISTORICAL_STAGES} from './history-stages.mjs?v=passive-feedback-1';
 // Approximate regional placement, not historical borders or a surveyed route.
 export const MAP_PLACES={

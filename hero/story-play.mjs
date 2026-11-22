@@ -1,5 +1,5 @@
 import {HISTORICAL_STAGES} from './history-stages.mjs?v=passive-feedback-1';
-import {paintPortrait} from './factions.mjs?v=passive-feedback-1';
+import {paintPortrait} from './factions.mjs?v=archer-identity-1';
 import {THIRD_CHAPTER} from './chapter-three.mjs?v=passive-feedback-1';
 // Small, optional story choices. Facts, novel episodes and invented encounters stay labelled.
 export const STORY_TASKS=[

@@ -1,3 +1,9 @@
+## 2026-11-22 夏侯淵與弓兵陣營辨識
+
+- 使用者反映夏侯淵像小兵、曹操軍弓兵仍穿綠色。確認 story roster 只改弓兵名稱，圖片沿用義軍。新增原創透明 3×3 圖集：夏侯淵（紅纓、藍金甲、披風、雕弓）、曹軍藍黑弓兵、孫軍赤色弓兵；劉備軍保留綠色。各列待機／拉弓／放箭。使用內建 image_gen，完整提示保存在 `hero/assets/factions/archer-identity-prompt.txt`。
+- 選將、兵卡、戰場、營地及技能展示共用角色設定；曹／孫軍戰場預載新圖集。普通弓兵按 lastAttack 推進三姿勢，依戰鬥時間暫停；敵弓手保持原素材，避免友軍透明佔位圖造成消失。練習場友軍也跟隨武將陣營。純美術，未改傷害、射程、存檔。
+- 驗證：362 項單元測試、桌面／手機三陣營共 6 項 UI 測試通過。確認第 18 關選夏侯淵後出陣與藍色弓兵、第 20 關赤色弓兵、第 1 關綠色弓兵，人工檢視手機畫面。資源引用版本統一 archer-identity-1，音效仍沿用同一既有版本。
+
 ## 2026-11-22 獨立線上跳關入口
 
 - 已發布 `b3e654b`，[Pages 44985520252](https://github.com/gm0621/pvz-web-prototype/actions/runs/44985520252) build／deploy 成功。正式 test.html、loader、共用 hook 三份資源逐位元相符；網址 https://gm0621.github.io/pvz-web-prototype/hero/test.html 。

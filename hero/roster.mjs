@@ -1,7 +1,7 @@
 import {ADVANCED_GROWTH,growthBonuses,learningLevels} from './skill-growth.mjs?v=passive-feedback-1';
 export {growthBonuses,learningLevels,activeText} from './skill-growth.mjs?v=passive-feedback-1';
 import {PEACH_HEROES} from './hero-base.mjs?v=passive-feedback-1';
-import {FACTIONS,BLANK_PORTRAIT} from './factions.mjs?v=passive-feedback-1';
+import {FACTIONS,BLANK_PORTRAIT,ARCHER_ATLAS} from './factions.mjs?v=archer-identity-1';
 export const SLOTS=['liubei','guanyu','zhangfei','hero4','hero5'];
 export const DEFAULT_TEAM=['caocao','xiahoudun','caohong'];
 const skill=(id,name,text,mp,cooldown,level=1)=>({id,name,text,mp,cooldown,level});
@@ -11,7 +11,7 @@ export const GENERALS={
  xiahoudun:{...FACTIONS.cao.heroes.guanyu,cost:100,speed:.05,cooldown:5,role:'穿擊',passive:'勇猛：普通攻擊額外 +2 傷害。',skills:[skill('pierce','奮槍突進','穿擊同路前方近處敵人，各造成 45 傷害。',20,8),skill('sweep','破陣長槍','同路前方近處敵人各受 65 傷害，暈眩 2 秒。',40,18,3)]},
  caohong:{...FACTIONS.cao.heroes.zhangfei,cost:110,speed:.04,cooldown:6,role:'擊退',passive:'護衛體魄：生命上限額外 +25。',skills:[skill('push','捨身斷後','同路近敵受到 20 傷害並暈眩 1 秒；小兵被推回。',20,8),skill('escape','護軍撤離','同路友軍獲得 45 護盾，持續 6 秒。',40,18,3)]},
  caoren:{...extra('曹仁',0,{hp:290,damage:20,range:.08},'劍盾／近戰'),rate:1.4,role:'守護',passive:'堅守：生命上限額外 +35。',skills:[skill('shield','堅城護軍','同路友軍獲得 35 護盾，持續 6 秒。',20,8),skill('fort','不動堅陣','全隊獲得 45 護盾，持續 6 秒。',40,18,3)]},
- xiahouyuan:{...extra('夏侯淵',1,{hp:155,damage:22,range:.31},'弓箭／遠程'),rate:1.2,ranged:true,role:'遠射',passive:'鷹眼：射程比普通弓兵更遠。',skills:[skill('volley','疾風連射','射擊同路射程內最近敵人，造成 60 傷害。',20,8),skill('rain','箭雨支援','射程內同路敵人各受到 45 傷害。',40,18,3)]},
+ xiahouyuan:{...extra('夏侯淵',1,{hp:155,damage:22,range:.31},'弓箭／遠程'),atlas:ARCHER_ATLAS,row:0,rate:1.2,ranged:true,role:'遠射',passive:'鷹眼：射程比普通弓兵更遠。',skills:[skill('volley','疾風連射','射擊同路射程內最近敵人，造成 60 傷害。',20,8),skill('rain','箭雨支援','射程內同路敵人各受到 45 傷害。',40,18,3)]},
  yujin:{...extra('于禁',2,{hp:230,damage:23,range:.11},'槍盾／近戰'),rate:1.3,role:'阻擋',passive:'紀律：每秒恢復 4 MP，比其他武將快。',skills:[skill('halt','列陣止步','同路近敵各受 15 傷害，停步 2 秒。',20,8),skill('lock','整軍固守','同路近敵停步 3 秒，同路友軍獲得 30 護盾。',40,18,3)]}
 };
 for(const g of Object.values(GENERALS))g.description=g.role+' · '+g.skills[0].text;

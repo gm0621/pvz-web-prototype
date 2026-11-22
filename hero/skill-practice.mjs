@@ -1,5 +1,6 @@
-import {createBattle,deploy,castActive,damageAlly} from './engine.mjs?v=mission-impact-1';
-import {ALL_GENERALS,PEACH_GENERALS,SUN_GENERALS,rosterFor,growthState,LEVEL_XP} from './roster.mjs?v=passive-feedback-1';
+import {archerArtwork} from './factions.mjs?v=archer-identity-1';
+import {createBattle,deploy,castActive,damageAlly} from './engine.mjs?v=archer-identity-1';
+import {ALL_GENERALS,PEACH_GENERALS,SUN_GENERALS,rosterFor,growthState,LEVEL_XP} from './roster.mjs?v=archer-identity-1';
 import {PEACH_HEROES} from './hero-base.mjs?v=passive-feedback-1';
 // A disposable battle. No campaign, storage, rewards, timers or normal wave stepping.
 export function createPractice(id,index,level){
@@ -20,7 +21,7 @@ export function mountPractice(stage,p){
   const sprite=make('span','practice-sprite');sprite.setAttribute('role','img');sprite.setAttribute('aria-label',name);let atlas=false;
   if(hero){atlas=!!g.atlas;sprite.style.backgroundImage=`url("${g.atlas||'./assets/attacks/'+p.id+'.png'}")`;sprite.style.backgroundSize=atlas?`300% ${g.atlasRows===2?200:300}%`:'300% 200%'}
   else if(enemy){sprite.style.backgroundImage='url("./assets/attacks/yellow-turban-troops.png")';sprite.style.backgroundSize='300% 200%'}
-  else{sprite.style.backgroundImage=`url("${PEACH_HEROES.archer.asset}")`;sprite.style.backgroundSize='contain';sprite.style.backgroundRepeat='no-repeat';sprite.style.backgroundPosition='center'}
+  else{const art=archerArtwork(ALL_GENERALS[p.id].faction);sprite.style.backgroundImage=`url("${art.atlas||PEACH_HEROES.archer.asset}")`;sprite.style.backgroundSize=art.atlas?'300% 300%':'contain';sprite.style.backgroundRepeat='no-repeat';sprite.style.backgroundPosition=art.atlas?`0% ${art.row*50}%`:'center'}
   const title=make('small','',name),hp=make('div','practice-hp'),fill=make('i',''),value=make('small','practice-value'),shield=make('small','practice-shield'),delta=make('b','practice-delta');hp.append(fill);card.append(title,sprite,hp,value,shield,delta);field.append(card);rows.push({u,card,sprite,fill,value,shield,delta,hero,enemy,g,atlas,old:p.before.find(a=>a.id===u.id)});
  }
  function render(age){

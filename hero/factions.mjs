@@ -22,3 +22,7 @@ export function paintPortrait(node,person){
  node.src=person.asset;node.classList.toggle('faction-portrait',!!person.atlas);
  node.style.backgroundImage=person.atlas?`url("${person.atlas}")`:'';node.style.backgroundSize=person.atlas?`300% ${person.atlasRows===2?200:300}%`:'';node.style.backgroundPosition=person.atlas?`${(person.col||0)*50}% ${person.row*(person.atlasRows===2?100:50)}%`:'';
 }
+
+// Visual faction identity only; no combat-stat changes.
+export const ARCHER_ATLAS='./assets/factions/archer-identity.png';
+export const archerArtwork=faction=>faction==='cao'||faction==='sun'?{asset:BLANK_PORTRAIT,atlas:ARCHER_ATLAS,row:faction==='cao'?1:2}:{};

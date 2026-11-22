@@ -1,6 +1,6 @@
 import {LEARNING_LEVELS} from './skill-growth.mjs?v=passive-feedback-1';
-import {growthState,selectedTeam,DEFAULT_TEAM,ALL_GENERALS} from './roster.mjs?v=passive-feedback-1';
-import {factionFor} from './factions.mjs?v=passive-feedback-1';
+import {growthState,selectedTeam,DEFAULT_TEAM,ALL_GENERALS} from './roster.mjs?v=archer-identity-1';
+import {factionFor} from './factions.mjs?v=archer-identity-1';
 import {CAMPAIGN_LENGTH} from './campaign-config.mjs?v=passive-feedback-1';
 // Local campaign economy, independent of the original zombie game's account/store.
 export const GOODS={

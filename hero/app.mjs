@@ -1,36 +1,36 @@
-import {mountExperienceView} from './experience-view.mjs?v=skill-preview-1';
+import {mountExperienceView} from './experience-view.mjs?v=archer-identity-1';
 import {preloadBattleAssets,battleAssetsReady,prepareBattleAssets} from './battle-assets.mjs?v=images-1';
-import {mountBattleFocus} from './battle-focus.mjs?v=mission-impact-1';
+import {mountBattleFocus} from './battle-focus.mjs?v=archer-identity-1';
 import {advanceAutoSkills} from './auto-skills.mjs?v=battle-focus-1';
 import {renderPassiveFeedback} from './passive-view.mjs?v=passive-feedback-1';
-import {mountSkillIntro} from './skill-intro.mjs?v=passive-feedback-1';
+import {mountSkillIntro} from './skill-intro.mjs?v=archer-identity-1';
 import {beginReading,installStoryReader} from './story-reader.mjs?v=passive-feedback-1';
 import {shortPages} from './story-pages.mjs?v=passive-feedback-1';
-import {configureRoster,configurePeachRoster,configureSunRoster,awardExperience,SLOTS,ALL_GENERALS as GENERALS} from './roster.mjs?v=passive-feedback-1';
-import {openDeployment,mountActiveSkills} from './roster-view.mjs?v=mission-impact-1';
-import {castActive,lanesFor,laneLabel} from './engine.mjs?v=mission-impact-1';
-import {mountSkillGuide} from './skill-guide.mjs?v=mission-impact-1';
-import {renderPeople,STORY_PEOPLE} from './characters.mjs?v=passive-feedback-1';
-import {FACTIONS,factionFor,enemyPortrait,paintPortrait} from './factions.mjs?v=passive-feedback-1';
-import {mountHistoryLesson} from './history-view.mjs?v=passive-feedback-1';
-import {renderSkillCutin} from './skill-cutin.mjs?v=skill-preview-1';
-import {renderMasterCutin} from './master-cutin.mjs?v=skill-preview-1';
-import {renderBossCutin} from './boss-cutin.mjs?v=mission-impact-1';
+import {configureRoster,configurePeachRoster,configureSunRoster,awardExperience,SLOTS,ALL_GENERALS as GENERALS} from './roster.mjs?v=archer-identity-1';
+import {openDeployment,mountActiveSkills} from './roster-view.mjs?v=archer-identity-1';
+import {castActive,lanesFor,laneLabel} from './engine.mjs?v=archer-identity-1';
+import {mountSkillGuide} from './skill-guide.mjs?v=archer-identity-1';
+import {renderPeople,STORY_PEOPLE} from './characters.mjs?v=archer-identity-1';
+import {FACTIONS,factionFor,enemyPortrait,paintPortrait} from './factions.mjs?v=archer-identity-1';
+import {mountHistoryLesson} from './history-view.mjs?v=archer-identity-1';
+import {renderSkillCutin} from './skill-cutin.mjs?v=archer-identity-1';
+import {renderMasterCutin} from './master-cutin.mjs?v=archer-identity-1';
+import {renderBossCutin} from './boss-cutin.mjs?v=archer-identity-1';
 import {mountBattleKeys} from './battle-keys.mjs?v=battle-focus-1';
-import {mountJourney} from './journey-view.mjs?v=passive-feedback-1';
-import {renderMission} from './chapter-mission-view.mjs?v=mission-impact-1';
-import {mountCampaignMap} from './campaign-map.mjs?v=passive-feedback-1';
-import {advanceBattleFrame,normalizeBattleSpeed} from './battle-speed.mjs?v=mission-impact-1';
-import {mountNovel} from './novel.mjs?v=passive-feedback-1';
-import {mountCamp} from './camp-view.mjs?v=mission-impact-1';
-import {rewardVictory,useSupply,weaponsForLevel} from './campaign.mjs?v=passive-feedback-1';
+import {mountJourney} from './journey-view.mjs?v=archer-identity-1';
+import {renderMission} from './chapter-mission-view.mjs?v=archer-identity-1';
+import {mountCampaignMap} from './campaign-map.mjs?v=archer-identity-1';
+import {advanceBattleFrame,normalizeBattleSpeed} from './battle-speed.mjs?v=archer-identity-1';
+import {mountNovel} from './novel.mjs?v=archer-identity-1';
+import {mountCamp} from './camp-view.mjs?v=archer-identity-1';
+import {rewardVictory,useSupply,weaponsForLevel} from './campaign.mjs?v=archer-identity-1';
 import {createFirstGuide} from './first-guide.mjs?v=passive-feedback-1';
-import {mountStoryTask} from './story-play.mjs?v=passive-feedback-1';
-import {CHAPTER_BACKGROUNDS,STAGE_LEADS} from './prologue.mjs?v=passive-feedback-1';
-import {setMusic,setMusicMode,setMusicHome,musicTheme,musicOn,setSfx,unlockAudio,hitSound} from './audio.mjs?v=skill-preview-1';
-import {renderDuel} from './duel-view.mjs?v=mission-impact-1';
-import {chapterInfo,enemyArt,HEROES as BASE_HEROES,heroesForLevel,STAGES,ENEMY_ART,SHIELD_ART,FEATURES,heroDescription} from './story.mjs?v=passive-feedback-1';
-import {bossProfile,LANE_CAPACITY,laneCount,ENEMY_SWING,enemyAttackFrame,skipDuelEntrance,positionHero,commandHero,moveHero,BOSS_SKILLS,SAVE_KEY,normalizeProgress,createBattle,deploy,canDeploy,attackFrame,SWING} from './engine.mjs?v=mission-impact-1';
+import {mountStoryTask} from './story-play.mjs?v=archer-identity-1';
+import {CHAPTER_BACKGROUNDS,STAGE_LEADS} from './prologue.mjs?v=archer-identity-1';
+import {setMusic,setMusicMode,setMusicHome,musicTheme,musicOn,setSfx,unlockAudio,hitSound} from './audio.mjs?v=archer-identity-1';
+import {renderDuel} from './duel-view.mjs?v=archer-identity-1';
+import {chapterInfo,enemyArt,HEROES as BASE_HEROES,heroesForLevel,STAGES,ENEMY_ART,SHIELD_ART,FEATURES,heroDescription} from './story.mjs?v=archer-identity-1';
+import {bossProfile,LANE_CAPACITY,laneCount,ENEMY_SWING,enemyAttackFrame,skipDuelEntrance,positionHero,commandHero,moveHero,BOSS_SKILLS,SAVE_KEY,normalizeProgress,createBattle,deploy,canDeploy,attackFrame,SWING} from './engine.mjs?v=archer-identity-1';
 
 const $=id=>document.getElementById(id);
 let HEROES=BASE_HEROES;
@@ -108,7 +108,7 @@ function renderStory(){
 }
 function battleAssetUrls(level){
  const faction=factionFor(level),stage=STAGES[level-1];
- const sheets=faction?[`./assets/factions/${faction}.png`,enemyPortrait(stage.bossName,level)?.atlas]:['liubei','guanyu','zhangfei','yellow-turban-troops'].map(key=>`./assets/attacks/${key}.png`);
+ const sheets=faction?['./assets/factions/archer-identity.png',`./assets/factions/${faction}.png`,enemyPortrait(stage.bossName,level)?.atlas]:['liubei','guanyu','zhangfei','yellow-turban-troops'].map(key=>`./assets/attacks/${key}.png`);
  if(GENERAL_ATTACK_SHEETS[stage.bossName])sheets.push('./assets/attacks/'+GENERAL_ATTACK_SHEETS[stage.bossName]);
  return [...new Set([stage.scene,...sheets].filter(Boolean))];
 }
@@ -141,7 +141,7 @@ function buildDeploymentControls(){
 function unitNode(u,enemy){
  const d=enemy?null:HEROES[u.key],el=document.createElement('div');el.dataset.id=String(u.id);el.dataset.lane=String(u.lane);el.dataset.kind=enemy?'enemy':u.key;
  if(!enemy){el.tabIndex=0;el.setAttribute('role','button');el.setAttribute('aria-label',`選取${d.name}，調動位置`);el.onclick=()=>{if(battle.paused||battle.duel||battle.introPending||battle.over)return;if(selected&&!selectedUnit()){const deploying=selected;if(deploy(battle,deploying,u.lane)){firstGuide?.event('deploy');selected=null;selectedUnitId=null;}renderBattle();return;}if(selectedUnit()?.id===u.id){if(commandHero(battle,u.id,'hold'))firstGuide?.event('hold')}else {selected=u.key;selectedUnitId=u.id;firstGuide?.event('select-unit')}renderBattle()};el.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();el.click()}}}
- const sheet=enemy?(GENERAL_ATTACK_SHEETS[u.name]||(!u.boss&&!u.ranged?'yellow-turban-troops.png':null)):u.key!=='archer'&&!d.troop&&!d.atlas?`${u.key}.png`:null,asset=enemy?(u.boss?enemyArt(u.name):u.ranged?HEROES.archer.asset:u.shielded?SHIELD_ART:ENEMY_ART):d.asset,name=enemy?u.name:d.name;
+ const sheet=enemy?(GENERAL_ATTACK_SHEETS[u.name]||(!u.boss&&!u.ranged?'yellow-turban-troops.png':null)):u.key!=='archer'&&!d.troop&&!d.atlas?`${u.key}.png`:null,asset=enemy?(u.boss?enemyArt(u.name):u.ranged?BASE_HEROES.archer.asset:u.shielded?SHIELD_ART:ENEMY_ART):d.asset,name=enemy?u.name:d.name;
  el.innerHTML=`<span class="unit-shadow"></span><div class="unit-figure${sheet?' frame-figure':''}">${sheet?`<span class="attack-sprite" style="background-image:url('./assets/attacks/${sheet}')"></span>`:`<img class="sprite-upper" src="${asset}" alt=""><img class="sprite-leg leg-left" src="${asset}" alt=""><img class="sprite-leg leg-right" src="${asset}" alt="">`}</div><div class="health"><i></i></div><span class="unit-name">${name}</span>`;const atlas=enemy?enemyPortrait(u.name,battle.level):d.atlas?d:null;if(atlas){el.querySelector('.unit-figure').className='unit-figure frame-figure';el.querySelector('.unit-figure').innerHTML='<span class="attack-sprite faction-sprite"></span>';el.querySelector('.attack-sprite').style.backgroundImage=`url("${atlas.atlas}")`;}return el;
 }
 function renderUnits(){
@@ -152,14 +152,14 @@ function renderUnits(){
   el.setAttribute('aria-pressed',String(!enemy&&selectedUnit()?.id===u.id));el.dataset.order=u.order||'auto';el.dataset.lane=String(u.lane);el.dataset.bossName=u.boss?u.name:'';el.dataset.bossPhase=!u.boss?'':battle.time<(u.recoveryUntil||0)?'exposed':u.castAt?'casting':u.enraged?'enraged':!u.skillsCast?'guard':'fighting';el.dataset.skill=u.boss?bossProfile(battle,u).skillType||'':'';el.style.setProperty('--cast-progress',String(u.castAt?Math.max(0,1-(u.castAt-battle.time)/2.5):0));
   el.className=`unit ${atlas?.atlas.endsWith('/dong.png')?'atlas-unit ':''}${enemy?'enemy':'ally'}${framed?' has-attack-frames':''}${u.boss?' boss':''}${u.elite?' elite':''}${u.ranged?' ranged-enemy':''}${battle.time<(u.rallyUntil||0)?' rallied':''}${u.shielded?' shielded':''}${battle.time<(u.slowUntil||0)?' rain-slowed':''} ${u.action||'guarding'}${attacking?(u.key==='archer'||u.ranged?' shooting':' striking'):''}${u.flash>0&&!attacking?' hit':''}`;
   if(framed){const frame=generalFramed?(u.castAt?(u.castAt-battle.time>.45?0:1):2):enemy?enemyAttackFrame(u,battle.time):attackFrame(u,battle.time),sprite=el.querySelector('.attack-sprite');sprite.dataset.frame=frame;sprite.style.backgroundSize=generalFramed?'300% 100%':'300% 200%';sprite.style.backgroundPosition=`${(frame%3)*50}% ${generalFramed?0:enemy?(u.shielded?100:0):Math.floor(frame/3)*100}%`;el.classList.toggle('impact',generalFramed?frame===1:battle.time<(u.impactUntil||0))}
-  if(atlas){const sprite=el.querySelector('.attack-sprite'),age=battle.time-(u.swingStartedAt??-100),frame=u.castAt?(u.castAt-battle.time>.45?1:2):u.boss?(battle.time-u.lastAttack<.32?2:0):age>=0&&age<.58?(age<.24?1:2):0;sprite.style.backgroundSize='300% 300%';sprite.style.backgroundPosition=`${frame*50}% ${atlas.row*50}%`;sprite.dataset.frame=String(frame);}
+  if(atlas){const sprite=el.querySelector('.attack-sprite'),age=battle.time-(!enemy&&u.key==='archer'?u.lastAttack:(u.swingStartedAt??-100)),frame=u.castAt?(u.castAt-battle.time>.45?1:2):u.boss?(battle.time-u.lastAttack<.32?2:0):age>=0&&age<.58?(age<.24?1:2):0;sprite.style.backgroundSize='300% 300%';sprite.style.backgroundPosition=`${frame*50}% ${atlas.row*50}%`;sprite.dataset.frame=String(frame);}
   el.style.left=u.boss?`clamp(50px, ${u.x*100}%, calc(100% - 50px))`:`${u.x*100}%`;const row=list.filter(a=>a.lane===u.lane&&a.hp>0).sort((a,b)=>a.id-b.id),offset=!enemy&&row.length>1?(row.indexOf(u)-(row.length-1)/2)*18:0;el.style.top=`calc(${(u.lane+.5)/lanesFor(battle)*100}% + ${offset}px)`;el.querySelector('.unit-name').textContent=(enemy?u.name:HEROES[u.key].name)+(u.action==='holding'?' · 駐守':'');el.querySelector('.health i').style.width=`${Math.max(0,u.hp/u.maxHp*100)}%`;
  }
  for(const [id,el] of existing)if(!ids.has(id))el.remove();
 }
 function renderEffects(){
  const sounded=new Set();const root=$('effects'),existing=new Map([...root.children].map(el=>[el.dataset.id,el])),ids=new Set();
- for(const e of battle.effects){const id=String(e.id);ids.add(id);let el=existing.get(id);if(!el){if(!e.master&&['slash','enemy-slash','arrow','enemy-arrow','cleave','heal','oath','roar','boss','block','rally','fire','hook','thunder','wind','rain','rock'].includes(e.type)&&!sounded.has(e.type)){hitSound(({'enemy-arrow':'arrow',rally:'roar',fire:'boss',hook:'cleave',thunder:'thunder',rock:'boss'})[e.type]||e.type);sounded.add(e.type)}el=document.createElement('span');el.dataset.id=id;el.className=`combat-effect ${e.type}`;if(e.type==='defeat'||e.type==='breach'||e.type==='retreat'||e.type==='capture'){const img=document.createElement('img');img.src=e.key?HEROES[e.key].asset:e.boss?enemyArt(e.bossName):e.ranged?HEROES.archer.asset:e.shielded?SHIELD_ART:ENEMY_ART;const portrait=e.key?HEROES[e.key]:enemyPortrait(e.bossName,battle.level);if(portrait)paintPortrait(img,portrait);img.alt=e.type==='capture'?e.bossName+'被俘':'';el.append(img);if(e.type==='capture'){const label=document.createElement('small');label.textContent='被俘';el.append(label)};el.classList.toggle('enemy-exit',!!e.enemy);el.classList.toggle('ranged-exit',!!e.ranged);el.classList.toggle('left-facing-exit',!!e.enemy&&!!portrait?.atlas&&!portrait.atlas.endsWith('/dong.png'))}else el.textContent=e.type==='heal'||e.type==='oath'?'+':e.type==='roar'?'震':e.type==='cleave'?'斬':e.type==='arrow'?'➶':({rally:'旗',fire:'♨',hook:'⛓',thunder:'ϟ',wind:'風',rain:'雨'})[e.type]||'';root.append(el)}
+ for(const e of battle.effects){const id=String(e.id);ids.add(id);let el=existing.get(id);if(!el){if(!e.master&&['slash','enemy-slash','arrow','enemy-arrow','cleave','heal','oath','roar','boss','block','rally','fire','hook','thunder','wind','rain','rock'].includes(e.type)&&!sounded.has(e.type)){hitSound(({'enemy-arrow':'arrow',rally:'roar',fire:'boss',hook:'cleave',thunder:'thunder',rock:'boss'})[e.type]||e.type);sounded.add(e.type)}el=document.createElement('span');el.dataset.id=id;el.className=`combat-effect ${e.type}`;if(e.type==='defeat'||e.type==='breach'||e.type==='retreat'||e.type==='capture'){const img=document.createElement('img');img.src=e.key?HEROES[e.key].asset:e.boss?enemyArt(e.bossName):e.ranged?BASE_HEROES.archer.asset:e.shielded?SHIELD_ART:ENEMY_ART;const portrait=e.key?HEROES[e.key]:enemyPortrait(e.bossName,battle.level);if(portrait)paintPortrait(img,portrait);img.alt=e.type==='capture'?e.bossName+'被俘':'';el.append(img);if(e.type==='capture'){const label=document.createElement('small');label.textContent='被俘';el.append(label)};el.classList.toggle('enemy-exit',!!e.enemy);el.classList.toggle('ranged-exit',!!e.ranged);el.classList.toggle('left-facing-exit',!!e.enemy&&!!portrait?.atlas&&!portrait.atlas.endsWith('/dong.png'))}else el.textContent=e.type==='heal'||e.type==='oath'?'+':e.type==='roar'?'震':e.type==='cleave'?'斬':e.type==='arrow'?'➶':({rally:'旗',fire:'♨',hook:'⛓',thunder:'ϟ',wind:'風',rain:'雨'})[e.type]||'';root.append(el)}
  const progress=1-e.remaining/e.duration,x=['arrow','enemy-arrow','breach','retreat'].includes(e.type)?e.from+(e.to-e.from)*progress:e.to;
  el.style.left=`${x*100}%`;el.style.top=`${(e.lane+.5)/lanesFor(battle)*100}%`;el.style.opacity=String(['arrow','enemy-arrow'].includes(e.type)?1:['defeat','breach','retreat','capture'].includes(e.type)?1-progress:Math.sin(Math.PI*progress));
  if(e.type==='slash'&&e.weapon==='zhangfei'){el.classList.add('spear-thrust');el.style.width=`${Math.max(.03,e.to-e.from)*100}%`}

@@ -1,11 +1,11 @@
 import {HISTORICAL_STAGES} from './history-stages.mjs?v=passive-feedback-1';
-import {FACTIONS,factionFor} from './factions.mjs?v=passive-feedback-1';
+import {FACTIONS,factionFor,archerArtwork} from './factions.mjs?v=archer-identity-1';
 import {THIRD_CHAPTER} from './chapter-three.mjs?v=passive-feedback-1';
 import {WEATHER_GENERALS} from './weather-generals.mjs?v=passive-feedback-1';
 import {SECOND_CHAPTER} from './chapter-two.mjs?v=passive-feedback-1';
 import {PEACH_HEROES} from './hero-base.mjs?v=passive-feedback-1';
 export const HEROES=PEACH_HEROES;
-const ROSTERS=Object.fromEntries(Object.entries(FACTIONS).map(([f,data])=>[f,Object.fromEntries(Object.entries(HEROES).map(([key,hero])=>[key,{...hero,...data.heroes[key],...(key==='archer'?{name:data.title+'弓兵'}:{})}]))]));
+const ROSTERS=Object.fromEntries(Object.entries(FACTIONS).map(([f,data])=>[f,Object.fromEntries(Object.entries(HEROES).map(([key,hero])=>[key,{...hero,...data.heroes[key],...(key==='archer'?{name:data.title+'弓兵',...archerArtwork(f)}:{})}]))]));
 export const heroesForLevel=level=>ROSTERS[factionFor(level)]||HEROES;
 export const ENEMY_ART='./assets/yellow-turban-raider.png';
 export const SHIELD_ART='./assets/yellow-turban-shield.png';

@@ -1,0 +1,1 @@
+const base=require('./playwright.hero-focus.config');module.exports={...base,testMatch:'hero-archer-identity.spec.js',outputDir:'test-results/archer-identity',projects:base.projects.filter(p=>['phone','desktop'].includes(p.name))};
