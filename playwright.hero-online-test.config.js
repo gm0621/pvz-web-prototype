@@ -1,0 +1,1 @@
+const base=require('./playwright.hero-focus.config');module.exports={...base,testMatch:'hero-online-test.spec.js',outputDir:'test-results/online-test',projects:base.projects.filter(p=>['phone','desktop','tablet'].includes(p.name))};

@@ -1,0 +1,10 @@
+<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>英雄演義｜跳關測試</title></head><body><p id="loading">正在載入跳關測試…</p><script type="module">
+try {
+ const response=await fetch('./index.html',{cache:'no-store'});if(!response.ok)throw new Error('遊戲頁面載入失敗');
+ const doc=new DOMParser().parseFromString(await response.text(),'text/html');
+ const entry=doc.querySelector('script[type="module"][src*="app.mjs"]');if(!entry)throw new Error('找不到遊戲入口');
+ entry.dataset.gameEntry=new URL(entry.getAttribute('src'),location.href).href;entry.src='./test-loader.mjs?v=online-test-1';
+ doc.title='英雄演義｜跳關測試';const robots=doc.createElement('meta');robots.name='robots';robots.content='noindex,nofollow';doc.head.append(robots);
+ document.open();document.write('<!doctype html>'+doc.documentElement.outerHTML);document.close();
+}catch(error){document.getElementById('loading').textContent='測試頁載入失敗，請重新整理。'+error.message}
+</script></body></html>
