@@ -1,5 +1,11 @@
-import {HISTORICAL_STAGES} from './history-stages.mjs?v=chapter-thirteen-1';
-import {FACTIONS,factionFor} from './factions.mjs?v=chapter-thirteen-1';
+import {HISTORICAL_STAGES} from './history-stages.mjs?v=chapter-thirteen-2';
+import {FACTIONS,factionFor} from './factions.mjs?v=chapter-thirteen-2';
+const retreatSlots=['liubei','zhangfei'];
+const aliveInSlot=(battle,key)=>battle.allies.some(unit=>unit.key===key&&unit.hp>0);
+export function retreatPartyNames(battle,{missingOnly=false}={}){
+ const roster=battle.roster||FACTIONS[factionFor(battle.level)].heroes;
+ return retreatSlots.filter(key=>!missingOnly||!aliveInSlot(battle,key)).map(key=>roster[key].name);
+}
 const laneList=b=>Array.from({length:b.laneTotal||3},(_,i)=>i);
 const routeName=(b,l)=>(b.laneTotal||3)>3?`第 ${l+1}`:['上','中','下'][l];
 const siteNames=['道路','水井','宗廟'],laneNames=['上','中','下'];
@@ -32,7 +38,7 @@ export function stepHistoryMission(b,dt){
  if(m.kind==='supply'){if(laneList(b).every(l=>safe(b,l)))m.charge=Math.min(10,m.charge+dt);m.done=m.delivered>=3}
  if(['withdraw','decoy'].includes(m.kind)){
   if(b.bossSpawned&&m.withdrawAt===null)m.withdrawAt=b.time+18;
-  m.done=m.ordered&&['liubei','zhangfei'].every(key=>b.allies.some(u=>u.key===key&&u.hp>0&&u.x<=.18))&&b.allies.filter(u=>u.hp>0).every(u=>u.x<=.18);
+  m.done=m.ordered&&retreatSlots.every(key=>b.allies.some(u=>u.key===key&&u.hp>0&&u.x<=.18))&&b.allies.filter(u=>u.hp>0).every(u=>u.x<=.18);
  }
  if(m.kind==='restoration'){if(m.site>=0&&safe(b,m.site)){m.sites[m.site]=Math.min(8,m.sites[m.site]+dt);if(m.sites[m.site]>=8){m.message=['道路已清理，行人能通過了。','水井已整理，可以取水了。','宗廟已整理，準備祭祀。'][m.site];m.site=-1}}m.done=m.sites.every(t=>t>=8)}
  if(m.kind==='holdout'){if(laneList(b).every(l=>safe(b,l)))m.hold=Math.min(24,m.hold+dt);m.done=m.hold>=24}
@@ -57,12 +63,12 @@ export function historyMissionText(b){const fronts=['','','','三','四','五'][
   return `${b.bossSpawned&&!b.enemies.some(e=>e.hp>0)?'敵軍已清退，還要完成運糧！ · ':''}軍糧 ${m.delivered}／3 批 · 備車 ${Math.floor(m.charge/10*100)}% · ${next}`;
  }
  if(['withdraw','decoy'].includes(m.kind)&&m.ordered){
-  const heroes=b.roster||FACTIONS[factionFor(b.level)].heroes,missing=['liubei','zhangfei'].filter(key=>!b.allies.some(u=>u.key===key&&u.hp>0)).map(key=>heroes[key].name);
+  const missing=retreatPartyNames(b,{missingOnly:true});
   if(missing.length)return `${missing.join('、')}尚未在場，請整備後召回，再帶隊撤離${stage.noBoss?'':` · ${opponent}無須擊倒`}`;
   const remaining=b.allies.filter(u=>u.hp>0&&u.x>.18).length;
   return remaining?`撤離中：尚有 ${remaining} 名友軍未回到左側 · 所有在場友軍都需撤回`:'隊伍已撤回左側，確認全員平安';
  }
- if(['withdraw','decoy'].includes(m.kind))return `${m.kind==='decoy'&&!m.decoyUsed?'先放置赤幘誘餌 · ':''}`+(m.withdrawAt===null?(stage.noBoss?`守住${fronts}路，等待後隊接應`:`守住${fronts}路，等${opponent}出陣`):b.time<m.withdrawAt?`接應尚需 ${Math.ceil(m.withdrawAt-b.time)} 秒`:'接應完成，按全軍撤離')+(stage.noBoss?' · 本關目標是保全撤離':` · 本關目標是撤退，不是擊倒${opponent}`);
+ if(['withdraw','decoy'].includes(m.kind))return `${m.kind==='decoy'&&!m.decoyUsed?'先放置赤幘誘餌 · ':''}`+(m.withdrawAt===null?(stage.noBoss?`守住${fronts}路，等待後隊接應`:`守住${fronts}路，等${opponent}出陣`):b.time<m.withdrawAt?`接應尚需 ${Math.ceil(m.withdrawAt-b.time)} 秒`:'接應完成，按全軍撤離')+(stage.noBoss?` · ${retreatPartyNames(b).join('、')}及在場友軍須撤回左側`:` · 本關目標是撤退，不是擊倒${opponent}`);
  if(m.kind==='restoration'){
   const detail=m.site<0?'選一處整備，派友軍守住對應路線':`${siteNames[m.site]}・${routeName(b,m.site)}路 · ${!b.allies.some(u=>u.hp>0&&u.lane===m.site)?'等候友軍接應':!safe(b,m.site)?'敵軍逼近，整備暫停':'整備中'}`;
   return `城內整備 ${m.sites.filter(t=>t>=8).length}／3 · ${detail}`;

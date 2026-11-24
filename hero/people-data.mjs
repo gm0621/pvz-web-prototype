@@ -1,11 +1,11 @@
-import {GENERALS} from './roster.mjs?v=chapter-thirteen-1';
-import {NOVEL_PAGES,CAMP_LINES} from './novel.mjs?v=chapter-thirteen-1';
-import {campConversation} from './camp-talk.mjs?v=chapter-thirteen-1';
-import {STORY_TASKS} from './story-play.mjs?v=chapter-thirteen-1';
-import {CHAPTER_BACKGROUNDS,STAGE_LEADS} from './prologue.mjs?v=chapter-thirteen-1';
-import {STORY_PEOPLE} from './characters.mjs?v=chapter-thirteen-1';
-import {HEROES,STAGES,chapterInfo,enemyArt,heroesForLevel} from './story.mjs?v=chapter-thirteen-1';
-import {FACTIONS,enemyPortrait} from './factions.mjs?v=chapter-thirteen-1';
+import {GENERALS} from './roster.mjs?v=chapter-thirteen-2';
+import {NOVEL_PAGES,CAMP_LINES} from './novel.mjs?v=chapter-thirteen-2';
+import {campConversation} from './camp-talk.mjs?v=chapter-thirteen-2';
+import {STORY_TASKS} from './story-play.mjs?v=chapter-thirteen-2';
+import {CHAPTER_BACKGROUNDS,STAGE_LEADS} from './prologue.mjs?v=chapter-thirteen-2';
+import {STORY_PEOPLE} from './characters.mjs?v=chapter-thirteen-2';
+import {HEROES,STAGES,chapterInfo,enemyArt,heroesForLevel} from './story.mjs?v=chapter-thirteen-2';
+import {FACTIONS,enemyPortrait} from './factions.mjs?v=chapter-thirteen-2';
 // Child-friendly summaries; comparisons are memory aids, not historical quotations.
 const bios=[
  ['張郃','史實人物','會看地形的儁乂','他是曹操的將領。瓦口山道太窄，他被張飛打退。後來定軍山失利，他又留下來收攏隊伍。','郃讀 ㄏㄜˊ，字儁乂。張郃在曹操軍，張飛在劉備軍。','第 71 關的撤離是遊戲任務。張郃此後仍活著，還會再出現。'],

@@ -6,7 +6,7 @@ test('chapter thirteen keeps independent army equipment and extends a completed 
  const {normalizeProgress}=await import('../../hero/engine.mjs');
  const {rewardVictory,weaponsForLevel}=await import('../../hero/campaign.mjs');
  const {factionFor}=await import('../../hero/factions.mjs');
- const {routeThrough,journeyRoute}=await import('../../hero/campaign-map.mjs');
+ const {routeThrough,journeyRoute,campaignMapSvg}=await import('../../hero/campaign-map.mjs');
  const {stagePeople,battleBossPortrait}=await import('../../hero/characters.mjs');
  const {searchPeople}=await import('../../hero/people-data.mjs');
  let progress=normalizeProgress({completed:70,coins:100,inventory:{grain:2},weapons:{liubei:3},armyWeapons:{cao:{liubei:1}}});
@@ -35,6 +35,10 @@ test('chapter thirteen keeps independent army equipment and extends a completed 
  assert.equal(stagePeople(71).leader.name,'張郃');
  assert.equal(stagePeople(71).opponent.name,'張飛');
  assert.equal(stagePeople(74).opponent.name,'陳式');
+ assert.match(campaignMapSvg(75),/class="map-person map-opponent" data-person="夏侯淵"/);
+ assert.doesNotMatch(campaignMapSvg(76),/data-person="曹操"/);
+ assert.equal(stagePeople(76).opponent.name,'曹操');
+ assert.match(stagePeople(76).relation,/撤回長安/);
  assert.equal(stagePeople(75).opponent.asset,battleBossPortrait('夏侯淵',75).asset);
  assert.match(STAGES[70].ending[0][1],/退回南鄭/);
  assert.match(STAGES[74].ending[0][1],/黃忠.*夏侯淵戰死/);
@@ -49,7 +53,7 @@ test('stage 71 waits for the relief countdown and an explicit retreat order with
  const {historyAction,historyMissionText}=await import('../../hero/history-missions.mjs');
  const {missionQuickState}=await import('../../hero/mission-quick.mjs');
  const battle=createBattle(71,42);
- assert.match(missionQuickState(battle).text,/等待後隊接應/);
+ assert.match(missionQuickState(battle).text,/守線等待接應.*曹操、曹洪與友軍撤回左側/);
  battle.spawned=12;
  battle.nextSpawn=0;
  deploy(battle,'liubei',0);
@@ -69,4 +73,21 @@ test('stage 71 waits for the relief countdown and an explicit retreat order with
  assert.equal(historyAction(battle,'retreat'),true);
  for(let i=0;i<200&&!battle.over;i++)stepBattle(battle,.1);
  assert.ok(battle.won);
+});
+
+test('Dingjunshan applies Liu Bei’s saved weapon rank to normal attacks',async()=>{
+ const {createBattle,deploy,normalizeProgress,stepBattle}=await import('../../hero/engine.mjs');
+ const {configurePeachRoster}=await import('../../hero/roster.mjs');
+ const {weaponsForLevel}=await import('../../hero/campaign.mjs');
+ const progress=normalizeProgress({completed:74,weapons:{liubei:3},heroGrowth:{caocao:{weapon:1}}});
+ const battle=createBattle(75,42,weaponsForLevel(progress,75));
+ configurePeachRoster(battle,progress);
+ battle.nextSpawn=0;
+ stepBattle(battle,.1);
+ const [target]=battle.enemies;
+ assert.ok(deploy(battle,'liubei',target.lane));
+ target.x=.15;
+ const initialHp=target.hp;
+ for(let i=0;i<4;i++)stepBattle(battle,.1);
+ assert.equal(initialHp-target.hp,battle.roster.liubei.damage+9);
 });

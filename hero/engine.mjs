@@ -1,13 +1,13 @@
 import {stepDoctrine,duelDoctrine,signature} from './army-doctrine.mjs?v=army-1';
 import {passiveCue,passiveLabel,learnedPassives,passiveName,tickPassives,passiveSnapshot,castPassiveFeedback} from './passive-feedback.mjs?v=passive-feedback-1';
-import {extracted} from './history-missions.mjs?v=chapter-thirteen-1';
-import {createMission,stepMission,protectBarrier,missionReady,missionDuelReady} from './chapter-missions.mjs?v=chapter-thirteen-1';
+import {extracted} from './history-missions.mjs?v=chapter-thirteen-2';
+import {createMission,stepMission,protectBarrier,missionReady,missionDuelReady} from './chapter-missions.mjs?v=chapter-thirteen-2';
 import {duelBeats} from './duel-patterns.mjs?v=passive-feedback-1';
 export {duelBeats} from './duel-patterns.mjs?v=passive-feedback-1';
 import {WEATHER_GENERALS} from './weather-generals.mjs?v=passive-feedback-1';
-import {campaignState,weaponBonus} from './campaign.mjs?v=chapter-thirteen-1';
-import {heroSkill} from './skills.mjs?v=chapter-thirteen-1';
-import {heroesForLevel,STAGES,UNLOCKS,FEATURES} from './story.mjs?v=chapter-thirteen-1';
+import {campaignState,weaponBonus} from './campaign.mjs?v=chapter-thirteen-2';
+import {heroSkill} from './skills.mjs?v=chapter-thirteen-2';
+import {heroesForLevel,STAGES,UNLOCKS,FEATURES} from './story.mjs?v=chapter-thirteen-2';
 
 export const SWING={duration:.58,impact:.24,frameTime:.08,frames:6};
 export const DUEL_DURATION=19;
@@ -272,7 +272,7 @@ export function stepBattle(b,seconds){
   else {e.action='marching';e.x-=e.speed*dt*(b.time<(e.rallyUntil||0)?1.35:1);}
   if(e.x<.025){e.hp=0;e.escaped=true;if(e.boss&&!e.support)b.lossReason='commander-breach';effect(b,'breach',e.lane,.025,-.12,{enemy:true,boss:e.boss,shielded:e.shielded,ranged:e.ranged});b.lives--;b.notice='敵軍突破！留意其他路線。';b.noticeUntil=b.time+3}
  }
- if(b.level>=UNLOCKS.oath&&!b.oathUsed&&['liubei','guanyu','zhangfei'].every(key=>b.allies.some(u=>u.key===key&&u.hp>0))){b.oathUsed=true;b.oathBuffUntil=b.time+5;for(const ally of b.allies)if(ally.hp>0){ally.hp=Math.min(ally.maxHp,ally.hp+55);effect(b,'oath',ally.lane,ally.x)}b.skillNotice={key:'liubei',text:b.level>=17?'合擊・同袍合陣':'合擊・桃園同心',until:b.time+2.2};b.notice=(b.level>=17?'同袍合陣':'桃園同心')+'！全軍回復，五秒內攻擊提升。';b.noticeUntil=b.time+5}
+ if(b.level>=UNLOCKS.oath&&!b.oathUsed&&['liubei','guanyu','zhangfei'].every(key=>b.allies.some(u=>u.key===key&&u.hp>0))){b.oathUsed=true;b.oathBuffUntil=b.time+5;for(const ally of b.allies)if(ally.hp>0){ally.hp=Math.min(ally.maxHp,ally.hp+55);effect(b,'oath',ally.lane,ally.x)}const name=stage.faction&&stage.faction!=='shu'?'同袍合陣':'桃園同心';b.skillNotice={key:'liubei',text:`合擊・${name}`,until:b.time+2.2};b.notice=name+'！全軍回復，五秒內攻擊提升。';b.noticeUntil=b.time+5}
  for(const unit of [...b.allies,...b.enemies])if(unit.hp<=0&&!unit.escaped){const captured=unit.boss&&!unit.support&&stage.duelOutcome==='capture',retreat=unit.boss&&(stage.duelOutcome==='retreat'||unit.support);effect(b,captured?'capture':retreat?'retreat':'defeat',unit.lane,unit.x,retreat?1.1:unit.x,{key:unit.key||null,enemy:!unit.key,boss:!!unit.boss,shielded:!!unit.shielded,ranged:!!unit.ranged,bossName:unit.name});if(captured){b.bossCaptured=true;b.notice=unit.name+'已被俘，繼續清退餘兵。';b.noticeUntil=b.time+4}if(retreat)b.bossRetreated=true;if(unit.key&&!troop(b,unit.key))b.cooldowns[unit.key]=b.time+12}
  stepDoctrine(b,dt);
  b.allies=b.allies.filter(u=>u.hp>0);b.enemies=b.enemies.filter(u=>u.hp>0);

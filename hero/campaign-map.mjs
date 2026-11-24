@@ -1,6 +1,6 @@
-import {stagePeople,mapPersonSvg,renderMatchup} from './characters.mjs?v=chapter-thirteen-1';
-import {factionTitle} from './factions.mjs?v=chapter-thirteen-1';
-import {HISTORICAL_STAGES} from './history-stages.mjs?v=chapter-thirteen-1';
+import {stagePeople,mapPersonSvg,renderMatchup} from './characters.mjs?v=chapter-thirteen-2';
+import {factionTitle} from './factions.mjs?v=chapter-thirteen-2';
+import {HISTORICAL_STAGES} from './history-stages.mjs?v=chapter-thirteen-2';
 // Approximate regional placement, not historical borders or a surveyed route.
 export const MAP_PLACES={
  zhuo:{name:'涿郡',modern:'今河北涿州一帶',x:402,y:78},
@@ -62,6 +62,9 @@ export function journeyRoute(level){
 }
 export function campaignMapSvg(level,mini=false){
  const current=stageLocation(level),route=routeThrough(level),visited=new Set(route);
+ const stage=HISTORICAL_STAGES[level-17],people=mini?null:stagePeople(level);
+ const markers=people?mapPersonSvg(people.leader,'map-leader',current.x-36,current.y-44)
+  +(stage?.mapOpponent===false?'':mapPersonSvg(people.opponent,'map-opponent',current.x+36,current.y-44)):'';
  const points=route.map(key=>`${MAP_PLACES[key].x},${MAP_PLACES[key].y}`).join(' ');
  const cities=Object.entries(MAP_PLACES).map(([key,p])=>{
   const active=key===current.place,labelOffset=active&&route.some(k=>k!==key&&Math.hypot(MAP_PLACES[k].x-p.x,MAP_PLACES[k].y-p.y)<55)?70:38;if(level>=17&&!visited.has(key)&&!active)return '';if(level<17&&Object.hasOwn(westernPlaces,key))return '';if(level<17&&['luoyang','chenliu','suanzhao','bian','liangdong','yangren','luyang','dongwuyang','shouzhang','jibei','juancheng','puyang','dingtao','xuxian','wan','chen','xiapi','guandu','baima','yanjin','wuchao','cangting','liyang','ye','xiping','runan','qiao','junyi','pingyuan','nanpi','guangpingNorth','huguan','chunyu','canals','wuzhong','lulong','baitan','pinggang','bailang','liucheng','yishuiSouth','xiangyang','changban','jiangling','chibi','tongguan','puban','weinan'].includes(key))return '';if(key.startsWith('side')&&!visited.has(key)&&!active)return '';
@@ -76,7 +79,7 @@ export function campaignMapSvg(level,mini=false){
  <path d="M82 180l25-46 28 46m13 28 22-40 24 40m-90 118 26-48 27 48m55-65 23-37 22 37" fill="none" stroke="#78826b" stroke-width="3" opacity=".4"/>
  <path d="M40 110H680M40 220H680M40 330H680M180 25V410M360 25V410M540 25V410" stroke="#ac986b" opacity=".14"/>
  ${mini||level>=17?'':`<g class="map-region"><text x="300" y="45">幽州</text><text x="265" y="152">冀州</text><text x="540" y="145">青州</text><text x="440" y="285">兗州</text><text x="235" y="390">豫州</text><text x="635" y="105">海</text></g><g class="map-reference"><circle cx="212" cy="327" r="5"/><text x="157" y="350">洛陽</text><text x="250" y="422">中原</text></g><path d="M245 85V35m-10 15 10-15 10 15" stroke="#5b6048" stroke-width="3" fill="none"/><text x="236" y="20" class="map-north">北</text>`}
- <polyline points="${points}" class="map-route"/>${cities}${mini?'':mapPersonSvg(stagePeople(level).leader,'map-leader',current.x-36,current.y-44)+mapPersonSvg(stagePeople(level).opponent,'map-opponent',current.x+36,current.y-44)}
+ <polyline points="${points}" class="map-route"/>${cities}${markers}
  </svg>`;
 }
 export function mountCampaignMap({stages,getBattle,setPaused}){

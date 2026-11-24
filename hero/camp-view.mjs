@@ -1,14 +1,14 @@
-import {CHAPTER_NUMERALS} from './campaign-config.mjs?v=chapter-thirteen-1';
-import {campGrowthCard} from './camp-growth.mjs?v=chapter-thirteen-1';
-import {PEACH_GENERALS,SUN_GENERALS,SLOTS,heroLevel} from './roster.mjs?v=chapter-thirteen-1';
-import {skillSummary} from './roster-view.mjs?v=chapter-thirteen-1';
-import {renderHeroCamp} from './roster-view.mjs?v=chapter-thirteen-1';
-import {STORY_PEOPLE,renderPeople} from './characters.mjs?v=chapter-thirteen-1';
-import {STAGES,chapterInfo} from './story.mjs?v=chapter-thirteen-1';
-import {factionFor,paintPortrait} from './factions.mjs?v=chapter-thirteen-1';
-import {campConversation} from './camp-talk.mjs?v=chapter-thirteen-1';
-import {GOODS,purchase,weaponsForLevel} from './campaign.mjs?v=chapter-thirteen-1';
-import {CAMP_LINES} from './novel.mjs?v=chapter-thirteen-1';
+import {CHAPTER_NUMERALS} from './campaign-config.mjs?v=chapter-thirteen-2';
+import {campGrowthCard} from './camp-growth.mjs?v=chapter-thirteen-2';
+import {PEACH_GENERALS,SUN_GENERALS,SLOTS,heroLevel} from './roster.mjs?v=chapter-thirteen-2';
+import {skillSummary} from './roster-view.mjs?v=chapter-thirteen-2';
+import {renderHeroCamp} from './roster-view.mjs?v=chapter-thirteen-2';
+import {STORY_PEOPLE,renderPeople} from './characters.mjs?v=chapter-thirteen-2';
+import {STAGES,chapterInfo} from './story.mjs?v=chapter-thirteen-2';
+import {factionFor,paintPortrait} from './factions.mjs?v=chapter-thirteen-2';
+import {campConversation} from './camp-talk.mjs?v=chapter-thirteen-2';
+import {GOODS,purchase,weaponsForLevel} from './campaign.mjs?v=chapter-thirteen-2';
+import {CAMP_LINES} from './novel.mjs?v=chapter-thirteen-2';
 export function mountCamp({progress,level,heroes,stage,onSave,onContinue,won=true}){
  const $=id=>document.getElementById(id);let shop='items';
  let people=$('campTalkPeople');if(!people){people=document.createElement('aside');people.id='campTalkPeople';people.className='story-people';people.setAttribute('aria-label','對話提及人物');$('campTalkText').after(people)}people.hidden=true;
@@ -28,7 +28,7 @@ export function mountCamp({progress,level,heroes,stage,onSave,onContinue,won=tru
   $('shopTitle').textContent=shop==='items'?'行腳郎中 · 道具商':'爐火未熄 · 武器商';
   $('shopGoods').replaceChildren(...Object.entries(GOODS).filter(([,g])=>g.shop===shop&&!(factionFor(level)==='cao'&&shop==='weapons')).map(([id,g])=>{
    const card=document.createElement('article'),weapon=shop==='weapons',owned=weapon?weaponsForLevel(progress,level)[id]:progress.inventory[id],price=g.price*(weapon?owned+1:1),max=owned>=(weapon?3:9);
-   card.className='goods-card';const icon=document.createElement('span');icon.className='goods-icon';icon.textContent=weapon&&level>=17?heroes[id].weapon.split('／')[0]:g.icon;const title=document.createElement('h4');title.textContent=weapon&&level>=17?heroes[id].name+'・兵器整備':g.name;const description=document.createElement('p');description.textContent=weapon&&level>=17?`${heroes[id].name}普攻每級 +${id==='liubei'?3:4}；最多三次，只強化這位武將。`:g.description;const stock=document.createElement('small');stock.textContent=weapon?`已強化 ${owned} / 3 次 · 購買後自動裝備`:`行囊 ${owned} / 9`;
+   card.className='goods-card';const icon=document.createElement('span');icon.className='goods-icon';icon.textContent=weapon&&level>=17?(heroes[id].weapon?.split('／')[0]||g.icon):g.icon;const title=document.createElement('h4');title.textContent=weapon&&level>=17?heroes[id].name+'・兵器整備':g.name;const description=document.createElement('p');description.textContent=weapon&&level>=17?`${heroes[id].name}普攻每級 +${id==='liubei'?3:4}；最多三次，只強化這位武將。`:g.description;const stock=document.createElement('small');stock.textContent=weapon?`已強化 ${owned} / 3 次 · 購買後自動裝備`:`行囊 ${owned} / 9`;
    const button=document.createElement('button');button.className='gold-button';button.dataset.buy=id;button.textContent=max?'已滿':`購買 · ${price} 軍資`;button.disabled=max||progress.coins<price;button.onclick=()=>{const error=purchase(progress,id,onSave,level);$('campMessage').textContent=error||`${weapon&&level>=17?heroes[id].name+'兵器':g.name}已${weapon?'強化並裝備':'放入行囊'}！`;render()};card.append(icon,title,description,stock,button);return card;
   }));
   if(factionFor(level)!=='cao'){const generals=factionFor(level)==='sun'?SUN_GENERALS:PEACH_GENERALS;$('campHeroes').replaceChildren(...Object.entries(generals).map(([id,g],i)=>campGrowthCard(id,g,progress.heroGrowth[id].xp,weaponsForLevel(progress,level)[SLOTS[i]],skillSummary(g,heroLevel(progress.heroGrowth[id].xp)))))}

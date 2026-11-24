@@ -63,12 +63,12 @@ const stages=[
   ending:'曹操撤回長安，漢中由劉備掌握。入秋後，群臣在沔陽推舉劉備為漢中王。',
   speaker:'法正',camp:'春天奪下定軍山，夏天曹軍才撤走。到秋天，大家又在沔陽見證了新的變化。',
   question:'曹操撤出漢中後，誰掌握漢中？',choices:['劉備','孫權','張魯'],
-  refs:[liu,annals,laterAnnals],matchupLabel:'前線對峙・戰後移至沔陽'
+  refs:[liu,annals,laterAnnals],mapOpponent:false,matchupLabel:'曹操撤回長安・戰後消息'
  }
 ];
 
 export const THIRTEENTH_CHAPTER=stages.map((stage,index)=>{
- const {name,year,place,origin,leader,opponent,faction='cao',shift=false,mission,missionTitle,scene,enemyArmy,commander,history,briefing,ending,speaker,camp,question,choices,refs,matchupLabel}=stage;
+ const {name,year,place,origin,leader,opponent,faction='cao',shift=false,mission,missionTitle,scene,enemyArmy,commander,history,briefing,ending,speaker,camp,question,choices,refs,mapOpponent,matchupLabel}=stage;
  const withdraw=mission==='withdraw';
  return {
   name,year,chapter:13,number:index+1,faction,place:name,mapPlace:place,originPlace:origin,viaPlaces:[],viewpointShift:shift,
@@ -76,7 +76,7 @@ export const THIRTEENTH_CHAPTER=stages.map((stage,index)=>{
   noBoss:!commander,bossName:commander?opponent:enemyArmy,bossHp:commander?620:0,
   ...(commander?{skillType:'charge',skillName:'山陣突擊',bossTitle:'漢中守將'}:{}),
   ...(withdraw?{successTitle:'保全撤離'}:{}),
-  leaderName:leader,opponentName:opponent,matchupLabel:matchupLabel||(opponent&&!withdraw?'對方主事者・劇情人物':undefined),
+  leaderName:leader,opponentName:opponent,mapOpponent,matchupLabel:matchupLabel||(opponent&&!withdraw?'對方主事者・劇情人物':undefined),
   lead:history,history,adaptation,note:adaptation,novel:[['說書人',history],[speaker,camp]],
   opening:[['說書人',history],[leader,briefing],['說書人',adaptation]],
   ending:[['說書人',ending],[speaker,camp]],campLine:ending,victory:ending,bossIntro:briefing,bossTip:briefing,

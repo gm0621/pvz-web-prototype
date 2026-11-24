@@ -2,11 +2,11 @@ const {test,expect}=require('@playwright/test');
 const KEY='heroLegendProgress_v1';
 const stages=[
  {name:'宕渠收兵',lanes:4,map:'南鄭 → 宕渠',leader:'張郃',opponent:'張飛',guest:'張郃'},
- {name:'鄴城魏王',lanes:5,guest:'曹丕'},
+ {name:'鄴城魏王',lanes:5,map:'鄴城',leader:'曹操',opponent:'道路游軍',guest:'曹丕'},
  {name:'濡須對峙',lanes:3,map:'居巢 → 濡須',leader:'曹操',opponent:'孫權',guest:'曹操'},
  {name:'馬鳴閣道',lanes:5,map:'陽平關 → 馬鳴閣道',leader:'徐晃',opponent:'陳式',guest:'徐晃'},
  {name:'定軍山爭高地',lanes:3,map:'陽平關 → 定軍山',leader:'劉備',opponent:'夏侯淵',guest:'黃忠'},
- {name:'漢中歸劉',lanes:3,map:'定軍山 → 沔陽',leader:'劉備',opponent:'曹操',guest:'法正'}
+ {name:'漢中歸劉',lanes:3,map:'定軍山 → 沔陽',leader:'劉備',opponent:'曹操',offMap:true,guest:'法正'}
 ];
 
 test('chapter thirteen continues old saves through the Hanzhong finale',async({page})=>{
@@ -98,7 +98,13 @@ test('chapter thirteen continues old saves through the Hanzhong finale',async({p
    await tap('#battleMapButton');
    await expect(page.locator('#campaignMapRoute')).toHaveText(stage.map);
    await expect(page.locator('#campaignMapCanvas .map-leader')).toHaveAttribute('data-person',stage.leader);
-   await expect(page.locator('#campaignMapCanvas .map-opponent')).toHaveAttribute('data-person',stage.opponent);
+   const marker=page.locator('#campaignMapCanvas .map-opponent');
+   if(stage.offMap){
+    await expect(marker).toHaveCount(0);
+    const matchup=page.locator('#campaignMapMatchup [data-side=enemy]');
+    await expect(matchup.locator('img')).toHaveAttribute('alt',stage.opponent);
+    await expect(matchup).toContainText('曹操撤回長安');
+   }else await expect(marker).toHaveAttribute('data-person',stage.opponent);
    const time=await page.evaluate(()=>window.chapterBattle.time);
    await advance(1000);
    expect(await page.evaluate(()=>window.chapterBattle.time)).toBe(time);
@@ -110,6 +116,8 @@ test('chapter thirteen continues old saves through the Hanzhong finale',async({p
   // Control enemy waves while exercising the actual touch controls, mission clock and settlement.
   if(i===4){
    expect(await page.evaluate(()=>window.chapterBattle.weapons.liubei)).toBe(3);
+   for(const [lane,key] of ['liubei','guanyu','zhangfei'].entries())await deploy(key,lane);
+   expect(await page.evaluate(()=>window.chapterBattle.skillNotice.text)).toBe('合擊・桃園同心');
    await page.evaluate(()=>{window.chapterBattle.spawned=999;window.chapterBattle.nextSpawn=0});
    await advance(100);
    await expect(page.locator('#bossIntroTitle')).toContainText('夏侯淵');
@@ -119,16 +127,23 @@ test('chapter thirteen continues old saves through the Hanzhong finale',async({p
   }else{
    await suppressWaves();
    const slots=['liubei','guanyu','zhangfei','hero4','hero5'];
-   for(let lane=0;lane<stage.lanes;lane++)await deploy(slots[lane],lane);
+   for(let lane=0;lane<stage.lanes;lane++)if(i!==0||lane!==2)await deploy(slots[lane],lane);
    if(i===0){
+    const requiredHero=await page.locator('#cards [data-hero=zhangfei] strong').innerText();
+    await expect(page.locator('#missionQuick p')).toContainText(`${requiredHero}與友軍撤回左側`);
+    expect(await page.locator('#missionQuick p').evaluate(el=>el.scrollHeight<=el.clientHeight)).toBe(true);
     await page.evaluate(()=>window.chapterBattle.allies.forEach(unit=>unit.x=.35));
     await expect(page.locator('#missionQuickAction')).toHaveText('查看任務');
     await advance(14000);
     await expect(page.locator('#missionQuickAction')).toHaveText('全軍撤離');
     await tap('#missionQuickAction');
     await advance(7000);
+    await expect(page.locator('#result')).toBeHidden();
+    await expect(page.locator('#missionQuick p')).toContainText(`請召回${requiredHero}`);
+    await deploy('zhangfei',2);
     await expect(page.locator('#resultTitle')).toHaveText('保全撤離');
    }else if(i===5){
+    expect(await page.evaluate(()=>window.chapterBattle.weapons.guanyu)).toBe(1);
     for(let cart=0;cart<3;cart++){
      await advance(7500);
      await expect(page.locator('#missionQuickAction')).toHaveText('發送糧車');
@@ -139,19 +154,42 @@ test('chapter thirteen continues old saves through the Hanzhong finale',async({p
   }
   await advance(100);
   await expect(page.locator('#resultEarned')).toHaveText('+80');
+  if(i===4){
+   const outcome=await page.evaluate(()=>({
+    defeated:window.chapterBattle.effects.some(e=>e.bossName==='夏侯淵'&&e.type==='defeat'),
+    retreated:!!window.chapterBattle.bossRetreated,duel:window.chapterBattle.duelSeen
+   }));
+   expect(outcome).toEqual({defeated:true,retreated:false,duel:false});
+   await expect(page.locator('#resultText')).toContainText('夏侯淵戰死');
+  }
   if(i===5){
    await expect(page.locator('#resultRetrySave')).toBeVisible();
-   expect(await save()).toMatchObject({completed:75,coins:500});
+   expect(await save()).toMatchObject({completed:75,coins:440,weapons:{guanyu:1}});
    await page.evaluate(()=>window.blockSave=false);
    await tap('#resultRetrySave');
   }
-  expect(await save()).toMatchObject({completed:71+i,coins:180+80*i,inventory:{grain:2},weapons:{liubei:3},heroGrowth:{caocao:{weapon:1}}});
+  expect(await save()).toMatchObject({completed:71+i,coins:180+80*i-(i===5?60:0),inventory:{grain:2},weapons:{liubei:3},heroGrowth:{caocao:{weapon:1}}});
   await toCamp();
   await expect(page.locator('#campTitle')).toContainText(stage.name);
   await tap('[data-talk=guanyu]');
   await expect(page.locator('#campTalkName')).toHaveText(stage.guest);
   await expect(page.locator('#campTalkPortrait')).toHaveAttribute('alt',stage.guest);
   await tap('#campTalkNext');
+  if(i===4){
+   await tap('#campPrepare');
+   await expect(page.locator('#campHeroes [data-hero=liubei]')).toContainText('兵器強化 3／3');
+   await tap('[data-shop=weapons]');
+   const sword=page.locator('[data-buy=guanyu]');
+   await expect(page.locator('[data-buy=liubei]')).toBeDisabled();
+   await page.evaluate(()=>window.blockSave=true);
+   await sword.tap();
+   await expect(page.locator('#campMessage')).toContainText('無法保存');
+   expect(await save()).toMatchObject({coins:500,weapons:{guanyu:0}});
+   await page.evaluate(()=>window.blockSave=false);
+   await sword.tap();
+   expect(await save()).toMatchObject({coins:440,weapons:{guanyu:1},heroGrowth:{caocao:{weapon:1}}});
+   await tap('#campShopBack');
+  }
   await tap('#campContinue');
   if(i===4)await expect(page.locator('#storyLine')).toContainText('夏侯淵戰死');
   if(i===5){
@@ -163,6 +201,7 @@ test('chapter thirteen continues old saves through the Hanzhong finale',async({p
  await expect(page.locator('#homeProgress')).toContainText('第十三章完成');
  await page.reload();
  await expect(page.locator('#homeProgress')).toContainText('第十三章完成');
+ expect(await save()).toMatchObject({completed:76,coins:520,weapons:{liubei:3,guanyu:1}});
  await page.goto('/hero/people.html',{waitUntil:'domcontentloaded'});
  for(const [query,name,level] of [['儁乂','張郃',71],['陳式','陳式',74],['漢升','黃忠',75],['孝直','法正',76]]){
   await page.locator('#peopleSearch').fill(query);
