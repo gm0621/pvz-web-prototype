@@ -20,6 +20,12 @@ npm run test:hero:engine
 npx playwright test --config=playwright.hero-input.config.js
 ```
 
+## 2026-11-24 第十八章「五丈原秋風」
+
+- 新增第 101～106 關「雨阻漢中、祁山運糧、木門收兵、斜谷再出、渭濱屯田、五丈原歸途」，延續 230～234 年。祁山仍因糧運不繼收兵，張郃在木門戰死，諸葛亮在五丈原病逝後由楊儀帶隊撤回漢中。 [第十八章規格](hero-history-chapter-eighteen.md)
+- 新增司馬懿、楊儀兩張萌將頭像與圖鑑，可搜尋仲達、威公。六關都有年份、史料、行軍路線、營地與問答。三路兵卡、兵器、道具及首勝 80 軍資沿用原存檔。
+- 389 項引擎、本機 320px 和 390px 手機與 820px 平板完整流程 3 項、第十七章與圖鑑的手機和平板回歸 8 項。引擎正常敵波驗證六關；觸控使用模擬裝置、隔離存檔及受控敵波。驗證武都陰平接新章、運糧、屯田暫停續作、兩次撤離、末關存檔重試、營地購買、重整與重玩無重複軍資。回歸設定為 `playwright.hero-eighteen.config.js`，快取版 `chapter-eighteen-1`。
+
 ## 2026-11-24 第十七章完整流程複查
 
 - 已發布 `55402c0`。正式站手機 Chromium 與平板 WebKit 各完成第 94～100 關及末關重玩。核對 44 份變更資源。 [正式遊戲](https://gm0621.github.io/pvz-web-prototype/hero/?v=55402c0) · [發布紀錄](https://github.com/gm0621/pvz-web-prototype/actions/runs/45366933541)

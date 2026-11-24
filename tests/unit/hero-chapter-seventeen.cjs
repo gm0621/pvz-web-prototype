@@ -10,7 +10,7 @@ test('first northern expedition extends saved progress, links routes and assigns
  const routes=[['chengdu','mianyang'],['qishan','tianshui'],['qishan','jieting'],['jigu','nanzheng'],['sanguan','chencang'],['wudu','yinping']];
  let progress=normalizeProgress({completed:94,coins:150,weapons:{guanyu:2},inventory:{grain:2}});
  assert.equal(rewardVictory(progress,94),0);
- assert.deepEqual(STAGES.slice(94).map(stage=>stage.year),[227,228,228,228,228,229]);
+ assert.deepEqual(STAGES.slice(94,100).map(stage=>stage.year),[227,228,228,228,228,229]);
  for(let level=95;level<=100;level++){
   const stage=STAGES[level-1];
   assert.deepEqual(chapterInfo(level),{chapter:17,number:level-94,count:6,title:'北伐初征'});

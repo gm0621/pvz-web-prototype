@@ -43,7 +43,7 @@ test('chapter thirteen keeps independent army equipment and extends a completed 
  assert.match(STAGES[70].ending[0][1],/退回南鄭/);
  assert.match(STAGES[74].ending[0][1],/黃忠.*夏侯淵戰死/);
  assert.match(STAGES[75].ending[0][1],/曹操撤回長安.*漢中王/);
- for(const [query,levels] of [['儁乂',[71,74,75,97]],['陳式',[74,100]],['漢升',[75]],['孝直',[75,76]]]){
+ for(const [query,levels] of [['儁乂',[71,74,75,97,103]],['陳式',[74,100]],['漢升',[75]],['孝直',[75,76]]]){
   assert.deepEqual(searchPeople(query)[0].levels,levels);
  }
 });

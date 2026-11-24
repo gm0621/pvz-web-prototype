@@ -1,6 +1,6 @@
-import {stagePeople,mapPersonSvg,renderMatchup} from './characters.mjs?v=chapter-seventeen-2';
-import {stageFactionTitle} from './factions.mjs?v=chapter-seventeen-2';
-import {HISTORICAL_STAGES} from './history-stages.mjs?v=chapter-seventeen-2';
+import {stagePeople,mapPersonSvg,renderMatchup} from './characters.mjs?v=chapter-eighteen-1';
+import {stageFactionTitle} from './factions.mjs?v=chapter-eighteen-1';
+import {HISTORICAL_STAGES} from './history-stages.mjs?v=chapter-eighteen-1';
 // Approximate regional placement, not historical borders or a surveyed route.
 export const MAP_PLACES={
  zhuo:{name:'涿郡',modern:'今河北涿州一帶',x:402,y:78},
@@ -72,6 +72,13 @@ Object.assign(westernPlaces,{
  jieting:{name:'街亭一帶',modern:'今甘肅東南天水地區・古街亭位置有不同說法',x:-74,y:412},
  jigu:{name:'箕谷一帶',modern:'漢中以北谷道・第一次北伐牽制戰線示意',x:3,y:424},
  yinping:{name:'陰平',modern:'今甘肅文縣一帶・陰平郡域示意',x:-175,y:520}
+});
+Object.assign(westernPlaces,{
+ jiangzhou:{name:'江州',modern:'今重慶渝中一帶・古江州示意',x:-38,y:643},
+ mumen:{name:'木門一帶',modern:'今甘肅天水一帶・古木門道位置有不同說法',x:-176,y:366},
+ xiegu:{name:'斜谷',modern:'今陝西眉縣西南至漢中一帶・秦嶺谷道示意',x:-22,y:414},
+ wuzhang:{name:'五丈原',modern:'今陝西寶雞岐山南一帶・渭水南岸',x:-22,y:348},
+ weiFields:{name:'渭水南岸',modern:'五丈原附近・屯田區域示意',x:38,y:320}
 });
 Object.assign(MAP_PLACES,westernPlaces);
 STAGE_LOCATIONS.push(...HISTORICAL_STAGES.map(s=>({place:s.mapPlace,detail:`${s.year} 年・${stageFactionTitle(s)}視角。${s.viewpointShift?'此處切換敘事視角，不是上一支軍隊的連續行程。':''}地點為歷史區域示意，並非精確軍事路線。`})));

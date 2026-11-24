@@ -1,6 +1,6 @@
-import {stageFactionTitle} from './factions.mjs?v=chapter-seventeen-2';
-import {stagePeople,mapPersonSvg,renderMatchup} from './characters.mjs?v=chapter-seventeen-2';
-import {campaignMapSvg,journeyRoute,MAP_PLACES,routeThrough} from './campaign-map.mjs?v=chapter-seventeen-2';
+import {stageFactionTitle} from './factions.mjs?v=chapter-eighteen-1';
+import {stagePeople,mapPersonSvg,renderMatchup} from './characters.mjs?v=chapter-eighteen-1';
+import {campaignMapSvg,journeyRoute,MAP_PLACES,routeThrough} from './campaign-map.mjs?v=chapter-eighteen-1';
 let cancelJourney=()=>{};
 export function mountJourney(level,stage){
  cancelJourney();let root=document.getElementById('journeyIntro');
@@ -18,7 +18,12 @@ export function mountJourney(level,stage){
  root.dataset.rearReport=String(stage.mapLeader===false);
  root.dataset.arrived='false';
  if(stage.mapLeader===false)return;
- const trail=document.createElementNS(ns,'path');trail.setAttribute('d',`M${start.x} ${start.y} Q${(start.x+end.x)/2+24} ${(start.y+end.y)/2-20} ${end.x} ${end.y}`);trail.setAttribute('class','journey-trail');trail.setAttribute('pathLength','1');svg.append(trail);
+ const trail=document.createElementNS(ns,'path');
+ const waypoints=level>=65?(stage.viaPlaces||[]).map(key=>MAP_PLACES[key]):[];
+ const path=waypoints.length
+  ? [start,...waypoints.map(place=>({x:place.x-36,y:place.y-44})),end].map(({x,y},i)=>`${i?'L':'M'}${x} ${y}`).join(' ')
+  : `M${start.x} ${start.y} Q${(start.x+end.x)/2+24} ${(start.y+end.y)/2-20} ${end.x} ${end.y}`;
+ trail.setAttribute('d',path);trail.setAttribute('class','journey-trail');trail.setAttribute('pathLength','1');svg.append(trail);
  svg.querySelector('.map-leader')?.remove();svg.insertAdjacentHTML('beforeend',mapPersonSvg(stagePeople(level).leader,'journey-army map-leader',start.x,start.y));const army=svg.querySelector('.journey-army');
  const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches,length=trail.getTotalLength();let elapsed=0,last=performance.now(),id=0,stopped=false;
  function draw(p){const pt=trail.getPointAtLength(length*p);army.setAttribute('transform',`translate(${pt.x} ${pt.y})`);trail.style.strokeDashoffset=String(1-p);root.style.setProperty('--journey-progress',String(p))}
