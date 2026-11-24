@@ -8,7 +8,7 @@
 
 ## Obsidian 尚未同步時，從這裡接手
 
-1. **確認版本。** 在剛拉下來的 `main` 執行 `git status --short --branch`、`git log -1 --oneline`。`git log` 顯示目前 checkout 的提交。正式遊戲版本另看下方最新一筆含「已發布」及 Pages 工作的功能紀錄。截至 2026-11-24，最新已驗證的正式遊戲版本為 `d63e75c`（第十五章，共 88 關）。 [正式遊戲](https://gm0621.github.io/pvz-web-prototype/hero/?v=d63e75c) · [發布紀錄](https://github.com/gm0621/pvz-web-prototype/actions/runs/45349700376)
+1. **確認版本。** 在剛拉下來的 `main` 執行 `git status --short --branch`、`git log -1 --oneline`。`git log` 顯示目前 checkout 的提交。正式遊戲版本另看下方最新一筆含「已發布」及 Pages 工作的功能紀錄。截至 2026-11-24，最新已驗證的正式遊戲版本為 `e22291a`（第十五章，共 88 關）。 [正式遊戲](https://gm0621.github.io/pvz-web-prototype/hero/?v=e22291a) · [發布紀錄](https://github.com/gm0621/pvz-web-prototype/actions/runs/45351457505)
 2. **安裝並做基本驗證。** 在專案根目錄用 Node.js 20 以上與 npm。執行下列指令可驗證引擎、桌面滑鼠／鍵盤及手機平板觸控。更多測試和本機預覽見 [開發指南](DEVELOPMENT.md)。Playwright 會啟動 4174 埠的測試服務，先關閉佔用該埠的手動預覽。
 3. **開工前看目前進度。** 先讀 [AGENTS.md](../AGENTS.md) 的「重要約束」及下方與任務相關的紀錄。英雄演義是獨立的 `/hero/` 遊戲，關卡上限見 `hero/campaign-config.mjs`。正式存檔 `heroLegendProgress_v1` 與本機、線上跳關測試的存檔分開。跨電腦時瀏覽器存檔和未提交的檔案需另外移轉。保留滑鼠、鍵盤與觸控操作，也要保留首勝軍資、重玩及暫停的既有規則。 [跳關工具和存檔說明](hero-local-testing.md)
 4. **繼續當次工作。** 依使用者的新需求從最新 `main` 開分支，保留原工作區修改。完成後把變更、實際測試結果、版本與注意事項記在本檔。Obsidian 未同步時註明待補，能讀取後再更新。正式發布依當次授權。
@@ -21,6 +21,8 @@ npx playwright test --config=playwright.hero-input.config.js
 ```
 
 ## 2026-11-24 第十五章完整流程複查
+
+- 已發布 `e22291a`。正式站手機 Chromium 與平板 WebKit 各完成一次第 82～88 關與重玩複驗，並核對 46 份變更資源。另以未攔截模組的手機環境直接從第 82 關存檔續玩。 [正式遊戲](https://gm0621.github.io/pvz-web-prototype/hero/?v=e22291a) · [發布紀錄](https://github.com/gm0621/pvz-web-prototype/actions/runs/45351457505)
 
 - 第 87 關的敵將欄在蓄力和燃燒期間標出危險路線，任務提示提前列出劉備及友軍須退回左側，使用上移／下移閃避後會繼續執行撤離。第十五章戰敗營地改由當關人物提供整備建議。
 - 第 82 關舊存檔重玩後能接第 83 關。第 87 關實測地圖暫停與恢復、同路受火傷與換路避傷、撤離中換路，以及未召回劉備時無法結算。第 88 關驗證空路不備車、三批運糧、存檔失敗後重試、白帝戰後對話、營地藥包購買及重整後重玩不重領軍資。六關行軍圖與人物圖鑑均複查。
