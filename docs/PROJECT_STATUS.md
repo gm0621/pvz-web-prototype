@@ -8,7 +8,7 @@
 
 ## Obsidian 尚未同步時，從這裡接手
 
-1. **確認版本。** 在剛拉下來的 `main` 執行 `git status --short --branch`、`git log -1 --oneline`。`git log` 顯示目前 checkout 的提交。正式遊戲版本另看下方最新一筆含「已發布」及 Pages 工作的功能紀錄。截至 2026-11-24，最新已驗證的正式遊戲版本為 `918c655`（第十三章，共 76 關）。 [正式遊戲](https://gm0621.github.io/pvz-web-prototype/hero/?v=918c655) · [發布紀錄](https://github.com/gm0621/pvz-web-prototype/actions/runs/45344888587)
+1. **確認版本。** 在剛拉下來的 `main` 執行 `git status --short --branch`、`git log -1 --oneline`。`git log` 顯示目前 checkout 的提交。正式遊戲版本另看下方最新一筆含「已發布」及 Pages 工作的功能紀錄。截至 2026-11-24，最新已驗證的正式遊戲版本為 `a2de3b5`（第十四章，共 82 關）。 [正式遊戲](https://gm0621.github.io/pvz-web-prototype/hero/?v=a2de3b5) · [發布紀錄](https://github.com/gm0621/pvz-web-prototype/actions/runs/45346622087)
 2. **安裝並做基本驗證。** 在專案根目錄用 Node.js 20 以上與 npm。執行下列指令可驗證引擎、桌面滑鼠／鍵盤及手機平板觸控。更多測試和本機預覽見 [開發指南](DEVELOPMENT.md)。Playwright 會啟動 4174 埠的測試服務，先關閉佔用該埠的手動預覽。
 3. **開工前看目前進度。** 先讀 [AGENTS.md](../AGENTS.md) 的「重要約束」及下方與任務相關的紀錄。英雄演義是獨立的 `/hero/` 遊戲，關卡上限見 `hero/campaign-config.mjs`。正式存檔 `heroLegendProgress_v1` 與本機、線上跳關測試的存檔分開。跨電腦時瀏覽器存檔和未提交的檔案需另外移轉。保留滑鼠、鍵盤與觸控操作，也要保留首勝軍資、重玩及暫停的既有規則。 [跳關工具和存檔說明](hero-local-testing.md)
 4. **繼續當次工作。** 依使用者的新需求從最新 `main` 開分支，保留原工作區修改。完成後把變更、實際測試結果、版本與注意事項記在本檔。Obsidian 未同步時註明待補，能讀取後再更新。正式發布依當次授權。
@@ -21,6 +21,8 @@ npx playwright test --config=playwright.hero-input.config.js
 ```
 
 ## 2026-11-24 第十四章「襄樊風雲」
+
+- 已發布 `a2de3b5`。GitHub Pages 部署成功，正式站 50 份變更資源與提交逐位元一致。Chromium 手機和 WebKit 平板各重跑第 76～82 關，2 項通過。平板首輪遇到 Pages 腳本 HTTP 503，重新請求確認檔案一致後重跑通過。未加測試鉤子的正式入口也確認第 76 關存檔可進第 77 關。 [正式遊戲](https://gm0621.github.io/pvz-web-prototype/hero/?v=a2de3b5) · [發布紀錄](https://github.com/gm0621/pvz-web-prototype/actions/runs/45346622087)
 
 - 第 77～82 關延續沔陽封王、關羽圍樊、漢水暴漲、徐晃解圍、江陵失守、麥城出走。第 80 關切曹操軍可選三至五路，其餘用劉備軍原有三路。麥城的撤離是出走途中一幕，結算與章末保留關羽、關平被俘後遇害。 [第十四章規格](hero-history-chapter-fourteen.md)
 - 新增龐德、呂蒙、陸遜、關平頭像和圖鑑介紹，補于禁襄樊戰事。各關有行軍圖、史料、營地與配樂。第 81 關在地圖上呈現江陵後方消息，不將關羽標成已進城。
