@@ -1,14 +1,14 @@
-import {CHAPTER_NUMERALS} from './campaign-config.mjs?v=chapter-sixteen-2';
-import {campGrowthCard} from './camp-growth.mjs?v=chapter-sixteen-2';
-import {PEACH_GENERALS,SUN_GENERALS,SLOTS,heroLevel} from './roster.mjs?v=chapter-sixteen-2';
-import {skillSummary} from './roster-view.mjs?v=chapter-sixteen-2';
-import {renderHeroCamp} from './roster-view.mjs?v=chapter-sixteen-2';
-import {STORY_PEOPLE,renderPeople} from './characters.mjs?v=chapter-sixteen-2';
-import {STAGES,chapterInfo} from './story.mjs?v=chapter-sixteen-2';
-import {factionFor,paintPortrait} from './factions.mjs?v=chapter-sixteen-2';
-import {campConversation} from './camp-talk.mjs?v=chapter-sixteen-2';
-import {GOODS,purchase,weaponsForLevel} from './campaign.mjs?v=chapter-sixteen-2';
-import {CAMP_LINES} from './novel.mjs?v=chapter-sixteen-2';
+import {CHAPTER_NUMERALS} from './campaign-config.mjs?v=chapter-sixteen-3';
+import {campGrowthCard} from './camp-growth.mjs?v=chapter-sixteen-3';
+import {PEACH_GENERALS,SUN_GENERALS,SLOTS,heroLevel} from './roster.mjs?v=chapter-sixteen-3';
+import {skillSummary} from './roster-view.mjs?v=chapter-sixteen-3';
+import {renderHeroCamp} from './roster-view.mjs?v=chapter-sixteen-3';
+import {STORY_PEOPLE,renderPeople} from './characters.mjs?v=chapter-sixteen-3';
+import {STAGES,chapterInfo} from './story.mjs?v=chapter-sixteen-3';
+import {factionFor,paintPortrait} from './factions.mjs?v=chapter-sixteen-3';
+import {campConversation} from './camp-talk.mjs?v=chapter-sixteen-3';
+import {GOODS,purchase,weaponsForLevel} from './campaign.mjs?v=chapter-sixteen-3';
+import {CAMP_LINES} from './novel.mjs?v=chapter-sixteen-3';
 export function mountCamp({progress,level,heroes,stage,onSave,onContinue,won=true}){
  const $=id=>document.getElementById(id);let shop='items';
  let people=$('campTalkPeople');if(!people){people=document.createElement('aside');people.id='campTalkPeople';people.className='story-people';people.setAttribute('aria-label','對話提及人物');$('campTalkText').after(people)}people.hidden=true;

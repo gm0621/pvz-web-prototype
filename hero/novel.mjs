@@ -1,7 +1,7 @@
 import {shortPages} from './story-pages.mjs?v=passive-feedback-1';
-import {renderPeople,STORY_PEOPLE} from './characters.mjs?v=chapter-sixteen-2';
-import {HISTORICAL_STAGES} from './history-stages.mjs?v=chapter-sixteen-2';
-import {paintPortrait} from './factions.mjs?v=chapter-sixteen-2';
+import {renderPeople,STORY_PEOPLE} from './characters.mjs?v=chapter-sixteen-3';
+import {HISTORICAL_STAGES} from './history-stages.mjs?v=chapter-sixteen-3';
+import {paintPortrait} from './factions.mjs?v=chapter-sixteen-3';
 import {THIRD_CHAPTER} from './chapter-three.mjs?v=passive-feedback-1';
 // Original child-friendly narration around the existing Romance chapter-one sequence.
 export const NOVEL_PAGES=[

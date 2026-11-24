@@ -1,11 +1,11 @@
-import {GENERALS} from './roster.mjs?v=chapter-sixteen-2';
-import {NOVEL_PAGES,CAMP_LINES} from './novel.mjs?v=chapter-sixteen-2';
-import {campConversation} from './camp-talk.mjs?v=chapter-sixteen-2';
-import {STORY_TASKS} from './story-play.mjs?v=chapter-sixteen-2';
-import {CHAPTER_BACKGROUNDS,STAGE_LEADS} from './prologue.mjs?v=chapter-sixteen-2';
-import {STORY_PEOPLE} from './characters.mjs?v=chapter-sixteen-2';
-import {HEROES,STAGES,chapterInfo,enemyArt,heroesForLevel} from './story.mjs?v=chapter-sixteen-2';
-import {FACTIONS,enemyPortrait} from './factions.mjs?v=chapter-sixteen-2';
+import {GENERALS} from './roster.mjs?v=chapter-sixteen-3';
+import {NOVEL_PAGES,CAMP_LINES} from './novel.mjs?v=chapter-sixteen-3';
+import {campConversation} from './camp-talk.mjs?v=chapter-sixteen-3';
+import {STORY_TASKS} from './story-play.mjs?v=chapter-sixteen-3';
+import {CHAPTER_BACKGROUNDS,STAGE_LEADS} from './prologue.mjs?v=chapter-sixteen-3';
+import {STORY_PEOPLE} from './characters.mjs?v=chapter-sixteen-3';
+import {HEROES,STAGES,chapterInfo,enemyArt,heroesForLevel} from './story.mjs?v=chapter-sixteen-3';
+import {FACTIONS,enemyPortrait} from './factions.mjs?v=chapter-sixteen-3';
 // Child-friendly summaries; comparisons are memory aids, not historical quotations.
 const bios=[
  ['劉禪','史實人物','接過責任的少年皇帝','他是劉備的兒子，字公嗣。父親去世後，他在成都即位，把新年號定為建興。諸葛亮繼續做丞相，幫他打理國事。','禪在這裡念 ㄕㄢˋ。搜尋「阿斗」，也能找到他。','本章的營地對話是遊戲改編，劉禪在成都即位有史書記載。'],
