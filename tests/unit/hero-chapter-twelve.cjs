@@ -25,7 +25,7 @@ test('chapter twelve brings a finished chapter eleven save forward and credits e
  assert.equal(progress.coins,580);
  assert.equal(progress.inventory.grain,2);
  assert.equal(progress.heroGrowth.caocao.weapon,2);
- assert.equal(rewardVictory(progress,77),0);
+ assert.equal(rewardVictory(progress,83),0);
  assert.deepEqual(routeThrough(69),['sanguan','wudu','yangping']);
  assert.equal(stagePeople(67).leader.name,'夏侯淵');
  assert.equal(stagePeople(69).opponent.name,'張魯');
@@ -33,5 +33,5 @@ test('chapter twelve brings a finished chapter eleven save forward and credits e
  assert.equal(STAGES[68].duelOutcome,'retreat');
  assert.match(STAGES[69].ending[0][1],/從巴中率部歸降/);
  assert.equal(searchPeople('公祺')[0].name,'張魯');
- assert.deepEqual(searchPeople('公祺')[0].levels,[67,69,70,71,74,76]);
+ assert.deepEqual(searchPeople('公祺')[0].levels.filter(level=>level<=76),[67,69,70,71,74,76]);
 });

@@ -1,5 +1,5 @@
-import {HISTORICAL_STAGES} from './history-stages.mjs?v=chapter-thirteen-2';
-import {paintPortrait} from './factions.mjs?v=chapter-thirteen-2';
+import {HISTORICAL_STAGES} from './history-stages.mjs?v=chapter-fourteen-1';
+import {paintPortrait} from './factions.mjs?v=chapter-fourteen-1';
 import {THIRD_CHAPTER} from './chapter-three.mjs?v=passive-feedback-1';
 // History and novel adaptation are deliberately separated in the introduction.
 export const CHAPTER_BACKGROUNDS={
@@ -35,6 +35,7 @@ CHAPTER_BACKGROUNDS[7]={era:'199—200 年・官渡風雲',history:'下邳戰後
 
 CHAPTER_BACKGROUNDS[10]={era:'208 年・荊州與赤壁',history:'曹操南征、劉琮歸降，長坂交戰後，孫權與劉備聯合抗曹。赤壁保留曹軍敗退的結果。',story:'沿用曹操軍；三路任務代表岸邊與驛道，不模擬水戰。人物對話為改編，關羽義釋曹操、借東風等小說情節不當作本章史實。'};
 
+CHAPTER_BACKGROUNDS[14]={era:'219 年・襄樊風雲',history:'劉備成為漢中王後，視角轉到荊州。關羽圍樊城，漢水暴漲改變戰局。徐晃解圍與孫權取荊州在不同戰線相繼影響關羽軍。',story:'前後以劉備軍為主，第 80 關切到徐晃所在的曹操軍。麥城關卡演出出走途中，戰後交代關羽與關平的史實結局。'};
 CHAPTER_BACKGROUNDS[13]={era:'215—219 年・漢中爭雄',history:'張魯歸降後，張郃與張飛在巴地交戰。曹操受封魏王，與孫權在濡須對峙；西邊的漢中後來由劉備取得。',story:'前四關從曹操軍看，定軍山起改由劉備軍看。瓦口保留張郃敗退，定軍山保留夏侯淵戰死，漢中易手由戰後故事交代。'};
 CHAPTER_BACKGROUNDS[12]={era:'212—215 年・隴右與漢中',history:'關中戰後，夏侯淵留守並援救祁山。曹操封魏公後，西征張魯，經陽平關進入南鄭。',story:'沿用曹操軍。西線及鄴城分段敘事，行軍、糧運與守軍交戰是遊戲改編。張魯退往巴中後才率部歸降。'};
 CHAPTER_BACKGROUNDS[11]={era:'209—211 年・江陵與關中',history:'赤壁後曹操北返，曹仁在江陵撤守。北方整備後，曹操西征，與馬超、韓遂等在潼關及渭水交戰。',story:'江陵段切換到留守軍消息，兵卡沿用抽象職能。三路接應與運糧為改編，保留江陵失守與馬超、韓遂退走的結果。'};

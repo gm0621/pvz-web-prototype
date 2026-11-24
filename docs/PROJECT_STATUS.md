@@ -20,6 +20,13 @@ npm run test:hero:engine
 npx playwright test --config=playwright.hero-input.config.js
 ```
 
+## 2026-11-24 第十四章「襄樊風雲」
+
+- 第 77～82 關延續沔陽封王、關羽圍樊、漢水暴漲、徐晃解圍、江陵失守、麥城出走。第 80 關切曹操軍可選三至五路，其餘用劉備軍原有三路。麥城的撤離是出走途中一幕，結算與章末保留關羽、關平被俘後遇害。 [第十四章規格](hero-history-chapter-fourteen.md)
+- 新增龐德、呂蒙、陸遜、關平頭像和圖鑑介紹，補于禁襄樊戰事。各關有行軍圖、史料、營地與配樂。第 81 關在地圖上呈現江陵後方消息，不將關羽標成已進城。
+- 377 項引擎測試通過，含六關合法操作的零經驗戰鬥模擬、第 80 關敵將技能與第 82 關關羽撤離條件。圖鑑回歸 6 項，跳關入口本機 12 項、線上入口本機 9 項通過。模組快取版本 `chapter-fourteen-1`。
+- 320px、390px Chromium 手機與 820px WebKit 平板共 3 項完整流程通過。確認重玩第 76 關銜接、換軍的兵器、行軍圖暫停恢復、各關營地、第 82 關存檔失敗重試及重整後進度。瀏覽器使用隔離存檔、受控敵波。回歸指令為 `npx playwright test --config=playwright.hero-fourteen.config.js`。
+
 ## 2026-11-24 第十三章完整流程複查
 
 - 已發布 `918c655`。正式站 Chromium 手機與 WebKit 平板各重跑第 70～76 關，2 項通過。45 份變更資源與發布提交逐位元一致。 [正式遊戲](https://gm0621.github.io/pvz-web-prototype/hero/?v=918c655) · [發布紀錄](https://github.com/gm0621/pvz-web-prototype/actions/runs/45344888587)

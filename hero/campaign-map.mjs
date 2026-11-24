@@ -1,6 +1,6 @@
-import {stagePeople,mapPersonSvg,renderMatchup} from './characters.mjs?v=chapter-thirteen-2';
-import {factionTitle} from './factions.mjs?v=chapter-thirteen-2';
-import {HISTORICAL_STAGES} from './history-stages.mjs?v=chapter-thirteen-2';
+import {stagePeople,mapPersonSvg,renderMatchup} from './characters.mjs?v=chapter-fourteen-1';
+import {factionTitle} from './factions.mjs?v=chapter-fourteen-1';
+import {HISTORICAL_STAGES} from './history-stages.mjs?v=chapter-fourteen-1';
 // Approximate regional placement, not historical borders or a surveyed route.
 export const MAP_PLACES={
  zhuo:{name:'涿郡',modern:'今河北涿州一帶',x:402,y:78},
@@ -47,6 +47,13 @@ Object.assign(westernPlaces,{
  dingjun:{name:'定軍山',modern:'今陝西勉縣南一帶・山地示意',x:-56,y:519},
  mianyang:{name:'沔陽',modern:'今陝西勉縣一帶・漢代縣城示意',x:-100,y:488}
 });
+Object.assign(westernPlaces,{
+ fancheng:{name:'樊城',modern:'今湖北襄陽樊城一帶・漢水北岸',x:289,y:431},
+ hanwater:{name:'漢水北岸',modern:'襄樊一帶的漢水戰區・洪水區域示意',x:347,y:469},
+ yancheng:{name:'偃城',modern:'襄樊一帶・徐晃解圍前的據點示意',x:239,y:399},
+ maicheng:{name:'麥城',modern:'今湖北當陽東南一帶・古城示意',x:236,y:572},
+ zhangxiang:{name:'章鄉一帶',modern:'古章鄉、臨沮戰區示意・擒獲與遇害位置依各史書敘述',x:165,y:521}
+});
 Object.assign(MAP_PLACES,westernPlaces);
 STAGE_LOCATIONS.push(...HISTORICAL_STAGES.map(s=>({place:s.mapPlace,detail:`${s.year} 年・${factionTitle(s.faction)}視角。${s.viewpointShift?'此處切換敘事視角，不是上一支軍隊的連續行程。':''}地點為歷史區域示意，並非精確軍事路線。`})));
 export function stageLocation(level){if(!Number.isInteger(level)||!STAGE_LOCATIONS[level-1])throw new RangeError('未知戰役關卡');const s=STAGE_LOCATIONS[level-1];return {...MAP_PLACES[s.place],...s,level}}
@@ -63,7 +70,7 @@ export function journeyRoute(level){
 export function campaignMapSvg(level,mini=false){
  const current=stageLocation(level),route=routeThrough(level),visited=new Set(route);
  const stage=HISTORICAL_STAGES[level-17],people=mini?null:stagePeople(level);
- const markers=people?mapPersonSvg(people.leader,'map-leader',current.x-36,current.y-44)
+ const markers=people?(stage?.mapLeader===false?'':mapPersonSvg(people.leader,'map-leader',current.x-36,current.y-44))
   +(stage?.mapOpponent===false?'':mapPersonSvg(people.opponent,'map-opponent',current.x+36,current.y-44)):'';
  const points=route.map(key=>`${MAP_PLACES[key].x},${MAP_PLACES[key].y}`).join(' ');
  const cities=Object.entries(MAP_PLACES).map(([key,p])=>{

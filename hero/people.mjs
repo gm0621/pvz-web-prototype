@@ -1,7 +1,7 @@
-import {ALL_GENERALS as GENERALS} from './roster.mjs?v=chapter-thirteen-2';
-import {skillSummary} from './roster-view.mjs?v=chapter-thirteen-2';
-import {PEOPLE,searchPeople} from './people-data.mjs?v=chapter-thirteen-2';
-import {paintPortrait} from './factions.mjs?v=chapter-thirteen-2';
+import {ALL_GENERALS as GENERALS} from './roster.mjs?v=chapter-fourteen-1';
+import {skillSummary} from './roster-view.mjs?v=chapter-fourteen-1';
+import {PEOPLE,searchPeople} from './people-data.mjs?v=chapter-fourteen-1';
+import {paintPortrait} from './factions.mjs?v=chapter-fourteen-1';
 const $=id=>document.getElementById(id);let kind='all';
 const node=(tag,text,className)=>{const e=document.createElement(tag);if(text)e.textContent=text;if(className)e.className=className;return e};
 function render(){
