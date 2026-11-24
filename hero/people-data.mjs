@@ -1,13 +1,14 @@
-import {GENERALS} from './roster.mjs?v=archer-identity-1';
-import {NOVEL_PAGES,CAMP_LINES} from './novel.mjs?v=archer-identity-1';
-import {campConversation} from './camp-talk.mjs?v=archer-identity-1';
-import {STORY_TASKS} from './story-play.mjs?v=archer-identity-1';
-import {CHAPTER_BACKGROUNDS,STAGE_LEADS} from './prologue.mjs?v=archer-identity-1';
-import {STORY_PEOPLE} from './characters.mjs?v=archer-identity-1';
-import {HEROES,STAGES,chapterInfo,enemyArt,heroesForLevel} from './story.mjs?v=archer-identity-1';
-import {FACTIONS,enemyPortrait} from './factions.mjs?v=archer-identity-1';
+import {GENERALS} from './roster.mjs?v=chapter-twelve-1';
+import {NOVEL_PAGES,CAMP_LINES} from './novel.mjs?v=chapter-twelve-1';
+import {campConversation} from './camp-talk.mjs?v=chapter-twelve-1';
+import {STORY_TASKS} from './story-play.mjs?v=chapter-twelve-1';
+import {CHAPTER_BACKGROUNDS,STAGE_LEADS} from './prologue.mjs?v=chapter-twelve-1';
+import {STORY_PEOPLE} from './characters.mjs?v=chapter-twelve-1';
+import {HEROES,STAGES,chapterInfo,enemyArt,heroesForLevel} from './story.mjs?v=chapter-twelve-1';
+import {FACTIONS,enemyPortrait} from './factions.mjs?v=chapter-twelve-1';
 // Child-friendly summaries; comparisons are memory aids, not historical quotations.
 const bios=[
+["張魯","史實人物","在漢中管事的公祺","張魯在漢中管理一方。曹軍來時，他的弟弟張衛在陽平關抵抗。關口失守後，張魯先退到巴中，後來帶著隊伍歸降。","張魯管漢中，張衛守關口。兩人是兄弟，做的決定也不同。","本章讓張魯在劇情中出場。陽平關戰場上的守軍主將是遊戲用來代表守軍的角色。"],
 ["馬超", "史實人物", "白甲孟起，先看他在哪一隊", "他字孟起。211 年與韓遂等關中將領迎戰曹操，敗後退走。後來才投奔劉備；讀不同年份，要跟著更新他的隊伍！", "超是超越的超；白甲藍羽是遊戲的記憶線索。", "本章不把後來的投奔提前，也不安排他在渭南戰死。"],
 ["韓遂", "史實人物", "關中聯軍裡的老將", "他字文約，在西方活動多年，曾與馬超等聯合迎戰曹操。聯合的隊伍也可能互相懷疑，合作需要信任。", "韓遂和馬超是兩個人，各有自己的隊伍。遂讀 ㄙㄨㄟˋ。", "渭南戰敗後退走；這裡沒有他的死亡結局。"],
 ["許褚", "史實人物", "危急渡河時的護衛", "他字仲康，是曹操的護衛。渡河遇上追兵，他護著曹操脫離危險。像一面保護同伴的盾，是幫助理解的比喻！", "褚讀 ㄔㄨˇ；黃頭巾和寬肩膀是遊戲造型。", "許褚、曹洪是不同的人；人物介紹不會增加新的出兵卡。"],

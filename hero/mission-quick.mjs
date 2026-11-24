@@ -1,4 +1,4 @@
-import {missionText} from './chapter-missions.mjs?v=archer-identity-1';
+import {missionText} from './chapter-missions.mjs?v=chapter-twelve-1';
 const names=['上','中','下'];
 export function missionQuickState(b){
  const m=b.mission;if(!m)return null;if(!['supply','withdraw','decoy'].includes(m.kind))return {text:missionText(b),button:m.done?'查看目標':'進行任務'};

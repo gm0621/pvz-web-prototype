@@ -1,6 +1,6 @@
 import {skillPresentation} from './skill-presentation.mjs?v=passive-feedback-1';
 import {MASTER_STYLES} from './master-style.mjs?v=passive-feedback-1';
-import {STAGES,chapterInfo} from './story.mjs?v=archer-identity-1';
+import {STAGES,chapterInfo} from './story.mjs?v=chapter-twelve-1';
 // Recorded interludes, stage scores and chapter codas share one switchable music bus.
 let context,musicBus,sfxBus,timer=null,step=0,enabled=false,sfx=true,revision=0,scene=0,recordedMode='home',chapterEnding=false,pageInactive=false,backgroundPaused=false;
 const recordedTracks=new Map(),recordedSources=[];
@@ -26,14 +26,14 @@ const MOTIFS=[
  {name:'驛道突圍',instrument:'撥弦、戰鼓與號角',root:50,beat:235,drum:8,notes:[12,null,9,7,4,null,2,0,2,null,4,7,4,2,0,null]},
  {name:'天公雷陣',instrument:'撥弦、戰鼓與號角',root:55,beat:210,drum:2,notes:[0,7,0,12,7,null,9,7,0,4,7,14,12,9,7,0]}
 ];
-// Reuse a small instrumental vocabulary, but give all 64 stages their own
+// Reuse a small instrumental vocabulary, but give all stages their own
 // melodic phrase, register and pulse. Chapter codas are slower and drum-free.
 export const THEMES=STAGES.map((stage,i)=>{
  const info=chapterInfo(i+1),base=MOTIFS[i%MOTIFS.length],shift=(info.chapter-1)%5,rotation=(info.number-1)*2;
  return {...base,name:`${stage.name}・行軍`,root:base.root+shift,beat:base.beat+info.chapter*3,
   notes:base.notes.map((_,n)=>{const note=base.notes[(n+rotation)%16];return n===14?(note??0)+info.chapter:note})};
 });
-export const CHAPTER_THEMES=Array.from({length:11},(_,i)=>{
+export const CHAPTER_THEMES=Array.from({length:chapterInfo(STAGES.length).chapter},(_,i)=>{
  const base=MOTIFS[i%MOTIFS.length];return {...base,name:`${chapterInfo(STAGES.findIndex(s=>(s.chapter||1)===i+1)+1).title}・章末`,root:60+i%5,beat:370+i*7,calm:true,
  notes:[0,4,7,null,9,7,4,null,2,4,7,9+i,7,4,0,null]};
 });

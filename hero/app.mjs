@@ -1,36 +1,37 @@
-import {mountExperienceView} from './experience-view.mjs?v=archer-identity-1';
+import {CHAPTER_NUMERALS} from './campaign-config.mjs?v=chapter-twelve-1';
+import {mountExperienceView} from './experience-view.mjs?v=chapter-twelve-1';
 import {preloadBattleAssets,battleAssetsReady,prepareBattleAssets} from './battle-assets.mjs?v=images-1';
-import {mountBattleFocus} from './battle-focus.mjs?v=archer-identity-1';
+import {mountBattleFocus} from './battle-focus.mjs?v=chapter-twelve-1';
 import {advanceAutoSkills} from './auto-skills.mjs?v=battle-focus-1';
 import {renderPassiveFeedback} from './passive-view.mjs?v=passive-feedback-1';
-import {mountSkillIntro} from './skill-intro.mjs?v=archer-identity-1';
+import {mountSkillIntro} from './skill-intro.mjs?v=chapter-twelve-1';
 import {beginReading,installStoryReader} from './story-reader.mjs?v=passive-feedback-1';
 import {shortPages} from './story-pages.mjs?v=passive-feedback-1';
-import {configureRoster,configurePeachRoster,configureSunRoster,awardExperience,SLOTS,ALL_GENERALS as GENERALS} from './roster.mjs?v=archer-identity-1';
-import {openDeployment,mountActiveSkills} from './roster-view.mjs?v=archer-identity-1';
-import {castActive,lanesFor,laneLabel} from './engine.mjs?v=archer-identity-1';
-import {mountSkillGuide} from './skill-guide.mjs?v=archer-identity-1';
-import {renderPeople,STORY_PEOPLE} from './characters.mjs?v=archer-identity-1';
-import {FACTIONS,factionFor,enemyPortrait,paintPortrait} from './factions.mjs?v=archer-identity-1';
-import {mountHistoryLesson} from './history-view.mjs?v=archer-identity-1';
-import {renderSkillCutin} from './skill-cutin.mjs?v=archer-identity-1';
-import {renderMasterCutin} from './master-cutin.mjs?v=archer-identity-1';
-import {renderBossCutin} from './boss-cutin.mjs?v=archer-identity-1';
+import {configureRoster,configurePeachRoster,configureSunRoster,awardExperience,SLOTS,ALL_GENERALS as GENERALS} from './roster.mjs?v=chapter-twelve-1';
+import {openDeployment,mountActiveSkills} from './roster-view.mjs?v=chapter-twelve-1';
+import {castActive,lanesFor,laneLabel} from './engine.mjs?v=chapter-twelve-1';
+import {mountSkillGuide} from './skill-guide.mjs?v=chapter-twelve-1';
+import {renderPeople,STORY_PEOPLE} from './characters.mjs?v=chapter-twelve-1';
+import {FACTIONS,factionFor,enemyPortrait,paintPortrait} from './factions.mjs?v=chapter-twelve-1';
+import {mountHistoryLesson} from './history-view.mjs?v=chapter-twelve-1';
+import {renderSkillCutin} from './skill-cutin.mjs?v=chapter-twelve-1';
+import {renderMasterCutin} from './master-cutin.mjs?v=chapter-twelve-1';
+import {renderBossCutin} from './boss-cutin.mjs?v=chapter-twelve-1';
 import {mountBattleKeys} from './battle-keys.mjs?v=battle-focus-1';
-import {mountJourney} from './journey-view.mjs?v=archer-identity-1';
-import {renderMission} from './chapter-mission-view.mjs?v=archer-identity-1';
-import {mountCampaignMap} from './campaign-map.mjs?v=archer-identity-1';
-import {advanceBattleFrame,normalizeBattleSpeed} from './battle-speed.mjs?v=archer-identity-1';
-import {mountNovel} from './novel.mjs?v=archer-identity-1';
-import {mountCamp} from './camp-view.mjs?v=archer-identity-1';
-import {rewardVictory,useSupply,weaponsForLevel} from './campaign.mjs?v=archer-identity-1';
+import {mountJourney} from './journey-view.mjs?v=chapter-twelve-1';
+import {renderMission} from './chapter-mission-view.mjs?v=chapter-twelve-1';
+import {mountCampaignMap} from './campaign-map.mjs?v=chapter-twelve-1';
+import {advanceBattleFrame,normalizeBattleSpeed} from './battle-speed.mjs?v=chapter-twelve-1';
+import {mountNovel} from './novel.mjs?v=chapter-twelve-1';
+import {mountCamp} from './camp-view.mjs?v=chapter-twelve-1';
+import {rewardVictory,useSupply,weaponsForLevel} from './campaign.mjs?v=chapter-twelve-1';
 import {createFirstGuide} from './first-guide.mjs?v=passive-feedback-1';
-import {mountStoryTask} from './story-play.mjs?v=archer-identity-1';
-import {CHAPTER_BACKGROUNDS,STAGE_LEADS} from './prologue.mjs?v=archer-identity-1';
-import {setMusic,setMusicMode,setMusicHome,musicTheme,musicOn,setSfx,unlockAudio,hitSound} from './audio.mjs?v=archer-identity-1';
-import {renderDuel} from './duel-view.mjs?v=archer-identity-1';
-import {chapterInfo,enemyArt,HEROES as BASE_HEROES,heroesForLevel,STAGES,ENEMY_ART,SHIELD_ART,FEATURES,heroDescription} from './story.mjs?v=archer-identity-1';
-import {bossProfile,LANE_CAPACITY,laneCount,ENEMY_SWING,enemyAttackFrame,skipDuelEntrance,positionHero,commandHero,moveHero,BOSS_SKILLS,SAVE_KEY,normalizeProgress,createBattle,deploy,canDeploy,attackFrame,SWING} from './engine.mjs?v=archer-identity-1';
+import {mountStoryTask} from './story-play.mjs?v=chapter-twelve-1';
+import {CHAPTER_BACKGROUNDS,STAGE_LEADS} from './prologue.mjs?v=chapter-twelve-1';
+import {setMusic,setMusicMode,setMusicHome,musicTheme,musicOn,setSfx,unlockAudio,hitSound} from './audio.mjs?v=chapter-twelve-1';
+import {renderDuel} from './duel-view.mjs?v=chapter-twelve-1';
+import {chapterInfo,enemyArt,HEROES as BASE_HEROES,heroesForLevel,STAGES,ENEMY_ART,SHIELD_ART,FEATURES,heroDescription} from './story.mjs?v=chapter-twelve-1';
+import {bossProfile,LANE_CAPACITY,laneCount,ENEMY_SWING,enemyAttackFrame,skipDuelEntrance,positionHero,commandHero,moveHero,BOSS_SKILLS,SAVE_KEY,normalizeProgress,createBattle,deploy,canDeploy,attackFrame,SWING} from './engine.mjs?v=chapter-twelve-1';
 
 const $=id=>document.getElementById(id);
 let HEROES=BASE_HEROES;
@@ -59,7 +60,7 @@ function show(id){if(id!=='result')experienceView?.cancel();battleFocus?.close()
 function updateHome(){
  const unfinished=battle&&!battle.over;
  $('startBtn').innerHTML=`${unfinished?'繼續戰鬥':progress.completed===STAGES.length?'重溫故事':progress.completed?'繼續故事':'開始故事'} <span>→</span>`;
- $('homeProgress').textContent=unfinished?`停在 ${chapterInfo(battle.level).chapter}-${chapterInfo(battle.level).number} · ${STAGES[battle.level-1].name}`:progress.completed===STAGES.length?`第${['','一','二','三','四','五','六','七','八','九','十','十一'][chapterInfo(STAGES.length).chapter]}章完成 · ${chapterInfo(STAGES.length).title}`:`已完成 ${progress.completed} / ${STAGES.length} 關 · 下一站：${STAGES[progress.completed].name}`;
+ $('homeProgress').textContent=unfinished?`停在 ${chapterInfo(battle.level).chapter}-${chapterInfo(battle.level).number} · ${STAGES[battle.level-1].name}`:progress.completed===STAGES.length?`第${CHAPTER_NUMERALS[chapterInfo(STAGES.length).chapter]}章完成 · ${chapterInfo(STAGES.length).title}`:`已完成 ${progress.completed} / ${STAGES.length} 關 · 下一站：${STAGES[progress.completed].name}`;
  const currentChapter=chapterInfo(Math.min(progress.completed+1,STAGES.length)).chapter;
  const chapters=[...new Set(STAGES.map((_,i)=>chapterInfo(i+1).chapter))];
  function selectChapter(chapter){
@@ -93,7 +94,7 @@ function storyLines(){const stage=STAGES[storyLevel-1];return shortPages(storyPh
 function finishStory(){if(storyPhase==='opening')beginBattle(storyLevel);else if(storyLevel<STAGES.length)startStory(storyLevel+1);else goHome()}
 function renderStory(){
  const stage=STAGES[storyLevel-1],lines=storyLines(),[speaker,text]=lines[lineIndex],last=lineIndex===lines.length-1;
- $('storyChapter').textContent=`第${['','一','二','三','四','五','六','七','八','九','十','十一'][chapterInfo(storyLevel).chapter]}章 · 第 ${chapterInfo(storyLevel).number} / ${chapterInfo(storyLevel).count} 關 · ${storyPhase==='ending'?'戰後':'戰前'}`;$('storyTitle').textContent=stage.name;$('storyAdaptation').textContent=storyLevel>=5?stage.note:'劇情依《三國演義》第一回改編；對話與小型遭遇為遊戲補寫。';$('storyPlace').textContent=stage.place;
+ $('storyChapter').textContent=`第${CHAPTER_NUMERALS[chapterInfo(storyLevel).chapter]}章 · 第 ${chapterInfo(storyLevel).number} / ${chapterInfo(storyLevel).count} 關 · ${storyPhase==='ending'?'戰後':'戰前'}`;$('storyTitle').textContent=stage.name;$('storyAdaptation').textContent=storyLevel>=5?stage.note:'劇情依《三國演義》第一回改編；對話與小型遭遇為遊戲補寫。';$('storyPlace').textContent=stage.place;
  $('storySpeaker').textContent=speaker;$('storyLine').textContent=text;renderPeople($('storyPeople'),text,speaker);$('storyCount').textContent=`${lineIndex+1} / ${lines.length}`;
  $('storyPrevious').disabled=lineIndex===0;
  const finalLabel=storyPhase==='ending'?(storyLevel<STAGES.length?'下一段故事 →':'回主選單 →'):'出發迎戰 →';
@@ -116,7 +117,7 @@ function beginBattle(level,ready=false){if(factionFor(level)==='cao'&&!ready){
  const returnMode=screen==='camp'?'camp':storyPhase==='ending'?'victory':$('storyPrologue').hidden?'prepare':'story';
  setMusicMode('prepare',level);syncMusicButton();
  openDeployment({level,progress,save:saveProgress,onStart:()=>beginBattle(level,true),onCancel:()=>{setMusicMode(returnMode,level);syncMusicButton()}});return
-}const assets=battleAssetUrls(level);if(!battleAssetsReady(assets)){prepareBattleAssets(assets,()=>beginBattle(level,ready));return}useRoster(level);setMusicMode('battle',level);syncMusicButton();battle=createBattle(level,Date.now(),weaponsForLevel(progress,level));if(factionFor(level)==='cao'){configureRoster(battle,progress,HEROES.archer);HEROES=battle.roster;battle.food=Math.min(300,battle.food+60*(lanesFor(battle)-3))}else if(factionFor(level)==='sun'){configureSunRoster(battle,progress,HEROES.archer);HEROES=battle.roster}else if(!factionFor(level)){configurePeachRoster(battle,progress);HEROES=battle.roster}buildDeploymentControls();firstGuide=createFirstGuide(level);selected=null;selectedUnitId=null;resultShown=false;duelShown=false;show('battle');$('battleChapter').textContent=`第${['','一','二','三','四','五','六','七','八','九','十','十一'][chapterInfo(level).chapter]}章 · ${chapterInfo(level).number}`;$('battleTitle').textContent=STAGES[level-1].name+(factionFor(level)?` · ${FACTIONS[factionFor(level)].title}`:'');$('featureBadge').textContent=FEATURES[level-1].name;$('field').style.backgroundImage=`linear-gradient(#d4dfb655,#b9cda588),url("${STAGES[level-1].scene}")`;renderBattle();$('cards').querySelector('button')?.focus({preventScroll:true})}
+}const assets=battleAssetUrls(level);if(!battleAssetsReady(assets)){prepareBattleAssets(assets,()=>beginBattle(level,ready));return}useRoster(level);setMusicMode('battle',level);syncMusicButton();battle=createBattle(level,Date.now(),weaponsForLevel(progress,level));if(factionFor(level)==='cao'){configureRoster(battle,progress,HEROES.archer);HEROES=battle.roster;battle.food=Math.min(300,battle.food+60*(lanesFor(battle)-3))}else if(factionFor(level)==='sun'){configureSunRoster(battle,progress,HEROES.archer);HEROES=battle.roster}else if(!factionFor(level)){configurePeachRoster(battle,progress);HEROES=battle.roster}buildDeploymentControls();firstGuide=createFirstGuide(level);selected=null;selectedUnitId=null;resultShown=false;duelShown=false;show('battle');$('battleChapter').textContent=`第${CHAPTER_NUMERALS[chapterInfo(level).chapter]}章 · ${chapterInfo(level).number}`;$('battleTitle').textContent=STAGES[level-1].name+(factionFor(level)?` · ${FACTIONS[factionFor(level)].title}`:'');$('featureBadge').textContent=FEATURES[level-1].name;$('field').style.backgroundImage=`linear-gradient(#d4dfb655,#b9cda588),url("${STAGES[level-1].scene}")`;renderBattle();$('cards').querySelector('button')?.focus({preventScroll:true})}
 function selectedUnit(){return battle?.allies.find(u=>u.hp>0&&(selectedUnitId!==null?u.id===selectedUnitId:selected!=='archer'&&!HEROES[selected]?.troop&&u.key===selected))}
 function syncPause(){if(!battle)return;$('field').classList.toggle('is-paused',battle.paused||!!battle.duel||!!battle.introPending);$('pauseOverlay').hidden=!battle.paused;$('pauseBtn').textContent=battle.paused?'▶ 繼續':'Ⅱ 暫停';$('pauseBtn').setAttribute('aria-pressed',String(battle.paused))}
 function setPause(value){if(!battle||battle.over)return;battle.paused=value;syncPause()}
@@ -217,7 +218,7 @@ function showResult(){
  const resultKeys=battle.heroMode?SLOTS.slice(0,battle.team.length):['guanyu','liubei','zhangfei'];document.querySelector('.result-company').replaceChildren(...resultKeys.map(key=>{const img=document.createElement('img');paintPortrait(img,HEROES[key]);img.alt=HEROES[key].name;return img}));
  document.querySelector('.result-next-step').textContent=battle.level>=17?'戰報看完了？回營整備，再聽同伴說說這一戰。':'戰報看完了？回營歇一歇，再聽三兄弟的故事。';
  document.querySelector('.victory-ribbon').textContent=stage.successTitle?'保 全 隊 伍 ・ 回 營 整 備':'捷 報 傳 回 ・ 凱 旋 歸 營';
- $('resultMark').textContent=battle.won?(stage.successTitle?'全':'勝'):'再起';$('resultChapter').textContent=`第${['','一','二','三','四','五','六','七','八','九','十','十一'][chapterInfo(battle.level).chapter]}章 · ${chapterInfo(battle.level).number}`;
+ $('resultMark').textContent=battle.won?(stage.successTitle?'全':'勝'):'再起';$('resultChapter').textContent=`第${CHAPTER_NUMERALS[chapterInfo(battle.level).chapter]}章 · ${chapterInfo(battle.level).number}`;
  $('resultTitle').textContent=battle.won?(stage.successTitle||((!STAGES[battle.level]||chapterInfo(battle.level+1).chapter!==chapterInfo(battle.level).chapter)?chapterInfo(battle.level).title:'此戰告捷')):'重整陣形，再來一次';
  $('resultText').textContent=battle.won?stage.victory:battle.lossReason==='commander-breach'?'敵方主將突破防線，本關未完成。調動部隊攔住主將，再挑戰一次。':(battle.level>=17?`先讓友軍照應${['','','','三','四','五'][lanesFor(battle)]}路，閱讀本關任務；撤軍關不必擊倒主將，接應完成後帶隊退回左側。`:'先讓弓兵照應三路，再用張飛頂住前線、關羽斬擊敵軍、劉備回復友軍。軍糧會持續補給，留意空著的路線。');
  $('result').dataset.outcome=battle.won?'victory':'defeat';$('result').dataset.reward=String(progress.coins>balanceBefore);if(battle.won&&!xp.some(x=>x.amount>0))void hitSound('oath');

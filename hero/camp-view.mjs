@@ -1,13 +1,14 @@
-import {campGrowthCard} from './camp-growth.mjs?v=archer-identity-1';
-import {PEACH_GENERALS,SUN_GENERALS,SLOTS,heroLevel} from './roster.mjs?v=archer-identity-1';
-import {skillSummary} from './roster-view.mjs?v=archer-identity-1';
-import {renderHeroCamp} from './roster-view.mjs?v=archer-identity-1';
-import {STORY_PEOPLE,renderPeople} from './characters.mjs?v=archer-identity-1';
-import {STAGES,chapterInfo} from './story.mjs?v=archer-identity-1';
-import {factionFor,paintPortrait} from './factions.mjs?v=archer-identity-1';
-import {campConversation} from './camp-talk.mjs?v=archer-identity-1';
-import {GOODS,purchase,weaponsForLevel} from './campaign.mjs?v=archer-identity-1';
-import {CAMP_LINES} from './novel.mjs?v=archer-identity-1';
+import {CHAPTER_NUMERALS} from './campaign-config.mjs?v=chapter-twelve-1';
+import {campGrowthCard} from './camp-growth.mjs?v=chapter-twelve-1';
+import {PEACH_GENERALS,SUN_GENERALS,SLOTS,heroLevel} from './roster.mjs?v=chapter-twelve-1';
+import {skillSummary} from './roster-view.mjs?v=chapter-twelve-1';
+import {renderHeroCamp} from './roster-view.mjs?v=chapter-twelve-1';
+import {STORY_PEOPLE,renderPeople} from './characters.mjs?v=chapter-twelve-1';
+import {STAGES,chapterInfo} from './story.mjs?v=chapter-twelve-1';
+import {factionFor,paintPortrait} from './factions.mjs?v=chapter-twelve-1';
+import {campConversation} from './camp-talk.mjs?v=chapter-twelve-1';
+import {GOODS,purchase,weaponsForLevel} from './campaign.mjs?v=chapter-twelve-1';
+import {CAMP_LINES} from './novel.mjs?v=chapter-twelve-1';
 export function mountCamp({progress,level,heroes,stage,onSave,onContinue,won=true}){
  const $=id=>document.getElementById(id);let shop='items';
  let people=$('campTalkPeople');if(!people){people=document.createElement('aside');people.id='campTalkPeople';people.className='story-people';people.setAttribute('aria-label','對話提及人物');$('campTalkText').after(people)}people.hidden=true;
@@ -16,7 +17,7 @@ export function mountCamp({progress,level,heroes,stage,onSave,onContinue,won=tru
  openPanel('campRoster');$('campPrepare').setAttribute('aria-pressed','true');for(const button of document.querySelectorAll('[data-talk]')){const d=heroes[button.dataset.talk];paintPortrait(button.querySelector('img'),d);button.querySelector('img').alt=d.name;button.querySelector('strong').textContent=d.name;button.querySelector('small').textContent='聊聊這一戰';}document.querySelector('.tent-banner').textContent=factionFor(level)==='sun'?'孫':factionFor(level)==='cao'?'曹':'義';
  let visitors=$('campVisitors');if(!visitors){visitors=document.createElement('button');visitors.id='campVisitors';visitors.className='quiet-button';visitors.textContent='探望鄉民與傷兵';$('campNarration').after(visitors)}visitors.hidden=level<11||!won;visitors.onclick=()=>{openPanel('campTalk');people.hidden=true;$('campTalkName').textContent='鄉民與傷兵';$('campTalkPortrait').hidden=true;$('campTalkText').textContent=level===16?'孩子已吃上熱粥，郎中正在替傷兵包紮。謝謝你們把大家平安帶回來。':'鄉民圍在營火旁，郎中替傷者包紮。先歇一歇，我們會彼此照應。';$('campTalkNext').textContent='回到營帳';$('campTalkNext').onclick=()=>openPanel(null)};
  $('campTitle').textContent=won?`${stage.name} · 歇馬整備`:'重整行裝，再來一次';$('campNarration').textContent=won?CAMP_LINES[level-1]:'先回營歇一歇。將士清點行囊，準備再試一次。';
- const finale=won&&(level===STAGES.length||chapterInfo(level+1).chapter!==chapterInfo(level).chapter),chapterLabel='第'+['','一','二','三','四','五','六','七','八','九','十','十一'][chapterInfo(level).chapter]+'章';
+ const finale=won&&(level===STAGES.length||chapterInfo(level+1).chapter!==chapterInfo(level).chapter),chapterLabel='第'+CHAPTER_NUMERALS[chapterInfo(level).chapter]+'章';
  document.querySelector('.camp-departure strong').textContent=finale?chapterLabel+'完成，聽聽戰後故事。':'整備好了，就繼續冒險！';
  $('campContinue').textContent=finale?chapterLabel+'尾聲 ➜':won?'繼續故事 ➜':'重新出戰 →';$('campContinue').onclick=onContinue;
  $('campMessage').textContent=(level>=17?'軍資與行囊共用；每位武將的兵器強化分開保存。':'')+'點一間攤位逛逛。購物可略過；兵器會自動裝備，道具可在戰鬥中使用。';
