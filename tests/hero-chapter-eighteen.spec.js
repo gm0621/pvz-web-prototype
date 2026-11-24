@@ -129,12 +129,31 @@ test('completed chapter seventeen saves continue through Wuzhang Plains on touch
 
   if(level===106)await page.evaluate(()=>window.blockSave=true);
   if(stage.kind==='withdraw')await withdraw();
-  else if(stage.kind==='supply')await sendCarts();
+  else if(stage.kind==='supply'){
+   await advance(7600);
+   await expect(page.locator('#missionQuickAction')).toHaveText('發送糧車');
+   const guardId=await page.evaluate(()=>String(window.chapterBattle.allies.find(u=>u.key==='zhangfei').id));
+   await page.locator('#unitSelect').selectOption(guardId);
+   await tap('#commandDrawerButton');
+   await tap('#orders [data-order="up"]');
+   await tap('#commandDrawerClose');
+   await expect(page.locator('#missionQuick')).toContainText('下路缺接應');
+   await tap('#missionQuickAction');
+   await expect(page.locator('#missionChoices [data-action=supply]')).toBeDisabled();
+   expect((await snapshot()).mission).toMatchObject({charge:10,delivered:0});
+   await tap('#missionDrawerClose');
+   await tap('#cards [data-hero=archer]');
+   await page.locator('.lane').nth(2).tap({position:{x:40,y:25}});
+   await advance(100);
+   await expect(page.locator('#missionQuickAction')).toHaveText('發送糧車');
+   await sendCarts();
+  }
   else if(stage.kind==='restoration'){
    await tap('#missionDrawerButton');
    for(const [i,site] of ['田畦','水渠','糧棚'].entries()){
     await tap(`#missionChoices [data-action=site]:nth-child(${i+1})`);
     await expect(page.locator('#missionObjective')).toContainText(site);
+    await expect(page.locator('#missionActionFx strong')).toHaveText(`開始整備${site}，請守住對應路線`);
     if(i===0){
      await advance(1000);
      await tap('#pauseBtn');
@@ -142,9 +161,17 @@ test('completed chapter seventeen saves continue through Wuzhang Plains on touch
      expect(progress.mission.sites[0]).toBeGreaterThan(0);
      await advance(1200);
      expect(await snapshot()).toEqual(progress);
+     await expect(page.locator('#missionObjective')).toContainText('已暫停');
+     await tap('#battleMenuButton');
+     await tap('#battleMapButton');
+     await tap('#campaignMapClose');
+     if(await page.locator('#battleMenu').isVisible())await tap('#battleMenuClose');
+     await advance(100);
+     await expect(page.locator('#pauseBtn')).toHaveAttribute('aria-pressed','true');
+     expect(await snapshot()).toEqual(progress);
      await tap('#pauseBtn');
      await advance(100);
-     await expect(page.locator('#missionDrawerButton')).toHaveAttribute('aria-expanded','true');
+     await tap('#missionDrawerButton');
     }
     await advance(6200);
    }

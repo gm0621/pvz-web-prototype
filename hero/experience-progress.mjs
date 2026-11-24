@@ -1,4 +1,4 @@
-import {LEVEL_XP,heroLevel} from './roster.mjs?v=chapter-eighteen-1';
+import {LEVEL_XP,heroLevel} from './roster.mjs?v=chapter-eighteen-2';
 export const EXPERIENCE_DURATION=3200;
 const mix=(a,b,p)=>a+(b-a)*Math.max(0,Math.min(1,p));
 // Presentation only. The campaign has already awarded and saved the final XP.

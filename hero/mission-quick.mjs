@@ -1,6 +1,6 @@
-import {HISTORICAL_STAGES} from './history-stages.mjs?v=chapter-eighteen-1';
-import {missionText} from './chapter-missions.mjs?v=chapter-eighteen-1';
-import {retreatPartyNames,retreatPartyLabel,supplyReady} from './history-missions.mjs?v=chapter-eighteen-1';
+import {HISTORICAL_STAGES} from './history-stages.mjs?v=chapter-eighteen-2';
+import {missionText} from './chapter-missions.mjs?v=chapter-eighteen-2';
+import {retreatPartyNames,retreatPartyLabel,supplyReady} from './history-missions.mjs?v=chapter-eighteen-2';
 const names=['上','中','下'];
 export function missionQuickState(b){
  const m=b.mission;if(!m)return null;if(!['supply','withdraw','decoy'].includes(m.kind))return {text:missionText(b),button:m.done?'查看目標':'進行任務'};

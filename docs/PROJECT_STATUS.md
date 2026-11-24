@@ -20,6 +20,12 @@ npm run test:hero:engine
 npx playwright test --config=playwright.hero-input.config.js
 ```
 
+## 2026-11-24 第十八章完整流程複查
+
+- 修正渭濱屯田的戰場提示。選擇田畦、水渠或糧棚時，提示、任務面板和完成訊息使用同一份關卡資料。
+- 從第 100 關結算接第 101 關。祁山糧車備妥後，調走一路守軍會暫停發車，補回接應即可延續。木門、五丈原須等在場友軍回到左側才結算。渭濱屯田暫停中打開及關閉行軍圖，仍保留暫停與整備進度。六關頭像、史料、行軍圖與營地複驗通過，包含圖鑑搜尋、末關存檔失敗重試、營地購買、重整與重玩。
+- 389 項引擎、本機 320px 和 390px 手機及 820px 平板完整流程 3 項、第十六章與圖鑑的手機和平板回歸 8 項通過。引擎含正常敵波，觸控使用模擬裝置、隔離存檔與受控敵波。快取版 `chapter-eighteen-2`，回歸設定為 `playwright.hero-eighteen.config.js`。
+
 ## 2026-11-24 第十八章「五丈原秋風」
 
 - 已發布 `1a830de`。正式站手機 Chromium 與平板 WebKit 各完成第 100～106 關及末關重玩，也以未修改遊戲模組的瀏覽器確認第 100、105 關存檔可直接續玩，核對 48 份變更資源。 [正式遊戲](https://gm0621.github.io/pvz-web-prototype/hero/?v=1a830de) · [發布紀錄](https://github.com/gm0621/pvz-web-prototype/actions/runs/45369525554)

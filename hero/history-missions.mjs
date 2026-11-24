@@ -1,5 +1,5 @@
-import {HISTORICAL_STAGES} from './history-stages.mjs?v=chapter-eighteen-1';
-import {FACTIONS,factionFor} from './factions.mjs?v=chapter-eighteen-1';
+import {HISTORICAL_STAGES} from './history-stages.mjs?v=chapter-eighteen-2';
+import {FACTIONS,factionFor} from './factions.mjs?v=chapter-eighteen-2';
 import {PEACH_HEROES} from './hero-base.mjs?v=passive-feedback-1';
 const defaultRetreatSlots=['liubei','zhangfei'];
 const retreatSlots=battle=>HISTORICAL_STAGES[battle.level-17]?.retreatKeys||defaultRetreatSlots;
@@ -15,7 +15,7 @@ export function retreatPartyLabel(battle,escorts='在場友軍'){
 const laneList=b=>Array.from({length:b.laneTotal||3},(_,i)=>i);
 const routeName=(b,l)=>(b.laneTotal||3)>3?`第 ${l+1}`:['上','中','下'][l];
 const defaultSites=['道路','水井','宗廟'],laneNames=['上','中','下'];
-const restorationSites=level=>HISTORICAL_STAGES[level-17]?.missionSites||defaultSites;
+export const restorationSites=level=>HISTORICAL_STAGES[level-17]?.missionSites||defaultSites;
 const kinds=HISTORICAL_STAGES.map(s=>s.mission);
 export function createHistoryMission(level){return {level,kind:kinds[level-17],hold:0,done:false,message:'',lane:1,travel:0,rescued:0,delivered:0,charge:0,withdrawAt:null,ordered:false,decoyUsed:false,decoyLane:null,site:-1,sites:[0,0,0]}}
 const active=b=>b?.mission&&b.level>=17&&!b.over&&!b.paused&&!b.duel&&!b.introPending;
