@@ -20,6 +20,13 @@ npm run test:hero:engine
 npx playwright test --config=playwright.hero-input.config.js
 ```
 
+## 2026-11-24 第十九章「興勢守漢中」
+
+- 已在本機分支 `codex/xingshi-campaign` 完成，待正式發布。
+- 新增第 107～112 關「棧道爭路、成都接任、漢中整軍、涪城轉運、興勢守關、援軍解圍」。沿 234～244 年史事，保留蜀軍撤兵內部爭端、蔣琬與費禕交接及曹爽撤軍結果。 [第十九章規格](hero-history-chapter-nineteen.md)
+- 新增魏延、蔣琬、費禕、曹爽的萌將頭像與圖鑑，保留六關行軍圖、史料、營地及蜀漢三路養成。
+- 391 項引擎、320px 與 390px 手機和 820px 平板觸控完整流程 3 項、第十八章與圖鑑回歸 8 項通過。觸控用模擬裝置、隔離存檔和受控敵波，引擎另用正常敵波。確認第 106 關過關接第 107 關、交接暫停不掉進度、涪縣糧車缺一路接應時不能發車、末關存檔失敗重試、營地購買及重玩無重複軍資。快取版 `chapter-nineteen-1`，回歸設定為 `playwright.hero-nineteen.config.js`。
+
 ## 2026-11-24 第十八章完整流程複查
 
 - 已發布 `39aece7`。正式站手機 Chromium 與平板 WebKit 各完成第 100～106 關及末關重玩。另用未修改遊戲模組的瀏覽器驗證第 100、105 關存檔可直接續玩，核對 44 份變更資源。輔助檢查初次戰場載入逾時，重跑兩種裝置均通過。 [正式遊戲](https://gm0621.github.io/pvz-web-prototype/hero/?v=39aece7) · [發布紀錄](https://github.com/gm0621/pvz-web-prototype/actions/runs/45371619806)

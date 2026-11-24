@@ -1,7 +1,7 @@
 import {skillPresentation,skillArtwork} from './skill-presentation.mjs?v=passive-feedback-1';
-import {ALL_GENERALS} from './roster.mjs?v=chapter-eighteen-3';
-import {paintPortrait} from './factions.mjs?v=chapter-eighteen-3';
-import {hitSound} from './audio.mjs?v=chapter-eighteen-3';
+import {ALL_GENERALS} from './roster.mjs?v=chapter-nineteen-1';
+import {paintPortrait} from './factions.mjs?v=chapter-nineteen-1';
+import {hitSound} from './audio.mjs?v=chapter-nineteen-1';
 const seen=new WeakMap();
 export function renderSkillCutin(b){
  let root=document.getElementById('skillCutin'),fx=document.getElementById('skillBurst');
