@@ -8,7 +8,7 @@
 
 ## Obsidian 尚未同步時，從這裡接手
 
-1. **確認版本。** 在剛拉下來的 `main` 執行 `git status --short --branch`、`git log -1 --oneline`。`git log` 顯示目前 checkout 的提交。正式遊戲版本另看下方最新一筆含「已發布」及 Pages 工作的功能紀錄。截至 2026-11-24，最新已驗證的正式遊戲版本為 `a055aae`（第十六章，共 94 關）。 [正式遊戲](https://gm0621.github.io/pvz-web-prototype/hero/?v=a055aae) · [發布紀錄](https://github.com/gm0621/pvz-web-prototype/actions/runs/45358807611)
+1. **確認版本。** 在剛拉下來的 `main` 執行 `git status --short --branch`、`git log -1 --oneline`。`git log` 顯示目前 checkout 的提交。正式遊戲版本另看下方最新一筆含「已發布」及 Pages 工作的功能紀錄。截至 2026-11-24，最新已驗證的正式遊戲版本為 `8dae1f5`（第十七章，共 100 關）。 [正式遊戲](https://gm0621.github.io/pvz-web-prototype/hero/?v=8dae1f5) · [發布紀錄](https://github.com/gm0621/pvz-web-prototype/actions/runs/45365321491)
 2. **安裝並做基本驗證。** 在專案根目錄用 Node.js 20 以上與 npm。執行下列指令可驗證引擎、桌面滑鼠／鍵盤及手機平板觸控。更多測試和本機預覽見 [開發指南](DEVELOPMENT.md)。Playwright 會啟動 4174 埠的測試服務，先關閉佔用該埠的手動預覽。
 3. **開工前看目前進度。** 先讀 [AGENTS.md](../AGENTS.md) 的「重要約束」及下方與任務相關的紀錄。英雄演義是獨立的 `/hero/` 遊戲，關卡上限見 `hero/campaign-config.mjs`。正式存檔 `heroLegendProgress_v1` 與本機、線上跳關測試的存檔分開。跨電腦時瀏覽器存檔和未提交的檔案需另外移轉。保留滑鼠、鍵盤與觸控操作，也要保留首勝軍資、重玩及暫停的既有規則。 [跳關工具和存檔說明](hero-local-testing.md)
 4. **繼續當次工作。** 依使用者的新需求從最新 `main` 開分支，保留原工作區修改。完成後把變更、實際測試結果、版本與注意事項記在本檔。Obsidian 未同步時註明待補，能讀取後再更新。正式發布依當次授權。
@@ -21,6 +21,8 @@ npx playwright test --config=playwright.hero-input.config.js
 ```
 
 ## 2026-11-24 第十七章「北伐初征」
+
+- 已發布 `8dae1f5`。正式站手機 Chromium、平板 WebKit 各由重玩第 94 關結算接第 95 關，再完成第 100 關。確認街亭與陳倉撤離、末關存檔重試與重整復原，並核對 52 份更新資源。 [正式遊戲](https://gm0621.github.io/pvz-web-prototype/hero/?v=8dae1f5) · [發布紀錄](https://github.com/gm0621/pvz-web-prototype/actions/runs/45365321491)
 
 - 新增第 95～100 關「漢中出師、隴右響應、街亭撤離、箕谷收兵、陳倉糧盡、武都陰平」，延續 227～229 年史實。 [第十七章規格](hero-history-chapter-seventeen.md)
 - 街亭和箕谷失利，陳倉未克，武都、陰平取得。街亭及陳倉以至少一隊存活友軍和全員撤回左側為結算條件。新增姜維、馬謖、王平、曹真、郝昭、郭淮六張萌將頭像與圖鑑，保留各關行軍圖、營地與養成。
