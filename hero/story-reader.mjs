@@ -12,12 +12,13 @@ export function installStoryReader(){
  function sync(){story.dataset.readerPhase=phase;$('storyScene').dataset.readerPhase=phase;back.textContent='← 上一步';
   const [current,total]=$('storyCount').textContent.split('/').map(Number);
   back.disabled=phase==='journey'||phase==='dialogue'&&current===1;
-  count.textContent=phase==='journey'?'行軍':phase==='novel'?$('novelCount').textContent:phase==='quiz'?'想一想':`${current} / ${total}`;
-  next.textContent=phase==='dialogue'&&current===total?(ending?'繼續故事 →':'出發 →'):'下一步 →';
+  const rearReport=phase==='journey'&&$('journeyIntro')?.dataset.rearReport==='true';
+  count.textContent=phase==='journey'?(rearReport?'後方消息':'行軍'):phase==='novel'?$('novelCount').textContent:phase==='quiz'?'想一想':`${current} / ${total}`;
+  next.textContent=rearReport?'查看後方消息 →':phase==='dialogue'&&current===total?(ending?'繼續故事 →':'出發 →'):'下一步 →';
   next.setAttribute('aria-label',phase==='quiz'&&$('storyTask').dataset.solved!=='true'?'略過問答，繼續故事':next.textContent);
  }
  function setPhase(value){phase=value;sync();$('storyPrologue').scrollTop=0;$('storyLine').scrollTop=0;$('novelText').scrollTop=0}
- next.onclick=()=>{if(phase==='journey'){const button=$('journeyIntro')?.querySelector('button');if($('journeyIntro')?.dataset.arrived!=='true')button?.click();setPhase('novel')}
+ next.onclick=()=>{if(phase==='journey'){const journey=$('journeyIntro');if(journey&&journey.dataset.rearReport!=='true'&&journey.dataset.arrived!=='true')journey.querySelector('button')?.click();setPhase('novel')}
   else if(phase==='novel'){$('novelNext').click();setPhase($('storyTask').hidden?'novel':'quiz')}
   else if(phase==='quiz'){$('prologueContinue').click();setPhase('dialogue')}
   else{advanceDialogue();if(!story.hidden&&phase==='dialogue')sync()}

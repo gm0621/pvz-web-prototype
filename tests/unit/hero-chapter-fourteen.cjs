@@ -27,6 +27,7 @@ test('Xiangfan chapter preserves saved equipment, geography, historical outcomes
  assert.equal(progress.inventory.grain,2);
  assert.equal(progress.heroGrowth.xiahoudun.weapon,1);
  assert.deepEqual(routeThrough(78),['jiangling','xiangyang','fancheng']);
+ assert.match(campaignMapSvg(78),/<text [^>]+>襄陽<\/text>/);
  assert.deepEqual(routeThrough(82),['maicheng','zhangxiang']);
  assert.doesNotMatch(campaignMapSvg(81),/map-person map-leader/);
  assert.match(campaignMapSvg(81),/data-person="呂蒙"/);

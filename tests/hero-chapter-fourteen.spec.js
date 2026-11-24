@@ -84,6 +84,15 @@ test('chapter fourteen continues a completed Hanzhong save through Xiangfan',asy
   const cao=index===3;
   await expect(page.locator('#storyTitle')).toHaveText(stage.name);
   await expect(page.locator('#storyChapter')).toContainText('第十四章');
+  if(index===1)await expect(page.locator('#journeyIntro h3')).toContainText(stage.route);
+  if(stage.offMapLeader){
+   await expect(page.locator('#journeyIntro .journey-heading small')).toContainText('荊州後方消息');
+   await expect(page.locator('#journeyIntro .map-opponent')).toBeVisible();
+   await expect(page.locator('#storyNext')).toHaveText('查看後方消息 →');
+   await tap('#storyNext');
+   await expect(page.locator('#story')).toHaveAttribute('data-reader-phase','novel');
+   await expect(page.locator('#novelPage')).toBeVisible();
+  }
   await tap('#storyMore');
   await tap('.history-toggle');
   await expect(page.locator('#historyLesson [aria-current=step]')).toContainText('219');
@@ -107,6 +116,7 @@ test('chapter fourteen continues a completed Hanzhong save through Xiangfan',asy
   await tap('#battleMenuButton');
   await tap('#battleMapButton');
   await expect(page.locator('#campaignMapRoute')).toHaveText(stage.route);
+  if(index===1)await expect(page.locator('#campaignMapCanvas .map-city text').filter({hasText:/^襄陽$/})).toBeVisible();
   const leader=page.locator('#campaignMapCanvas .map-leader');
   const opponent=page.locator('#campaignMapCanvas .map-opponent');
   if(stage.offMapLeader)await expect(leader).toHaveCount(0);
@@ -131,7 +141,8 @@ test('chapter fourteen continues a completed Hanzhong save through Xiangfan',asy
    await page.evaluate(()=>window.chapterBattle.enemies[0].hp=0);
   }else{
    await suppressWaves();
-   for(const [lane,key] of ['liubei','guanyu','zhangfei'].entries())if(stage.goal!=='withdraw'||key==='guanyu')await deploy(key,lane);
+   if(stage.goal==='withdraw')await deploy('archer',0);
+   else for(const [lane,key] of ['liubei','guanyu','zhangfei'].entries())await deploy(key,lane);
    if(stage.goal==='supply')await supply();
    else if(stage.goal==='withdraw'){
     await expect(page.locator('#missionQuick p')).toContainText('帶關羽與友軍撤回左側');
@@ -142,6 +153,9 @@ test('chapter fourteen continues a completed Hanzhong save through Xiangfan',asy
     await advance(14000);
     await tap('#missionQuickAction');
     await advance(7000);
+    await expect(page.locator('#result')).toBeHidden();
+    await expect(page.locator('#missionQuick p')).toContainText('請召回關羽');
+    await deploy('guanyu',1);
     await expect(page.locator('#resultTitle')).toHaveText('離開麥城');
     await expect(page.locator('#resultText')).toContainText('被潘璋部下馬忠擒獲');
    }else await advance(18500);
@@ -151,12 +165,12 @@ test('chapter fourteen continues a completed Hanzhong save through Xiangfan',asy
   if(stage.goal==='commander')expect(await page.evaluate(()=>window.chapterBattle.bossRetreated)).toBe(true);
   if(index===5){
    await expect(page.locator('#resultRetrySave')).toBeVisible();
-   expect(await save()).toMatchObject({completed:81,coins:500});
+   expect(await save()).toMatchObject({completed:81,coins:380,weapons:{guanyu:2},heroGrowth:{caocao:{weapon:2}}});
    await page.evaluate(()=>window.blockSave=false);
    await tap('#resultRetrySave');
   }
   expect(await save()).toMatchObject({
-   completed:77+index,coins:180+80*index,weapons:{guanyu:2},heroGrowth:{caocao:{weapon:1}},inventory:{grain:2}
+   completed:77+index,coins:180+80*index-(index>3?120:0),weapons:{guanyu:2},heroGrowth:{caocao:{weapon:index>3?2:1}},inventory:{grain:2}
   });
   await toCamp();
   await expect(page.locator('#campTitle')).toContainText(stage.name);
@@ -164,6 +178,27 @@ test('chapter fourteen continues a completed Hanzhong save through Xiangfan',asy
   await expect(page.locator('#campTalkName')).toHaveText(stage.guest);
   await expect(page.locator('#campTalkPortrait')).toHaveAttribute('alt',stage.guest);
   await tap('#campTalkNext');
+  if(cao){
+   await tap('[data-shop=weapons]');
+   const weapon=page.locator('[data-buy-hero=caocao]');
+   await expect(weapon).toHaveText('購買 · 120 軍資');
+   await page.evaluate(()=>window.blockSave=true);
+   await weapon.tap();
+   await expect(page.locator('#campMessage')).toContainText('無法保存');
+   expect(await save()).toMatchObject({coins:420,weapons:{guanyu:2},heroGrowth:{caocao:{weapon:1}}});
+   await page.evaluate(()=>window.blockSave=false);
+   await weapon.tap();
+   expect(await save()).toMatchObject({coins:300,weapons:{guanyu:2},heroGrowth:{caocao:{weapon:2}}});
+   await tap('#campShopBack');
+  }
+  if(index===5){
+   await expect(page.locator('[data-talk=guanyu] strong')).toHaveText('劉備');
+   await expect(page.locator('[data-talk=zhangfei] strong')).toHaveText('戰後消息');
+   await tap('[data-talk=zhangfei]');
+   await expect(page.locator('#campTalkText')).toContainText('關羽、關平');
+   await expect(page.locator('#campTalkText')).toContainText('後來遇害');
+   await tap('#campTalkNext');
+  }
   await tap('#campContinue');
   if(index===5){
    await expect(page.locator('#storyChapter')).toContainText('戰後');
@@ -174,7 +209,14 @@ test('chapter fourteen continues a completed Hanzhong save through Xiangfan',asy
  await expect(page.locator('#homeProgress')).toContainText('第十四章完成');
  await page.reload();
  await expect(page.locator('#homeProgress')).toContainText('第十四章完成');
- expect(await save()).toMatchObject({completed:82,coins:580});
+ expect(await save()).toMatchObject({completed:82,coins:460,weapons:{guanyu:2},heroGrowth:{caocao:{weapon:2}}});
+ await page.locator('#chapterPicker').evaluate(el=>el.open=true);
+ await tap('#chapterTabs [data-chapter="14"]');
+ await tap('#chapterDots [data-level="80"]');
+ await tap('#storySkip');
+ await tap('#deploymentStart');
+ await expect(page.locator('#battle')).toBeVisible({timeout:25000});
+ expect(await page.evaluate(()=>window.chapterBattle.weapons.liubei)).toBe(2);
  await page.goto('/hero/people.html',{waitUntil:'domcontentloaded'});
  for(const [query,name,level] of [['令明','龐德',79],['子明','呂蒙',81],['伯言','陸遜',81],['關平','關平',82]]){
   await page.locator('#peopleSearch').fill(query);

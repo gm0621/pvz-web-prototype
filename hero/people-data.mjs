@@ -1,11 +1,11 @@
-import {GENERALS} from './roster.mjs?v=chapter-fourteen-1';
-import {NOVEL_PAGES,CAMP_LINES} from './novel.mjs?v=chapter-fourteen-1';
-import {campConversation} from './camp-talk.mjs?v=chapter-fourteen-1';
-import {STORY_TASKS} from './story-play.mjs?v=chapter-fourteen-1';
-import {CHAPTER_BACKGROUNDS,STAGE_LEADS} from './prologue.mjs?v=chapter-fourteen-1';
-import {STORY_PEOPLE} from './characters.mjs?v=chapter-fourteen-1';
-import {HEROES,STAGES,chapterInfo,enemyArt,heroesForLevel} from './story.mjs?v=chapter-fourteen-1';
-import {FACTIONS,enemyPortrait} from './factions.mjs?v=chapter-fourteen-1';
+import {GENERALS} from './roster.mjs?v=chapter-fourteen-2';
+import {NOVEL_PAGES,CAMP_LINES} from './novel.mjs?v=chapter-fourteen-2';
+import {campConversation} from './camp-talk.mjs?v=chapter-fourteen-2';
+import {STORY_TASKS} from './story-play.mjs?v=chapter-fourteen-2';
+import {CHAPTER_BACKGROUNDS,STAGE_LEADS} from './prologue.mjs?v=chapter-fourteen-2';
+import {STORY_PEOPLE} from './characters.mjs?v=chapter-fourteen-2';
+import {HEROES,STAGES,chapterInfo,enemyArt,heroesForLevel} from './story.mjs?v=chapter-fourteen-2';
+import {FACTIONS,enemyPortrait} from './factions.mjs?v=chapter-fourteen-2';
 // Child-friendly summaries; comparisons are memory aids, not historical quotations.
 const bios=[
  ['龐德','史實人物','洪水中的曹軍將領','龐德字令明，與于禁一起援救樊城。大雨淹了營地，他仍繼續抵抗，最後被俘後遇害。','龐德和于禁遇到同一場洪水，兩人的結局不同。','漢水因連日大雨暴漲，關卡的運糧是遊戲改編。'],

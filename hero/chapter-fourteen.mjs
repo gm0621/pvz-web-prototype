@@ -53,6 +53,10 @@ const stages=[
  {
   name:'麥城出走',place:'zhangxiang',origin:'maicheng',leader:'關羽',opponent:'孫權',mapOpponent:false,
   matchupLabel:'派將攔截・劇情人物',retreatKeys:['guanyu'],
+  campTalkPrompts:{
+   guanyu:{speaker:'劉備',title:'劉備',hint:'談荊州消息'},
+   zhangfei:{speaker:'劉備',title:'戰後消息',hint:'關羽與關平的結局'}
+  },
   mission:'withdraw',scene:'ambush-valley',enemyArmy:'江東追兵',
   history:'關羽退守麥城後出走，身邊只剩少數人。孫權派朱然、潘璋截斷去路。章鄉的位置是戰區示意，史書也以臨沮交代關羽最後的結局。',
   briefing:'等接應就緒後按「全軍撤離」，讓關羽與在場友軍退回左側。這一段只演出離開麥城的途中。',
@@ -63,7 +67,7 @@ const stages=[
 ];
 
 export const FOURTEENTH_CHAPTER=stages.map((stage,index)=>{
- const {name,place,origin,viaPlaces=[],leader,opponent,faction='shu',shift=false,mission,missionTitle,scene,enemyArmy,commander,retreatKeys,history,briefing,ending,guest,camp,question,choices,refs,mapOpponent,mapLeader,matchupLabel}=stage;
+ const {name,place,origin,viaPlaces=[],leader,opponent,faction='shu',shift=false,mission,missionTitle,scene,enemyArmy,commander,retreatKeys,history,briefing,ending,guest,camp,campTalkPrompts,question,choices,refs,mapOpponent,mapLeader,matchupLabel}=stage;
  return {
   name,year:219,chapter:14,number:index+1,faction,place:name,mapPlace:place,originPlace:origin,viaPlaces,viewpointShift:shift,
   scene:`./assets/scenes/${scene}.jpg`,mission,missionTitle,enemyArmy,enemyCount:commander?14:12,interval:3.8,
@@ -75,6 +79,6 @@ export const FOURTEENTH_CHAPTER=stages.map((stage,index)=>{
   opening:[['說書人',history],[leader,briefing],['說書人',adaptation]],
   ending:[['說書人',ending],[guest,camp]],campLine:ending,victory:ending,bossIntro:briefing,bossTip:briefing,
   quiz:{kind:'史書小偵探',hero:'guanyu',title:question,scene:history,question,choices,answer:0,hint:history,reply:history},
-  campTalk:{guanyu:[`${guest}：${camp}`],zhangfei:[`${guest}：${ending}`]},references:refs
+  campTalkPrompts,campTalk:{guanyu:[`${guest}：${camp}`],zhangfei:[`${guest}：${ending}`]},references:refs
  };
 });
