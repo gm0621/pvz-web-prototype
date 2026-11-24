@@ -1,5 +1,6 @@
-import {stagePeople,mapPersonSvg,renderMatchup} from './characters.mjs?v=chapter-twelve-2';
-import {HISTORICAL_STAGES} from './history-stages.mjs?v=chapter-twelve-2';
+import {stagePeople,mapPersonSvg,renderMatchup} from './characters.mjs?v=chapter-thirteen-1';
+import {factionTitle} from './factions.mjs?v=chapter-thirteen-1';
+import {HISTORICAL_STAGES} from './history-stages.mjs?v=chapter-thirteen-1';
 // Approximate regional placement, not historical borders or a surveyed route.
 export const MAP_PLACES={
  zhuo:{name:'涿郡',modern:'今河北涿州一帶',x:402,y:78},
@@ -29,7 +30,7 @@ Object.assign(MAP_PLACES,{guandu:{name:'官渡',modern:'今河南中牟一帶・
 Object.assign(MAP_PLACES,{cangting:{name:'倉亭',modern:'今山東陽谷一帶・古渡口示意',x:465,y:250},liyang:{name:'黎陽',modern:'今河南浚縣一帶',x:380,y:255},ye:{name:'鄴城',modern:'今河北臨漳一帶',x:365,y:205},xiping:{name:'西平',modern:'今河南西平一帶',x:370,y:420},runan:{name:'汝南',modern:'今河南汝南一帶・區域示意',x:415,y:445},qiao:{name:'譙',modern:'今安徽亳州一帶',x:475,y:385},junyi:{name:'浚儀',modern:'今河南開封一帶',x:400,y:330}});
 Object.assign(MAP_PLACES,{"pingyuan": {"name": "平原", "modern": "今山東平原一帶", "x": 485, "y": 215}, "nanpi": {"name": "南皮", "modern": "今河北南皮一帶", "x": 480, "y": 155}, "guangpingNorth": {"name": "獷平", "modern": "今北京密雲一帶・位置示意", "x": 480, "y": 55}, "huguan": {"name": "壺關", "modern": "今山西長治一帶・古關位置示意", "x": 285, "y": 225}, "chunyu": {"name": "淳于", "modern": "今山東安丘一帶", "x": 565, "y": 255}, "canals": {"name": "北征水路", "modern": "河北水系區域示意，非單一城址", "x": 475, "y": 110}, "wuzhong": {"name": "無終", "modern": "今天津薊州一帶", "x": 500, "y": 90}, "lulong": {"name": "盧龍塞", "modern": "古塞在今河北遷西一帶，非今盧龍縣城", "x": 555, "y": 80}, "baitan": {"name": "白檀", "modern": "今河北灤平一帶・古道位置示意", "x": 520, "y": 25}, "pinggang": {"name": "平岡", "modern": "今遼寧凌源一帶・古道位置示意", "x": 600, "y": 25}, "bailang": {"name": "白狼山", "modern": "今遼寧喀左一帶・古戰場位置示意", "x": 650, "y": 65}, "liucheng": {"name": "柳城", "modern": "今遼寧朝陽一帶", "x": 690, "y": 30}});
 Object.assign(MAP_PLACES,{tongguan:{name:'潼關',modern:'今陝西潼關一帶・古關位置示意',x:125,y:345},puban:{name:'蒲阪津',modern:'今山西永濟一帶・黃河古渡口示意',x:125,y:270},weinan:{name:'渭南',modern:'今陝西渭南一帶・渭水戰區示意',x:65,y:330}});
-const twelfthPlaces={
+const westernPlaces={
  changan:{name:'長安',modern:'今陝西西安一帶・漢長安城示意',x:18,y:340},
  qishan:{name:'祁山',modern:'今甘肅禮縣一帶・戰區示意',x:-135,y:392},
  chencang:{name:'陳倉',modern:'今陝西寶雞一帶・古城示意',x:-48,y:356},
@@ -38,8 +39,16 @@ const twelfthPlaces={
  yangping:{name:'陽平關',modern:'今陝西勉縣一帶・古陽平關示意',x:-71,y:470},
  nanzheng:{name:'南鄭',modern:'今陝西漢中一帶・漢中郡治示意',x:-6,y:484}
 };
-Object.assign(MAP_PLACES,twelfthPlaces);
-STAGE_LOCATIONS.push(...HISTORICAL_STAGES.map(s=>({place:s.mapPlace,detail:`${s.year} 年・${s.faction==='cao'?'曹操軍':'孫堅軍'}視角。${s.viewpointShift?'此處切換敘事視角，不是上一支軍隊的連續行程。':''}地點為歷史區域示意，並非精確軍事路線。`})));
+Object.assign(westernPlaces,{
+ dangqu:{name:'宕渠',modern:'今四川渠縣一帶・瓦口戰區示意',x:-45,y:637},
+ juchao:{name:'居巢',modern:'今安徽巢湖一帶・古城示意',x:567,y:527},
+ ruxu:{name:'濡須',modern:'今安徽巢湖出水至長江一帶・戰區示意',x:625,y:568},
+ maming:{name:'馬鳴閣道',modern:'漢中山間通道・位置示意',x:-142,y:536},
+ dingjun:{name:'定軍山',modern:'今陝西勉縣南一帶・山地示意',x:-56,y:519},
+ mianyang:{name:'沔陽',modern:'今陝西勉縣一帶・漢代縣城示意',x:-100,y:488}
+});
+Object.assign(MAP_PLACES,westernPlaces);
+STAGE_LOCATIONS.push(...HISTORICAL_STAGES.map(s=>({place:s.mapPlace,detail:`${s.year} 年・${factionTitle(s.faction)}視角。${s.viewpointShift?'此處切換敘事視角，不是上一支軍隊的連續行程。':''}地點為歷史區域示意，並非精確軍事路線。`})));
 export function stageLocation(level){if(!Number.isInteger(level)||!STAGE_LOCATIONS[level-1])throw new RangeError('未知戰役關卡');const s=STAGE_LOCATIONS[level-1];return {...MAP_PLACES[s.place],...s,level}}
 export function routeThrough(level){stageLocation(level);if(level>=65){const s=HISTORICAL_STAGES[level-17];return [...new Set([s.originPlace,...s.viaPlaces,s.mapPlace])]}if(level>=59){const start=level>=61?44:level>=60?43:42;return HISTORICAL_STAGES.slice(start,level-16).flatMap(s=>[s.originPlace,s.mapPlace]).filter((p,i,a)=>i===0||p!==a[i-1])}if(level>=53)return ['yishuiSouth',...HISTORICAL_STAGES.slice(36,level-16).flatMap(s=>[...(s.viaPlaces||[]),s.originPlace,s.mapPlace])].filter((p,i,a)=>i===0||p!==a[i-1]);if(level>=47)return ['ye',...HISTORICAL_STAGES.slice(30,level-16).flatMap(s=>[...(s.viaPlaces||[]),s.originPlace,s.mapPlace])].filter((p,i,a)=>i===0||p!==a[i-1]);if(level>=41)return ['wuchao',...HISTORICAL_STAGES.slice(24,level-16).flatMap(s=>[...(s.viaPlaces||[]),s.originPlace,s.mapPlace])].filter((p,i,a)=>i===0||p!==a[i-1]);if(level>=35)return ['xiapi',...HISTORICAL_STAGES.slice(18,level-16).flatMap(s=>[...(s.originPlace?[s.originPlace]:[]),s.mapPlace])].filter((p,i,a)=>i===0||p!==a[i-1]);if(level>=29)return ['dingtao',...HISTORICAL_STAGES.slice(12,level-16).flatMap(s=>[...(s.originPlace?[s.originPlace]:[]),s.mapPlace])].filter((p,i,a)=>i===0||p!==a[i-1]);if(level>=17){const start=level>=23?22:level>=20?19:16,origin=level>=23?'dongwuyang':level>=20?'luyang':'luoyang';return [origin,...STAGE_LOCATIONS.slice(start,level).map(s=>s.place)].filter((p,i,a)=>i===0||p!==a[i-1])}return STAGE_LOCATIONS.slice(0,level).map(s=>s.place).filter((key,i,arr)=>i===0||key!==arr[i-1])}
 // Only this stage's travel segment; changing factions uses its explicit origin.
@@ -55,7 +64,7 @@ export function campaignMapSvg(level,mini=false){
  const current=stageLocation(level),route=routeThrough(level),visited=new Set(route);
  const points=route.map(key=>`${MAP_PLACES[key].x},${MAP_PLACES[key].y}`).join(' ');
  const cities=Object.entries(MAP_PLACES).map(([key,p])=>{
-  const active=key===current.place,labelOffset=active&&route.some(k=>k!==key&&Math.hypot(MAP_PLACES[k].x-p.x,MAP_PLACES[k].y-p.y)<55)?70:38;if(level>=17&&!visited.has(key)&&!active)return '';if(level<17&&Object.hasOwn(twelfthPlaces,key))return '';if(level<17&&['luoyang','chenliu','suanzhao','bian','liangdong','yangren','luyang','dongwuyang','shouzhang','jibei','juancheng','puyang','dingtao','xuxian','wan','chen','xiapi','guandu','baima','yanjin','wuchao','cangting','liyang','ye','xiping','runan','qiao','junyi','pingyuan','nanpi','guangpingNorth','huguan','chunyu','canals','wuzhong','lulong','baitan','pinggang','bailang','liucheng','yishuiSouth','xiangyang','changban','jiangling','chibi','tongguan','puban','weinan'].includes(key))return '';if(key.startsWith('side')&&!visited.has(key)&&!active)return '';
+  const active=key===current.place,labelOffset=active&&route.some(k=>k!==key&&Math.hypot(MAP_PLACES[k].x-p.x,MAP_PLACES[k].y-p.y)<55)?70:38;if(level>=17&&!visited.has(key)&&!active)return '';if(level<17&&Object.hasOwn(westernPlaces,key))return '';if(level<17&&['luoyang','chenliu','suanzhao','bian','liangdong','yangren','luyang','dongwuyang','shouzhang','jibei','juancheng','puyang','dingtao','xuxian','wan','chen','xiapi','guandu','baima','yanjin','wuchao','cangting','liyang','ye','xiping','runan','qiao','junyi','pingyuan','nanpi','guangpingNorth','huguan','chunyu','canals','wuzhong','lulong','baitan','pinggang','bailang','liucheng','yishuiSouth','xiangyang','changban','jiangling','chibi','tongguan','puban','weinan'].includes(key))return '';if(key.startsWith('side')&&!visited.has(key)&&!active)return '';
   return `<g class="map-city ${active?'current':visited.has(key)?'visited':'future'}"><circle cx="${p.x}" cy="${p.y}" r="${active?16:7}"/>${active?`<circle class="map-current-ring" cx="${p.x}" cy="${p.y}" r="24"/><path class="map-flag" d="M${p.x},${p.y-14}v-34l26,7 -26,9"/>`:''}${mini||key.startsWith('side')&&!active||level>=35&&!active&&Math.hypot(p.x-current.x,p.y-current.y)<85?'':`<text x="${active?p.x:level>=41&&key==='guandu'?p.x-14:p.x+32}" text-anchor="${active?'middle':level>=41&&key==='guandu'?'end':'start'}" y="${p.y+(active?labelOffset:7)}">${p.name}</text>`}</g>`;
  }).join('');
  const xs=route.map(key=>MAP_PLACES[key].x),ys=route.map(key=>MAP_PLACES[key].y);

@@ -1,5 +1,5 @@
-import {HISTORICAL_STAGES} from './history-stages.mjs?v=chapter-twelve-2';
-import {FACTIONS,factionFor} from './factions.mjs?v=chapter-twelve-2';
+import {HISTORICAL_STAGES} from './history-stages.mjs?v=chapter-thirteen-1';
+import {FACTIONS,factionFor} from './factions.mjs?v=chapter-thirteen-1';
 const laneList=b=>Array.from({length:b.laneTotal||3},(_,i)=>i);
 const routeName=(b,l)=>(b.laneTotal||3)>3?`第 ${l+1}`:['上','中','下'][l];
 const siteNames=['道路','水井','宗廟'],laneNames=['上','中','下'];
@@ -58,11 +58,11 @@ export function historyMissionText(b){const fronts=['','','','三','四','五'][
  }
  if(['withdraw','decoy'].includes(m.kind)&&m.ordered){
   const heroes=b.roster||FACTIONS[factionFor(b.level)].heroes,missing=['liubei','zhangfei'].filter(key=>!b.allies.some(u=>u.key===key&&u.hp>0)).map(key=>heroes[key].name);
-  if(missing.length)return `${missing.join('、')}尚未在場，請整備後召回，再帶隊撤離 · ${opponent}無須擊倒`;
+  if(missing.length)return `${missing.join('、')}尚未在場，請整備後召回，再帶隊撤離${stage.noBoss?'':` · ${opponent}無須擊倒`}`;
   const remaining=b.allies.filter(u=>u.hp>0&&u.x>.18).length;
   return remaining?`撤離中：尚有 ${remaining} 名友軍未回到左側 · 所有在場友軍都需撤回`:'隊伍已撤回左側，確認全員平安';
  }
- if(['withdraw','decoy'].includes(m.kind))return `${m.kind==='decoy'&&!m.decoyUsed?'先放置赤幘誘餌 · ':''}`+(m.withdrawAt===null?(stage.noBoss?`守住${fronts}路，等待後隊接應`:`守住${fronts}路，等${opponent}出陣`):b.time<m.withdrawAt?`接應尚需 ${Math.ceil(m.withdrawAt-b.time)} 秒`:'接應完成，按全軍撤離')+` · 本關目標是撤退，不是擊倒${opponent}`;
+ if(['withdraw','decoy'].includes(m.kind))return `${m.kind==='decoy'&&!m.decoyUsed?'先放置赤幘誘餌 · ':''}`+(m.withdrawAt===null?(stage.noBoss?`守住${fronts}路，等待後隊接應`:`守住${fronts}路，等${opponent}出陣`):b.time<m.withdrawAt?`接應尚需 ${Math.ceil(m.withdrawAt-b.time)} 秒`:'接應完成，按全軍撤離')+(stage.noBoss?' · 本關目標是保全撤離':` · 本關目標是撤退，不是擊倒${opponent}`);
  if(m.kind==='restoration'){
   const detail=m.site<0?'選一處整備，派友軍守住對應路線':`${siteNames[m.site]}・${routeName(b,m.site)}路 · ${!b.allies.some(u=>u.hp>0&&u.lane===m.site)?'等候友軍接應':!safe(b,m.site)?'敵軍逼近，整備暫停':'整備中'}`;
   return `城內整備 ${m.sites.filter(t=>t>=8).length}／3 · ${detail}`;

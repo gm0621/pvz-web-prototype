@@ -24,7 +24,7 @@ test('chapter twelve continues from the prior chapter camp through all six stage
  const saved=()=>page.evaluate(key=>JSON.parse(localStorage.getItem(key)),KEY);
  await page.goto('/hero/');
  await page.clock.pauseAt(await page.evaluate(()=>Date.now()+600));
- await expect(page.locator('#homeProgress')).toContainText('64 / 70');
+ await expect(page.locator('#homeProgress')).toContainText('64 / 76');
  // Revisit the previous finale through the normal chapter picker and complete its mission.
  await page.locator('#chapterPicker').evaluate(e=>e.open=true);
  await tap('#chapterTabs [data-chapter="11"]');
@@ -125,9 +125,9 @@ test('chapter twelve continues from the prior chapter camp through all six stage
   }
   await tap('#storySkip');
  }
- await expect(page.locator('#homeProgress')).toContainText('第十二章完成');
+ await expect(page.locator('#storyTitle')).toHaveText('宕渠收兵');
  await page.reload();
- await expect(page.locator('#homeProgress')).toContainText('第十二章完成');
+ await expect(page.locator('#homeProgress')).toContainText('70 / 76');
  await page.goto('/hero/people.html');
  await page.locator('#peopleSearch').fill('公祺');
  const card=page.locator('[data-person="張魯"]');

@@ -1,4 +1,4 @@
-import {hitSound} from './audio.mjs?v=chapter-twelve-2';
+import {hitSound} from './audio.mjs?v=chapter-thirteen-1';
 const events=new WeakMap();
 const CART='<svg viewBox="0 0 120 86" aria-hidden="true"><g fill="#d5a34f" stroke="#533c23" stroke-width="3"><path d="M18 39h76l-7 27H27Z"/><path d="M18 40 8 25M90 55l24-12"/><ellipse cx="38" cy="30" rx="16" ry="19" fill="#efcf89"/><ellipse cx="66" cy="30" rx="16" ry="19" fill="#f5daa1"/><path d="M27 28h22m6 0h23"/><g class="cart-wheels"><circle cx="34" cy="69" r="12"/><circle cx="80" cy="69" r="12"/></g></g><text x="53" y="56" text-anchor="middle" font-size="16" fill="#49351e">糧</text></svg>';
 export function recordMissionFeedback(b,action,index=0){const m=b.mission;const lane=(b.laneTotal||3)===3?['上','中','下'][index]:String(index+1);const text=action==='supply'?`第 ${m.delivered} 批糧車已送達！ ${m.delivered}／3`:action==='retreat'?'撤軍令已下達！部隊正退回左側':action==='decoy'?`${lane}路赤幘誘餌已放下，引開追兵！`:action==='site'?`開始整備${['道路','水井','宗廟'][index]}，請守住對應路線`:action==='flag'?`破陣成功！ ${m.flags}／${m.needed}`:`隊伍改走${lane}路，請派兵接應`;

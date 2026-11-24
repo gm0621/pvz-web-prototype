@@ -1,5 +1,5 @@
-import {HISTORICAL_STAGES} from './history-stages.mjs?v=chapter-twelve-2';
-import {paintPortrait} from './factions.mjs?v=chapter-twelve-2';
+import {HISTORICAL_STAGES} from './history-stages.mjs?v=chapter-thirteen-1';
+import {paintPortrait} from './factions.mjs?v=chapter-thirteen-1';
 import {THIRD_CHAPTER} from './chapter-three.mjs?v=passive-feedback-1';
 // Small, optional story choices. Facts, novel episodes and invented encounters stay labelled.
 export const STORY_TASKS=[

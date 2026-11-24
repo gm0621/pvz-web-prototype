@@ -1,4 +1,5 @@
-import {TWELFTH_CHAPTER} from './chapter-twelve.mjs?v=chapter-twelve-2';
+import {THIRTEENTH_CHAPTER} from './chapter-thirteen.mjs?v=chapter-thirteen-1';
+import {TWELFTH_CHAPTER} from './chapter-twelve.mjs?v=chapter-thirteen-1';
 import {ELEVENTH_CHAPTER} from './chapter-eleven.mjs?v=passive-feedback-1';
 import {FOURTH_CHAPTER} from './chapter-four.mjs?v=passive-feedback-1';
 import {FIFTH_CHAPTER} from './chapter-five.mjs?v=passive-feedback-1';
@@ -7,4 +8,4 @@ import {SEVENTH_CHAPTER} from './chapter-seven.mjs?v=passive-feedback-1';
 import {EIGHTH_CHAPTER} from './chapter-eight.mjs?v=passive-feedback-1';
 import {NINTH_CHAPTER} from './chapter-nine.mjs?v=passive-feedback-1';
 import {TENTH_CHAPTER} from './chapter-ten.mjs?v=passive-feedback-1';
-export const HISTORICAL_STAGES=[...FOURTH_CHAPTER,...FIFTH_CHAPTER,...SIXTH_CHAPTER,...SEVENTH_CHAPTER,...EIGHTH_CHAPTER,...NINTH_CHAPTER,...TENTH_CHAPTER,...ELEVENTH_CHAPTER,...TWELFTH_CHAPTER];
+export const HISTORICAL_STAGES=[...FOURTH_CHAPTER,...FIFTH_CHAPTER,...SIXTH_CHAPTER,...SEVENTH_CHAPTER,...EIGHTH_CHAPTER,...NINTH_CHAPTER,...TENTH_CHAPTER,...ELEVENTH_CHAPTER,...TWELFTH_CHAPTER,...THIRTEENTH_CHAPTER];

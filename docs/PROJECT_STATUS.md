@@ -20,6 +20,12 @@ npm run test:hero:engine
 npx playwright test --config=playwright.hero-input.config.js
 ```
 
+## 2026-11-24 第十三章「漢中爭雄」
+
+- 新增第 71～76 關，從張魯歸降後的宕渠撤離、鄴城封魏王、濡須對峙、馬鳴閣道，接到定軍山與漢中易手。第 75 關起切回劉備軍與原有三路編制，曹操軍保留三至五路。張郃、陳式、黃忠與法正加入劇情、行軍圖或營地與人物圖鑑。各關附史料連結，保留章末和各關各自的配樂。 [第十三章規格](hero-history-chapter-thirteen.md)
+- 原有存檔自動銜接第 71 關。武將經驗、兵器、軍資及道具保留，首勝與重玩沿用原規則。第 71 關以保全撤離完成，第 75 關保留黃忠戰功及夏侯淵戰死，第 76 關由章末交代曹操撤軍與劉備受推為漢中王。
+- 371 項引擎測試通過，含新增六關的零經驗實戰模擬。跳關入口本機 12 項、線上入口本機回歸 9 項通過，涵蓋第 76 關營地與存檔隔離。Chromium 手機與 WebKit 平板完整流程 2 項、圖鑑回歸 6 項通過。流程涵蓋第 70 關重玩、章末銜接、曹操軍換劉備軍、撤離、地圖暫停恢復、各關營地與末關存檔失敗重試。關卡 UI 使用隔離存檔與受控敵波，回歸指令為 `npx playwright test --config=playwright.hero-thirteen.config.js`。模組快取版本為 `chapter-thirteen-1`。
+
 ## 2026-11-24 第十二章完整流程複查
 
 - 已發布 `da10520`。GitHub Pages 部署成功，正式站 13 份資源與發布提交逐位元一致。手機 Chromium 及平板 WebKit 各重跑第 64～70 關流程，2 項通過。 [正式遊戲](https://gm0621.github.io/pvz-web-prototype/hero/?v=da10520) · [發布紀錄](https://github.com/gm0621/pvz-web-prototype/actions/runs/45341435473)

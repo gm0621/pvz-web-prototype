@@ -1,5 +1,6 @@
-import {stagePeople,mapPersonSvg,renderMatchup} from './characters.mjs?v=chapter-twelve-2';
-import {campaignMapSvg,journeyRoute} from './campaign-map.mjs?v=chapter-twelve-2';
+import {factionTitle} from './factions.mjs?v=chapter-thirteen-1';
+import {stagePeople,mapPersonSvg,renderMatchup} from './characters.mjs?v=chapter-thirteen-1';
+import {campaignMapSvg,journeyRoute} from './campaign-map.mjs?v=chapter-thirteen-1';
 let cancelJourney=()=>{};
 export function mountJourney(level,stage){
  cancelJourney();let root=document.getElementById('journeyIntro');
@@ -7,7 +8,7 @@ export function mountJourney(level,stage){
  document.getElementById('storyPrologue').prepend(root);
  const {from,to,same,start,end,viewBox}=journeyRoute(level);
  root.innerHTML='<div class="journey-heading"><div><small>義軍行程 · 地理位置示意</small><h3></h3><p></p></div><button type="button">略過行軍動畫 →</button></div><div class="journey-map"></div><div class="journey-matchup map-matchup"></div><small class="journey-caption"></small>';
- root.querySelector('.journey-heading small').textContent=(stage.faction==='cao'?'曹操軍':stage.faction==='sun'?'孫堅軍':'義軍')+'行程 · 地理位置示意';
+ root.querySelector('.journey-heading small').textContent=(stage.faction?factionTitle(stage.faction):'義軍')+'行程 · 地理位置示意';
  root.querySelector('h3').textContent=(stage.viewpointShift?'轉換視角 · ':'')+(same?`${to.name} · ${stage.place}`:`${from.name} → ${to.name}`);
  root.querySelector('p').textContent=stage.lead||`${same?'義軍繼續前往':'隊伍整裝出發，前往'}${stage.place}，${stage.name}。`;
  root.querySelector('.journey-caption').textContent=to.detail;root.querySelector('.journey-map').innerHTML=campaignMapSvg(level);
