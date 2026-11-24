@@ -45,10 +45,42 @@ test('chapter seventeen preserves the southern campaign save and completes all s
   for(const [lane,key] of ['liubei','guanyu','zhangfei'].entries())await deploy(key,lane);
  }
 
+ async function sendCarts(){
+  for(let batch=0;batch<3;batch++){
+   await advance(7600);
+   await expect(page.locator('#missionQuickAction')).toHaveText('發送糧車');
+   await tap('#missionQuickAction');
+  }
+ }
+
  await page.goto('/hero/');
  await page.clock.pauseAt(await page.evaluate(()=>Date.now()+700));
  await expect(page.locator('#homeProgress')).toContainText('94 / 100');
- await tap('#startBtn');
+ await page.locator('#chapterPicker').evaluate(el=>el.open=true);
+ await tap('#chapterTabs [data-chapter="16"]');
+ await tap('#chapterDots [data-level="94"]');
+ await expect(page.locator('#storyTitle')).toHaveText('南中收兵');
+ await tap('#storySkip');
+ await expect(page.locator('#battle')).toBeVisible({timeout:25000});
+ await page.locator('#battleSpeed').selectOption('2');
+ await page.evaluate(()=>{
+  const battle=window.chapterBattle;
+  battle.bossSpawned=true;
+  battle.nextSpawn=Infinity;
+  battle.food=300;
+ });
+ await deployTeam();
+ await sendCarts();
+ await advance(300);
+ await expect(page.locator('#resultEarned')).toHaveText('+0');
+ expect(await readSave()).toMatchObject({completed:94,coins:150,weapons:{guanyu:2},inventory:{grain:2}});
+ await advance(4200);
+ while(await page.locator('#skillIntro[open]').isVisible())await tap('#skillIntroContinue');
+ await tap('#resultNext');
+ await expect(page.locator('#campContinue')).toContainText('第十六章尾聲');
+ await tap('#campContinue');
+ await expect(page.locator('#storyLine')).toContainText('諸葛亮回到成都');
+ await tap('#storySkip');
 
  for(const [index,stage] of stages.entries()){
   await expect(page.locator('#storyTitle')).toHaveText(stage.name);
@@ -104,11 +136,21 @@ test('chapter seventeen preserves the southern campaign save and completes all s
    await advance(3600);
    await expect(page.locator('#resultText')).toContainText(index===2?'街亭仍由魏軍取勝':'陳倉未被攻下');
   }else if(stage.kind==='supply'){
-   for(let batch=0;batch<3;batch++){
-    await advance(7600);
-    await expect(page.locator('#missionQuickAction')).toHaveText('發送糧車');
-    await tap('#missionQuickAction');
-   }
+   await advance(7600);
+   await expect(page.locator('#missionQuickAction')).toHaveText('發送糧車');
+   const guardId=await page.evaluate(()=>String(window.chapterBattle.allies.find(u=>u.key==='zhangfei').id));
+   await page.locator('#unitSelect').selectOption(guardId);
+   await tap('#commandDrawerButton');
+   await tap('#orders [data-order="up"]');
+   await tap('#commandDrawerClose');
+   await expect(page.locator('#missionQuick')).toContainText('下路缺接應');
+   await tap('#missionQuickAction');
+   await expect(page.locator('#missionChoices [data-action=supply]')).toBeDisabled();
+   expect(await page.evaluate(()=>window.chapterBattle.mission)).toMatchObject({charge:10,delivered:0});
+   await tap('#missionDrawerClose');
+   await deploy('archer',2);
+   await expect(page.locator('#missionQuickAction')).toHaveText('發送糧車');
+   await sendCarts();
   }else await advance(18500);
 
   await advance(300);
@@ -127,13 +169,38 @@ test('chapter seventeen preserves the southern campaign save and completes all s
   await tap('[data-talk=guanyu]');
   await expect(page.locator('#campTalkPortrait')).toHaveAttribute('alt',stage.guest);
   await tap('#campTalkNext');
+  if(index===5){
+   await tap('[data-shop=items]');
+   await tap('[data-buy=herb]');
+   await expect(page.locator('#campCoins')).toHaveText('605');
+   await tap('#campShopBack');
+  }
   await tap('#campContinue');
+  if(index===5)await expect(page.locator('#storyLine')).toContainText('蜀軍取得武都、陰平兩郡');
   await tap('#storySkip');
  }
  await expect(page.locator('#homeProgress')).toContainText('第十七章完成');
  await page.reload();
  await expect(page.locator('#homeProgress')).toContainText('第十七章完成');
- expect(await readSave()).toMatchObject({completed:100,coins:630,weapons:{guanyu:2}});
+ const cleared=await readSave();
+ expect(cleared).toMatchObject({completed:100,coins:605,weapons:{guanyu:2},inventory:{grain:2,herb:1}});
+ await page.locator('#chapterPicker').evaluate(el=>el.open=true);
+ await tap('#chapterTabs [data-chapter="17"]');
+ await tap('#chapterDots [data-level="100"]');
+ await tap('#storySkip');
+ await expect(page.locator('#battle')).toBeVisible();
+ await page.locator('#battleSpeed').selectOption('2');
+ await page.evaluate(()=>{
+  const battle=window.chapterBattle;
+  battle.bossSpawned=true;
+  battle.nextSpawn=Infinity;
+  battle.food=300;
+ });
+ await deployTeam();
+ await sendCarts();
+ await advance(300);
+ await expect(page.locator('#resultEarned')).toHaveText('+0');
+ expect(await readSave()).toMatchObject({completed:100,coins:605,weapons:{guanyu:2},inventory:{grain:2,herb:1}});
  await page.goto('/hero/people.html',{waitUntil:'domcontentloaded'});
  for(const [query,name,level] of [['伯約','姜維',96],['幼常','馬謖',97],['子均','王平',97],['子丹','曹真',98],['伯道','郝昭',99],['伯濟','郭淮',100]]){
   await page.locator('#peopleSearch').fill(query);

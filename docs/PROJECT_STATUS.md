@@ -20,6 +20,12 @@ npm run test:hero:engine
 npx playwright test --config=playwright.hero-input.config.js
 ```
 
+## 2026-11-24 第十七章完整流程複查
+
+- 修正備車後即使有路失守仍可送糧。送出時各路都須有活著的友軍接應，且敵兵未逼近。路線失去接應時保留備車進度，恢復安全即可送出。任務按鈕和實際判定共用條件。
+- 第 94 關結算接第 95 關，街亭無友軍時不可結算，陳倉需等待全員回到左側。第 100 關驗證備好糧車後換路、補回接應、送完三批、存檔失敗重試、營地購買藥包，再重整並重玩，軍資不重複領取。六關地圖、萌將頭像、圖鑑與營地複驗通過。
+- 387 項引擎、本機 320px 和 390px 手機與 820px 平板完整流程 3 項、第十六章與圖鑑回歸 8 項。觸控測試用模擬裝置、隔離存檔與受控敵波。快取版本 `chapter-seventeen-2`，回歸用 `playwright.hero-seventeen.config.js`。
+
 ## 2026-11-24 第十七章「北伐初征」
 
 - 已發布 `8dae1f5`。正式站手機 Chromium、平板 WebKit 各由重玩第 94 關結算接第 95 關，再完成第 100 關。確認街亭與陳倉撤離、末關存檔重試與重整復原，並核對 52 份更新資源。 [正式遊戲](https://gm0621.github.io/pvz-web-prototype/hero/?v=8dae1f5) · [發布紀錄](https://github.com/gm0621/pvz-web-prototype/actions/runs/45365321491)

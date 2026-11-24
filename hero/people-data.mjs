@@ -1,11 +1,11 @@
-import {GENERALS} from './roster.mjs?v=chapter-seventeen-1';
-import {NOVEL_PAGES,CAMP_LINES} from './novel.mjs?v=chapter-seventeen-1';
-import {campConversation} from './camp-talk.mjs?v=chapter-seventeen-1';
-import {STORY_TASKS} from './story-play.mjs?v=chapter-seventeen-1';
-import {CHAPTER_BACKGROUNDS,STAGE_LEADS} from './prologue.mjs?v=chapter-seventeen-1';
-import {STORY_PEOPLE} from './characters.mjs?v=chapter-seventeen-1';
-import {HEROES,STAGES,chapterInfo,enemyArt,heroesForLevel} from './story.mjs?v=chapter-seventeen-1';
-import {FACTIONS,enemyPortrait} from './factions.mjs?v=chapter-seventeen-1';
+import {GENERALS} from './roster.mjs?v=chapter-seventeen-2';
+import {NOVEL_PAGES,CAMP_LINES} from './novel.mjs?v=chapter-seventeen-2';
+import {campConversation} from './camp-talk.mjs?v=chapter-seventeen-2';
+import {STORY_TASKS} from './story-play.mjs?v=chapter-seventeen-2';
+import {CHAPTER_BACKGROUNDS,STAGE_LEADS} from './prologue.mjs?v=chapter-seventeen-2';
+import {STORY_PEOPLE} from './characters.mjs?v=chapter-seventeen-2';
+import {HEROES,STAGES,chapterInfo,enemyArt,heroesForLevel} from './story.mjs?v=chapter-seventeen-2';
+import {FACTIONS,enemyPortrait} from './factions.mjs?v=chapter-seventeen-2';
 // Child-friendly summaries; comparisons are memory aids, not historical quotations.
 const bios=[
  ['姜維','史實人物','從天水來的新隊友','他字伯約。諸葛亮第一次北伐時，他原在魏國的天水郡做事，後來投奔蜀軍，隨隊回漢中。','搜尋「伯約」就能找到姜維。','他投奔的過程在《三國志》正文與注文所引的記載有不同說法。'],

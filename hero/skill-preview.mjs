@@ -1,10 +1,10 @@
-import {createPractice,castPractice,strikePracticeShield,mountPractice} from './skill-practice.mjs?v=chapter-seventeen-1';
-import {ALL_GENERALS,activeText} from './roster.mjs?v=chapter-seventeen-1';
-import {paintPortrait} from './factions.mjs?v=chapter-seventeen-1';
+import {createPractice,castPractice,strikePracticeShield,mountPractice} from './skill-practice.mjs?v=chapter-seventeen-2';
+import {ALL_GENERALS,activeText} from './roster.mjs?v=chapter-seventeen-2';
+import {paintPortrait} from './factions.mjs?v=chapter-seventeen-2';
 import {skillPresentation,skillArtwork} from './skill-presentation.mjs?v=passive-feedback-1';
 import {MASTER_STYLES} from './master-style.mjs?v=passive-feedback-1';
-import {masterArtwork} from './master-cutin.mjs?v=chapter-seventeen-1';
-import {createSoundPreview} from './audio.mjs?v=chapter-seventeen-1';
+import {masterArtwork} from './master-cutin.mjs?v=chapter-seventeen-2';
+import {createSoundPreview} from './audio.mjs?v=chapter-seventeen-2';
 import {passiveName} from './passive-feedback.mjs?v=passive-feedback-1';
 let dialog,player,frame=0,origin,current,practiceView;
 function stop(){cancelAnimationFrame(frame);player?.stop();if(dialog){dialog.dataset.playing='false';dialog.querySelector('[data-replay]').disabled=false}}
