@@ -82,6 +82,8 @@ test('completed chapter seventeen saves continue through Wuzhang Plains on touch
  await page.goto('/hero/');
  await page.clock.pauseAt(await page.evaluate(()=>Date.now()+700));
  await expect(page.locator('#homeProgress')).toContainText('100 / 106');
+ await expect(page.locator('#homeChapterCount')).toHaveText('第十八章已開放');
+ await expect(page.locator('#homeStageCount')).toHaveText('106 場征途');
  await choose(17,100);
  await expect(page.locator('#storyTitle')).toHaveText('武都陰平');
  await controlledBattle();

@@ -1,7 +1,7 @@
-import {ALL_GENERALS,growthHint} from './roster.mjs?v=chapter-eighteen-2';
-import {paintPortrait} from './factions.mjs?v=chapter-eighteen-2';
-import {hitSound} from './audio.mjs?v=chapter-eighteen-2';
-import {EXPERIENCE_DURATION,experienceFrame} from './experience-progress.mjs?v=chapter-eighteen-2';
+import {ALL_GENERALS,growthHint} from './roster.mjs?v=chapter-eighteen-3';
+import {paintPortrait} from './factions.mjs?v=chapter-eighteen-3';
+import {hitSound} from './audio.mjs?v=chapter-eighteen-3';
+import {EXPERIENCE_DURATION,experienceFrame} from './experience-progress.mjs?v=chapter-eighteen-3';
 export function mountExperienceView(){
  const root=document.createElement('section');root.id='resultExperience';root.setAttribute('aria-label','武將成長');document.getElementById('resultText').after(root);
  let frame=0,active=false,elapsed=0,last=0,levelSound=false,callback,rows=[],pageAway=false;

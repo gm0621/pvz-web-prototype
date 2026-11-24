@@ -1,11 +1,11 @@
-import {GENERALS} from './roster.mjs?v=chapter-eighteen-2';
-import {NOVEL_PAGES,CAMP_LINES} from './novel.mjs?v=chapter-eighteen-2';
-import {campConversation} from './camp-talk.mjs?v=chapter-eighteen-2';
-import {STORY_TASKS} from './story-play.mjs?v=chapter-eighteen-2';
-import {CHAPTER_BACKGROUNDS,STAGE_LEADS} from './prologue.mjs?v=chapter-eighteen-2';
-import {STORY_PEOPLE} from './characters.mjs?v=chapter-eighteen-2';
-import {HEROES,STAGES,chapterInfo,enemyArt,heroesForLevel} from './story.mjs?v=chapter-eighteen-2';
-import {FACTIONS,enemyPortrait} from './factions.mjs?v=chapter-eighteen-2';
+import {GENERALS} from './roster.mjs?v=chapter-eighteen-3';
+import {NOVEL_PAGES,CAMP_LINES} from './novel.mjs?v=chapter-eighteen-3';
+import {campConversation} from './camp-talk.mjs?v=chapter-eighteen-3';
+import {STORY_TASKS} from './story-play.mjs?v=chapter-eighteen-3';
+import {CHAPTER_BACKGROUNDS,STAGE_LEADS} from './prologue.mjs?v=chapter-eighteen-3';
+import {STORY_PEOPLE} from './characters.mjs?v=chapter-eighteen-3';
+import {HEROES,STAGES,chapterInfo,enemyArt,heroesForLevel} from './story.mjs?v=chapter-eighteen-3';
+import {FACTIONS,enemyPortrait} from './factions.mjs?v=chapter-eighteen-3';
 // Child-friendly summaries; comparisons are memory aids, not historical quotations.
 const bios=[
  ['司馬懿','史實人物','在渭南守住陣地的魏軍主帥','他字仲達。諸葛亮在祁山和五丈原兩次遇到他帶領的魏軍。234 年，兩軍在五丈原附近對峙了好幾個月。','司馬是複姓，懿讀 ㄧˋ。紫袍銀邊的萌將就是他。','五丈原的相持見《三國志・諸葛亮傳》。'],
