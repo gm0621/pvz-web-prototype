@@ -20,6 +20,11 @@ npm run test:hero:engine
 npx playwright test --config=playwright.hero-input.config.js
 ```
 
+## 2026-11-24 萌將頭像複查
+
+- 全圖鑑複查 91 張頭像。第十六章六張已先改為萌將風格，這批另重畫 12 張，含第十三章張郃、陳式、黃忠、法正，第十四章龐德、呂蒙、陸遜、關平，第十五章吳班、馮習、黃權、孫桓。保留其他角色已辨識的風格，遊戲資料沿用原設定。 [頭像名單與重畫提示](hero-portrait-style-audit.md)
+- 383 項引擎測試與 3 項圖鑑回歸通過。以 Chromium 手機和 WebKit 平板模擬環境各解碼 91 張頭像與所用圖集，確認 18 張新版、圖鑑無橫向溢出，並抽查第 71、74、81、85 關戰前地圖、第 85 關戰場地圖和第 75、81、85、86 關營地。跳關採隔離存檔，確認一般存檔一致。模組快取版 `moe-portraits-1`，18 張新圖用 `moe-1`。
+
 ## 2026-11-24 第十六章完整流程複查
 
 - 已發布 `2698b30`。正式站手機 Chromium 與平板 WebKit 各完成一次第 88～94 關及重玩，核對 53 份變更資源。另以未攔截模組的手機環境從第 88 關舊存檔直接續玩。 [正式遊戲](https://gm0621.github.io/pvz-web-prototype/hero/?v=2698b30) · [發布紀錄](https://github.com/gm0621/pvz-web-prototype/actions/runs/45357850970)

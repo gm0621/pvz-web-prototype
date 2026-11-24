@@ -1,7 +1,7 @@
-import {ALL_GENERALS,growthHint} from './roster.mjs?v=chapter-sixteen-3';
-import {paintPortrait} from './factions.mjs?v=chapter-sixteen-3';
-import {hitSound} from './audio.mjs?v=chapter-sixteen-3';
-import {EXPERIENCE_DURATION,experienceFrame} from './experience-progress.mjs?v=chapter-sixteen-3';
+import {ALL_GENERALS,growthHint} from './roster.mjs?v=moe-portraits-1';
+import {paintPortrait} from './factions.mjs?v=moe-portraits-1';
+import {hitSound} from './audio.mjs?v=moe-portraits-1';
+import {EXPERIENCE_DURATION,experienceFrame} from './experience-progress.mjs?v=moe-portraits-1';
 export function mountExperienceView(){
  const root=document.createElement('section');root.id='resultExperience';root.setAttribute('aria-label','武將成長');document.getElementById('resultText').after(root);
  let frame=0,active=false,elapsed=0,last=0,levelSound=false,callback,rows=[],pageAway=false;

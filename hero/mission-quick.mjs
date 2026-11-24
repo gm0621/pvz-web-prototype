@@ -1,6 +1,6 @@
-import {HISTORICAL_STAGES} from './history-stages.mjs?v=chapter-sixteen-3';
-import {missionText} from './chapter-missions.mjs?v=chapter-sixteen-3';
-import {retreatPartyNames} from './history-missions.mjs?v=chapter-sixteen-3';
+import {HISTORICAL_STAGES} from './history-stages.mjs?v=moe-portraits-1';
+import {missionText} from './chapter-missions.mjs?v=moe-portraits-1';
+import {retreatPartyNames} from './history-missions.mjs?v=moe-portraits-1';
 const names=['上','中','下'];
 export function missionQuickState(b){
  const m=b.mission;if(!m)return null;if(!['supply','withdraw','decoy'].includes(m.kind))return {text:missionText(b),button:m.done?'查看目標':'進行任務'};

@@ -1,10 +1,10 @@
-import {renderTeamDuel} from './team-duel-view.mjs?v=chapter-sixteen-3';
+import {renderTeamDuel} from './team-duel-view.mjs?v=moe-portraits-1';
 import {renderDuelCinematic} from './duel-cinematic.mjs?v=passive-feedback-1';
 import {duelPattern} from './duel-patterns.mjs?v=passive-feedback-1';
-import {renderDuelEntrance} from './duel-entrance.mjs?v=chapter-sixteen-3';
-import {HEROES,enemyArt,STAGES} from './story.mjs?v=chapter-sixteen-3';
-import {hitSound} from './audio.mjs?v=chapter-sixteen-3';
-import {duelBeats,duelBeat} from './engine.mjs?v=chapter-sixteen-3';
+import {renderDuelEntrance} from './duel-entrance.mjs?v=moe-portraits-1';
+import {HEROES,enemyArt,STAGES} from './story.mjs?v=moe-portraits-1';
+import {hitSound} from './audio.mjs?v=moe-portraits-1';
+import {duelBeats,duelBeat} from './engine.mjs?v=moe-portraits-1';
 export function renderDuel(b){
  const d=b.duel,dialog=document.getElementById('duelDialog');if(!d)return;
  dialog.dataset.team=String(d.format==='two-v-one');

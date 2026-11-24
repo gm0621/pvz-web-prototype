@@ -1,7 +1,7 @@
-import {GENERALS} from './roster.mjs?v=chapter-sixteen-3';
+import {GENERALS} from './roster.mjs?v=moe-portraits-1';
 import {WEATHER_GENERALS} from './weather-generals.mjs?v=passive-feedback-1';
-import {HEROES,STAGES,ENEMY_ART,enemyArt} from './story.mjs?v=chapter-sixteen-3';
-import {BLANK_PORTRAIT,FACTIONS,factionFor,enemyPortrait,paintPortrait} from './factions.mjs?v=chapter-sixteen-3';
+import {HEROES,STAGES,ENEMY_ART,enemyArt} from './story.mjs?v=moe-portraits-1';
+import {BLANK_PORTRAIT,FACTIONS,factionFor,enemyPortrait,paintPortrait} from './factions.mjs?v=moe-portraits-1';
 const fifthPortraits=['董卓','王允','荀彧','程昱','陳宮','鮑信'].map((name,i)=>({name,aliases:[name],asset:BLANK_PORTRAIT,atlas:'./assets/portraits/chapter-five.png',atlasRows:2,row:Math.floor(i/3),col:i%3,role:['掌權於洛陽、長安的軍閥','參與誅董卓的朝臣','守住鄄城的曹操軍謀士','協助保全兗州據點的謀士','迎呂布入兗州的謀士','迎曹操領兗州、戰死壽張的盟友'][i]}));
 const sixthPortraits=['漢獻帝','袁術','典韋','曹昂','曹安民','賈詡','郭嘉','荀攸','棗祗'].map((name,i)=>({name,aliases:name==='漢獻帝'?['漢獻帝','劉協']:[name],asset:BLANK_PORTRAIT,atlas:'./assets/portraits/chapter-six.png',row:Math.floor(i/3),col:i%3,role:['東漢皇帝・輾轉遷到許縣','淮南軍閥・197 年稱帝','曹操護衛・宛城遇害','曹操長子・宛城遇害','曹操的侄子・宛城遇害','張繡的謀士・後歸曹操','曹操軍謀士・參與下邳之計','曹操軍謀士・參與下邳之計','推動屯田的官員'][i]}));
 const seventhPortraits=['袁紹','顏良','文醜','許攸','張遼','淳于瓊'].map((name,i)=>({name,aliases:[name],asset:BLANK_PORTRAIT,atlas:'./assets/portraits/chapter-seven.png',atlasRows:2,row:Math.floor(i/3),col:i%3,role:['河北軍閥・官渡敗退','袁紹部將・白馬戰死','袁紹部將・延津戰死','由袁紹轉投曹操的謀士','白馬先鋒・與關羽同戰','袁軍糧屯守將・烏巢戰敗'][i]}));
@@ -17,19 +17,19 @@ export const STORY_PEOPLE=[
  {name:'李恢',aliases:['李恢','德昂'],asset:'./assets/portraits/li-hui.webp?v=moe-1',role:'蜀漢將領・分路進軍南中'},
  {name:'孟獲',aliases:['孟獲'],asset:'./assets/portraits/meng-huo.webp?v=moe-1',role:'南中地方人物・見史書注文'},
 
- {name:'吳班',aliases:['吳班','元雄'],asset:'./assets/portraits/wu-ban.webp',role:'劉備部將・巫縣先鋒'},
- {name:'馮習',aliases:['馮習','休元'],asset:'./assets/portraits/feng-xi.webp',role:'劉備部將・在夷陵戰死'},
- {name:'黃權',aliases:['黃權','公衡'],asset:'./assets/portraits/huang-quan.webp',role:'劉備部將・守江北，後因歸路被截降魏'},
- {name:'孫桓',aliases:['孫桓','叔武'],asset:'./assets/portraits/sun-huan.webp',role:'孫權部將・受圍仍守住夷道'},
- {name:'龐德',aliases:['龐德','令明'],asset:'./assets/portraits/pang-de.webp',role:'曹操軍將領・漢水暴漲後拒降'},
- {name:'呂蒙',aliases:['呂蒙','子明'],asset:'./assets/portraits/lu-meng.webp',role:'孫權部將・取得公安與江陵'},
- {name:'陸遜',aliases:['陸遜','伯言'],asset:'./assets/portraits/lu-xun.webp',role:'孫權部將・進取宜都'},
- {name:'關平',aliases:['關平'],asset:'./assets/portraits/guan-ping.webp',role:'關羽之子・隨軍至麥城'},
+ {name:'吳班',aliases:['吳班','元雄'],asset:'./assets/portraits/wu-ban.webp?v=moe-1',role:'劉備部將・巫縣先鋒'},
+ {name:'馮習',aliases:['馮習','休元'],asset:'./assets/portraits/feng-xi.webp?v=moe-1',role:'劉備部將・在夷陵戰死'},
+ {name:'黃權',aliases:['黃權','公衡'],asset:'./assets/portraits/huang-quan.webp?v=moe-1',role:'劉備部將・守江北，後因歸路被截降魏'},
+ {name:'孫桓',aliases:['孫桓','叔武'],asset:'./assets/portraits/sun-huan.webp?v=moe-1',role:'孫權部將・受圍仍守住夷道'},
+ {name:'龐德',aliases:['龐德','令明'],asset:'./assets/portraits/pang-de.webp?v=moe-1',role:'曹操軍將領・漢水暴漲後拒降'},
+ {name:'呂蒙',aliases:['呂蒙','子明'],asset:'./assets/portraits/lu-meng.webp?v=moe-1',role:'孫權部將・取得公安與江陵'},
+ {name:'陸遜',aliases:['陸遜','伯言'],asset:'./assets/portraits/lu-xun.webp?v=moe-1',role:'孫權部將・進取宜都'},
+ {name:'關平',aliases:['關平'],asset:'./assets/portraits/guan-ping.webp?v=moe-1',role:'關羽之子・隨軍至麥城'},
  {...GENERALS.yujin,aliases:['于禁','文則'],role:'曹操軍援將・漢水暴漲後投降'},
- {name:'張郃',aliases:['張郃','儁乂','雋乂'],asset:'./assets/portraits/zhang-he.webp',role:'曹操軍將領・在瓦口退回南鄭'},
- {name:'陳式',aliases:['陳式'],asset:'./assets/portraits/chen-shi.webp',role:'劉備部將・曾試圖切斷馬鳴閣道'},
- {name:'黃忠',aliases:['黃忠','漢升'],asset:'./assets/portraits/huang-zhong.webp',role:'劉備軍將領・定軍山從高處出擊'},
- {name:'法正',aliases:['法正','孝直'],asset:'./assets/portraits/fa-zheng.webp',role:'劉備的謀士・看準定軍山出擊時機'},
+ {name:'張郃',aliases:['張郃','儁乂','雋乂'],asset:'./assets/portraits/zhang-he.webp?v=moe-1',role:'曹操軍將領・在瓦口退回南鄭'},
+ {name:'陳式',aliases:['陳式'],asset:'./assets/portraits/chen-shi.webp?v=moe-1',role:'劉備部將・曾試圖切斷馬鳴閣道'},
+ {name:'黃忠',aliases:['黃忠','漢升'],asset:'./assets/portraits/huang-zhong.webp?v=moe-1',role:'劉備軍將領・定軍山從高處出擊'},
+ {name:'法正',aliases:['法正','孝直'],asset:'./assets/portraits/fa-zheng.webp?v=moe-1',role:'劉備的謀士・看準定軍山出擊時機'},
  {name:'張魯',aliases:['張魯','公祺'],asset:'./assets/portraits/zhang-lu.webp',role:'漢中主事者・退往巴中後歸降'},
  ...eleventhPortraits,...tenthPortraits,{...HEROES.liubei,aliases:['劉備','玄德'],role:'劉備軍領袖・長坂後與孫權合作'},{...HEROES.zhangfei,aliases:['張飛','翼德'],role:'劉備的夥伴・長坂斷後'},{...FACTIONS.sun.heroes.guanyu,aliases:['程普'],role:'孫氏將領・與周瑜等抗曹'},{...FACTIONS.sun.heroes.zhangfei,aliases:['黃蓋'],role:'孫氏將領・赤壁提出火攻'},...ninthPortraits,...eighthPortraits,...seventhPortraits,{...HEROES.guanyu,aliases:['關羽','雲長'],role:'劉備的夥伴・白馬斬顏良'},
  {...FACTIONS.cao.heroes.zhangfei,aliases:['曹洪','子廉'],role:'曹操軍護衛・字子廉，與曹仁不同人'},
