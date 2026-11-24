@@ -1,7 +1,7 @@
-import {enemyPortrait,paintPortrait} from './factions.mjs?v=chapter-twelve-1';
-import {bossProfile,laneLabel} from './engine.mjs?v=chapter-twelve-1';
-import {enemyArt} from './story.mjs?v=chapter-twelve-1';
-import {hitSound} from './audio.mjs?v=chapter-twelve-1';
+import {enemyPortrait,paintPortrait} from './factions.mjs?v=chapter-twelve-2';
+import {bossProfile,laneLabel} from './engine.mjs?v=chapter-twelve-2';
+import {enemyArt} from './story.mjs?v=chapter-twelve-2';
+import {hitSound} from './audio.mjs?v=chapter-twelve-2';
 const seen=new WeakMap();
 const label=(root,selector,text)=>{const node=root.querySelector(selector);if(node.textContent!==text)node.textContent=text};
 const clamp=n=>Math.max(0,Math.min(1,n));

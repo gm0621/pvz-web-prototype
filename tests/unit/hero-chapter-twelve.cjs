@@ -30,6 +30,7 @@ test('chapter twelve brings a finished chapter eleven save forward and credits e
  assert.equal(stagePeople(67).leader.name,'夏侯淵');
  assert.equal(stagePeople(69).opponent.name,'張魯');
  assert.notEqual(STAGES[68].bossName,'張魯');
+ assert.equal(STAGES[68].duelOutcome,'retreat');
  assert.match(STAGES[69].ending[0][1],/從巴中率部歸降/);
  assert.equal(searchPeople('公祺')[0].name,'張魯');
  assert.deepEqual(searchPeople('公祺')[0].levels,[67,69,70]);

@@ -1,5 +1,5 @@
-import {HISTORICAL_STAGES} from './history-stages.mjs?v=chapter-twelve-1';
-import {FACTIONS,factionFor,archerArtwork} from './factions.mjs?v=chapter-twelve-1';
+import {HISTORICAL_STAGES} from './history-stages.mjs?v=chapter-twelve-2';
+import {FACTIONS,factionFor,archerArtwork} from './factions.mjs?v=chapter-twelve-2';
 import {THIRD_CHAPTER} from './chapter-three.mjs?v=passive-feedback-1';
 import {WEATHER_GENERALS} from './weather-generals.mjs?v=passive-feedback-1';
 import {SECOND_CHAPTER} from './chapter-two.mjs?v=passive-feedback-1';

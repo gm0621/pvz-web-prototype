@@ -1,11 +1,11 @@
-import {GENERALS} from './roster.mjs?v=chapter-twelve-1';
-import {NOVEL_PAGES,CAMP_LINES} from './novel.mjs?v=chapter-twelve-1';
-import {campConversation} from './camp-talk.mjs?v=chapter-twelve-1';
-import {STORY_TASKS} from './story-play.mjs?v=chapter-twelve-1';
-import {CHAPTER_BACKGROUNDS,STAGE_LEADS} from './prologue.mjs?v=chapter-twelve-1';
-import {STORY_PEOPLE} from './characters.mjs?v=chapter-twelve-1';
-import {HEROES,STAGES,chapterInfo,enemyArt,heroesForLevel} from './story.mjs?v=chapter-twelve-1';
-import {FACTIONS,enemyPortrait} from './factions.mjs?v=chapter-twelve-1';
+import {GENERALS} from './roster.mjs?v=chapter-twelve-2';
+import {NOVEL_PAGES,CAMP_LINES} from './novel.mjs?v=chapter-twelve-2';
+import {campConversation} from './camp-talk.mjs?v=chapter-twelve-2';
+import {STORY_TASKS} from './story-play.mjs?v=chapter-twelve-2';
+import {CHAPTER_BACKGROUNDS,STAGE_LEADS} from './prologue.mjs?v=chapter-twelve-2';
+import {STORY_PEOPLE} from './characters.mjs?v=chapter-twelve-2';
+import {HEROES,STAGES,chapterInfo,enemyArt,heroesForLevel} from './story.mjs?v=chapter-twelve-2';
+import {FACTIONS,enemyPortrait} from './factions.mjs?v=chapter-twelve-2';
 // Child-friendly summaries; comparisons are memory aids, not historical quotations.
 const bios=[
 ["張魯","史實人物","在漢中管事的公祺","張魯在漢中管理一方。曹軍來時，他的弟弟張衛在陽平關抵抗。關口失守後，張魯先退到巴中，後來帶著隊伍歸降。","張魯管漢中，張衛守關口。兩人是兄弟，做的決定也不同。","本章讓張魯在劇情中出場。陽平關戰場上的守軍主將是遊戲用來代表守軍的角色。"],

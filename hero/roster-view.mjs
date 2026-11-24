@@ -1,8 +1,8 @@
-import {skillButtons} from './skill-preview.mjs?v=chapter-twelve-1';
-import {campGrowthCard} from './camp-growth.mjs?v=chapter-twelve-1';
+import {skillButtons} from './skill-preview.mjs?v=chapter-twelve-2';
+import {campGrowthCard} from './camp-growth.mjs?v=chapter-twelve-2';
 import {learnedPassives,passiveName} from './passive-feedback.mjs?v=passive-feedback-1';
-import {GENERALS,ALL_GENERALS,DEFAULT_TEAM,SLOTS,heroLevel,growthHint,growthBonuses,nextLesson,activeText,selectedTeam,maxLanes,buyHeroWeapon} from './roster.mjs?v=chapter-twelve-1';
-import {paintPortrait} from './factions.mjs?v=chapter-twelve-1';
+import {GENERALS,ALL_GENERALS,DEFAULT_TEAM,SLOTS,heroLevel,growthHint,growthBonuses,nextLesson,activeText,selectedTeam,maxLanes,buyHeroWeapon} from './roster.mjs?v=chapter-twelve-2';
+import {paintPortrait} from './factions.mjs?v=chapter-twelve-2';
 const el=(tag,text)=>{const e=document.createElement(tag);if(text)e.textContent=text;return e};
 export function skillSummary(g,level){const bonus=growthBonuses(g,level);return [...g.skills.map(s=>({...s,type:'active'})),...g.passives].sort((a,b)=>a.level-b.level).map(s=>`${level<s.level?'🔒 Lv.'+s.level:s.type==='active'?'主動':'被動'}｜${s.name}：${s.type==='active'?activeText(g,s,level):s.text}${s.type==='active'?`（${s.mp} MP／${Math.max(1,s.cooldown-(bonus.cooldownReduction||0))} 秒）`:''}`).join('\n')}
 

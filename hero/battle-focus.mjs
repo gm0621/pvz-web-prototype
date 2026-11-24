@@ -1,4 +1,4 @@
-import {mountMissionQuick} from './mission-quick.mjs?v=chapter-twelve-1';
+import {mountMissionQuick} from './mission-quick.mjs?v=chapter-twelve-2';
 import {ARMY_STYLE,TACTICS,SIGNATURES,doctrine,useTactic} from './army-doctrine.mjs?v=army-1';
 export function mountBattleFocus({getBattle,getSelected,toggleAutoSkill}){
  const $=id=>document.getElementById(id),battle=$('battle'),field=$('field');

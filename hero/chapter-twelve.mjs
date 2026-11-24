@@ -5,7 +5,7 @@ const adaptation='對話、行軍路線及戰場任務是遊戲改編。出戰�
 const chapters=[
  {
   name:'長安收隊',year:212,place:'changan',originPlace:'weinan',mission:'supply',
-  leader:'夏侯淵',scene:'supply-road',enemyArmy:'沿途游兵',
+  leader:'夏侯淵',scene:'supply-road',enemyArmy:'沿途游軍',
   history:'建安十七年，曹操回鄴，留下夏侯淵等屯駐長安，繼續處理關中戰事。渭南戰事結束，關中還需要有人留守。',
   briefing:'長安是留守的據點。讓各路都有友軍接應，分三次送出糧車，再清退沿途游兵。',
   ending:'軍糧備妥。下一回轉看鄴城的消息，並非留守軍跟著曹操一起移防。',
@@ -13,7 +13,7 @@ const chapters=[
  },
  {
   name:'鄴城魏公',year:213,place:'ye',originPlace:'ye',mission:'dispatch',viewpointShift:true,
-  leader:'曹操',scene:'supply-road',enemyArmy:'道路游兵',
+  leader:'曹操',scene:'supply-road',enemyArmy:'道路游軍',
   history:'建安十八年，漢獻帝封曹操為魏公。東漢仍在，曹操此時也還不是魏王。這一幕切回鄴城的消息。',
   briefing:'新消息得送到各處。派友軍護路，接回三隊使者後清退餘兵。',
   ending:'魏公是東漢朝廷封的爵位。接著把視線移回西邊，看看隴右的戰事。',
@@ -29,7 +29,7 @@ const chapters=[
  },
  {
   name:'散關送糧',year:215,place:'sanguan',originPlace:'chencang',mission:'supply',viewpointShift:true,
-  leader:'曹操',scene:'supply-road',enemyArmy:'山道敵兵',
+  leader:'曹操',scene:'supply-road',enemyArmy:'山道敵軍',
   history:'建安二十年，曹操由陳倉出散關，向漢中進軍。史書記載沿途山道險阻，行軍十分辛苦。',
   briefing:'山路難走，糧車要分批前進。派友軍守住各路，按下發送糧車，共送出三批。',
   ending:'糧車到齊後，隊伍繼續往陽平關。路上的演練只是這段行軍的一小幕。',
@@ -45,7 +45,7 @@ const chapters=[
  },
  {
   name:'南鄭迎使',year:215,place:'nanzheng',originPlace:'yangping',mission:'dispatch',
-  leader:'曹操',opponentName:'張魯',scene:'supply-road',enemyArmy:'道路游兵',
+  leader:'曹操',opponentName:'張魯',scene:'supply-road',enemyArmy:'道路游軍',
   history:'曹操進入南鄭後派人安撫張魯。建安二十年冬，張魯從巴中率部歸降，曹操後來留夏侯淵鎮守漢中。',
   briefing:'使者要帶回消息。讓友軍護住安全路線，接回三隊使者，並清退道路上的敵兵。',
   ending:'張魯從巴中率部歸降。曹操離開時留下夏侯淵守漢中，故事還會繼續。',
@@ -60,7 +60,7 @@ export const TWELFTH_CHAPTER=chapters.map((s,index)=>{
   name,year,chapter:12,number:index+1,faction:'cao',place:name,mapPlace:place,originPlace,viaPlaces,viewpointShift,mission,missionTitle,
   scene:`./assets/scenes/${scene}.jpg`,enemyCount:commander?14:12,interval:3.8,enemyArmy,
   noBoss:!commander,bossName:commander?'陽平守軍主將':enemyArmy,bossHp:commander?680:0,
-  ...(commander?{skillType:'charge',skillName:'關口重擊',bossTitle:'關口守將'}:{}),
+  ...(commander?{skillType:'charge',skillName:'關口重擊',bossTitle:'關口守將',duelOutcome:'retreat'}:{}),
   leaderName:leader,opponentName,matchupLabel:final?'來使與歸降・劇情人物':undefined,
   lead:history,history,adaptation,note:commander?`${adaptation} 陽平關失守的細節在裴注引書中有不同說法，關卡不指定單一夜襲經過。`:adaptation,
   novel:[['說書人',history],[leader,briefing]],
