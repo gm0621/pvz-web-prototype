@@ -1,6 +1,6 @@
-import {stagePeople,mapPersonSvg,renderMatchup} from './characters.mjs?v=chapter-sixteen-1';
-import {stageFactionTitle} from './factions.mjs?v=chapter-sixteen-1';
-import {HISTORICAL_STAGES} from './history-stages.mjs?v=chapter-sixteen-1';
+import {stagePeople,mapPersonSvg,renderMatchup} from './characters.mjs?v=chapter-sixteen-2';
+import {stageFactionTitle} from './factions.mjs?v=chapter-sixteen-2';
+import {HISTORICAL_STAGES} from './history-stages.mjs?v=chapter-sixteen-2';
 // Approximate regional placement, not historical borders or a surveyed route.
 export const MAP_PLACES={
  zhuo:{name:'涿郡',modern:'今河北涿州一帶',x:402,y:78},
@@ -84,7 +84,7 @@ export function campaignMapSvg(level,mini=false){
  const current=stageLocation(level),route=routeThrough(level),visited=new Set(route);
  const stage=HISTORICAL_STAGES[level-17],people=mini?null:stagePeople(level);
  const markers=people?(stage?.mapLeader===false?'':mapPersonSvg(people.leader,'map-leader',current.x-36,current.y-44))
-  +(stage?.mapOpponent===false?'':mapPersonSvg(people.opponent,'map-opponent',current.x+36,current.y-44)):'';
+  +(stage?.mapOpponent===false?'':mapPersonSvg(people.opponent,people.diplomaticMeeting?'map-host':'map-opponent',current.x+36,current.y-44)):'';
  const points=route.map(key=>`${MAP_PLACES[key].x},${MAP_PLACES[key].y}`).join(' ');
  const cities=Object.entries(MAP_PLACES).map(([key,p])=>{
   const waypoint=stage?.viaPlaces?.includes(key);
@@ -109,11 +109,12 @@ export function mountCampaignMap({stages,getBattle,setPaused}){
  const render=next=>{
   if(level===next)return;level=next;const p=stageLocation(level),stage=stages[level-1];
   document.getElementById('battleMapThumb').innerHTML=campaignMapSvg(level,true);
-  document.getElementById('battleMapPlace').textContent=stage.place;
+  const location=stage.year?p.name:stage.place;
+  document.getElementById('battleMapPlace').textContent=location;
   document.getElementById('battleMapStage').textContent=`第 ${level} 關・${stage.name}`;
   document.getElementById('campaignMapCanvas').innerHTML=campaignMapSvg(level);
   renderMatchup(document.getElementById('campaignMapMatchup'),level);
-  document.getElementById('campaignMapLocation').textContent=`目前：${stage.place}`;
+  document.getElementById('campaignMapLocation').textContent=`目前：${location}`;
   document.getElementById('campaignMapModern').textContent=p.modern;
   document.getElementById('campaignMapDetail').textContent=p.detail;
   document.getElementById('campaignMapRoute').textContent=routeThrough(level).map(key=>MAP_PLACES[key].name).join(' → ');

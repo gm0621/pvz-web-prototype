@@ -1,5 +1,5 @@
-import {HISTORICAL_STAGES} from './history-stages.mjs?v=chapter-sixteen-1';
-import {FACTIONS,factionFor} from './factions.mjs?v=chapter-sixteen-1';
+import {HISTORICAL_STAGES} from './history-stages.mjs?v=chapter-sixteen-2';
+import {FACTIONS,factionFor} from './factions.mjs?v=chapter-sixteen-2';
 import {PEACH_HEROES} from './hero-base.mjs?v=passive-feedback-1';
 const defaultRetreatSlots=['liubei','zhangfei'];
 const retreatSlots=battle=>HISTORICAL_STAGES[battle.level-17]?.retreatKeys||defaultRetreatSlots;
@@ -57,7 +57,7 @@ export function historyMissionText(b){const fronts=['','','','三','四','五'][
  if(m.kind==='dispatch'){
   const guarded=b.allies.some(u=>u.hp>0&&u.lane===m.lane),blocked=b.enemies.some(e=>e.hp>0&&e.lane===m.lane&&e.x<.48);
   const next=!guarded?`請派一名友軍到${routeName(b,m.lane)}路，或按下方按鈕改走有友軍的路線`:blocked?'敵軍逼近，使者暫停；清退後會繼續前進':'友軍正在接應，請等使者回營';
-  return `${b.bossSpawned&&!b.enemies.some(e=>e.hp>0)?'敵軍已清退，正在接回使者！ · ':''}接應 ${m.rescued}／3 隊使者 · ${routeName(b,m.lane)}路 ${Math.floor(m.travel*100)}% · ${next}`;
+  return `${b.bossSpawned&&!b.enemies.some(e=>e.hp>0)?'敵軍已清退 · ':''}接應 ${m.rescued}／3 隊使者 · ${routeName(b,m.lane)}路 ${Math.floor(m.travel*100)}% · ${next}`;
  }
  if(m.kind==='supply'){
   const missing=laneList(b).filter(l=>!b.allies.some(u=>u.hp>0&&u.lane===l)).map(l=>((b.laneTotal||3)>3?`第 ${l+1}`:laneNames[l])+'路');
@@ -78,8 +78,12 @@ export function historyMissionText(b){const fronts=['','','','三','四','五'][
   return (m.kind==='decoy'&&!m.decoyUsed?'先放置赤幘誘餌 · ':'')+status+party+goal;
  }
  if(m.kind==='restoration'){
-  const detail=m.site<0?'選一處整備，派友軍守住對應路線':`${restorationSites(b.level)[m.site]}・${routeName(b,m.site)}路 · ${!b.allies.some(u=>u.hp>0&&u.lane===m.site)?'等候友軍接應':!safe(b,m.site)?'敵軍逼近，整備暫停':'整備中'}`;
-  return `${stage.missionTitle||'城內整備'} ${m.sites.filter(t=>t>=8).length}／3 · ${detail}`;
+  const title=`${stage.missionTitle||'城內整備'} ${m.sites.filter(t=>t>=8).length}／3`;
+  if(m.site<0)return title+' · 選一處整備，派友軍守住對應路線';
+  const place=`${restorationSites(b.level)[m.site]}・${routeName(b,m.site)}路`;
+  const guarded=b.allies.some(u=>u.hp>0&&u.lane===m.site);
+  const status=b.paused?'已暫停':!guarded?'等候友軍接應':!safe(b,m.site)?'敵軍逼近，整備暫停':'整備中';
+  return `${title} · ${place} · ${status} ${Math.floor(m.sites[m.site]/8*100)}%`;
  }
  if(m.kind==='holdout')return `${holdTitle} ${Math.floor(m.hold)}／24 秒 · 每路皆有友軍、敵人未逼近才計時 · 受阻暫停，進度保留`;
  if(b.bossCaptured)return `${opponent}已被俘 · ${b.won?'本關完成':`守住${fronts}路，清退餘兵後過關`}`;

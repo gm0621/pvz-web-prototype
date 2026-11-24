@@ -1,6 +1,7 @@
-import {HISTORICAL_STAGES} from './history-stages.mjs?v=chapter-sixteen-1';
-import {paintPortrait} from './factions.mjs?v=chapter-sixteen-1';
+import {HISTORICAL_STAGES} from './history-stages.mjs?v=chapter-sixteen-2';
+import {paintPortrait} from './factions.mjs?v=chapter-sixteen-2';
 import {THIRD_CHAPTER} from './chapter-three.mjs?v=passive-feedback-1';
+import {STORY_PEOPLE} from './characters.mjs?v=chapter-sixteen-2';
 // Small, optional story choices. Facts, novel episodes and invented encounters stay labelled.
 export const STORY_TASKS=[
  {kind:'演義故事',hero:'zhangfei',title:'桃園缺一位好朋友',scene:'劉備想幫助鄉親，卻沒有招募義勇的錢。',question:'誰願意拿出家財，幫忙招募義勇？',choices:['張飛','關羽','張角'],answer:0,hint:'找找那位嗓門大、家中有莊田的朋友。',reply:'張飛：「俺願出資！」有了朋友相助，理想才能開始。桃園結義是《三國演義》的故事。'},
@@ -17,12 +18,13 @@ export const STORY_TASKS=[
 STORY_TASKS.push(...THIRD_CHAPTER.map(s=>s.quiz),...HISTORICAL_STAGES.map(s=>s.quiz));
 export function mountStoryTask(level,heroes,onReward=()=>{}){
  const task=STORY_TASKS[level-1],root=document.getElementById('storyTask');
- root.dataset.solved='false';document.getElementById('taskKind').textContent=task.kind;
+ root.dataset.solved='false';root.toggleAttribute('data-history-portrait',!!task.speaker);document.getElementById('taskKind').textContent=task.kind;
  document.getElementById('taskTitle').textContent=task.title;
- const portrait=document.getElementById('taskPortrait');paintPortrait(portrait,heroes[task.hero]);portrait.alt=heroes[task.hero].name;
+ const person=heroes[task.hero]||STORY_PEOPLE.find(p=>p.name===task.speaker);
+ const portrait=document.getElementById('taskPortrait');paintPortrait(portrait,person);portrait.alt=person.name;
  document.getElementById('taskScene').textContent=task.scene;
  document.getElementById('taskQuestion').textContent=task.question;
- const feedback=document.getElementById('taskFeedback');feedback.textContent='點一個答案，聽聽武將怎麼說。';
+ const feedback=document.getElementById('taskFeedback');feedback.textContent=task.speaker?'點一個答案，看看史書怎麼說。':'點一個答案，聽聽武將怎麼說。';
  document.getElementById('taskChoices').replaceChildren(...task.choices.map((label,index)=>{
   const button=document.createElement('button');button.type='button';button.textContent=label;button.className='story-choice';
   button.onclick=()=>{if(root.dataset.solved==='true')return;

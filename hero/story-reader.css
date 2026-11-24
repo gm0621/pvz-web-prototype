@@ -35,6 +35,13 @@ body.story-focus #story{height:100dvh;max-width:1180px;margin:auto;padding:52px 
 #story #novelText:first-letter{float:none;font-size:inherit;line-height:inherit;margin:0;color:inherit}
 #story #prologueEra{font-size:12px;display:block;margin:0}
 #story .task-vignette,#story #taskTitle{display:none}#story #taskKind{font-size:11px}#story #taskQuestion{font-size:18px;line-height:1.6;margin:12px 0}
+#story #storyTask[data-history-portrait]{display:grid;grid-template-columns:44px minmax(0,1fr);gap:4px 10px;align-items:center}
+#story #storyTask[data-history-portrait] .task-vignette{display:block;grid-column:1;grid-row:1/span 2;background:none;padding:0}
+#story #storyTask[data-history-portrait] #taskPortrait{display:block;width:44px;height:44px;border-radius:8px;animation:none}
+#story #storyTask[data-history-portrait] #taskScene{display:none}
+#story #storyTask[data-history-portrait] #taskKind{grid-column:2;grid-row:1;justify-self:start}
+#story #storyTask[data-history-portrait] #taskQuestion{grid-column:2;grid-row:2;margin:0 0 8px}
+#story #storyTask[data-history-portrait] :is(#taskChoices,#taskFeedback){grid-column:1/-1}
 #story .task-choices{display:grid;gap:8px}#story .story-choice{min-height:44px;text-align:left;font-size:16px;padding:10px 12px}
 #story .task-feedback{font-size:14px!important;min-height:0;margin:10px 0 0!important;line-height:1.6!important}
 #storyDetails{width:min(620px,calc(100% - 24px));max-height:80dvh;padding:0;background:#fff7e5;color:#234437;border:1px solid #c7ad72;border-radius:16px;box-sizing:border-box}
