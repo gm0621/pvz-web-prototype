@@ -8,7 +8,7 @@
 
 ## Obsidian 尚未同步時，從這裡接手
 
-1. **確認版本。** 在剛拉下來的 `main` 執行 `git status --short --branch`、`git log -1 --oneline`。`git log` 顯示目前 checkout 的提交。正式遊戲版本另看下方最新一筆含「已發布」及 Pages 工作的功能紀錄。截至 2026-11-24，最新已驗證的正式遊戲版本為 `2698b30`（第十六章，共 94 關）。 [正式遊戲](https://gm0621.github.io/pvz-web-prototype/hero/?v=2698b30) · [發布紀錄](https://github.com/gm0621/pvz-web-prototype/actions/runs/45357850970)
+1. **確認版本。** 在剛拉下來的 `main` 執行 `git status --short --branch`、`git log -1 --oneline`。`git log` 顯示目前 checkout 的提交。正式遊戲版本另看下方最新一筆含「已發布」及 Pages 工作的功能紀錄。截至 2026-11-24，最新已驗證的正式遊戲版本為 `a055aae`（第十六章，共 94 關）。 [正式遊戲](https://gm0621.github.io/pvz-web-prototype/hero/?v=a055aae) · [發布紀錄](https://github.com/gm0621/pvz-web-prototype/actions/runs/45358807611)
 2. **安裝並做基本驗證。** 在專案根目錄用 Node.js 20 以上與 npm。執行下列指令可驗證引擎、桌面滑鼠／鍵盤及手機平板觸控。更多測試和本機預覽見 [開發指南](DEVELOPMENT.md)。Playwright 會啟動 4174 埠的測試服務，先關閉佔用該埠的手動預覽。
 3. **開工前看目前進度。** 先讀 [AGENTS.md](../AGENTS.md) 的「重要約束」及下方與任務相關的紀錄。英雄演義是獨立的 `/hero/` 遊戲，關卡上限見 `hero/campaign-config.mjs`。正式存檔 `heroLegendProgress_v1` 與本機、線上跳關測試的存檔分開。跨電腦時瀏覽器存檔和未提交的檔案需另外移轉。保留滑鼠、鍵盤與觸控操作，也要保留首勝軍資、重玩及暫停的既有規則。 [跳關工具和存檔說明](hero-local-testing.md)
 4. **繼續當次工作。** 依使用者的新需求從最新 `main` 開分支，保留原工作區修改。完成後把變更、實際測試結果、版本與注意事項記在本檔。Obsidian 未同步時註明待補，能讀取後再更新。正式發布依當次授權。
@@ -21,6 +21,8 @@ npx playwright test --config=playwright.hero-input.config.js
 ```
 
 ## 2026-11-24 萌將頭像複查
+
+- 已發布 `a055aae`。正式站手機和平板各通過一次圖鑑、地圖和營地複驗。核對 56 份更新資源。第 88 關直接續玩檢查首輪逾時，重跑通過。 [正式遊戲](https://gm0621.github.io/pvz-web-prototype/hero/?v=a055aae) · [發布紀錄](https://github.com/gm0621/pvz-web-prototype/actions/runs/45358807611)
 
 - 全圖鑑複查 91 張頭像。第十六章六張已先改為萌將風格，這批另重畫 12 張，含第十三章張郃、陳式、黃忠、法正，第十四章龐德、呂蒙、陸遜、關平，第十五章吳班、馮習、黃權、孫桓。保留其他角色已辨識的風格，遊戲資料沿用原設定。 [頭像名單與重畫提示](hero-portrait-style-audit.md)
 - 383 項引擎測試與 3 項圖鑑回歸通過。以 Chromium 手機和 WebKit 平板模擬環境各解碼 91 張頭像與所用圖集，確認 18 張新版、圖鑑無橫向溢出，並抽查第 71、74、81、85 關戰前地圖、第 85 關戰場地圖和第 75、81、85、86 關營地。跳關採隔離存檔，確認一般存檔一致。模組快取版 `moe-portraits-1`，18 張新圖用 `moe-1`。
