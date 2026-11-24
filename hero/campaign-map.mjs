@@ -1,6 +1,6 @@
-import {stagePeople,mapPersonSvg,renderMatchup} from './characters.mjs?v=moe-portraits-1';
-import {stageFactionTitle} from './factions.mjs?v=moe-portraits-1';
-import {HISTORICAL_STAGES} from './history-stages.mjs?v=moe-portraits-1';
+import {stagePeople,mapPersonSvg,renderMatchup} from './characters.mjs?v=chapter-seventeen-1';
+import {stageFactionTitle} from './factions.mjs?v=chapter-seventeen-1';
+import {HISTORICAL_STAGES} from './history-stages.mjs?v=chapter-seventeen-1';
 // Approximate regional placement, not historical borders or a surveyed route.
 export const MAP_PLACES={
  zhuo:{name:'涿郡',modern:'今河北涿州一帶',x:402,y:78},
@@ -66,6 +66,12 @@ Object.assign(westernPlaces,{
  wuchang:{name:'武昌（吳都）',modern:'今湖北鄂州一帶・孫權時期的武昌',x:457,y:636},
  yuesui:{name:'越巂',modern:'今四川西南西昌一帶・越巂郡域示意',x:-172,y:730},
  dianchi:{name:'滇池一帶',modern:'今雲南昆明滇池一帶・南征末段區域示意',x:-138,y:773}
+});
+Object.assign(westernPlaces,{
+ tianshui:{name:'天水一帶',modern:'今甘肅天水一帶・古天水郡域示意',x:-113,y:364},
+ jieting:{name:'街亭一帶',modern:'今甘肅東南天水地區・古街亭位置有不同說法',x:-74,y:412},
+ jigu:{name:'箕谷一帶',modern:'漢中以北谷道・第一次北伐牽制戰線示意',x:3,y:424},
+ yinping:{name:'陰平',modern:'今甘肅文縣一帶・陰平郡域示意',x:-175,y:520}
 });
 Object.assign(MAP_PLACES,westernPlaces);
 STAGE_LOCATIONS.push(...HISTORICAL_STAGES.map(s=>({place:s.mapPlace,detail:`${s.year} 年・${stageFactionTitle(s)}視角。${s.viewpointShift?'此處切換敘事視角，不是上一支軍隊的連續行程。':''}地點為歷史區域示意，並非精確軍事路線。`})));

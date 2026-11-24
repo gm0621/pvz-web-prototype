@@ -12,7 +12,7 @@ test('the new chapter extends white emperor saves with six documented routes, co
  const routes=[['chengdu','yongan'],['chengdu'],['chengdu','wuchang'],['chengdu'],['chengdu','yuesui'],['yuesui','dianchi']];
  let progress=normalizeProgress({completed:88,coins:100,weapons:{guanyu:2},inventory:{grain:2},heroGrowth:{caocao:{weapon:1}}});
  assert.equal(rewardVictory(progress,88),0);
- assert.deepEqual(STAGES.slice(88).map(stage=>stage.year),[223,223,223,224,225,225]);
+ assert.deepEqual(STAGES.slice(88,94).map(stage=>stage.year),[223,223,223,224,225,225]);
  for(let level=89;level<=94;level++){
   const stage=STAGES[level-1];
   assert.deepEqual(chapterInfo(level),{chapter:16,number:level-88,count:6,title:'託孤與南征'});
@@ -42,7 +42,7 @@ test('the new chapter extends white emperor saves with six documented routes, co
  assert.match(campaignMapSvg(91),/map-host" data-person="孫權"/);
  assert.doesNotMatch(campaignMapSvg(91),/map-opponent/);
  assert.doesNotMatch(campaignMapSvg(94),/data-person="孟獲"/);
- for(const [query,levels] of [['阿斗',[89,90,91,92]],['正方',[89]],['伯苗',[91]],['高定',[93]],['德昂',[93,94]],['孟獲',[94]]]){
+ for(const [query,levels] of [['阿斗',[89,90,91,92,95]],['正方',[89]],['伯苗',[91,98]],['高定',[93]],['德昂',[93,94]],['孟獲',[94]]]){
   assert.deepEqual(searchPeople(query)[0].levels,levels,query);
  }
 });

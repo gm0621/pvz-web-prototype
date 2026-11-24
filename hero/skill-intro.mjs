@@ -1,5 +1,5 @@
-import {ALL_GENERALS,learningLevels,nextLesson,activeText} from './roster.mjs?v=moe-portraits-1';
-import {paintPortrait} from './factions.mjs?v=moe-portraits-1';
+import {ALL_GENERALS,learningLevels,nextLesson,activeText} from './roster.mjs?v=chapter-seventeen-1';
+import {paintPortrait} from './factions.mjs?v=chapter-seventeen-1';
 // One small lesson at a time. Reading freezes the same battle clock as Pause.
 export function mountSkillIntro({getBattle,getProgress,save,setPaused}){
  const dialog=document.createElement('dialog');dialog.id='skillIntro';dialog.setAttribute('aria-labelledby','skillIntroTitle');

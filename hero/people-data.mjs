@@ -1,13 +1,20 @@
-import {GENERALS} from './roster.mjs?v=moe-portraits-1';
-import {NOVEL_PAGES,CAMP_LINES} from './novel.mjs?v=moe-portraits-1';
-import {campConversation} from './camp-talk.mjs?v=moe-portraits-1';
-import {STORY_TASKS} from './story-play.mjs?v=moe-portraits-1';
-import {CHAPTER_BACKGROUNDS,STAGE_LEADS} from './prologue.mjs?v=moe-portraits-1';
-import {STORY_PEOPLE} from './characters.mjs?v=moe-portraits-1';
-import {HEROES,STAGES,chapterInfo,enemyArt,heroesForLevel} from './story.mjs?v=moe-portraits-1';
-import {FACTIONS,enemyPortrait} from './factions.mjs?v=moe-portraits-1';
+import {GENERALS} from './roster.mjs?v=chapter-seventeen-1';
+import {NOVEL_PAGES,CAMP_LINES} from './novel.mjs?v=chapter-seventeen-1';
+import {campConversation} from './camp-talk.mjs?v=chapter-seventeen-1';
+import {STORY_TASKS} from './story-play.mjs?v=chapter-seventeen-1';
+import {CHAPTER_BACKGROUNDS,STAGE_LEADS} from './prologue.mjs?v=chapter-seventeen-1';
+import {STORY_PEOPLE} from './characters.mjs?v=chapter-seventeen-1';
+import {HEROES,STAGES,chapterInfo,enemyArt,heroesForLevel} from './story.mjs?v=chapter-seventeen-1';
+import {FACTIONS,enemyPortrait} from './factions.mjs?v=chapter-seventeen-1';
 // Child-friendly summaries; comparisons are memory aids, not historical quotations.
 const bios=[
+ ['姜維','史實人物','從天水來的新隊友','他字伯約。諸葛亮第一次北伐時，他原在魏國的天水郡做事，後來投奔蜀軍，隨隊回漢中。','搜尋「伯約」就能找到姜維。','他投奔的過程在《三國志》正文與注文所引的記載有不同說法。'],
+ ['馬謖','史實人物','在街亭沒有照部署行事','他字幼常。諸葛亮讓他領前軍，卻在街亭被魏將張郃擊敗。那時同隊的王平曾勸他改變安排。','謖讀 ㄙㄨˋ。記住馬謖守街亭，王平收攏散兵。','戰後馬謖被處置。《諸葛亮傳》和《馬良傳》對他的最後經過記述不同。'],
+ ['王平','史實人物','大家走散時的領隊人','他字子均。街亭失利時，他仍穩住手邊的軍隊，把散開的隊伍收攏後撤回。','混亂時，先找到隊友再一起回去。這就是王平在街亭的工作。','本作的撤離操作是遊戲改編。'],
+ ['曹真','史實人物','守在魏國西邊的指揮官','他字子丹。首次北伐時，他領魏軍去應付箕谷的趙雲與鄧芝。後來他讓人提前準備陳倉的防守。','先記「曹真在箕谷，郝昭守陳倉」。','本章在地圖標明兩條不同的戰線。'],
+ ['郝昭','史實人物','城門守得住的將領','他字伯道。諸葛亮冬天圍攻陳倉時，他負責守城，等到蜀軍缺糧撤退。','郝讀 ㄏㄠˇ。看到陳倉，就想起守城的郝昭。','事蹟見《曹真傳》及裴松之注。'],
+ ['郭淮','史實人物','趕來接應的魏將','他字伯濟。蜀軍進攻武都和陰平時，他原想帶兵救援。諸葛亮到了建威，他就退兵。','淮讀 ㄏㄨㄞˊ，記得郭淮和郭嘉是不同年代的兩個人。','第 100 關從陳式一方看戰事，郭淮在圖上列為另一戰線的援將。'],
+
  ['劉禪','史實人物','接過責任的少年皇帝','他是劉備的兒子，字公嗣。父親去世後，他在成都即位，把新年號定為建興。諸葛亮繼續做丞相，幫他打理國事。','禪在這裡念 ㄕㄢˋ。搜尋「阿斗」，也能找到他。','本章的營地對話是遊戲改編，劉禪在成都即位有史書記載。'],
  ['李嚴','史實人物','白帝託孤的另一位大臣','大家常記得諸葛亮聽劉備交代後事，李嚴也受了託付。後來他留下守永安。','同樣姓李，李嚴守永安，李恢帶隊南征。','李嚴字正方，後來改名李平。'],
  ['鄧芝','史實人物','靠談話搭橋的使者','夷陵打完後，蜀與吳的關係還要修補。鄧芝代表蜀漢去見孫權，把兩邊合作的理由說清楚，讓彼此恢復往來。','看到手上的信，就想起這位去吳國談合作的人。','223 年出使見《三國志・鄧芝傳》與《後主傳》。'],

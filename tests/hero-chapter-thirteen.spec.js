@@ -51,7 +51,7 @@ test('chapter thirteen continues old saves through the Hanzhong finale',async({p
 
  await page.goto('/hero/');
  await page.clock.pauseAt(await page.evaluate(()=>Date.now()+600));
- await expect(page.locator('#homeProgress')).toContainText('70 / 94');
+ await expect(page.locator('#homeProgress')).toContainText('70 / 100');
  await page.locator('#chapterPicker').evaluate(el=>el.open=true);
  await tap('#chapterTabs [data-chapter="12"]');
  await tap('#chapterDots [data-level="70"]');
@@ -200,7 +200,7 @@ test('chapter thirteen continues old saves through the Hanzhong finale',async({p
  }
  await expect(page.locator('#storyTitle')).toHaveText('沔陽傳令');
  await page.reload();
- await expect(page.locator('#homeProgress')).toContainText('76 / 94');
+ await expect(page.locator('#homeProgress')).toContainText('76 / 100');
  expect(await save()).toMatchObject({completed:76,coins:520,weapons:{liubei:3,guanyu:1}});
  await page.goto('/hero/people.html',{waitUntil:'domcontentloaded'});
  for(const [query,name,level] of [['儁乂','張郃',71],['陳式','陳式',74],['漢升','黃忠',75],['孝直','法正',76]]){

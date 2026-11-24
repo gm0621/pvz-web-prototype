@@ -1,5 +1,5 @@
-import {HISTORICAL_STAGES} from './history-stages.mjs?v=moe-portraits-1';
-import {FACTIONS,factionFor} from './factions.mjs?v=moe-portraits-1';
+import {HISTORICAL_STAGES} from './history-stages.mjs?v=chapter-seventeen-1';
+import {FACTIONS,factionFor} from './factions.mjs?v=chapter-seventeen-1';
 import {PEACH_HEROES} from './hero-base.mjs?v=passive-feedback-1';
 const defaultRetreatSlots=['liubei','zhangfei'];
 const retreatSlots=battle=>HISTORICAL_STAGES[battle.level-17]?.retreatKeys||defaultRetreatSlots;
@@ -7,6 +7,10 @@ const aliveInSlot=(battle,key)=>battle.allies.some(unit=>unit.key===key&&unit.hp
 export function retreatPartyNames(battle,{missingOnly=false}={}){
  const roster=battle.roster||FACTIONS[factionFor(battle.level)]?.heroes||PEACH_HEROES;
  return retreatSlots(battle).filter(key=>!missingOnly||!aliveInSlot(battle,key)).map(key=>roster[key].name);
+}
+export function retreatPartyLabel(battle,escorts='在場友軍'){
+ const names=retreatPartyNames(battle);
+ return names.length?names.join('、')+'與'+escorts:'所有'+escorts;
 }
 const laneList=b=>Array.from({length:b.laneTotal||3},(_,i)=>i);
 const routeName=(b,l)=>(b.laneTotal||3)>3?`第 ${l+1}`:['上','中','下'][l];
@@ -22,7 +26,7 @@ export function historyAction(b,action,index=0){
  if(action==='supply'&&m.kind==='supply'&&m.charge>=10&&m.delivered<3){m.delivered++;m.charge=0;m.done=m.delivered>=3;m.message=`第 ${m.delivered} 批軍糧送達！`;return true}
  if(action==='decoy'&&m.kind==='decoy'&&!m.decoyUsed&&Number.isInteger(index)&&index>=0&&index<3){const boss=b.enemies.find(e=>e.boss&&e.hp>0);if(!boss||boss.castAt)return false;boss.lane=index;m.decoyUsed=true;m.decoyLane=index;m.message='赤幘引開追兵，趁機照應退路！';return true}
  if(action==='retreat'&&['withdraw','decoy'].includes(m.kind)&&m.withdrawAt!==null&&b.time>=m.withdrawAt&&(m.kind!=='decoy'||m.decoyUsed)){
-  m.ordered=true;for(const u of b.allies){u.order='back';u.targetX=.08;u.pendingStrike=null;u.pendingCleave=null;u.swingStartedAt=-100}m.message=`正在撤離！${retreatPartyNames(b).join('、')}與在場友軍退回左側。`;return true;
+  m.ordered=true;for(const u of b.allies){u.order='back';u.targetX=.08;u.pendingStrike=null;u.pendingCleave=null;u.swingStartedAt=-100}m.message=`正在撤離！${retreatPartyLabel(b)}退回左側。`;return true;
  }
  if(action==='site'&&m.kind==='restoration'&&Number.isInteger(index)&&index>=0&&index<3&&m.sites[index]<8){m.site=index;return true}return false;
 }
@@ -41,7 +45,8 @@ export function stepHistoryMission(b,dt){
  if(m.kind==='supply'){if(laneList(b).every(l=>safe(b,l)))m.charge=Math.min(10,m.charge+dt);m.done=m.delivered>=3}
  if(['withdraw','decoy'].includes(m.kind)){
   if(b.bossSpawned&&m.withdrawAt===null)m.withdrawAt=b.time+18;
-  m.done=m.ordered&&retreatSlots(b).every(key=>b.allies.some(u=>u.key===key&&u.hp>0&&u.x<=.18))&&b.allies.filter(u=>u.hp>0).every(u=>u.x<=.18);
+  const living=b.allies.filter(u=>u.hp>0);
+  m.done=m.ordered&&living.length>0&&retreatSlots(b).every(key=>living.some(u=>u.key===key))&&living.every(u=>u.x<=.18);
  }
  if(m.kind==='restoration'){if(m.site>=0&&safe(b,m.site)){m.sites[m.site]=Math.min(8,m.sites[m.site]+dt);if(m.sites[m.site]>=8){const sites=restorationSites(b.level);m.message=sites===defaultSites?['道路已清理，行人能通過了。','水井已整理，可以取水了。','宗廟已整理，準備祭祀。'][m.site]:sites[m.site]+'已整備完成。';m.site=-1}}m.done=m.sites.every(t=>t>=8)}
  if(m.kind==='holdout'){if(laneList(b).every(l=>safe(b,l)))m.hold=Math.min(24,m.hold+dt);m.done=m.hold>=24}
@@ -68,12 +73,13 @@ export function historyMissionText(b){const fronts=['','','','三','四','五'][
  if(['withdraw','decoy'].includes(m.kind)&&m.ordered){
   const missing=retreatPartyNames(b,{missingOnly:true});
   if(missing.length)return `${missing.join('、')}尚未在場，請整備後召回，再帶隊撤離${stage.noBoss?'':` · ${opponent}無須擊倒`}`;
+  if(!b.allies.some(u=>u.hp>0))return '請先召回至少一隊友軍，再撤回左側';
   const remaining=b.allies.filter(u=>u.hp>0&&u.x>.18).length;
   return remaining?`撤離中：尚有 ${remaining} 名友軍未回到左側 · 所有在場友軍都需撤回`:'隊伍已撤回左側，確認全員平安';
  }
  if(['withdraw','decoy'].includes(m.kind)){
   const status=m.withdrawAt===null?(stage.noBoss?`守住${fronts}路，等待後隊接應`:`守住${fronts}路，等${opponent}出陣`):b.time<m.withdrawAt?`接應尚需 ${Math.ceil(m.withdrawAt-b.time)} 秒`:'接應完成，按全軍撤離';
-  const party=stage.noBoss||stage.retreatKeys?` · ${retreatPartyNames(b).join('、')}及在場友軍須撤回左側`:'';
+  const party=stage.noBoss||stage.retreatKeys?` · ${retreatPartyLabel(b)}須撤回左側`:'';
   const goal=stage.noBoss?'':` · 無須擊倒${opponent}`;
   return (m.kind==='decoy'&&!m.decoyUsed?'先放置赤幘誘餌 · ':'')+status+party+goal;
  }

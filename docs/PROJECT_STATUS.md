@@ -20,6 +20,12 @@ npm run test:hero:engine
 npx playwright test --config=playwright.hero-input.config.js
 ```
 
+## 2026-11-24 第十七章「北伐初征」
+
+- 新增第 95～100 關「漢中出師、隴右響應、街亭撤離、箕谷收兵、陳倉糧盡、武都陰平」，延續 227～229 年史實。 [第十七章規格](hero-history-chapter-seventeen.md)
+- 街亭和箕谷失利，陳倉未克，武都、陰平取得。街亭及陳倉以至少一隊存活友軍和全員撤回左側為結算條件。新增姜維、馬謖、王平、曹真、郝昭、郭淮六張萌將頭像與圖鑑，保留各關行軍圖、營地與養成。
+- 386 項引擎測試通過。模擬觸控以隔離存檔和受控敵波驗證 320px、390px 手機與 820px 平板的完整六關。手機和平板另複驗第 94 關結算接第 95 關及圖鑑。第 100 關存檔失敗後重試，重整仍保留進度、軍資與兵器。引擎另用正常敵波測試。快取版本 `chapter-seventeen-1`，回歸用 `playwright.hero-seventeen.config.js`。
+
 ## 2026-11-24 萌將頭像複查
 
 - 已發布 `a055aae`。正式站手機和平板各通過一次圖鑑、地圖和營地複驗。核對 56 份更新資源。第 88 關直接續玩檢查首輪逾時，重跑通過。 [正式遊戲](https://gm0621.github.io/pvz-web-prototype/hero/?v=a055aae) · [發布紀錄](https://github.com/gm0621/pvz-web-prototype/actions/runs/45358807611)

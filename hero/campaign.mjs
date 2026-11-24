@@ -1,7 +1,7 @@
 import {LEARNING_LEVELS} from './skill-growth.mjs?v=passive-feedback-1';
-import {growthState,selectedTeam,DEFAULT_TEAM,ALL_GENERALS} from './roster.mjs?v=moe-portraits-1';
-import {factionFor} from './factions.mjs?v=moe-portraits-1';
-import {CAMPAIGN_LENGTH} from './campaign-config.mjs?v=moe-portraits-1';
+import {growthState,selectedTeam,DEFAULT_TEAM,ALL_GENERALS} from './roster.mjs?v=chapter-seventeen-1';
+import {factionFor} from './factions.mjs?v=chapter-seventeen-1';
+import {CAMPAIGN_LENGTH} from './campaign-config.mjs?v=chapter-seventeen-1';
 // Local campaign economy, independent of the original zombie game's account/store.
 export const GOODS={
  herb:{name:'行軍藥包',shop:'items',price:25,icon:'✚',description:'戰鬥中使用，所有在場友軍回復 60 生命。'},
