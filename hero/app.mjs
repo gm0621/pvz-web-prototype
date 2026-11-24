@@ -1,37 +1,37 @@
-import {CHAPTER_NUMERALS} from './campaign-config.mjs?v=chapter-fifteen-2';
-import {mountExperienceView} from './experience-view.mjs?v=chapter-fifteen-2';
+import {CHAPTER_NUMERALS} from './campaign-config.mjs?v=chapter-sixteen-1';
+import {mountExperienceView} from './experience-view.mjs?v=chapter-sixteen-1';
 import {preloadBattleAssets,battleAssetsReady,prepareBattleAssets} from './battle-assets.mjs?v=images-1';
-import {mountBattleFocus} from './battle-focus.mjs?v=chapter-fifteen-2';
+import {mountBattleFocus} from './battle-focus.mjs?v=chapter-sixteen-1';
 import {advanceAutoSkills} from './auto-skills.mjs?v=battle-focus-1';
 import {renderPassiveFeedback} from './passive-view.mjs?v=passive-feedback-1';
-import {mountSkillIntro} from './skill-intro.mjs?v=chapter-fifteen-2';
-import {beginReading,installStoryReader} from './story-reader.mjs?v=chapter-fifteen-2';
+import {mountSkillIntro} from './skill-intro.mjs?v=chapter-sixteen-1';
+import {beginReading,installStoryReader} from './story-reader.mjs?v=chapter-sixteen-1';
 import {shortPages} from './story-pages.mjs?v=passive-feedback-1';
-import {configureRoster,configurePeachRoster,configureSunRoster,awardExperience,SLOTS,ALL_GENERALS as GENERALS} from './roster.mjs?v=chapter-fifteen-2';
-import {openDeployment,mountActiveSkills} from './roster-view.mjs?v=chapter-fifteen-2';
-import {castActive,lanesFor,laneLabel} from './engine.mjs?v=chapter-fifteen-2';
-import {mountSkillGuide} from './skill-guide.mjs?v=chapter-fifteen-2';
-import {battleBossPortrait,renderPeople,STORY_PEOPLE} from './characters.mjs?v=chapter-fifteen-2';
-import {factionFor,factionTitle,enemyPortrait,paintPortrait} from './factions.mjs?v=chapter-fifteen-2';
-import {mountHistoryLesson} from './history-view.mjs?v=chapter-fifteen-2';
-import {renderSkillCutin} from './skill-cutin.mjs?v=chapter-fifteen-2';
-import {renderMasterCutin} from './master-cutin.mjs?v=chapter-fifteen-2';
-import {renderBossCutin} from './boss-cutin.mjs?v=chapter-fifteen-2';
+import {configureRoster,configurePeachRoster,configureSunRoster,awardExperience,SLOTS,ALL_GENERALS as GENERALS} from './roster.mjs?v=chapter-sixteen-1';
+import {openDeployment,mountActiveSkills} from './roster-view.mjs?v=chapter-sixteen-1';
+import {castActive,lanesFor,laneLabel} from './engine.mjs?v=chapter-sixteen-1';
+import {mountSkillGuide} from './skill-guide.mjs?v=chapter-sixteen-1';
+import {battleBossPortrait,renderPeople,STORY_PEOPLE} from './characters.mjs?v=chapter-sixteen-1';
+import {factionFor,stageFactionTitle,enemyPortrait,paintPortrait} from './factions.mjs?v=chapter-sixteen-1';
+import {mountHistoryLesson} from './history-view.mjs?v=chapter-sixteen-1';
+import {renderSkillCutin} from './skill-cutin.mjs?v=chapter-sixteen-1';
+import {renderMasterCutin} from './master-cutin.mjs?v=chapter-sixteen-1';
+import {renderBossCutin} from './boss-cutin.mjs?v=chapter-sixteen-1';
 import {mountBattleKeys} from './battle-keys.mjs?v=battle-focus-1';
-import {mountJourney} from './journey-view.mjs?v=chapter-fifteen-2';
-import {renderMission} from './chapter-mission-view.mjs?v=chapter-fifteen-2';
-import {mountCampaignMap} from './campaign-map.mjs?v=chapter-fifteen-2';
-import {advanceBattleFrame,normalizeBattleSpeed} from './battle-speed.mjs?v=chapter-fifteen-2';
-import {mountNovel} from './novel.mjs?v=chapter-fifteen-2';
-import {mountCamp} from './camp-view.mjs?v=chapter-fifteen-2';
-import {rewardVictory,useSupply,weaponsForLevel} from './campaign.mjs?v=chapter-fifteen-2';
+import {mountJourney} from './journey-view.mjs?v=chapter-sixteen-1';
+import {renderMission} from './chapter-mission-view.mjs?v=chapter-sixteen-1';
+import {mountCampaignMap} from './campaign-map.mjs?v=chapter-sixteen-1';
+import {advanceBattleFrame,normalizeBattleSpeed} from './battle-speed.mjs?v=chapter-sixteen-1';
+import {mountNovel} from './novel.mjs?v=chapter-sixteen-1';
+import {mountCamp} from './camp-view.mjs?v=chapter-sixteen-1';
+import {rewardVictory,useSupply,weaponsForLevel} from './campaign.mjs?v=chapter-sixteen-1';
 import {createFirstGuide} from './first-guide.mjs?v=passive-feedback-1';
-import {mountStoryTask} from './story-play.mjs?v=chapter-fifteen-2';
-import {CHAPTER_BACKGROUNDS,STAGE_LEADS} from './prologue.mjs?v=chapter-fifteen-2';
-import {setMusic,setMusicMode,setMusicHome,musicTheme,musicOn,setSfx,unlockAudio,hitSound} from './audio.mjs?v=chapter-fifteen-2';
-import {renderDuel} from './duel-view.mjs?v=chapter-fifteen-2';
-import {chapterInfo,enemyArt,HEROES as BASE_HEROES,heroesForLevel,STAGES,ENEMY_ART,SHIELD_ART,FEATURES,heroDescription} from './story.mjs?v=chapter-fifteen-2';
-import {bossProfile,LANE_CAPACITY,laneCount,ENEMY_SWING,enemyAttackFrame,skipDuelEntrance,positionHero,commandHero,moveHero,BOSS_SKILLS,SAVE_KEY,normalizeProgress,createBattle,deploy,canDeploy,attackFrame,SWING} from './engine.mjs?v=chapter-fifteen-2';
+import {mountStoryTask} from './story-play.mjs?v=chapter-sixteen-1';
+import {CHAPTER_BACKGROUNDS,STAGE_LEADS} from './prologue.mjs?v=chapter-sixteen-1';
+import {setMusic,setMusicMode,setMusicHome,musicTheme,musicOn,setSfx,unlockAudio,hitSound} from './audio.mjs?v=chapter-sixteen-1';
+import {renderDuel} from './duel-view.mjs?v=chapter-sixteen-1';
+import {chapterInfo,enemyArt,HEROES as BASE_HEROES,heroesForLevel,STAGES,ENEMY_ART,SHIELD_ART,FEATURES,heroDescription} from './story.mjs?v=chapter-sixteen-1';
+import {bossProfile,LANE_CAPACITY,laneCount,ENEMY_SWING,enemyAttackFrame,skipDuelEntrance,positionHero,commandHero,moveHero,BOSS_SKILLS,SAVE_KEY,normalizeProgress,createBattle,deploy,canDeploy,attackFrame,SWING} from './engine.mjs?v=chapter-sixteen-1';
 
 const $=id=>document.getElementById(id);
 let HEROES=BASE_HEROES;
@@ -86,7 +86,7 @@ function setPrologue(visible){
  const info=chapterInfo(storyLevel),background=CHAPTER_BACKGROUNDS[info.chapter];
  $('storyPrologue').hidden=!visible;$('storyScene').classList.toggle('has-prologue',visible);
  $('storyScene').querySelector('.scene-cast').hidden=visible;$('storyScene').querySelector('.scene-dialogue').hidden=visible;
- $('prologueEra').textContent=STAGES[storyLevel-1].year?`${STAGES[storyLevel-1].year} 年・${factionTitle(STAGES[storyLevel-1].faction)}`:background.era;
+ $('prologueEra').textContent=STAGES[storyLevel-1].year?`${STAGES[storyLevel-1].year} 年・${stageFactionTitle(STAGES[storyLevel-1])}`:background.era;
  if(!visible&&storyPhase==='opening'){setMusicMode('prepare',storyLevel);syncMusicButton()}
  (visible?$('prologueContinue'):$('storyNext')).focus({preventScroll:true});
 }
@@ -118,7 +118,7 @@ function beginBattle(level,ready=false){if(factionFor(level)==='cao'&&!ready){
  const returnMode=screen==='camp'?'camp':storyPhase==='ending'?'victory':$('storyPrologue').hidden?'prepare':'story';
  setMusicMode('prepare',level);syncMusicButton();
  openDeployment({level,progress,save:saveProgress,onStart:()=>beginBattle(level,true),onCancel:()=>{setMusicMode(returnMode,level);syncMusicButton()}});return
-}const assets=battleAssetUrls(level);if(!battleAssetsReady(assets)){prepareBattleAssets(assets,()=>beginBattle(level,ready));return}useRoster(level);setMusicMode('battle',level);syncMusicButton();battle=createBattle(level,Date.now(),weaponsForLevel(progress,level));if(factionFor(level)==='cao'){configureRoster(battle,progress,HEROES.archer);HEROES=battle.roster;battle.food=Math.min(300,battle.food+60*(lanesFor(battle)-3))}else if(factionFor(level)==='sun'){configureSunRoster(battle,progress,HEROES.archer);HEROES=battle.roster}else if(!factionFor(level)){configurePeachRoster(battle,progress);HEROES=battle.roster}buildDeploymentControls();firstGuide=createFirstGuide(level);selected=null;selectedUnitId=null;resultShown=false;duelShown=false;show('battle');$('battleChapter').textContent=`第${CHAPTER_NUMERALS[chapterInfo(level).chapter]}章 · ${chapterInfo(level).number}`;$('battleTitle').textContent=STAGES[level-1].name+(level>=17?` · ${factionTitle(STAGES[level-1].faction)}`:'');$('featureBadge').textContent=FEATURES[level-1].name;$('field').style.backgroundImage=`linear-gradient(#d4dfb655,#b9cda588),url("${STAGES[level-1].scene}")`;renderBattle();$('cards').querySelector('button')?.focus({preventScroll:true})}
+}const assets=battleAssetUrls(level);if(!battleAssetsReady(assets)){prepareBattleAssets(assets,()=>beginBattle(level,ready));return}useRoster(level);setMusicMode('battle',level);syncMusicButton();battle=createBattle(level,Date.now(),weaponsForLevel(progress,level));if(factionFor(level)==='cao'){configureRoster(battle,progress,HEROES.archer);HEROES=battle.roster;battle.food=Math.min(300,battle.food+60*(lanesFor(battle)-3))}else if(factionFor(level)==='sun'){configureSunRoster(battle,progress,HEROES.archer);HEROES=battle.roster}else if(!factionFor(level)){configurePeachRoster(battle,progress);HEROES=battle.roster}buildDeploymentControls();firstGuide=createFirstGuide(level);selected=null;selectedUnitId=null;resultShown=false;duelShown=false;show('battle');$('battleChapter').textContent=`第${CHAPTER_NUMERALS[chapterInfo(level).chapter]}章 · ${chapterInfo(level).number}`;$('battleTitle').textContent=STAGES[level-1].name+(level>=17?` · ${stageFactionTitle(STAGES[level-1])}`:'');$('featureBadge').textContent=FEATURES[level-1].name;$('field').style.backgroundImage=`linear-gradient(#d4dfb655,#b9cda588),url("${STAGES[level-1].scene}")`;renderBattle();$('cards').querySelector('button')?.focus({preventScroll:true})}
 function selectedUnit(){return battle?.allies.find(u=>u.hp>0&&(selectedUnitId!==null?u.id===selectedUnitId:selected!=='archer'&&!HEROES[selected]?.troop&&u.key===selected))}
 function syncPause(){if(!battle)return;$('field').classList.toggle('is-paused',battle.paused||!!battle.duel||!!battle.introPending);$('pauseOverlay').hidden=!battle.paused;$('pauseBtn').textContent=battle.paused?'▶ 繼續':'Ⅱ 暫停';$('pauseBtn').setAttribute('aria-pressed',String(battle.paused))}
 function setPause(value){if(!battle||battle.over)return;battle.paused=value;syncPause()}

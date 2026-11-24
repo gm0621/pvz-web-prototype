@@ -1,5 +1,5 @@
-import {HISTORICAL_STAGES} from './history-stages.mjs?v=chapter-fifteen-2';
-import {FACTIONS,factionFor} from './factions.mjs?v=chapter-fifteen-2';
+import {HISTORICAL_STAGES} from './history-stages.mjs?v=chapter-sixteen-1';
+import {FACTIONS,factionFor} from './factions.mjs?v=chapter-sixteen-1';
 import {PEACH_HEROES} from './hero-base.mjs?v=passive-feedback-1';
 const defaultRetreatSlots=['liubei','zhangfei'];
 const retreatSlots=battle=>HISTORICAL_STAGES[battle.level-17]?.retreatKeys||defaultRetreatSlots;
@@ -10,7 +10,8 @@ export function retreatPartyNames(battle,{missingOnly=false}={}){
 }
 const laneList=b=>Array.from({length:b.laneTotal||3},(_,i)=>i);
 const routeName=(b,l)=>(b.laneTotal||3)>3?`第 ${l+1}`:['上','中','下'][l];
-const siteNames=['道路','水井','宗廟'],laneNames=['上','中','下'];
+const defaultSites=['道路','水井','宗廟'],laneNames=['上','中','下'];
+const restorationSites=level=>HISTORICAL_STAGES[level-17]?.missionSites||defaultSites;
 const kinds=HISTORICAL_STAGES.map(s=>s.mission);
 export function createHistoryMission(level){return {level,kind:kinds[level-17],hold:0,done:false,message:'',lane:1,travel:0,rescued:0,delivered:0,charge:0,withdrawAt:null,ordered:false,decoyUsed:false,decoyLane:null,site:-1,sites:[0,0,0]}}
 const active=b=>b?.mission&&b.level>=17&&!b.over&&!b.paused&&!b.duel&&!b.introPending;
@@ -42,7 +43,7 @@ export function stepHistoryMission(b,dt){
   if(b.bossSpawned&&m.withdrawAt===null)m.withdrawAt=b.time+18;
   m.done=m.ordered&&retreatSlots(b).every(key=>b.allies.some(u=>u.key===key&&u.hp>0&&u.x<=.18))&&b.allies.filter(u=>u.hp>0).every(u=>u.x<=.18);
  }
- if(m.kind==='restoration'){if(m.site>=0&&safe(b,m.site)){m.sites[m.site]=Math.min(8,m.sites[m.site]+dt);if(m.sites[m.site]>=8){m.message=['道路已清理，行人能通過了。','水井已整理，可以取水了。','宗廟已整理，準備祭祀。'][m.site];m.site=-1}}m.done=m.sites.every(t=>t>=8)}
+ if(m.kind==='restoration'){if(m.site>=0&&safe(b,m.site)){m.sites[m.site]=Math.min(8,m.sites[m.site]+dt);if(m.sites[m.site]>=8){const sites=restorationSites(b.level);m.message=sites===defaultSites?['道路已清理，行人能通過了。','水井已整理，可以取水了。','宗廟已整理，準備祭祀。'][m.site]:sites[m.site]+'已整備完成。';m.site=-1}}m.done=m.sites.every(t=>t>=8)}
  if(m.kind==='holdout'){if(laneList(b).every(l=>safe(b,l)))m.hold=Math.min(24,m.hold+dt);m.done=m.hold>=24}
  if(m.kind==='formation')m.done=true;
 }
@@ -50,7 +51,7 @@ export function protectHistoricalOutcome(b){if(['withdraw','decoy'].includes(b.m
 export const extracted=b=>['withdraw','decoy'].includes(b.mission?.kind)&&b.mission.done;
 export function historyMissionText(b){const fronts=['','','','三','四','五'][b.laneTotal||3];const m=b.mission,stage=HISTORICAL_STAGES[b.level-17],opponent=stage.bossName,holdTitle=stage.missionTitle||'鄄城接應';
  if(m.done&&['dispatch','supply','restoration','holdout'].includes(m.kind)){
-  const title={dispatch:'接應 3／3 隊使者',supply:'軍糧 3／3 批',restoration:'城內整備 3／3',holdout:holdTitle+' 24／24 秒'}[m.kind];
+  const title={dispatch:'接應 3／3 隊使者',supply:'軍糧 3／3 批',restoration:(stage.missionTitle||'城內整備')+' 3／3',holdout:holdTitle+' 24／24 秒'}[m.kind];
   return `${title} · 任務已完成`+(b.won?'':b.bossSpawned?'，清退剩餘敵軍後過關':'，守住防線並清退後續敵軍');
  }
  if(m.kind==='dispatch'){
@@ -77,8 +78,8 @@ export function historyMissionText(b){const fronts=['','','','三','四','五'][
   return (m.kind==='decoy'&&!m.decoyUsed?'先放置赤幘誘餌 · ':'')+status+party+goal;
  }
  if(m.kind==='restoration'){
-  const detail=m.site<0?'選一處整備，派友軍守住對應路線':`${siteNames[m.site]}・${routeName(b,m.site)}路 · ${!b.allies.some(u=>u.hp>0&&u.lane===m.site)?'等候友軍接應':!safe(b,m.site)?'敵軍逼近，整備暫停':'整備中'}`;
-  return `城內整備 ${m.sites.filter(t=>t>=8).length}／3 · ${detail}`;
+  const detail=m.site<0?'選一處整備，派友軍守住對應路線':`${restorationSites(b.level)[m.site]}・${routeName(b,m.site)}路 · ${!b.allies.some(u=>u.hp>0&&u.lane===m.site)?'等候友軍接應':!safe(b,m.site)?'敵軍逼近，整備暫停':'整備中'}`;
+  return `${stage.missionTitle||'城內整備'} ${m.sites.filter(t=>t>=8).length}／3 · ${detail}`;
  }
  if(m.kind==='holdout')return `${holdTitle} ${Math.floor(m.hold)}／24 秒 · 每路皆有友軍、敵人未逼近才計時 · 受阻暫停，進度保留`;
  if(b.bossCaptured)return `${opponent}已被俘 · ${b.won?'本關完成':`守住${fronts}路，清退餘兵後過關`}`;
@@ -88,7 +89,7 @@ export function historyMissionText(b){const fronts=['','','','三','四','五'][
 export function renderHistoryMission(b,panel,scene,refresh,onAction=()=>{}){
  const m=b.mission,locked=!active(b),choices=panel.querySelector('#missionChoices');
  panel.querySelector('#missionObjective').textContent=historyMissionText(b);panel.querySelector('#missionMessage').textContent=m.message;
- const items=m.kind==='dispatch'?laneList(b).map(i=>['route',i,`使者走${routeName(b,i)}路`]):m.kind==='supply'?[['supply',0,'發送糧車']]:m.kind==='restoration'?siteNames.map((x,i)=>['site',i,`${x}・${routeName(b,i)}路 ${Math.floor(m.sites[i]/8*100)}%`]):['withdraw','decoy'].includes(m.kind)?[...(m.kind==='decoy'?[0,1,2].map(i=>['decoy',i,`赤幘放${['上','中','下'][i]}路`]):[]),['retreat',0,m.ordered?'重新下令撤離 ←':'全軍撤離 ←']]:[];
+ const items=m.kind==='dispatch'?laneList(b).map(i=>['route',i,`使者走${routeName(b,i)}路`]):m.kind==='supply'?[['supply',0,'發送糧車']]:m.kind==='restoration'?restorationSites(b.level).map((x,i)=>['site',i,`${x}・${routeName(b,i)}路 ${Math.floor(m.sites[i]/8*100)}%`]):['withdraw','decoy'].includes(m.kind)?[...(m.kind==='decoy'?[0,1,2].map(i=>['decoy',i,`赤幘放${['上','中','下'][i]}路`]):[]),['retreat',0,m.ordered?'重新下令撤離 ←':'全軍撤離 ←']]:[];
  const mode=`${m.kind}:${b.laneTotal||3}`;if(choices.dataset.mode!==mode){choices.dataset.mode=mode;choices.replaceChildren(...items.map(()=>{const el=document.createElement('button');el.type='button';return el}))}
  items.forEach(([action,i,label],n)=>{const button=choices.children[n];button.textContent=label;button.dataset.action=action;button.disabled=locked||m.done||(action==='supply'&&(m.charge<10||m.delivered>=3))||(action==='decoy'&&(m.decoyUsed||!b.enemies.some(e=>e.boss&&!e.castAt)))||(action==='retreat'&&(m.withdrawAt===null||b.time<m.withdrawAt||m.kind==='decoy'&&!m.decoyUsed))||(action==='site'&&m.sites[i]>=8);button.setAttribute('aria-pressed',String(action==='route'?m.lane===i:action==='site'&&m.site===i));button.onclick=()=>{if(historyAction(b,action,i))onAction(b,action,i);refresh()}});
  scene.querySelector('.mission-fog').style.opacity='0';const group=scene.querySelector('.civilian-group');group.hidden=m.kind!=='dispatch'||m.done;group.querySelector('span').textContent='聯絡使者';group.style.left=`${18+m.travel*65}%`;group.style.top=`${(m.lane+.75)/(b.laneTotal||3)*100}%`;

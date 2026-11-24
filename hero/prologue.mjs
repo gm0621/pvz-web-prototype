@@ -1,5 +1,5 @@
-import {HISTORICAL_STAGES} from './history-stages.mjs?v=chapter-fifteen-2';
-import {paintPortrait} from './factions.mjs?v=chapter-fifteen-2';
+import {HISTORICAL_STAGES} from './history-stages.mjs?v=chapter-sixteen-1';
+import {paintPortrait} from './factions.mjs?v=chapter-sixteen-1';
 import {THIRD_CHAPTER} from './chapter-three.mjs?v=passive-feedback-1';
 // History and novel adaptation are deliberately separated in the introduction.
 export const CHAPTER_BACKGROUNDS={
@@ -40,3 +40,4 @@ CHAPTER_BACKGROUNDS[14]={era:'219 年・襄樊風雲',history:'劉備成為漢�
 CHAPTER_BACKGROUNDS[13]={era:'215—219 年・漢中爭雄',history:'張魯歸降後，張郃與張飛在巴地交戰。曹操受封魏王，與孫權在濡須對峙；西邊的漢中後來由劉備取得。',story:'前四關從曹操軍看，定軍山起改由劉備軍看。瓦口保留張郃敗退，定軍山保留夏侯淵戰死，漢中易手由戰後故事交代。'};
 CHAPTER_BACKGROUNDS[12]={era:'212—215 年・隴右與漢中',history:'關中戰後，夏侯淵留守並援救祁山。曹操封魏公後，西征張魯，經陽平關進入南鄭。',story:'沿用曹操軍。西線及鄴城分段敘事，行軍、糧運與守軍交戰是遊戲改編。張魯退往巴中後才率部歸降。'};
 CHAPTER_BACKGROUNDS[11]={era:'209—211 年・江陵與關中',history:'赤壁後曹操北返，曹仁在江陵撤守。北方整備後，曹操西征，與馬超、韓遂等在潼關及渭水交戰。',story:'江陵段切換到留守軍消息，兵卡沿用抽象職能。三路接應與運糧為改編，保留江陵失守與馬超、韓遂退走的結果。'};
+CHAPTER_BACKGROUNDS[16]={era:'223—225 年・託孤與南征',history:'劉備去世前在永安託付後事，劉禪於成都即位。蜀漢與吳修好、讓百姓休息，諸葛亮在 225 年才出兵南中，年底回到成都。',story:'跟著諸葛亮、劉禪、鄧芝和李恢走過六關。從傳遞消息、守護三路到整備田間和送糧，看看打仗之外還要做哪些事。'};

@@ -11,7 +11,7 @@ test('Yiling chapter keeps a completed Maicheng save and preserves history, rout
  const {campConversation}=await import('../../hero/camp-talk.mjs');
  let progress=normalizeProgress({completed:82,coins:100,weapons:{guanyu:2},inventory:{grain:2},armyWeapons:{cao:{liubei:1}}});
  assert.equal(rewardVictory(progress,82),0);
- assert.deepEqual(STAGES.slice(82).map(stage=>stage.year),[221,221,221,222,222,222]);
+ assert.deepEqual(STAGES.slice(82,88).map(stage=>stage.year),[221,221,221,222,222,222]);
  for(let level=83;level<=88;level++){
   assert.deepEqual(chapterInfo(level),{chapter:15,number:level-82,count:6,title:'夷陵之戰'});
   assert.ok(STAGES[level-1].references.every(ref=>new URL(ref.url).hostname==='zh.wikisource.org'));

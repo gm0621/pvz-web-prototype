@@ -20,6 +20,13 @@ npm run test:hero:engine
 npx playwright test --config=playwright.hero-input.config.js
 ```
 
+## 2026-11-24 第十六章「託孤與南征」
+
+- 第 89～94 關依序為白帝託孤、劉禪即位、使吳修好、務農息民、南征越巂、南中收兵。史實從 223 年接到 225 年十二月諸葛亮回成都。 [第十六章規格](hero-history-chapter-sixteen.md)
+- 各關有行軍圖、營地及配樂。新增劉禪、李嚴、鄧芝、高定、李恢、孟獲的頭像與圖鑑，更新諸葛亮介紹。保留三路兵卡與原有養成。第 92 關照應田間道路、水渠與糧倉。「七擒孟獲」有史書注文出處，任務使用運糧。
+- 383 項引擎測試通過，本機第十六章觸控 3 項通過，涵蓋 320px、390px Chromium 手機和 820px WebKit 平板。6 關以模擬觸控、隔離存檔及受控敵波驗證。從第 88 關直接續玩，檢查歷史來源、頭像、營地、地圖暫停、農務整備及第 94 關存檔失敗重試。重整後仍保留第 94 關、軍資和兵器。
+- 第十五章尾聲接第 89 關的手機和平板複驗各通過一次。本機跳關 12 項、線上跳關入口本機回歸 9 項、圖鑑 9 項通過。模組快取版 `chapter-sixteen-1`，回歸用 `npx playwright test --config=playwright.hero-sixteen.config.js`。
+
 ## 2026-11-24 第十五章完整流程複查
 
 - 已發布 `e22291a`。正式站手機 Chromium 與平板 WebKit 各完成一次第 82～88 關與重玩複驗，並核對 46 份變更資源。另以未攔截模組的手機環境直接從第 82 關存檔續玩。 [正式遊戲](https://gm0621.github.io/pvz-web-prototype/hero/?v=e22291a) · [發布紀錄](https://github.com/gm0621/pvz-web-prototype/actions/runs/45351457505)

@@ -1,6 +1,6 @@
-import {stagePeople,mapPersonSvg,renderMatchup} from './characters.mjs?v=chapter-fifteen-2';
-import {factionTitle} from './factions.mjs?v=chapter-fifteen-2';
-import {HISTORICAL_STAGES} from './history-stages.mjs?v=chapter-fifteen-2';
+import {stagePeople,mapPersonSvg,renderMatchup} from './characters.mjs?v=chapter-sixteen-1';
+import {stageFactionTitle} from './factions.mjs?v=chapter-sixteen-1';
+import {HISTORICAL_STAGES} from './history-stages.mjs?v=chapter-sixteen-1';
 // Approximate regional placement, not historical borders or a surveyed route.
 export const MAP_PLACES={
  zhuo:{name:'涿郡',modern:'今河北涿州一帶',x:402,y:78},
@@ -62,8 +62,13 @@ Object.assign(westernPlaces,{
  xiaoting:{name:'夷道猇亭一帶',modern:'今湖北宜昌一帶・夷陵戰區示意',x:201,y:612},
  yongan:{name:'永安（白帝一帶）',modern:'今重慶奉節一帶・魚復與白帝城區域示意',x:-5,y:583}
 });
+Object.assign(westernPlaces,{
+ wuchang:{name:'武昌（吳都）',modern:'今湖北鄂州一帶・孫權時期的武昌',x:457,y:636},
+ yuesui:{name:'越巂',modern:'今四川西南西昌一帶・越巂郡域示意',x:-172,y:730},
+ dianchi:{name:'滇池一帶',modern:'今雲南昆明滇池一帶・南征末段區域示意',x:-138,y:773}
+});
 Object.assign(MAP_PLACES,westernPlaces);
-STAGE_LOCATIONS.push(...HISTORICAL_STAGES.map(s=>({place:s.mapPlace,detail:`${s.year} 年・${factionTitle(s.faction)}視角。${s.viewpointShift?'此處切換敘事視角，不是上一支軍隊的連續行程。':''}地點為歷史區域示意，並非精確軍事路線。`})));
+STAGE_LOCATIONS.push(...HISTORICAL_STAGES.map(s=>({place:s.mapPlace,detail:`${s.year} 年・${stageFactionTitle(s)}視角。${s.viewpointShift?'此處切換敘事視角，不是上一支軍隊的連續行程。':''}地點為歷史區域示意，並非精確軍事路線。`})));
 export function stageLocation(level){if(!Number.isInteger(level)||!STAGE_LOCATIONS[level-1])throw new RangeError('未知戰役關卡');const s=STAGE_LOCATIONS[level-1];return {...MAP_PLACES[s.place],...s,level}}
 export function routeThrough(level){stageLocation(level);if(level>=65){const s=HISTORICAL_STAGES[level-17];return [...new Set([s.originPlace,...s.viaPlaces,s.mapPlace])]}if(level>=59){const start=level>=61?44:level>=60?43:42;return HISTORICAL_STAGES.slice(start,level-16).flatMap(s=>[s.originPlace,s.mapPlace]).filter((p,i,a)=>i===0||p!==a[i-1])}if(level>=53)return ['yishuiSouth',...HISTORICAL_STAGES.slice(36,level-16).flatMap(s=>[...(s.viaPlaces||[]),s.originPlace,s.mapPlace])].filter((p,i,a)=>i===0||p!==a[i-1]);if(level>=47)return ['ye',...HISTORICAL_STAGES.slice(30,level-16).flatMap(s=>[...(s.viaPlaces||[]),s.originPlace,s.mapPlace])].filter((p,i,a)=>i===0||p!==a[i-1]);if(level>=41)return ['wuchao',...HISTORICAL_STAGES.slice(24,level-16).flatMap(s=>[...(s.viaPlaces||[]),s.originPlace,s.mapPlace])].filter((p,i,a)=>i===0||p!==a[i-1]);if(level>=35)return ['xiapi',...HISTORICAL_STAGES.slice(18,level-16).flatMap(s=>[...(s.originPlace?[s.originPlace]:[]),s.mapPlace])].filter((p,i,a)=>i===0||p!==a[i-1]);if(level>=29)return ['dingtao',...HISTORICAL_STAGES.slice(12,level-16).flatMap(s=>[...(s.originPlace?[s.originPlace]:[]),s.mapPlace])].filter((p,i,a)=>i===0||p!==a[i-1]);if(level>=17){const start=level>=23?22:level>=20?19:16,origin=level>=23?'dongwuyang':level>=20?'luyang':'luoyang';return [origin,...STAGE_LOCATIONS.slice(start,level).map(s=>s.place)].filter((p,i,a)=>i===0||p!==a[i-1])}return STAGE_LOCATIONS.slice(0,level).map(s=>s.place).filter((key,i,arr)=>i===0||key!==arr[i-1])}
 // Only this stage's travel segment; changing factions uses its explicit origin.

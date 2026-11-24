@@ -1,4 +1,4 @@
-import {HISTORICAL_STAGES} from './history-stages.mjs?v=chapter-fifteen-2';
+import {HISTORICAL_STAGES} from './history-stages.mjs?v=chapter-sixteen-1';
 export const BLANK_PORTRAIT='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22256%22 height=%22256%22/%3E';
 const person=(name,faction,row,stats,weapon,description)=>({name,short:name,faction,atlas:`./assets/factions/${faction}.png`,row,asset:BLANK_PORTRAIT,...stats,weapon,description});
 export const FACTIONS={
@@ -14,6 +14,7 @@ export const FACTIONS={
  }}
 };
 export const factionTitle=faction=>FACTIONS[faction]?.title||'劉備軍';
+export const stageFactionTitle=stage=>stage.factionLabel||factionTitle(stage.faction);
 export function factionFor(level){
  const faction=HISTORICAL_STAGES[level-17]?.faction;
  return Object.hasOwn(FACTIONS,faction)?faction:null;
