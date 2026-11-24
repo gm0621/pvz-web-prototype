@@ -8,7 +8,7 @@
 
 ## Obsidian 尚未同步時，從這裡接手
 
-1. **確認版本。** 在剛拉下來的 `main` 執行 `git status --short --branch`、`git log -1 --oneline`。`git log` 顯示目前 checkout 的提交。正式遊戲版本另看下方最新一筆含「已發布」及 Pages 工作的功能紀錄。截至 2026-11-24，最新已驗證的正式遊戲版本為 `277c7e9`（第十四章，共 82 關）。 [正式遊戲](https://gm0621.github.io/pvz-web-prototype/hero/?v=277c7e9) · [發布紀錄](https://github.com/gm0621/pvz-web-prototype/actions/runs/45348233844)
+1. **確認版本。** 在剛拉下來的 `main` 執行 `git status --short --branch`、`git log -1 --oneline`。`git log` 顯示目前 checkout 的提交。正式遊戲版本另看下方最新一筆含「已發布」及 Pages 工作的功能紀錄。截至 2026-11-24，最新已驗證的正式遊戲版本為 `d63e75c`（第十五章，共 88 關）。 [正式遊戲](https://gm0621.github.io/pvz-web-prototype/hero/?v=d63e75c) · [發布紀錄](https://github.com/gm0621/pvz-web-prototype/actions/runs/45349700376)
 2. **安裝並做基本驗證。** 在專案根目錄用 Node.js 20 以上與 npm。執行下列指令可驗證引擎、桌面滑鼠／鍵盤及手機平板觸控。更多測試和本機預覽見 [開發指南](DEVELOPMENT.md)。Playwright 會啟動 4174 埠的測試服務，先關閉佔用該埠的手動預覽。
 3. **開工前看目前進度。** 先讀 [AGENTS.md](../AGENTS.md) 的「重要約束」及下方與任務相關的紀錄。英雄演義是獨立的 `/hero/` 遊戲，關卡上限見 `hero/campaign-config.mjs`。正式存檔 `heroLegendProgress_v1` 與本機、線上跳關測試的存檔分開。跨電腦時瀏覽器存檔和未提交的檔案需另外移轉。保留滑鼠、鍵盤與觸控操作，也要保留首勝軍資、重玩及暫停的既有規則。 [跳關工具和存檔說明](hero-local-testing.md)
 4. **繼續當次工作。** 依使用者的新需求從最新 `main` 開分支，保留原工作區修改。完成後把變更、實際測試結果、版本與注意事項記在本檔。Obsidian 未同步時註明待補，能讀取後再更新。正式發布依當次授權。
@@ -21,6 +21,8 @@ npx playwright test --config=playwright.hero-input.config.js
 ```
 
 ## 2026-11-24 第十五章「夷陵之戰」
+
+- 已發布 `d63e75c`。正式站手機 Chromium 與平板 WebKit 各走完第 82 關舊存檔接第 83～88 關，並核對 50 份變更資源與發布提交一致。另用未攔截模組的手機環境直接按「繼續故事」，確認第 82 關存檔進入成都即位。 [正式遊戲](https://gm0621.github.io/pvz-web-prototype/hero/?v=d63e75c) · [發布紀錄](https://github.com/gm0621/pvz-web-prototype/actions/runs/45349700376)
 
 - 新增第 83～88 關，從麥城後的成都即位、閬中噩耗、巫口進兵，走到猇亭對峙、夷陵撤退與白帝收兵。陸遜火攻取勝，劉備退秭歸後入永安，戰後另交代黃權降魏與孫權請和。 [第十五章規格](hero-history-chapter-fifteen.md)
 - 吳班、馮習、黃權、孫桓新增原創頭像和圖鑑。各關有行軍圖、營地、史料與配樂。戰鬥保留劉備軍三路與原有養成，史實登場另由劇情與營地交代。
