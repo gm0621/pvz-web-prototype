@@ -20,6 +20,13 @@ npm run test:hero:engine
 npx playwright test --config=playwright.hero-input.config.js
 ```
 
+## 2026-11-24 第十五章「夷陵之戰」
+
+- 新增第 83～88 關，從麥城後的成都即位、閬中噩耗、巫口進兵，走到猇亭對峙、夷陵撤退與白帝收兵。陸遜火攻取勝，劉備退秭歸後入永安，戰後另交代黃權降魏與孫權請和。 [第十五章規格](hero-history-chapter-fifteen.md)
+- 吳班、馮習、黃權、孫桓新增原創頭像和圖鑑。各關有行軍圖、營地、史料與配樂。戰鬥保留劉備軍三路與原有養成，史實登場另由劇情與營地交代。
+- 380 項引擎測試通過，含六關零經驗戰鬥模擬、第 87 關撤離必須帶回劉備，以及追兵主將在撤離任務中存活。6 項圖鑑、本機跳關 12 項、線上跳關入口本機回歸 9 項通過。模組快取版本 `chapter-fifteen-1`。
+- 本機 Playwright 三項通過，覆蓋 320px、390px 手機及 820px WebKit 平板。以隔離存檔和可控敵波走完第 82 關接第 83 關到第 88 關，驗證營地行軍圖、夷陵火路預警與撤離、白帝存檔失敗後重試、重新載入與圖鑑。指令為 `npx playwright test --config=playwright.hero-fifteen.config.js`。
+
 ## 2026-11-24 第十四章完整流程複查
 
 - 已發布 `277c7e9`。正式站手機 Chromium 與平板 WebKit 各完成一次第 76～82 關複驗。46 份變更資源與發布提交內容一致。 [正式遊戲](https://gm0621.github.io/pvz-web-prototype/hero/?v=277c7e9) · [發布紀錄](https://github.com/gm0621/pvz-web-prototype/actions/runs/45348233844)

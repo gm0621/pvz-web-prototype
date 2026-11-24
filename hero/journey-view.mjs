@@ -1,6 +1,6 @@
-import {factionTitle} from './factions.mjs?v=chapter-fourteen-2';
-import {stagePeople,mapPersonSvg,renderMatchup} from './characters.mjs?v=chapter-fourteen-2';
-import {campaignMapSvg,journeyRoute,MAP_PLACES,routeThrough} from './campaign-map.mjs?v=chapter-fourteen-2';
+import {factionTitle} from './factions.mjs?v=chapter-fifteen-1';
+import {stagePeople,mapPersonSvg,renderMatchup} from './characters.mjs?v=chapter-fifteen-1';
+import {campaignMapSvg,journeyRoute,MAP_PLACES,routeThrough} from './campaign-map.mjs?v=chapter-fifteen-1';
 let cancelJourney=()=>{};
 export function mountJourney(level,stage){
  cancelJourney();let root=document.getElementById('journeyIntro');
@@ -8,7 +8,7 @@ export function mountJourney(level,stage){
  document.getElementById('storyPrologue').prepend(root);
  const {from,to,same,start,end,viewBox}=journeyRoute(level);
  root.innerHTML='<div class="journey-heading"><div><small>義軍行程 · 地理位置示意</small><h3></h3><p></p></div><button type="button">略過行軍動畫 →</button></div><div class="journey-map"></div><div class="journey-matchup map-matchup"></div><small class="journey-caption"></small>';
- root.querySelector('.journey-heading small').textContent=stage.mapLeader===false?'荊州後方消息 · 地理位置示意':(stage.faction?factionTitle(stage.faction):'義軍')+'行程 · 地理位置示意';
+ root.querySelector('.journey-heading small').textContent=stage.mapLeader===false?`${stage.mapReportRegion||'荊州'}後方消息 · 地理位置示意`:(stage.faction?factionTitle(stage.faction):'義軍')+'行程 · 地理位置示意';
  const route=stage.viaPlaces?.length?routeThrough(level).map(key=>MAP_PLACES[key].name).join(' → '):same?`${to.name} · ${stage.place}`:`${from.name} → ${to.name}`;
  root.querySelector('h3').textContent=(stage.viewpointShift?'轉換視角 · ':'')+route;
  root.querySelector('p').textContent=stage.lead||`${same?'義軍繼續前往':'隊伍整裝出發，前往'}${stage.place}，${stage.name}。`;

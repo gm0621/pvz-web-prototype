@@ -38,7 +38,7 @@ test('Xiangfan chapter preserves saved equipment, geography, historical outcomes
  assert.match(STAGES[78].history,/大雨.*于禁向關羽投降.*龐德.*被俘後遇害/);
  assert.match(STAGES[81].ending[0][1],/關羽、關平.*擒獲.*遇害/);
  for(const [query,levels] of [['令明',[79]],['子明',[81]],['伯言',[81]],['關平',[78,79,81,82]]]){
-  assert.deepEqual(searchPeople(query)[0].levels,levels);
+  assert.deepEqual(searchPeople(query)[0].levels.filter(level=>level<=82),levels);
  }
 });
 

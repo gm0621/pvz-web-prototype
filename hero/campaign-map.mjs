@@ -1,6 +1,6 @@
-import {stagePeople,mapPersonSvg,renderMatchup} from './characters.mjs?v=chapter-fourteen-2';
-import {factionTitle} from './factions.mjs?v=chapter-fourteen-2';
-import {HISTORICAL_STAGES} from './history-stages.mjs?v=chapter-fourteen-2';
+import {stagePeople,mapPersonSvg,renderMatchup} from './characters.mjs?v=chapter-fifteen-1';
+import {factionTitle} from './factions.mjs?v=chapter-fifteen-1';
+import {HISTORICAL_STAGES} from './history-stages.mjs?v=chapter-fifteen-1';
 // Approximate regional placement, not historical borders or a surveyed route.
 export const MAP_PLACES={
  zhuo:{name:'涿郡',modern:'今河北涿州一帶',x:402,y:78},
@@ -53,6 +53,14 @@ Object.assign(westernPlaces,{
  yancheng:{name:'偃城',modern:'襄樊一帶・徐晃解圍前的據點示意',x:239,y:399},
  maicheng:{name:'麥城',modern:'今湖北當陽東南一帶・古城示意',x:236,y:572},
  zhangxiang:{name:'章鄉一帶',modern:'古章鄉、臨沮戰區示意・擒獲與遇害位置依各史書敘述',x:165,y:521}
+});
+Object.assign(westernPlaces,{
+ chengdu:{name:'成都',modern:'今四川成都一帶・即位地區示意',x:-149,y:669},
+ langzhong:{name:'閬中',modern:'今四川閬中一帶・消息來源示意',x:-99,y:611},
+ wuxian:{name:'巫縣',modern:'今重慶巫山一帶・古縣示意',x:50,y:592},
+ zigui:{name:'秭歸',modern:'今湖北秭歸一帶・古縣示意',x:118,y:606},
+ xiaoting:{name:'夷道猇亭一帶',modern:'今湖北宜昌一帶・夷陵戰區示意',x:201,y:612},
+ yongan:{name:'永安（白帝一帶）',modern:'今重慶奉節一帶・魚復與白帝城區域示意',x:-5,y:583}
 });
 Object.assign(MAP_PLACES,westernPlaces);
 STAGE_LOCATIONS.push(...HISTORICAL_STAGES.map(s=>({place:s.mapPlace,detail:`${s.year} 年・${factionTitle(s.faction)}視角。${s.viewpointShift?'此處切換敘事視角，不是上一支軍隊的連續行程。':''}地點為歷史區域示意，並非精確軍事路線。`})));
