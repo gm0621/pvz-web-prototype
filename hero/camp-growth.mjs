@@ -1,6 +1,6 @@
-import {previewButton,skillButtons} from './skill-preview.mjs?v=chapter-fifteen-1';
-import {LEVEL_XP,heroLevel,nextLesson,activeText} from './roster.mjs?v=chapter-fifteen-1';
-import {paintPortrait} from './factions.mjs?v=chapter-fifteen-1';
+import {previewButton,skillButtons} from './skill-preview.mjs?v=chapter-fifteen-2';
+import {LEVEL_XP,heroLevel,nextLesson,activeText} from './roster.mjs?v=chapter-fifteen-2';
+import {paintPortrait} from './factions.mjs?v=chapter-fifteen-2';
 const el=(tag,text)=>{const e=document.createElement(tag);if(text)e.textContent=text;return e};
 // Read-only cards: use the same thresholds and skill definitions as battle rewards.
 export function campGrowthCard(id,g,xp,weapon,summary){

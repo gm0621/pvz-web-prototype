@@ -1,11 +1,11 @@
-import {GENERALS} from './roster.mjs?v=chapter-fifteen-1';
-import {NOVEL_PAGES,CAMP_LINES} from './novel.mjs?v=chapter-fifteen-1';
-import {campConversation} from './camp-talk.mjs?v=chapter-fifteen-1';
-import {STORY_TASKS} from './story-play.mjs?v=chapter-fifteen-1';
-import {CHAPTER_BACKGROUNDS,STAGE_LEADS} from './prologue.mjs?v=chapter-fifteen-1';
-import {STORY_PEOPLE} from './characters.mjs?v=chapter-fifteen-1';
-import {HEROES,STAGES,chapterInfo,enemyArt,heroesForLevel} from './story.mjs?v=chapter-fifteen-1';
-import {FACTIONS,enemyPortrait} from './factions.mjs?v=chapter-fifteen-1';
+import {GENERALS} from './roster.mjs?v=chapter-fifteen-2';
+import {NOVEL_PAGES,CAMP_LINES} from './novel.mjs?v=chapter-fifteen-2';
+import {campConversation} from './camp-talk.mjs?v=chapter-fifteen-2';
+import {STORY_TASKS} from './story-play.mjs?v=chapter-fifteen-2';
+import {CHAPTER_BACKGROUNDS,STAGE_LEADS} from './prologue.mjs?v=chapter-fifteen-2';
+import {STORY_PEOPLE} from './characters.mjs?v=chapter-fifteen-2';
+import {HEROES,STAGES,chapterInfo,enemyArt,heroesForLevel} from './story.mjs?v=chapter-fifteen-2';
+import {FACTIONS,enemyPortrait} from './factions.mjs?v=chapter-fifteen-2';
 // Child-friendly summaries; comparisons are memory aids, not historical quotations.
 const bios=[
  ['吳班','史實人物','走在前面的先鋒','劉備東征時，他和馮習從巫縣進軍，抵達秭歸。後來他也帶水軍駐在夷陵附近。','名字有「吳」字的吳班，這一戰在劉備軍中。','頭像和送糧任務是遊戲設計。'],

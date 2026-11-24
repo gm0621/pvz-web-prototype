@@ -1,6 +1,6 @@
-import {GENERALS,PEACH_GENERALS,SUN_GENERALS,heroLevel} from './roster.mjs?v=chapter-fifteen-1';
-import {skillButtons} from './skill-preview.mjs?v=chapter-fifteen-1';
-import {factionFor,paintPortrait} from './factions.mjs?v=chapter-fifteen-1';
+import {GENERALS,PEACH_GENERALS,SUN_GENERALS,heroLevel} from './roster.mjs?v=chapter-fifteen-2';
+import {skillButtons} from './skill-preview.mjs?v=chapter-fifteen-2';
+import {factionFor,paintPortrait} from './factions.mjs?v=chapter-fifteen-2';
 export function mountSkillGuide({getBattle,getProgress,setPaused}){
  const button=document.createElement('button');button.id='skillGuideButton';button.className='quiet-button';button.textContent='武將技能介紹';button.setAttribute('aria-haspopup','dialog');document.getElementById('cards').before(button);
  const dialog=document.createElement('dialog');dialog.id='skillGuide';dialog.className='skill-guide';dialog.setAttribute('aria-labelledby','skillGuideTitle');dialog.innerHTML='<header><h2 id="skillGuideTitle">武將技能介紹</h2><button class="quiet-button">返回戰場 ✕</button></header><p>點技能看介紹與展示。主動技需施放，被動技會自動生效。</p><label>查看軍隊 <select aria-label="查看軍隊"><option value="1">劉備軍</option><option value="17">曹操軍</option><option value="20">孫堅軍</option></select></label><div class="skill-guide-list"></div><details><summary>經驗與學招規則</summary><p>劉備軍、曹操軍與孫堅軍的武將各有個別經驗。實際上場後勝利 +20 經驗；敗戰需持續 10 秒才 +5。Lv.3 第二主動技、Lv.5 新被動、Lv.7 第三主動技、Lv.10 滿級被動；每級生命 +5、普攻 +1。重玩也能練經驗，軍資只在首次通關發放。技能顯示會計入已學會的被動加成。小兵沒有武將 MP 技能。</p></details>';document.body.append(dialog);

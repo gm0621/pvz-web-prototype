@@ -1,13 +1,13 @@
 import {stepDoctrine,duelDoctrine,signature} from './army-doctrine.mjs?v=army-1';
 import {passiveCue,passiveLabel,learnedPassives,passiveName,tickPassives,passiveSnapshot,castPassiveFeedback} from './passive-feedback.mjs?v=passive-feedback-1';
-import {extracted} from './history-missions.mjs?v=chapter-fifteen-1';
-import {createMission,stepMission,protectBarrier,missionReady,missionDuelReady} from './chapter-missions.mjs?v=chapter-fifteen-1';
+import {extracted} from './history-missions.mjs?v=chapter-fifteen-2';
+import {createMission,stepMission,protectBarrier,missionReady,missionDuelReady} from './chapter-missions.mjs?v=chapter-fifteen-2';
 import {duelBeats} from './duel-patterns.mjs?v=passive-feedback-1';
 export {duelBeats} from './duel-patterns.mjs?v=passive-feedback-1';
 import {WEATHER_GENERALS} from './weather-generals.mjs?v=passive-feedback-1';
-import {campaignState,weaponBonus} from './campaign.mjs?v=chapter-fifteen-1';
-import {heroSkill} from './skills.mjs?v=chapter-fifteen-1';
-import {heroesForLevel,STAGES,UNLOCKS,FEATURES} from './story.mjs?v=chapter-fifteen-1';
+import {campaignState,weaponBonus} from './campaign.mjs?v=chapter-fifteen-2';
+import {heroSkill} from './skills.mjs?v=chapter-fifteen-2';
+import {heroesForLevel,STAGES,UNLOCKS,FEATURES} from './story.mjs?v=chapter-fifteen-2';
 
 export const SWING={duration:.58,impact:.24,frameTime:.08,frames:6};
 export const DUEL_DURATION=19;
@@ -65,7 +65,8 @@ export function moveHero(b,key,lane){
  u.lane=lane;u.moveReadyAt=b.time+2;u.pendingStrike=null;u.pendingCleave=null;u.swingStartedAt=-100;
  const enemy=b.enemies.filter(e=>e.hp>0&&e.lane===lane).sort((a,c)=>a.x-c.x)[0];
  if(enemy)u.x=Math.max(.03,Math.min(u.x,enemy.x-.08));
- if(u.order){u.order='hold';u.targetX=u.x}
+ const fallingBack=b.mission?.ordered&&u.order==='back';
+ if(u.order&&!fallingBack){u.order='hold';u.targetX=u.x}
  b.notice=`${battleHeroes(b)[u.key].name}轉往${laneLabel(b,lane)}路！`;b.noticeUntil=b.time+2;return true;
 }
 export function normalizeProgress(raw){

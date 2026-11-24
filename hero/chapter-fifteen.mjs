@@ -71,11 +71,19 @@ export const FIFTEENTH_CHAPTER=stages.map((stage,index)=>{
   retreatKeys,successTitle,leaderName:leader,opponentName:opponent,mapOpponent,mapLeader,mapReportRegion,matchupLabel,
   lead:history,history,adaptation,note:adaptation,novel:[['說書人',history],[guest,camp]],
   opening:[['說書人',history],[leader,briefing],['說書人',adaptation]],
-  ending:[['說書人',ending],[guest,camp]],campLine:ending,victory:ending,bossIntro:briefing,bossTip:briefing,
+  ending:[['說書人',ending],[guest,camp]],campLine:ending,victory:ending,bossIntro:briefing,bossTip:commander?'紅色預警標出即將起火的路線。換到安全路，等火熄滅再回去。接應後，帶劉備和友軍退回左側。':briefing,
   quiz:{kind:'史書小偵探',hero:'liubei',title:question,scene:history,question,choices,answer:0,hint:history,reply:history},
   campTalkPrompts:{
    guanyu:{speaker:guest,title:guest,hint:'聊聊這一戰'},
    zhangfei:{speaker:guest,title:'戰後消息',hint:'看看這一戰的結果'}
+  },
+  campRetryPrompts:{
+   guanyu:{speaker:guest,title:guest,hint:'先照應傷兵'},
+   zhangfei:{speaker:guest,title:'再試一次',hint:'看看任務要點'}
+  },
+  campRetryTalk:{
+   guanyu:[`${guest}：先照顧傷兵，清點軍糧，再整隊出發。`],
+   zhangfei:[`${guest}：${briefing}`]
   },
   campTalk:{guanyu:[`${guest}：${camp}`],zhangfei:[`${guest}：${ending}`]},references:refs
  };

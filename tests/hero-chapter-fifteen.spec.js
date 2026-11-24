@@ -35,6 +35,15 @@ test('chapter fifteen carries a completed Xiangfan save through the retreat to Y
  await page.clock.install();
  const tap=selector=>page.locator(selector).tap();
  const advance=ms=>page.clock.runFor(ms);
+ const advanceUntil=async predicate=>{
+  for(let i=0;i<100;i++){
+   if(await page.evaluate(predicate))return;
+   await advance(250);
+  }
+  expect(await page.evaluate(predicate)).toBe(true);
+ };
+ const unit=key=>page.evaluate(key=>window.chapterBattle.allies.find(ally=>ally.key===key),key);
+ const selectUnit=async key=>page.locator('#unitSelect').selectOption(String((await unit(key)).id));
  const save=()=>page.evaluate(key=>JSON.parse(localStorage.getItem(key)),KEY);
  const deploy=async(key,lane)=>{
   await page.evaluate(()=>window.chapterBattle.food=300);
@@ -126,18 +135,67 @@ test('chapter fifteen carries a completed Xiangfan save through the retreat to Y
    await advance(100);
    await expect(page.locator('#bossIntroTitle')).toContainText('吳軍追兵主將');
    await tap('#bossIntroContinue');
-   await deploy('liubei',1);
-   await page.evaluate(()=>{window.chapterBattle.allies[0].x=.24});
-   await advance(200);
+   await expect(page.locator('#missionQuick')).toContainText('帶劉備與友軍撤回左側');
+   await deploy('guanyu',1);
+   await deploy('zhangfei',1);
+   await page.evaluate(()=>{
+    const battle=window.chapterBattle;
+    battle.enemies[0].speed=0;
+    for(const ally of battle.allies)ally.x=.31;
+   });
+   await advance(150);
    await expect(page.locator('.boss-cutin-skill')).toHaveText('火路追擊');
-   await advance(14000);
+   await advance(360);
+   await expect(page.locator('#bossHudState')).toContainText('中路即將起火');
+   expect(await page.locator('#bossHudState').evaluate(node=>node.scrollWidth<=node.clientWidth)).toBe(true);
+   await expect(page.locator('.lane').nth(1)).toHaveClass(/danger/);
+   const duringWarning=await page.evaluate(()=>window.chapterBattle.time);
+   await tap('#battleMenuButton');
+   await tap('#battleMapButton');
+   await advance(1800);
+   expect(await page.evaluate(()=>window.chapterBattle.time)).toBe(duringWarning);
+   await tap('#campaignMapClose');
+   if(await page.locator('#battleMenu').isVisible())await tap('#battleMenuClose');
+   await advance(100);
+   expect(await page.evaluate(()=>window.chapterBattle.time)).toBeGreaterThan(duringWarning);
+   const safeBefore=(await unit('guanyu')).hp;
+   const exposedBefore=(await unit('zhangfei')).hp;
+   await selectUnit('guanyu');
+   await tap('#commandDrawerButton');
+   await tap('#orders [data-order="up"]');
+   await tap('#commandDrawerClose');
+   expect((await unit('guanyu')).lane).toBe(0);
+   await advanceUntil(()=>window.chapterBattle.hazards.some(h=>h.lane===1));
+   await expect(page.locator('#bossHudState')).toContainText('中路仍在燃燒');
+   await expect(page.locator('.lane').nth(1)).toHaveClass(/burning/);
+   await advanceUntil(()=>window.chapterBattle.hazards.some(h=>h.lane===1&&h.nextTick>h.until-1.3));
+   expect((await unit('guanyu')).hp).toBe(safeBefore);
+   expect((await unit('zhangfei')).hp).toBeLessThan(exposedBefore);
+   await advanceUntil(()=>window.chapterBattle.time>=window.chapterBattle.mission.withdrawAt);
+   await expect(page.locator('#missionQuickAction')).toHaveText('全軍撤離');
    await tap('#missionQuickAction');
+   await expect(page.locator('#missionQuick')).toContainText('請召回劉備');
+   await selectUnit('guanyu');
+   await tap('#commandDrawerButton');
+   await tap('#orders [data-order="down"]');
+   expect(await unit('guanyu')).toMatchObject({lane:1,order:'back'});
+   await tap('#commandDrawerClose');
    await advance(7000);
+   await expect(page.locator('#result')).toBeHidden();
+   await deploy('liubei',2);
+   await advance(400);
    await expect(page.locator('#resultTitle')).toHaveText('撤出猇亭');
    await expect(page.locator('#resultText')).toContainText('由陸遜取勝');
   }else{
    await suppressWaves();
-   for(const [lane,key] of ['liubei','guanyu','zhangfei'].entries())await deploy(key,lane);
+   if(index===5){
+    await deploy('liubei',0);
+    await deploy('guanyu',1);
+    await advance(6500);
+    await expect(page.locator('#missionQuick')).toContainText('下路缺接應');
+    expect(await page.evaluate(()=>window.chapterBattle.mission.charge)).toBe(0);
+    await deploy('zhangfei',2);
+   }else for(const [lane,key] of ['liubei','guanyu','zhangfei'].entries())await deploy(key,lane);
    if(index===5)await page.evaluate(()=>window.blockSave=true);
    if(stage.goal==='supply')await supply();
    else await advance(18500);
@@ -159,6 +217,15 @@ test('chapter fifteen carries a completed Xiangfan save through the retreat to Y
   await expect(page.locator('#campTalkName')).toHaveText(stage.guest);
   await expect(page.locator('#campTalkPortrait')).toHaveAttribute('alt',stage.guest);
   await tap('#campTalkNext');
+  if(index===5){
+   await tap('[data-talk=zhangfei]');
+   await expect(page.locator('#campTalkText')).toContainText('孫權派人請和');
+   await tap('#campTalkNext');
+   await tap('[data-shop=items]');
+   await tap('[data-buy=herb]');
+   await expect(page.locator('#campCoins')).toHaveText('555');
+   await tap('#campShopBack');
+  }
   await tap('#campContinue');
   if(index===5){
    await expect(page.locator('#storyChapter')).toContainText('戰後');
@@ -169,7 +236,31 @@ test('chapter fifteen carries a completed Xiangfan save through the retreat to Y
  await expect(page.locator('#homeProgress')).toContainText('第十五章完成');
  await page.reload();
  await expect(page.locator('#homeProgress')).toContainText('第十五章完成');
- expect(await save()).toMatchObject({completed:88,coins:580,weapons:{guanyu:2}});
+ expect(await save()).toMatchObject({completed:88,coins:555,weapons:{guanyu:2},inventory:{grain:2,herb:1}});
+ await page.locator('#chapterPicker').evaluate(el=>el.open=true);
+ await tap('#chapterTabs [data-chapter="15"]');
+ await tap('#chapterDots [data-level="88"]');
+ await tap('#storySkip');
+ await expect(page.locator('#battle')).toBeVisible();
+ await suppressWaves();
+ await page.evaluate(()=>{window.chapterBattle.lives=0});
+ await advance(300);
+ await toCamp();
+ await expect(page.locator('#campTitle')).toHaveText('重整行裝，再來一次');
+ await tap('[data-talk=zhangfei]');
+ await expect(page.locator('#campTalkPortrait')).toHaveAttribute('alt','劉備');
+ await expect(page.locator('#campTalkText')).toContainText('三批軍糧');
+ await tap('#campTalkNext');
+ await tap('#campContinue');
+ if(await page.locator('#story').isVisible())await tap('#storySkip');
+ await expect(page.locator('#battle')).toBeVisible();
+ await page.locator('#battleSpeed').selectOption('2');
+ await suppressWaves();
+ for(const [lane,key] of ['liubei','guanyu','zhangfei'].entries())await deploy(key,lane);
+ await supply();
+ await advance(300);
+ await expect(page.locator('#resultEarned')).toHaveText('+0');
+ expect(await save()).toMatchObject({completed:88,coins:555,weapons:{guanyu:2},inventory:{grain:2,herb:1}});
  await page.goto('/hero/people.html',{waitUntil:'domcontentloaded'});
  for(const [query,name,level] of [['元雄','吳班',85],['休元','馮習',87],['公衡','黃權',88],['叔武','孫桓',86]]){
   await page.locator('#peopleSearch').fill(query);

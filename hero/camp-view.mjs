@@ -1,14 +1,14 @@
-import {CHAPTER_NUMERALS} from './campaign-config.mjs?v=chapter-fifteen-1';
-import {campGrowthCard} from './camp-growth.mjs?v=chapter-fifteen-1';
-import {PEACH_GENERALS,SUN_GENERALS,SLOTS,heroLevel} from './roster.mjs?v=chapter-fifteen-1';
-import {skillSummary} from './roster-view.mjs?v=chapter-fifteen-1';
-import {renderHeroCamp} from './roster-view.mjs?v=chapter-fifteen-1';
-import {STORY_PEOPLE,renderPeople} from './characters.mjs?v=chapter-fifteen-1';
-import {STAGES,chapterInfo} from './story.mjs?v=chapter-fifteen-1';
-import {factionFor,paintPortrait} from './factions.mjs?v=chapter-fifteen-1';
-import {campConversation} from './camp-talk.mjs?v=chapter-fifteen-1';
-import {GOODS,purchase,weaponsForLevel} from './campaign.mjs?v=chapter-fifteen-1';
-import {CAMP_LINES} from './novel.mjs?v=chapter-fifteen-1';
+import {CHAPTER_NUMERALS} from './campaign-config.mjs?v=chapter-fifteen-2';
+import {campGrowthCard} from './camp-growth.mjs?v=chapter-fifteen-2';
+import {PEACH_GENERALS,SUN_GENERALS,SLOTS,heroLevel} from './roster.mjs?v=chapter-fifteen-2';
+import {skillSummary} from './roster-view.mjs?v=chapter-fifteen-2';
+import {renderHeroCamp} from './roster-view.mjs?v=chapter-fifteen-2';
+import {STORY_PEOPLE,renderPeople} from './characters.mjs?v=chapter-fifteen-2';
+import {STAGES,chapterInfo} from './story.mjs?v=chapter-fifteen-2';
+import {factionFor,paintPortrait} from './factions.mjs?v=chapter-fifteen-2';
+import {campConversation} from './camp-talk.mjs?v=chapter-fifteen-2';
+import {GOODS,purchase,weaponsForLevel} from './campaign.mjs?v=chapter-fifteen-2';
+import {CAMP_LINES} from './novel.mjs?v=chapter-fifteen-2';
 export function mountCamp({progress,level,heroes,stage,onSave,onContinue,won=true}){
  const $=id=>document.getElementById(id);let shop='items';
  let people=$('campTalkPeople');if(!people){people=document.createElement('aside');people.id='campTalkPeople';people.className='story-people';people.setAttribute('aria-label','對話提及人物');$('campTalkText').after(people)}people.hidden=true;
@@ -16,7 +16,7 @@ export function mountCamp({progress,level,heroes,stage,onSave,onContinue,won=tru
  function openPanel(id){for(const panel of panels)$(panel).hidden=panel!==id;for(const button of document.querySelectorAll('.tent-floor button'))button.setAttribute('aria-pressed','false')}
  openPanel('campRoster');$('campPrepare').setAttribute('aria-pressed','true');
  for(const button of document.querySelectorAll('[data-talk]')){
-  const key=button.dataset.talk,prompt=won?stage.campTalkPrompts?.[key]:undefined;
+  const key=button.dataset.talk,prompt=(won?stage.campTalkPrompts:stage.campRetryPrompts)?.[key];
   const person=STORY_PEOPLE.find(p=>p.name===prompt?.speaker)||heroes[key];
   const image=button.querySelector('img');
   paintPortrait(image,person);image.alt=person.name;

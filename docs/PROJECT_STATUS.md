@@ -20,6 +20,12 @@ npm run test:hero:engine
 npx playwright test --config=playwright.hero-input.config.js
 ```
 
+## 2026-11-24 第十五章完整流程複查
+
+- 第 87 關的敵將欄在蓄力和燃燒期間標出危險路線，任務提示提前列出劉備及友軍須退回左側，使用上移／下移閃避後會繼續執行撤離。第十五章戰敗營地改由當關人物提供整備建議。
+- 第 82 關舊存檔重玩後能接第 83 關。第 87 關實測地圖暫停與恢復、同路受火傷與換路避傷、撤離中換路，以及未召回劉備時無法結算。第 88 關驗證空路不備車、三批運糧、存檔失敗後重試、白帝戰後對話、營地藥包購買及重整後重玩不重領軍資。六關行軍圖與人物圖鑑均複查。
+- 380 項引擎測試通過。第十五章 3 項觸控流程通過，涵蓋 320px、390px Chromium 手機及 820px WebKit 平板。另有 8 項第十四章與人物圖鑑回歸。觸控以模擬螢幕、隔離存檔和受控敵波驗證，另以引擎測試戰鬥。指令為 `npx playwright test --config=playwright.hero-fifteen.config.js`。 快取版本 `chapter-fifteen-2`。
+
 ## 2026-11-24 第十五章「夷陵之戰」
 
 - 已發布 `d63e75c`。正式站手機 Chromium 與平板 WebKit 各走完第 82 關舊存檔接第 83～88 關，並核對 50 份變更資源與發布提交一致。另用未攔截模組的手機環境直接按「繼續故事」，確認第 82 關存檔進入成都即位。 [正式遊戲](https://gm0621.github.io/pvz-web-prototype/hero/?v=d63e75c) · [發布紀錄](https://github.com/gm0621/pvz-web-prototype/actions/runs/45349700376)

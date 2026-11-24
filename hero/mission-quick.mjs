@@ -1,6 +1,6 @@
-import {HISTORICAL_STAGES} from './history-stages.mjs?v=chapter-fifteen-1';
-import {missionText} from './chapter-missions.mjs?v=chapter-fifteen-1';
-import {retreatPartyNames} from './history-missions.mjs?v=chapter-fifteen-1';
+import {HISTORICAL_STAGES} from './history-stages.mjs?v=chapter-fifteen-2';
+import {missionText} from './chapter-missions.mjs?v=chapter-fifteen-2';
+import {retreatPartyNames} from './history-missions.mjs?v=chapter-fifteen-2';
 const names=['上','中','下'];
 export function missionQuickState(b){
  const m=b.mission;if(!m)return null;if(!['supply','withdraw','decoy'].includes(m.kind))return {text:missionText(b),button:m.done?'查看目標':'進行任務'};
@@ -13,11 +13,11 @@ export function missionQuickState(b){
   const label=ls=>ls.map(l=>lanes.length===3?names[l]:String(l+1)).join('、')+'路';
   return {text:`${prefix} · `+(missing.length?`${label(missing)}缺接應，派友軍駐守`:blocked.length?`${label(blocked)}受阻，先清退敵人`:`備車 ${Math.floor(m.charge/10*100)}%，完成後送出`),button:'查看任務'};
  }
- const noBoss=HISTORICAL_STAGES[b.level-17]?.noBoss;
+ const stage=HISTORICAL_STAGES[b.level-17],noBoss=stage?.noBoss;
  const wait=m.withdrawAt===null?(noBoss?'守線等待接應':'等待敵將出場'):b.time<m.withdrawAt?`接應尚需 ${Math.ceil(m.withdrawAt-b.time)} 秒`:'接應完成';
  if(m.ordered){const missing=retreatPartyNames(b,{missingOnly:true});return {text:missing.length?`請召回${missing.join('、')}，才能撤離`:`撤離中 · ${b.allies.filter(u=>u.hp>0&&u.x>.18).length} 名友軍尚未回到左側`,button:'重新撤離',action:'retreat'}}
  if(m.kind==='decoy'&&!m.decoyUsed)return {text:`${wait} · 先放赤幘誘餌`,button:'放置誘餌'};
- return {text:`${wait} · ${noBoss?`帶${retreatPartyNames(b).join('、')}與友軍撤回左側`:'不必擊倒敵將'}`,button:m.withdrawAt!==null&&b.time>=m.withdrawAt?'全軍撤離':'查看任務',action:m.withdrawAt!==null&&b.time>=m.withdrawAt?'retreat':undefined};
+ return {text:`${wait} · ${noBoss||stage?.retreatKeys?`帶${retreatPartyNames(b).join('、')}與友軍撤回左側`:'不必擊倒敵將'}`,button:m.withdrawAt!==null&&b.time>=m.withdrawAt?'全軍撤離':'查看任務',action:m.withdrawAt!==null&&b.time>=m.withdrawAt?'retreat':undefined};
 }
 export function mountMissionQuick(field,openMission){
  const root=document.createElement('aside');root.id='missionQuick';root.hidden=true;root.setAttribute('aria-label','過關任務');const text=document.createElement('p'),button=document.createElement('button');button.id='missionQuickAction';button.className='gold-button';const heading=document.createElement('strong');heading.textContent='⚑ 過關任務';heading.className='mission-quick-heading';const copy=document.createElement('div');copy.append(heading,text);root.append(copy,button);field.append(root);
