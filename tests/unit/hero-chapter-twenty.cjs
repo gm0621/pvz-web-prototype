@@ -38,7 +38,7 @@ test('Jiang Wei’s campaign preserves the Xingshi save and distinguishes histor
  assert.match(chapter[5].victory,/狄道仍由魏軍守住/);
  assert.match(campaignMapSvg(114),/map-opponent" data-person="郭淮"/);
  assert.doesNotMatch(campaignMapSvg(118),/map-opponent/);
- assert.match(campaignMapSvg(118),/>狄道<\/text>/);
+ for(const name of ['洮西','狄道','鍾題'])assert.ok(campaignMapSvg(118).includes('>'+name+'</text>'),name);
  const [left,top,width,height]=journeyRoute(118).viewBox.split(' ').map(Number);
  const {x,y}=MAP_PLACES.didao;
  assert.ok(x>left&&x<left+width&&y>top&&y<top+height);
@@ -51,4 +51,32 @@ test('Jiang Wei’s campaign preserves the Xingshi save and distinguishes histor
   assert.equal(portraitForDisplay(entry.portrait).asset,expressionPortrait(name));
  }
  assert.equal(new Set(PEOPLE.map(p=>expressionPortrait(p.name))).size,107);
+});
+
+test('both chapter twenty retreats require a surviving party and wait for soldiers as well as heroes',async()=>{
+ const {createBattle,deploy,stepBattle}=await import('../../hero/engine.mjs');
+ const {historyAction}=await import('../../hero/history-missions.mjs');
+ const {STAGES}=await import('../../hero/story.mjs');
+ for(const level of [117,118]){
+  assert.match(STAGES[level-1].bossTip,/武將和士兵/);
+  const battle=createBattle(level);
+  battle.bossSpawned=true;
+  battle.mission.withdrawAt=0;
+  assert.ok(historyAction(battle,'retreat'));
+  stepBattle(battle,.1);
+  assert.equal(battle.won,false,'an empty field cannot win');
+
+  assert.ok(deploy(battle,'liubei',0));
+  assert.ok(deploy(battle,'archer',1));
+  const [hero,archer]=battle.allies;
+  archer.x=.45;
+  assert.ok(historyAction(battle,'retreat'));
+  stepBattle(battle,.1);
+  assert.equal(battle.won,false,'a soldier outside the retreat zone blocks victory');
+
+  hero.hp=0;
+  for(let i=0;i<100&&!battle.over;i++)stepBattle(battle,.1);
+  assert.equal(battle.won,true,'a living soldier can be the last unit to return');
+  assert.ok(archer.x<=.18);
+ }
 });

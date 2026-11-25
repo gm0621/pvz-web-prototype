@@ -33,6 +33,7 @@ test('stage 112 continues through Jiang Wei’s northern campaigns and keeps cam
  await page.clock.install();
  const tap=selector=>page.locator(selector).tap();
  const advance=ms=>page.clock.runFor(ms);
+ const snapshot=()=>page.evaluate(()=>({time:window.chapterBattle.time,mission:window.chapterBattle.mission}));
  const readSave=()=>page.evaluate(key=>JSON.parse(localStorage.getItem(key)),saveKey);
  async function controlledBattle(){
   await tap('#storySkip');
@@ -61,13 +62,33 @@ test('stage 112 continues through Jiang Wei’s northern campaigns and keeps cam
   }
  }
  async function withdraw(){
-  await page.evaluate(()=>window.chapterBattle.allies[0].x=.43);
-  await advance(14000);
+  await advance(2300);
+  await tap('#cards [data-hero=archer]');
+  await page.locator('.lane').first().tap({position:{x:40,y:25}});
+  await advance(100);
+  const archer=await page.evaluate(()=>String(window.chapterBattle.allies.find(u=>u.key==='archer').id));
+  await page.locator('#unitSelect').selectOption(archer);
+  await tap('#commandDrawerButton');
+  for(let move=0;move<2;move++){
+   await tap('#orders [data-order="forward"]');
+   await advance(3300);
+  }
+  await tap('#commandDrawerClose');
+  await advance(6200);
   await expect(page.locator('#missionQuickAction')).toHaveText('全軍撤離');
   await tap('#missionQuickAction');
   await advance(200);
+  await expect(page.locator('#missionQuick')).toContainText('1 名友軍尚未回到左側');
   await expect(page.locator('#result')).toBeHidden();
-  await advance(3600);
+  await tap('#pauseBtn');
+  const frozen=await snapshot();
+  const position=()=>page.evaluate(()=>window.chapterBattle.allies.find(u=>u.key==='archer').x);
+  const before=await position();
+  await advance(550);
+  expect(await snapshot()).toEqual(frozen);
+  expect(await position()).toBe(before);
+  await tap('#pauseBtn');
+  await advance(4500);
  }
  async function camp(){
   await advance(4200);
@@ -103,6 +124,7 @@ test('stage 112 continues through Jiang Wei’s northern campaigns and keeps cam
   await expect(page.locator('#storyTitle')).toHaveText(stage.name);
   await expect(page.locator('#storyChapter')).toContainText('第二十章');
   await expect(page.locator('#journeyIntro h3')).toContainText(stage.route);
+  if(level===118)for(const place of ['洮西','狄道','鍾題'])await expect(page.locator('#journeyIntro .map-city text').filter({hasText:new RegExp(`^${place}$`)})).toBeVisible();
   await expect(page.locator('#journeyIntro .journey-army')).toHaveAttribute('data-person',stage.leader);
   await expect(page.locator('#journeyIntro .journey-army image')).toHaveAttribute('href',expressionPortrait(stage.leader));
   await tap('#storyMore');
@@ -123,6 +145,7 @@ test('stage 112 continues through Jiang Wei’s northern campaigns and keeps cam
   await tap('#battleMenuButton');
   await tap('#battleMapButton');
   await expect(page.locator('#campaignMapRoute')).toHaveText(stage.route);
+  if(level===118)for(const place of ['洮西','狄道','鍾題'])await expect(page.locator('#campaignMapCanvas .map-city text').filter({hasText:new RegExp(`^${place}$`)})).toBeVisible();
   await expect(page.locator('#campaignMapCanvas .map-leader')).toHaveAttribute('data-person',stage.leader);
   await expect(page.locator('#campaignMapCanvas .map-leader image')).toHaveAttribute('href',expressionPortrait(stage.leader));
   const opponent=page.locator('#campaignMapMatchup [data-side=enemy] img');
@@ -130,7 +153,6 @@ test('stage 112 continues through Jiang Wei’s northern campaigns and keeps cam
   if(stage.opponent)await expect(opponent).toHaveAttribute('src',expressionPortrait(stage.opponent));
   await opponent.evaluate(img=>img.decode());
   await expect(page.locator('#campaignMapCanvas .map-opponent')).toHaveCount(stage.marker?1:0);
-  const snapshot=()=>page.evaluate(()=>({time:window.chapterBattle.time,mission:window.chapterBattle.mission}));
   const paused=await snapshot();
   await advance(600);
   expect(await snapshot()).toEqual(paused);
@@ -141,7 +163,16 @@ test('stage 112 continues through Jiang Wei’s northern campaigns and keeps cam
 
   if(level===118)await page.evaluate(()=>window.blockSave=true);
   if(stage.kind==='supply'){
-   await advance(7600);
+   await advance(2500);
+   await tap('#pauseBtn');
+   const prepping=await snapshot();
+   expect(prepping.mission.charge).toBeGreaterThan(0);
+   expect(prepping.mission.charge).toBeLessThan(10);
+   await advance(650);
+   expect(await snapshot()).toEqual(prepping);
+   await expect(page.locator('#missionQuickAction')).toBeDisabled();
+   await tap('#pauseBtn');
+   await advance(5100);
    await expect(page.locator('#missionQuickAction')).toHaveText('發送糧車');
    const guardId=await page.evaluate(()=>String(window.chapterBattle.allies.find(u=>u.key==='zhangfei').id));
    await page.locator('#unitSelect').selectOption(guardId);
@@ -158,6 +189,7 @@ test('stage 112 continues through Jiang Wei’s northern campaigns and keeps cam
    await advance(100);
    await expect(page.locator('#missionQuickAction')).toHaveText('發送糧車');
    await sendCarts();
+   await expect(page.locator('#missionQuick')).toContainText('軍糧 3／3');
   }
   else if(stage.kind==='restoration'){
    await tap('#missionDrawerButton');
@@ -246,13 +278,14 @@ test('stage 112 continues through Jiang Wei’s northern campaigns and keeps cam
  expect(await readSave()).toMatchObject(cleared);
 
  await page.goto('/hero/people.html',{waitUntil:'domcontentloaded'});
- for(const [query,name,level] of [['仲權','夏侯霸',115],['郭脩','郭循',116],['玄伯','陳泰',117],['彥緯','王經',118]]){
+ for(const [query,name,levels] of [['仲權','夏侯霸',[114,115,118]],['郭脩','郭循',[116]],['玄伯','陳泰',[117,118]],['彥緯','王經',[118]]]){
   await page.locator('#peopleSearch').fill(query);
   const card=page.locator(`[data-person="${name}"]`);
-  await expect(card.locator('.stage-pills')).toContainText(`第 ${level} 關`);
-  await expect(card.locator('img')).toHaveAttribute('src',/expression-1$/);
+  await expect(card.locator('.stage-pills span')).toHaveText(levels.map(level=>new RegExp(`第 ${level} 關`)));
+  await expect(card.locator('img')).toHaveAttribute('src',expressionPortrait(name));
   expect(await card.locator('img').evaluate(img=>img.decode().then(()=>img.naturalWidth))).toBe(320);
  }
  expect(await page.evaluate(()=>document.documentElement.scrollWidth)).toBeLessThanOrEqual(await page.evaluate(()=>innerWidth));
+ expect(await readSave()).toMatchObject(cleared);
  expect(errors).toEqual([]);
 });

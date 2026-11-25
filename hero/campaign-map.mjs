@@ -1,6 +1,6 @@
-import {stagePeople,mapPersonSvg,renderMatchup} from './characters.mjs?v=chapter-twenty-1';
-import {stageFactionTitle} from './factions.mjs?v=chapter-twenty-1';
-import {HISTORICAL_STAGES} from './history-stages.mjs?v=chapter-twenty-1';
+import {stagePeople,mapPersonSvg,renderMatchup} from './characters.mjs?v=chapter-twenty-2';
+import {stageFactionTitle} from './factions.mjs?v=chapter-twenty-2';
+import {HISTORICAL_STAGES} from './history-stages.mjs?v=chapter-twenty-2';
 // Approximate regional placement, not historical borders or a surveyed route.
 export const MAP_PLACES={
  zhuo:{name:'涿郡',modern:'今河北涿州一帶',x:402,y:78},
@@ -116,7 +116,10 @@ export function campaignMapSvg(level,mini=false){
  const cities=Object.entries(MAP_PLACES).map(([key,p])=>{
   const waypoint=stage?.viaPlaces?.includes(key);
   const active=key===current.place,labelOffset=active&&route.some(k=>k!==key&&Math.hypot(MAP_PLACES[k].x-p.x,MAP_PLACES[k].y-p.y)<55)?70:38;if(level>=17&&!visited.has(key)&&!active)return '';if(level<17&&Object.hasOwn(westernPlaces,key))return '';if(level<17&&['luoyang','chenliu','suanzhao','bian','liangdong','yangren','luyang','dongwuyang','shouzhang','jibei','juancheng','puyang','dingtao','xuxian','wan','chen','xiapi','guandu','baima','yanjin','wuchao','cangting','liyang','ye','xiping','runan','qiao','junyi','pingyuan','nanpi','guangpingNorth','huguan','chunyu','canals','wuzhong','lulong','baitan','pinggang','bailang','liucheng','yishuiSouth','xiangyang','changban','jiangling','chibi','tongguan','puban','weinan'].includes(key))return '';if(key.startsWith('side')&&!visited.has(key)&&!active)return '';
-  return `<g class="map-city ${active?'current':visited.has(key)?'visited':'future'}"><circle cx="${p.x}" cy="${p.y}" r="${active?16:7}"/>${active?`<circle class="map-current-ring" cx="${p.x}" cy="${p.y}" r="24"/><path class="map-flag" d="M${p.x},${p.y-14}v-34l26,7 -26,9"/>`:''}${mini||key.startsWith('side')&&!active||level>=35&&!active&&!waypoint&&Math.hypot(p.x-current.x,p.y-current.y)<85?'':`<text x="${active?p.x:(waypoint||level>=41&&key==='guandu')?p.x-14:p.x+32}" text-anchor="${active?'middle':(waypoint||level>=41&&key==='guandu')?'end':'start'}" y="${p.y+(active?labelOffset:7)}">${p.name}</text>`}</g>`;
+  const originNearDestination=key===stage?.originPlace&&stage.viaPlaces?.length>0&&!active&&Math.hypot(p.x-current.x,p.y-current.y)<85;
+  const labelOnLeft=waypoint||originNearDestination||level>=41&&key==='guandu';
+  const hideLabel=mini||key.startsWith('side')&&!active||level>=35&&!active&&!waypoint&&!originNearDestination&&Math.hypot(p.x-current.x,p.y-current.y)<85;
+  return `<g class="map-city ${active?'current':visited.has(key)?'visited':'future'}"><circle cx="${p.x}" cy="${p.y}" r="${active?16:7}"/>${active?`<circle class="map-current-ring" cx="${p.x}" cy="${p.y}" r="24"/><path class="map-flag" d="M${p.x},${p.y-14}v-34l26,7 -26,9"/>`:''}${hideLabel?'':`<text x="${active?p.x:labelOnLeft?p.x-14:p.x+32}" text-anchor="${active?'middle':labelOnLeft?'end':'start'}" y="${p.y+(active?labelOffset:7)}">${p.name}</text>`}</g>`;
  }).join('');
  const xs=route.map(key=>MAP_PLACES[key].x),ys=route.map(key=>MAP_PLACES[key].y);
  const chapterView=[Math.min(...xs)-86,Math.min(...ys)-94,Math.max(...xs)-Math.min(...xs)+190,Math.max(...ys)-Math.min(...ys)+181].join(' ');

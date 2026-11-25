@@ -20,6 +20,11 @@ npm run test:hero:engine
 npx playwright test --config=playwright.hero-input.config.js
 ```
 
+## 2026-11-25 第二十章複查
+
+- 修正第 117、118 關的戰前說明，交代接應完成後按「全軍撤離」，所有存活的武將與士兵都須回到左側，且至少有一隊友軍平安撤回。修正第 118 關行軍動畫和戰場地圖的洮西標籤，與狄道、鍾題一起顯示。 [第二十章規格](hero-history-chapter-twenty.md)
+- 394 項引擎測試、320px 和 390px 手機 Chromium 與 820px 平板 WebKit 的 3 項完整觸控流程、第十九章與圖鑑回歸 8 項。核對第 112 關接第 113 關、陰平備車暫停及缺路時保留備車進度、補位後送完三批糧、南安和狄道的弓兵撤離與暫停、營地購物、末關重整及重玩。確認空場不能撤離、最後存活的一隊士兵也可完成撤離。檢查四位新人物的表情與所有登場關卡。觸控使用模擬裝置、隔離存檔及受控敵波，引擎另有正常敵波。快取版 `chapter-twenty-2`，回歸設定為 `playwright.hero-twenty.config.js`。
+
 ## 2026-11-25 第二十章「姜維北伐」
 
 - 已發布 `4e9593c`。正式站手機 Chromium 與平板 WebKit 各從第 112 關接到第 113 關，完成六關與末關重玩。用原始模組確認第 112、117 關存檔可直接續玩，兩種裝置各解碼 107 張頭像。核對 51 份發布資源。 [正式遊戲](https://gm0621.github.io/pvz-web-prototype/hero/?v=4e9593c) · [人物圖鑑](https://gm0621.github.io/pvz-web-prototype/hero/people.html?v=4e9593c) · [發布紀錄](https://github.com/gm0621/pvz-web-prototype/actions/runs/45523821553)

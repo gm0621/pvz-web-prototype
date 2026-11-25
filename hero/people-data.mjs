@@ -1,11 +1,11 @@
-import {GENERALS} from './roster.mjs?v=chapter-twenty-1';
-import {NOVEL_PAGES,CAMP_LINES} from './novel.mjs?v=chapter-twenty-1';
-import {campConversation} from './camp-talk.mjs?v=chapter-twenty-1';
-import {STORY_TASKS} from './story-play.mjs?v=chapter-twenty-1';
-import {CHAPTER_BACKGROUNDS,STAGE_LEADS} from './prologue.mjs?v=chapter-twenty-1';
-import {STORY_PEOPLE} from './characters.mjs?v=chapter-twenty-1';
-import {HEROES,STAGES,chapterInfo,enemyArt,heroesForLevel} from './story.mjs?v=chapter-twenty-1';
-import {FACTIONS,enemyPortrait} from './factions.mjs?v=chapter-twenty-1';
+import {GENERALS} from './roster.mjs?v=chapter-twenty-2';
+import {NOVEL_PAGES,CAMP_LINES} from './novel.mjs?v=chapter-twenty-2';
+import {campConversation} from './camp-talk.mjs?v=chapter-twenty-2';
+import {STORY_TASKS} from './story-play.mjs?v=chapter-twenty-2';
+import {CHAPTER_BACKGROUNDS,STAGE_LEADS} from './prologue.mjs?v=chapter-twenty-2';
+import {STORY_PEOPLE} from './characters.mjs?v=chapter-twenty-2';
+import {HEROES,STAGES,chapterInfo,enemyArt,heroesForLevel} from './story.mjs?v=chapter-twenty-2';
+import {FACTIONS,enemyPortrait} from './factions.mjs?v=chapter-twenty-2';
 // Child-friendly summaries; comparisons are memory aids, not historical quotations.
 const bios=[
  ['夏侯霸','史實人物','走過山路的兩軍老將','他字仲權，是夏侯淵的兒子。他原先和姜維交手，後來投奔蜀漢，竟和姜維一起北伐。','紅披肩加上歪起的眉毛，就是迷了路、正找人幫忙的夏侯霸。','陰平迷路和缺糧見《三國志》裴松之注引《魏略》。沔陽是遊戲的接應方向示意。'],
