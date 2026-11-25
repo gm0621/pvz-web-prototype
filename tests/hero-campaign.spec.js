@@ -1,3 +1,4 @@
+const {expectExpressionPortrait}=require('./support/hero-portraits.cjs');
 const {test,expect}=require('@playwright/test');
 test('old chapter-one save continues into four new playable stages',async({page})=>{
  await page.addInitScript(()=>localStorage.setItem('heroLegendProgress_v1',JSON.stringify({version:1,completed:6})));
@@ -15,7 +16,7 @@ test('fifth boss arrival has a portrait, shield health bar and duel instructions
  await page.addInitScript(()=>localStorage.setItem('heroLegendProgress_v1',JSON.stringify({version:1,completed:4})));
  // Controlled spawn fixture exercises the real arrival/render path without a long battle.
  await page.route('**/hero/engine.mjs?*',async route=>{const r=await route.fetch();await route.fulfill({response:r,body:(await r.text()).replace('spawned:0,nextSpawn:6','spawned:STAGES[level-1].enemyCount,nextSpawn:0')})});
- await page.goto('/hero/');await page.locator('#startBtn').click();await page.locator('#storySkip').click();await expect(page.locator('#bossIntro')).toBeVisible();await expect(page.locator('#bossIntroTitle')).toContainText('石魁');await expect(page.locator('#bossIntroTip')).toContainText('劉備');await expect(page.locator('#bossIntroArt')).toHaveAttribute('src',/shi-kui/);
+ await page.goto('/hero/');await page.locator('#startBtn').click();await page.locator('#storySkip').click();await expect(page.locator('#bossIntro')).toBeVisible();await expect(page.locator('#bossIntroTitle')).toContainText('石魁');await expect(page.locator('#bossIntroTip')).toContainText('劉備');await expectExpressionPortrait(page.locator('#bossIntroArt'),'石魁');
  await page.screenshot({path:info.outputPath('shi-kui-arrival.png')});await page.locator('#bossIntroContinue').click();await expect(page.locator('#bossHud')).toBeVisible();await expect(page.locator('#bossHudName')).toContainText('石魁');
  await page.locator('[data-hero="liubei"]').click();await page.locator('.lane[data-lane="1"]').click();await page.screenshot({path:info.outputPath('boss-field.png')});
  expect(await page.locator('#cards').evaluate(e=>e.getBoundingClientRect().bottom<=innerHeight)).toBe(true);

@@ -1,6 +1,7 @@
-import {DUEL_ENTRANCE_DURATION} from './engine.mjs?v=chapter-nineteen-1';
-import {HEROES,STAGES,enemyArt} from './story.mjs?v=chapter-nineteen-1';
-import {hitSound} from './audio.mjs?v=chapter-nineteen-1';
+import {paintPortrait} from './factions.mjs?v=chapter-nineteen-2';
+import {DUEL_ENTRANCE_DURATION} from './engine.mjs?v=chapter-nineteen-2';
+import {HEROES,STAGES,enemyArt} from './story.mjs?v=chapter-nineteen-2';
+import {hitSound} from './audio.mjs?v=chapter-nineteen-2';
 const HERO_LABELS={liubei:['仁義之將','雌雄雙劍','為了身後的百姓，出戰！'],guanyu:['美髯公','青龍偃月刀','關雲長在此，請賜教！'],zhangfei:['燕人翼德','丈八蛇矛','燕人張翼德在此！']};
 const ENEMY_WEAPONS={'張寶':'符杖與雨鈴','張梁':'環刀與風旗','鄧茂':'山賊大刀','程遠志':'旋風大刀','石魁':'巨盾・重錘','韓旌':'黃旗長矛','焦魯':'餘燼雙刀','杜衡':'鉤鐮雙刃','張角':'黃天符杖'};
 const clamp=n=>Math.max(0,Math.min(1,n));
@@ -15,7 +16,7 @@ export function renderDuelEntrance(b){
  if(!active){if(hadSkipFocus)$('duelPause').focus({preventScroll:true});return false}
  const t=d.entranceElapsed,reduced=matchMedia('(prefers-reduced-motion: reduce)').matches,hero=HEROES[d.heroKey],stage=STAGES[b.level-1],labels=HERO_LABELS[d.heroKey];
  const set=(id,value)=>{if($(id).textContent!==value)$(id).textContent=value};
- $('versusHero').src=hero.asset;$('versusHero').alt=hero.name;$('versusEnemy').src=enemyArt(d.bossName);$('versusEnemy').alt=d.bossName;
+ paintPortrait($('versusHero'),hero);$('versusHero').alt=hero.name;paintPortrait($('versusEnemy'),{name:d.bossName,asset:enemyArt(d.bossName)});$('versusEnemy').alt=d.bossName;
  set('versusHeroTitle',`義軍 · ${labels[0]}`);set('versusHeroName',hero.name);set('versusHeroWeapon',labels[1]);set('versusEnemyTitle',`黃巾軍 · ${stage.bossTitle||'敵軍大將'}`);set('versusEnemyName',d.bossName);set('versusEnemyWeapon',ENEMY_WEAPONS[d.bossName]||'黃巾兵器');
  set('versusCallout',t<.65?'戰鼓驟起，兩軍讓開！':t<2.45?labels[2]:'兵刃相向——一決勝負！');
  const arrival=ease((t-.12)/.8),impact=clamp(1-Math.abs(t-1.05)/.38),exit=ease((t-2.75)/.45);

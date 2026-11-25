@@ -11,6 +11,7 @@ const stages=[
 
 test('stage 106 continues through Xingshi and keeps campaign saves on touch screens',async({page})=>{
  test.setTimeout(300000);
+ const {expressionPortrait}=await import('../hero/portrait-expressions.mjs');
  const errors=[];
  page.on('pageerror',error=>errors.push(error.message));
  await page.addInitScript(key=>{
@@ -102,6 +103,7 @@ test('stage 106 continues through Xingshi and keeps campaign saves on touch scre
   await expect(page.locator('#storyChapter')).toContainText('第十九章');
   await expect(page.locator('#journeyIntro h3')).toContainText(stage.route);
   await expect(page.locator('#journeyIntro .journey-army')).toHaveAttribute('data-person',stage.leader);
+  await expect(page.locator('#journeyIntro .journey-army image')).toHaveAttribute('href',expressionPortrait(stage.leader));
   await tap('#storyMore');
   await tap('.history-toggle');
   await expect(page.locator('#historyLesson [aria-current=step]')).toContainText(String(stage.year));
@@ -116,6 +118,7 @@ test('stage 106 continues through Xingshi and keeps campaign saves on touch scre
   await tap('#battleMapButton');
   await expect(page.locator('#campaignMapRoute')).toHaveText(stage.route);
   await expect(page.locator('#campaignMapCanvas .map-leader')).toHaveAttribute('data-person',stage.leader);
+  await expect(page.locator('#campaignMapCanvas .map-leader image')).toHaveAttribute('href',expressionPortrait(stage.leader));
   const opponent=page.locator('#campaignMapMatchup [data-side=enemy] img');
   if(stage.opponent)await expect(opponent).toHaveAttribute('alt',stage.opponent);
   await opponent.evaluate(img=>img.decode());
@@ -176,6 +179,37 @@ test('stage 106 continues through Xingshi and keeps campaign saves on touch scre
     }
     await advance(6200);
    }
+  }else if(level===111){
+   await advance(2600);
+   await expect(page.locator('#missionQuick')).toContainText('接應計時中');
+   const guardId=await page.evaluate(()=>String(window.chapterBattle.allies.find(u=>u.key==='zhangfei').id));
+   await page.locator('#unitSelect').selectOption(guardId);
+   await tap('#commandDrawerButton');
+   await tap('#orders [data-order="up"]');
+   await tap('#commandDrawerClose');
+   await expect(page.locator('#missionQuick')).toContainText('下路缺接應');
+   const held=(await snapshot()).mission.hold;
+   expect(held).toBeGreaterThan(0);
+   await advance(1000);
+   expect((await snapshot()).mission.hold).toBe(held);
+   await tap('#cards [data-hero=archer]');
+   await page.locator('.lane').nth(2).tap({position:{x:40,y:25}});
+   await advance(18500);
+  }else if(level===112){
+   await tap('#missionDrawerButton');
+   await tap('#missionChoices [data-action=route]:first-child');
+   await advance(650);
+   expect((await snapshot()).mission.travel).toBeGreaterThan(0);
+   await tap('#pauseBtn');
+   const frozen=await snapshot();
+   await advance(800);
+   expect(await snapshot()).toEqual(frozen);
+   await expect(page.locator('#missionChoices [data-action=route]:nth-child(2)')).toBeDisabled();
+   await tap('#pauseBtn');
+   await advance(100);
+   await tap('#missionChoices [data-action=route]:nth-child(2)');
+   await tap('#missionDrawerClose');
+   await advance(18500);
   }else await advance(18500);
 
   await advance(300);
@@ -193,6 +227,7 @@ test('stage 106 continues through Xingshi and keeps campaign saves on touch scre
   await tap('[data-talk=guanyu]');
   const portrait=page.locator('#campTalkPortrait');
   await expect(portrait).toHaveAttribute('alt',stage.guest);
+  await expect(portrait).toHaveAttribute('src',expressionPortrait(stage.guest));
   await portrait.evaluate(img=>img.decode());
   await tap('#campTalkNext');
   if(level===112){
@@ -222,7 +257,8 @@ test('stage 106 continues through Xingshi and keeps campaign saves on touch scre
   await page.locator('#peopleSearch').fill(query);
   const card=page.locator(`[data-person="${name}"]`);
   await expect(card.locator('.stage-pills')).toContainText(`第 ${level} 關`);
-  expect(await card.locator('img').evaluate(img=>img.decode().then(()=>img.naturalWidth))).toBeGreaterThan(0);
+  await expect(card.locator('img')).toHaveAttribute('src',/expression-1$/);
+  expect(await card.locator('img').evaluate(img=>img.decode().then(()=>img.naturalWidth))).toBe(320);
  }
  expect(await page.evaluate(()=>document.documentElement.scrollWidth)).toBeLessThanOrEqual(await page.evaluate(()=>innerWidth));
  expect(errors).toEqual([]);

@@ -1,3 +1,4 @@
+const {expectExpressionPortrait}=require('./support/hero-portraits.cjs');
 const {test,expect}=require('@playwright/test');
 const KEY='heroLegendProgress_v1';
 const stages=[
@@ -121,7 +122,7 @@ test('chapter thirteen continues old saves through the Hanzhong finale',async({p
    await page.evaluate(()=>{window.chapterBattle.spawned=999;window.chapterBattle.nextSpawn=0});
    await advance(100);
    await expect(page.locator('#bossIntroTitle')).toContainText('夏侯淵');
-   await expect(page.locator('#bossIntroArt')).toHaveAttribute('src',/xiahou-yuan\.png$/);
+   await expectExpressionPortrait(page.locator('#bossIntroArt'),'夏侯淵');
    await tap('#bossIntroContinue');
    await page.evaluate(()=>window.chapterBattle.enemies[0].hp=0);
   }else{

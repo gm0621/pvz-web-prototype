@@ -1,4 +1,5 @@
-import {HISTORICAL_STAGES} from './history-stages.mjs?v=chapter-nineteen-1';
+import {portraitForDisplay} from './portrait-expressions.mjs?v=chapter-nineteen-2';
+import {HISTORICAL_STAGES} from './history-stages.mjs?v=chapter-nineteen-2';
 export const BLANK_PORTRAIT='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22256%22 height=%22256%22/%3E';
 const person=(name,faction,row,stats,weapon,description)=>({name,short:name,faction,atlas:`./assets/factions/${faction}.png`,row,asset:BLANK_PORTRAIT,...stats,weapon,description});
 export const FACTIONS={
@@ -25,6 +26,7 @@ export const FACTION_SKILLS={
 };
 export function enemyPortrait(name,level){if(level===75&&name==='夏侯淵')return {name,asset:BLANK_PORTRAIT,atlas:ARCHER_ATLAS,row:0};if(level>=47)return {name,asset:BLANK_PORTRAIT,atlas:'./assets/factions/yuan.png',row:2};if(level>=41)return {name,asset:BLANK_PORTRAIT,atlas:'./assets/factions/yuan.png',row:level===44||level===46?2:1};if(level>=35)return {name,asset:BLANK_PORTRAIT,atlas:'./assets/factions/yuan.png',row:name==='淳于瓊'?0:level===35?2:1};if(level>=29&&name!=='呂布'){if(level>=33)return {name,asset:BLANK_PORTRAIT,atlas:'./assets/factions/yan.png',row:1};return {name,asset:BLANK_PORTRAIT,atlas:'./assets/factions/central.png',row:name==='張繡'?0:name==='橋蕤'?1:2}}if(level>=23&&level<=28||name==='呂布')return {name,asset:BLANK_PORTRAIT,atlas:'./assets/factions/yan.png',row:name==='呂布'?0:level>=26?1:2};if(level<17&&!['徐榮','華雄'].includes(name))return null;return {name,asset:BLANK_PORTRAIT,atlas:'./assets/factions/dong.png',row:name==='徐榮'?0:name==='華雄'?1:2}}
 export function paintPortrait(node,person){
+ person=portraitForDisplay(person);
  node.src=person.asset;node.classList.toggle('faction-portrait',!!person.atlas);
  node.style.backgroundImage=person.atlas?`url("${person.atlas}")`:'';node.style.backgroundSize=person.atlas?`300% ${person.atlasRows===2?200:300}%`:'';node.style.backgroundPosition=person.atlas?`${(person.col||0)*50}% ${person.row*(person.atlasRows===2?100:50)}%`:'';
 }

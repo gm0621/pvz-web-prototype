@@ -1,11 +1,11 @@
-import {GENERALS} from './roster.mjs?v=chapter-nineteen-1';
-import {NOVEL_PAGES,CAMP_LINES} from './novel.mjs?v=chapter-nineteen-1';
-import {campConversation} from './camp-talk.mjs?v=chapter-nineteen-1';
-import {STORY_TASKS} from './story-play.mjs?v=chapter-nineteen-1';
-import {CHAPTER_BACKGROUNDS,STAGE_LEADS} from './prologue.mjs?v=chapter-nineteen-1';
-import {STORY_PEOPLE} from './characters.mjs?v=chapter-nineteen-1';
-import {HEROES,STAGES,chapterInfo,enemyArt,heroesForLevel} from './story.mjs?v=chapter-nineteen-1';
-import {FACTIONS,enemyPortrait} from './factions.mjs?v=chapter-nineteen-1';
+import {GENERALS} from './roster.mjs?v=chapter-nineteen-2';
+import {NOVEL_PAGES,CAMP_LINES} from './novel.mjs?v=chapter-nineteen-2';
+import {campConversation} from './camp-talk.mjs?v=chapter-nineteen-2';
+import {STORY_TASKS} from './story-play.mjs?v=chapter-nineteen-2';
+import {CHAPTER_BACKGROUNDS,STAGE_LEADS} from './prologue.mjs?v=chapter-nineteen-2';
+import {STORY_PEOPLE} from './characters.mjs?v=chapter-nineteen-2';
+import {HEROES,STAGES,chapterInfo,enemyArt,heroesForLevel} from './story.mjs?v=chapter-nineteen-2';
+import {FACTIONS,enemyPortrait} from './factions.mjs?v=chapter-nineteen-2';
 // Child-friendly summaries; comparisons are memory aids, not historical quotations.
 const bios=[
  ['魏延','史實人物','守過漢中的紅巾將軍','魏延字文長，劉備曾讓他守漢中。諸葛亮去世後，他想繼續作戰，與準備撤軍的楊儀發生衝突。','棧道像是沿著山壁搭起的路。第 107 關的爭端發生在撤軍途中。','《三國志》正文與裴松之注引《魏略》對爭端經過記載不同。本作依正文交代結局。'],

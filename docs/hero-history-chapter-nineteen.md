@@ -21,6 +21,8 @@
 
 新增 [魏延](../hero/assets/portraits/wei-yan.webp)、[蔣琬](../hero/assets/portraits/jiang-wan.webp)、[費禕](../hero/assets/portraits/fei-yi.webp)、[曹爽](../hero/assets/portraits/cao-shuang.webp)。可用「文長、公琰、文偉、昭伯」搜尋。使用內建 imagegen，以姜維、王平和劉禪為畫風參考。提示採大頭、大眼、簡化五官、深色線條與暖色卡通陰影，四格透明原圖裁成 320 × 320 WebP。魏延配紅頭巾、短方鬍與青銅甲，蔣琬配綠邊寬帽、短鬚與綠袍，費禕配青藍帽袍和竹簡，曹爽配靛藍帽、紫披風及藍鋼護肩。
 
+2026-11-25 內建 imagegen 表情修訂沿用原服裝、鬍鬚和四格透明版面，讓表情在 40px 時仍可區分。魏延向左低頭怒瞪、緊閉下彎的嘴。蔣琬正面垂眼、平眉閉嘴。費禕瞇眼開懷笑。曹爽抬下巴、揚起一邊眉毛與側眼抿笑。圖像仍裁為 320 × 320 WebP，資源版本為 `expression-1`。
+
 ## 回歸方式
 
 ```sh

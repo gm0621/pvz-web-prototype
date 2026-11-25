@@ -1,10 +1,11 @@
-import {renderTeamDuel} from './team-duel-view.mjs?v=chapter-nineteen-1';
+import {paintPortrait} from './factions.mjs?v=chapter-nineteen-2';
+import {renderTeamDuel} from './team-duel-view.mjs?v=chapter-nineteen-2';
 import {renderDuelCinematic} from './duel-cinematic.mjs?v=passive-feedback-1';
 import {duelPattern} from './duel-patterns.mjs?v=passive-feedback-1';
-import {renderDuelEntrance} from './duel-entrance.mjs?v=chapter-nineteen-1';
-import {HEROES,enemyArt,STAGES} from './story.mjs?v=chapter-nineteen-1';
-import {hitSound} from './audio.mjs?v=chapter-nineteen-1';
-import {duelBeats,duelBeat} from './engine.mjs?v=chapter-nineteen-1';
+import {renderDuelEntrance} from './duel-entrance.mjs?v=chapter-nineteen-2';
+import {HEROES,enemyArt,STAGES} from './story.mjs?v=chapter-nineteen-2';
+import {hitSound} from './audio.mjs?v=chapter-nineteen-2';
+import {duelBeats,duelBeat} from './engine.mjs?v=chapter-nineteen-2';
 export function renderDuel(b){
  const d=b.duel,dialog=document.getElementById('duelDialog');if(!d)return;
  dialog.dataset.team=String(d.format==='two-v-one');
@@ -50,8 +51,8 @@ export function renderDuel(b){
  const enemyLine=retreat&&beat.side==='victory'?lines.victory:enemyTurns>1?`${d.bossName}：「還沒完！再接一招！」`:enemyTurns?lines.enemy:lines.ready;
  document.getElementById('duelEnemyLine').textContent=enemyLine;
  document.getElementById('duelDialogue').textContent=heroLine;
- document.getElementById('duelEnemyFace').src=enemyArt(d.bossName);document.getElementById('duelEnemyFace').alt=d.bossName;
- document.getElementById('duelHeroFace').src=HEROES[d.heroKey].asset;document.getElementById('duelHeroFace').alt=heroName;
+ paintPortrait(document.getElementById('duelEnemyFace'),{name:d.bossName,asset:enemyArt(d.bossName)});document.getElementById('duelEnemyFace').alt=d.bossName;
+ paintPortrait(document.getElementById('duelHeroFace'),HEROES[d.heroKey]);document.getElementById('duelHeroFace').alt=heroName;
  dialog.dataset.speaker=['ready','enemy'].includes(beat.side)?'enemy':'hero';
  const boss=b.enemies.find(e=>e.id===d.bossId),fighter=b.allies.find(u=>u.id===d.heroId);
  for(const [prefix,unit,name] of [['Hero',fighter,heroName],['Enemy',boss,d.bossName]]){const hp=Math.max(0,unit?.hp||0),max=unit?.maxHp||1,bar=document.getElementById(`duel${prefix}Health`);bar.setAttribute('aria-label',`${name}生命`);bar.setAttribute('aria-valuemax',String(max));bar.setAttribute('aria-valuenow',String(Math.ceil(hp)));bar.querySelector('i').style.width=`${Math.min(100,hp/max*100)}%`;document.getElementById(`duel${prefix}HpText`).textContent=`${name} ${Math.ceil(hp)} / ${max}`;}

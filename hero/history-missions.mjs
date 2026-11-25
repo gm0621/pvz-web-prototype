@@ -1,5 +1,5 @@
-import {HISTORICAL_STAGES} from './history-stages.mjs?v=chapter-nineteen-1';
-import {FACTIONS,factionFor} from './factions.mjs?v=chapter-nineteen-1';
+import {HISTORICAL_STAGES} from './history-stages.mjs?v=chapter-nineteen-2';
+import {FACTIONS,factionFor} from './factions.mjs?v=chapter-nineteen-2';
 import {PEACH_HEROES} from './hero-base.mjs?v=passive-feedback-1';
 const defaultRetreatSlots=['liubei','zhangfei'];
 const retreatSlots=battle=>HISTORICAL_STAGES[battle.level-17]?.retreatKeys||defaultRetreatSlots;
@@ -94,7 +94,16 @@ export function historyMissionText(b){const fronts=['','','','三','四','五'][
   const status=b.paused?'已暫停':!guarded?'等候友軍接應':!safe(b,m.site)?'敵軍逼近，整備暫停':'整備中';
   return `${title} · ${place} · ${status} ${Math.floor(m.sites[m.site]/8*100)}%`;
  }
- if(m.kind==='holdout')return `${holdTitle} ${Math.floor(m.hold)}／24 秒 · 每路皆有友軍、敵人未逼近才計時 · 受阻暫停，進度保留`;
+ if(m.kind==='holdout'){
+  const progress=`${holdTitle} ${Math.floor(m.hold)}／24 秒`;
+  if(b.paused)return progress+' · 已暫停，保留進度';
+  const lanes=laneList(b);
+  const missing=lanes.filter(lane=>!b.allies.some(unit=>unit.hp>0&&unit.lane===lane));
+  if(missing.length)return `${progress} · ${missing.map(lane=>routeName(b,lane)+'路').join('、')}缺接應，請派友軍駐守`;
+  const blocked=lanes.filter(lane=>!safe(b,lane));
+  if(blocked.length)return `${progress} · ${blocked.map(lane=>routeName(b,lane)+'路').join('、')}受阻，保留進度`;
+  return progress+' · 各路安全，接應計時中';
+ }
  if(b.bossCaptured)return `${opponent}已被俘 · ${b.won?'本關完成':`守住${fronts}路，清退餘兵後過關`}`;
  if(b.level>=23)return HISTORICAL_STAGES[b.level-17].bossTip;
  return '陽人之戰 · 三將合陣、避開重斧再反擊 · 史書記孫堅軍破敵，非關羽單挑';

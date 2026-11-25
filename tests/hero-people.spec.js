@@ -1,9 +1,22 @@
+const {expectExpressionPortrait}=require('./support/hero-portraits.cjs');
 const {test,expect}=require('@playwright/test');
 test('people book: portraits, aliases, filters, readable cards and unchanged save',async({page},info)=>{
  const errors=[];page.on('pageerror',e=>errors.push(e.message));const save={completed:28,coins:123,weapons:{liubei:2},inventory:{grain:3}};
  await page.addInitScript(s=>{if(!localStorage.getItem('heroLegendProgress_v1'))localStorage.setItem('heroLegendProgress_v1',JSON.stringify(s))},save);
  await page.goto('/hero/people.html');await expect(page.locator('.person-card')).toHaveCount(103);
- const broken=await page.locator('main').evaluate(async e=>{const urls=new Set();for(const n of e.querySelectorAll('img')){urls.add(n.src);const bg=getComputedStyle(n).backgroundImage.match(/url\(["']?(.*?)["']?\)/);if(bg)urls.add(bg[1])}return (await Promise.all([...urls].map(src=>new Promise(r=>{const i=new Image();i.onload=()=>r(null);i.onerror=()=>r(src);i.src=src})))).filter(Boolean)});expect(broken).toEqual([]);
+ const portraits=await page.locator('.person-card img').evaluateAll(async images=>{
+  return Promise.all(images.map(async img=>{
+   img.loading='eager';
+   await img.decode();
+   return {name:img.alt,url:img.getAttribute('src'),width:img.naturalWidth,height:img.naturalHeight};
+  }));
+ });
+ const {expressionPortrait}=await import('../hero/portrait-expressions.mjs');
+ expect(new Set(portraits.map(p=>p.url)).size).toBe(103);
+ for(const portrait of portraits){
+  expect(portrait.url).toBe(expressionPortrait(portrait.name));
+  expect([portrait.width,portrait.height]).toEqual([320,320]);
+ }
  await page.locator('#peopleSearch').fill('盧公');await expect(page.locator('.person-card h2')).toHaveText('盧植');await page.locator('summary').click();await expect(page.locator('.memory')).toContainText('老師');await expect(page.locator('.stage-pills')).toContainText('第 7 關');
  await page.locator('#peopleSearch').fill('劉協');await expect(page.locator('.person-card h2')).toHaveText('漢獻帝');await page.locator('summary').click();await expect(page.locator('.stage-pills')).toContainText('第 29 關');await page.screenshot({path:info.outputPath('people-search.png'),fullPage:true});
  await page.locator('#clearSearch').click();await page.locator('[data-kind="遊戲原創"]').click();await expect(page.locator('.person-card')).toHaveCount(5);await expect(page.locator('.kind-tag')).toHaveText(Array(5).fill('遊戲原創（虛構人物）'));
@@ -17,10 +30,11 @@ test('game opens book separately and retains chapter six story',async({page})=>{
  await page.locator('#storyMore').click();
  const link=page.locator('#storyDetails').getByRole('link',{name:/人物圖鑑/});await link.scrollIntoViewIfNeeded();expect(await link.evaluate(e=>{const r=e.getBoundingClientRect();return document.elementFromPoint(r.x+r.width/2,r.y+r.height/2)===e})).toBe(true);await expect(link).toHaveAttribute('target','_blank');expect(await page.evaluate(()=>JSON.parse(localStorage.getItem('heroLegendProgress_v1')).completed)).toBe(28);
 });
-test('book matches named atlas cells and narrative appearances, excluding source-only names',async({page})=>{
+test('book matches named portraits and narrative appearances, excluding source-only names',async({page})=>{
  await page.goto('/hero/people.html');
- for(const [name,row,col] of [['漢獻帝',0,0],['袁術',0,1],['典韋',0,2],['曹昂',1,0],['曹安民',1,1],['賈詡',1,2],['郭嘉',2,0],['荀攸',2,1],['棗祗',2,2]]){
-  await page.locator('#peopleSearch').fill(name);const card=page.locator(`[data-person="${name}"]`);await expect(card.locator('img')).toHaveAttribute('alt',name);expect(await card.locator('img').evaluate(e=>e.style.backgroundPosition)).toBe(`${col*50}% ${row*50}%`);expect(await card.locator('img').evaluate(e=>e.style.backgroundImage)).toContain('portraits/chapter-six.png');
+ for(const name of ['漢獻帝','袁術','典韋','曹昂','曹安民','賈詡','郭嘉','荀攸','棗祗']){
+  await page.locator('#peopleSearch').fill(name);
+  await expectExpressionPortrait(page.locator(`[data-person="${name}"] img`),name);
  }
  for(const [name,yes,no] of [['張角',1,34],['盧植',8,34],['典韋',31,34],['呂布',34,30]]){await page.locator('#peopleSearch').fill(name);const card=page.locator(`[data-person="${name}"]`);await card.locator('summary').click();await expect(card.locator('.stage-pills span').filter({hasText:new RegExp(`^第 ${yes} 關$`)})).toHaveCount(1);await expect(card.locator('.stage-pills span').filter({hasText:new RegExp(`^第 ${no} 關$`)})).toHaveCount(0)}
  await page.locator('#peopleSearch').fill('賈詡');await page.locator('[data-person="賈詡"] summary').click();await expect(page.locator('[data-person="賈詡"] .stage-pills span')).toHaveText(['第 35 關','第 64 關']);

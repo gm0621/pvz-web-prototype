@@ -1,3 +1,4 @@
+const {expectExpressionPortrait}=require('./support/hero-portraits.cjs');
 const {test,expect}=require('@playwright/test');
 async function tap(l){await l.scrollIntoViewIfNeeded();const r=await l.boundingBox();expect(r.width).toBeGreaterThanOrEqual(44);expect(r.height).toBeGreaterThanOrEqual(44);await l.click()}
 for(let level=53;level<=58;level++)test(`chapter ten ${level}: story map mission camp book save`,async({page},info)=>{
@@ -18,9 +19,9 @@ for(let level=53;level<=58;level++)test(`chapter ten ${level}: story map mission
 });
 
 
-test('chapter ten portraits and appearances: six new identities load in correct atlas cells',async({page},info)=>{
+test('chapter ten portraits and appearances: six new identities load their own portraits',async({page},info)=>{
  await page.goto('/hero/people.html');
  for(const [i,name] of ['劉琮','趙雲','諸葛亮','孫權','周瑜','魯肅'].entries()){
-  await page.locator('#peopleSearch').fill(name);const card=page.locator(`[data-person="${name}"]`),img=card.locator('img');await expect(img).toHaveAttribute('alt',name);await expect(img).toHaveCSS('background-position',`${i%3*50}% ${Math.floor(i/3)*100}%`);await expect(img).toHaveCSS('background-size','300% 200%');await img.evaluate(async e=>{const i=new Image();i.src=getComputedStyle(e).backgroundImage.slice(5,-2);await i.decode()});await tap(card.locator('summary'));await expect(card.locator('.stage-pills')).toContainText(`第 ${[54,55,57,57,57,57][i]} 關`);expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
+  await page.locator('#peopleSearch').fill(name);const card=page.locator(`[data-person="${name}"]`),img=card.locator('img');await expect(img).toHaveAttribute('alt',name);await expectExpressionPortrait(img,name);await tap(card.locator('summary'));await expect(card.locator('.stage-pills')).toContainText(`第 ${[54,55,57,57,57,57][i]} 關`);expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
  }await page.screenshot({path:info.outputPath('lu-su-book.png'),fullPage:true});
 });
