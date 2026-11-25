@@ -8,7 +8,7 @@
 
 ## Obsidian 尚未同步時，從這裡接手
 
-1. **確認版本。** 在剛拉下來的 `main` 執行 `git status --short --branch`、`git log -1 --oneline`。`git log` 顯示目前 checkout 的提交。正式遊戲版本另看下方最新一筆含「已發布」及 Pages 工作的功能紀錄。截至 2026-11-24，最新已驗證的正式遊戲版本為 `39aece7`（第十八章，共 106 關）。 [正式遊戲](https://gm0621.github.io/pvz-web-prototype/hero/?v=39aece7) · [發布紀錄](https://github.com/gm0621/pvz-web-prototype/actions/runs/45371619806)
+1. **確認版本。** 在剛拉下來的 `main` 執行 `git status --short --branch`、`git log -1 --oneline`。`git log` 顯示目前 checkout 的提交。正式遊戲版本另看下方最新一筆含「已發布」及 Pages 工作的功能紀錄。截至 2026-11-25，最新已驗證的正式遊戲版本為 `5a6d345`（第十九章，共 112 關）。 [正式遊戲](https://gm0621.github.io/pvz-web-prototype/hero/?v=5a6d345) · [發布紀錄](https://github.com/gm0621/pvz-web-prototype/actions/runs/45517799290)
 2. **安裝並做基本驗證。** 在專案根目錄用 Node.js 20 以上與 npm。執行下列指令可驗證引擎、桌面滑鼠／鍵盤及手機平板觸控。更多測試和本機預覽見 [開發指南](DEVELOPMENT.md)。Playwright 會啟動 4174 埠的測試服務，先關閉佔用該埠的手動預覽。
 3. **開工前看目前進度。** 先讀 [AGENTS.md](../AGENTS.md) 的「重要約束」及下方與任務相關的紀錄。英雄演義是獨立的 `/hero/` 遊戲，關卡上限見 `hero/campaign-config.mjs`。正式存檔 `heroLegendProgress_v1` 與本機、線上跳關測試的存檔分開。跨電腦時瀏覽器存檔和未提交的檔案需另外移轉。保留滑鼠、鍵盤與觸控操作，也要保留首勝軍資、重玩及暫停的既有規則。 [跳關工具和存檔說明](hero-local-testing.md)
 4. **繼續當次工作。** 依使用者的新需求從最新 `main` 開分支，保留原工作區修改。完成後把變更、實際測試結果、版本與注意事項記在本檔。Obsidian 未同步時註明待補，能讀取後再更新。正式發布依當次授權。
@@ -22,7 +22,7 @@ npx playwright test --config=playwright.hero-input.config.js
 
 ## 2026-11-24 第十九章「興勢守漢中」
 
-- 已在本機分支 `codex/xingshi-campaign` 完成，待正式發布。
+- 已發布 `5a6d345`。2026-11-25 正式站以 390px 手機 Chromium 和 820px 平板 WebKit 模擬觸控，各由第 106 關結算接入第 107 關，再走完六關。興勢守關的接應、援軍解圍的使者與曹爽退兵結局、末關存檔失敗重試、營地購物、重整及重玩皆通過。重玩第 112 關不重複發軍資。瀏覽器流程使用隔離存檔與受控敵波。另用原始遊戲模組確認第 106、111 關存檔可直接續玩，核對 50 份發布資源。 [正式遊戲](https://gm0621.github.io/pvz-web-prototype/hero/?v=5a6d345) · [發布紀錄](https://github.com/gm0621/pvz-web-prototype/actions/runs/45517799290)
 - 新增第 107～112 關「棧道爭路、成都接任、漢中整軍、涪城轉運、興勢守關、援軍解圍」。沿 234～244 年史事，保留蜀軍撤兵內部爭端、蔣琬與費禕交接及曹爽撤軍結果。 [第十九章規格](hero-history-chapter-nineteen.md)
 - 新增魏延、蔣琬、費禕、曹爽的萌將頭像與圖鑑，保留六關行軍圖、史料、營地及蜀漢三路養成。
 - 391 項引擎、320px 與 390px 手機和 820px 平板觸控完整流程 3 項、第十八章與圖鑑回歸 8 項通過。觸控用模擬裝置、隔離存檔和受控敵波，引擎另用正常敵波。確認第 106 關過關接第 107 關、交接暫停不掉進度、涪縣糧車缺一路接應時不能發車、末關存檔失敗重試、營地購買及重玩無重複軍資。快取版 `chapter-nineteen-1`，回歸設定為 `playwright.hero-nineteen.config.js`。
