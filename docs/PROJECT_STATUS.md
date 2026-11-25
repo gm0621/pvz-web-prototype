@@ -8,7 +8,7 @@
 
 ## Obsidian 尚未同步時，從這裡接手
 
-1. **確認版本。** 在剛拉下來的 `main` 執行 `git status --short --branch`、`git log -1 --oneline`。`git log` 顯示目前 checkout 的提交。正式遊戲版本另看下方最新一筆含「已發布」及 Pages 工作的功能紀錄。截至 2026-11-25，最新已驗證的正式遊戲版本為 `9b434e6`（第二十四章，共 142 關）。 [正式遊戲](https://gm0621.github.io/pvz-web-prototype/hero/?v=9b434e6) · [人物圖鑑](https://gm0621.github.io/pvz-web-prototype/hero/people.html?v=9b434e6) · [發布紀錄](https://github.com/gm0621/pvz-web-prototype/actions/runs/45543466293)
+1. **確認版本。** 在剛拉下來的 `main` 執行 `git status --short --branch`、`git log -1 --oneline`。`git log` 顯示目前 checkout 的提交。正式遊戲版本另看下方最新一筆含「已發布」及 Pages 工作的功能紀錄。截至 2026-11-25，最新已驗證的正式遊戲版本為 `476ae71`（第二十四章，共 142 關）。 [正式遊戲](https://gm0621.github.io/pvz-web-prototype/hero/?v=476ae71) · [人物圖鑑](https://gm0621.github.io/pvz-web-prototype/hero/people.html?v=476ae71) · [發布紀錄](https://github.com/gm0621/pvz-web-prototype/actions/runs/45544802688)
 2. **安裝並做基本驗證。** 在專案根目錄用 Node.js 20 以上與 npm。執行下列指令可驗證引擎、桌面滑鼠／鍵盤及手機平板觸控。更多測試和本機預覽見 [開發指南](DEVELOPMENT.md)。Playwright 會啟動 4174 埠的測試服務，先關閉佔用該埠的手動預覽。
 3. **開工前看目前進度。** 先讀 [AGENTS.md](../AGENTS.md) 的「重要約束」及下方與任務相關的紀錄。英雄演義是獨立的 `/hero/` 遊戲，關卡上限見 `hero/campaign-config.mjs`。正式存檔 `heroLegendProgress_v1` 與本機、線上跳關測試的存檔分開。跨電腦時瀏覽器存檔和未提交的檔案需另外移轉。保留滑鼠、鍵盤與觸控操作，也要保留首勝軍資、重玩及暫停的既有規則。 [跳關工具和存檔說明](hero-local-testing.md)
 4. **繼續當次工作。** 依使用者的新需求從最新 `main` 開分支，保留原工作區修改。完成後把變更、實際測試結果、版本與注意事項記在本檔。Obsidian 未同步時註明待補，能讀取後再更新。正式發布依當次授權。
@@ -21,6 +21,8 @@ npx playwright test --config=playwright.hero-input.config.js
 ```
 
 ## 2026-11-25 第二十四章完整流程複查
+
+- 已發布 `476ae71`。正式站手機 Chromium 和平板 WebKit 各通過第 136～142 關、末關重玩，以及第 138、141 關的正常敵波觸控測試。以原始模組確認從第 136、141 關續玩，兩種裝置各解碼 125 張頭像。四種畫面尺寸核對六關戰前及戰場行軍圖，另比對 45 份發布資源。 [正式遊戲](https://gm0621.github.io/pvz-web-prototype/hero/?v=476ae71) · [人物圖鑑](https://gm0621.github.io/pvz-web-prototype/hero/people.html?v=476ae71) · [發布紀錄](https://github.com/gm0621/pvz-web-prototype/actions/runs/45544802688)
 
 - 兩場西陵的波次改顯示「晉軍援兵」和「吳軍沿江守兵」，敵軍出齊後也沿用當關名稱。無主將關卡在失敗結算時會直接提示本關任務，第 138 關已用手機和平板核對。 [第二十四章規格](hero-history-chapter-twenty-four.md)
 - 405 項引擎測試、320px 與 390px 手機 Chromium、820px 平板 WebKit 整章觸控 3 項，前章與圖鑑回歸 8 項。檢查 136→137、襄陽三處整備、兩場西陵完成條件、益州三批軍糧、石頭城交接、營地及末關儲存重試。實際為晉方曹操和吳方黃蓋各買兵器一次，確認換軍、重整與重玩各自保留。第 138 關派友軍離開下路時暫停守備計時。兩場西陵即使任務完成，仍須等最後一名敵軍入場並清退才結算。整章觸控使用模擬裝置、隔離存檔和受控敵波，兩場西陵另以正常敵波驗證。快取版 `chapter-twenty-four-2`，整章設定 `playwright.hero-twenty-four.config.js`。
