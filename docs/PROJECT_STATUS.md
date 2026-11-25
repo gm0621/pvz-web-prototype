@@ -20,6 +20,12 @@ npm run test:hero:engine
 npx playwright test --config=playwright.hero-input.config.js
 ```
 
+## 2026-11-25 第二十四章「西晉一統」
+
+- 新增第 137～142 關「襄陽屯田、西陵守圍、襄陽交印、益州備舟、西陵順流、石頭城受降」。沿 269～280 年的史實，分清 272 年東吳守住西陵與 280 年晉軍攻下西陵，最後孫皓在建業石頭城投降。保留新版行軍圖、歷史時間軸、分軍強化、營地與首勝存檔。 [第二十四章規格](hero-history-chapter-twenty-four.md)
+- 新增羊祜、陸抗、步闡、杜預、王濬、孫皓六張表情各異的萌將頭像，圖鑑共 125 人。
+- 本機 405 項引擎測試，320px 與 390px 手機 Chromium、820px 平板 WebKit 整章觸控 3 項，前章與圖鑑回歸 8 項，四種畫面尺寸含手機橫向核對六關行軍圖。測試涵蓋 136→137、換軍與兵器、兩場西陵的不同完成條件、備舟補給、受降交接、營地、末關儲存失敗重試、重整及重玩。觸控整章使用模擬裝置、隔離存檔和受控敵波，兩場西陵另用引擎跑三組正常敵波。快取版 `chapter-twenty-four-1`，整章測試設定 `playwright.hero-twenty-four.config.js`。
+
 ## 2026-11-25 第二十三章完整流程複查
 
 - 已發布 `21c7b70`。正式站手機 Chromium 和平板 WebKit 都通過整章觸控、末關重玩，以及原始模組第 134 關正常敵波撤離。第 130、135 關存檔可續玩，四種尺寸核對六關戰前與戰場行軍圖，兩種裝置各解碼 119 張頭像，並比對 46 份已發布資源。 [正式遊戲](https://gm0621.github.io/pvz-web-prototype/hero/?v=21c7b70) · [人物圖鑑](https://gm0621.github.io/pvz-web-prototype/hero/people.html?v=21c7b70) · [發布紀錄](https://github.com/gm0621/pvz-web-prototype/actions/runs/45542002129)

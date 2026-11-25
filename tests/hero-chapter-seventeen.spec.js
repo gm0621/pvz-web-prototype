@@ -55,7 +55,7 @@ test('chapter seventeen preserves the southern campaign save and completes all s
 
  await page.goto('/hero/');
  await page.clock.pauseAt(await page.evaluate(()=>Date.now()+700));
- await expect(page.locator('#homeProgress')).toContainText('94 / 136');
+ await expect(page.locator('#homeProgress')).toContainText('94 / 142');
  await page.locator('#chapterPicker').evaluate(el=>el.open=true);
  await tap('#chapterTabs [data-chapter="16"]');
  await tap('#chapterDots [data-level="94"]');
@@ -181,9 +181,9 @@ test('chapter seventeen preserves the southern campaign save and completes all s
  }
  await expect(page.locator('#storyTitle')).toHaveText('雨阻漢中');
  await tap('#story [data-home]');
- await expect(page.locator('#homeProgress')).toContainText('100 / 136');
+ await expect(page.locator('#homeProgress')).toContainText('100 / 142');
  await page.reload();
- await expect(page.locator('#homeProgress')).toContainText('100 / 136');
+ await expect(page.locator('#homeProgress')).toContainText('100 / 142');
  const cleared=await readSave();
  expect(cleared).toMatchObject({completed:100,coins:605,weapons:{guanyu:2},inventory:{grain:2,herb:1}});
  await page.locator('#chapterPicker').evaluate(el=>el.open=true);

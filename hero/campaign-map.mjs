@@ -1,7 +1,7 @@
-import {routeInset,routeInsetSvg} from './route-inset.mjs?v=chapter-twenty-three-2';
-import {stagePeople,mapPersonSvg,renderMatchup} from './characters.mjs?v=chapter-twenty-three-2';
-import {stageFactionTitle} from './factions.mjs?v=chapter-twenty-three-2';
-import {HISTORICAL_STAGES} from './history-stages.mjs?v=chapter-twenty-three-2';
+import {routeInset,routeInsetSvg} from './route-inset.mjs?v=chapter-twenty-four-1';
+import {stagePeople,mapPersonSvg,renderMatchup} from './characters.mjs?v=chapter-twenty-four-1';
+import {stageFactionTitle} from './factions.mjs?v=chapter-twenty-four-1';
+import {HISTORICAL_STAGES} from './history-stages.mjs?v=chapter-twenty-four-1';
 // Approximate regional placement, not historical borders or a surveyed route.
 export const MAP_PLACES={
  zhuo:{name:'涿郡',modern:'今河北涿州一帶',x:402,y:78},
@@ -111,6 +111,14 @@ Object.assign(westernPlaces,{
  qiCounty:{name:'郪縣',modern:'今四川三台一帶・古郪縣區域示意',x:-83,y:627},
  chengduOffice:{name:'成都府署',modern:'成都城中・府署區域示意',x:-151,y:663},
  chengduStreets:{name:'成都街巷',modern:'成都城中・護送場景示意',x:-126,y:682}
+});
+Object.assign(westernPlaces,{
+ jinYongan:{name:'永安',modern:'今重慶奉節一帶・長江上游路段示意',x:-5,y:583},
+ jinYizhou:{name:'益州',modern:'今四川成都一帶・益州船隊出發區域示意',x:-149,y:669},
+ lexiangWu:{name:'樂鄉',modern:'今湖北松滋一帶・東吳樂鄉駐地示意',x:263,y:631},
+ xiling:{name:'西陵',modern:'今湖北宜昌一帶・東吳西陵戰區示意',x:183,y:600},
+ wuWuchang:{name:'武昌',modern:'今湖北鄂州一帶・三國時的武昌',x:457,y:636},
+ shitou:{name:'石頭城',modern:'今江蘇南京清涼山一帶・建業石頭城區域示意',x:681,y:542}
 });
 Object.assign(MAP_PLACES,westernPlaces);
 STAGE_LOCATIONS.push(...HISTORICAL_STAGES.map(s=>({place:s.mapPlace,detail:`${s.year} 年・${stageFactionTitle(s)}視角。${s.viewpointShift?'此處切換敘事視角，不是上一支軍隊的連續行程。':''}地點為歷史區域示意，並非精確軍事路線。`})));
