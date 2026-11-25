@@ -1,15 +1,32 @@
-import {skillButtons} from './skill-preview.mjs?v=chapter-twenty-two-1';
-import {campGrowthCard} from './camp-growth.mjs?v=chapter-twenty-two-1';
+import {skillButtons} from './skill-preview.mjs?v=chapter-twenty-two-2';
+import {campGrowthCard} from './camp-growth.mjs?v=chapter-twenty-two-2';
 import {learnedPassives,passiveName} from './passive-feedback.mjs?v=passive-feedback-1';
-import {GENERALS,ALL_GENERALS,DEFAULT_TEAM,SLOTS,heroLevel,growthHint,growthBonuses,nextLesson,activeText,selectedTeam,maxLanes,buyHeroWeapon} from './roster.mjs?v=chapter-twenty-two-1';
-import {paintPortrait} from './factions.mjs?v=chapter-twenty-two-1';
+import {GENERALS,ALL_GENERALS,DEFAULT_TEAM,SLOTS,heroLevel,growthHint,growthBonuses,nextLesson,activeText,selectedTeam,maxLanes,buyHeroWeapon} from './roster.mjs?v=chapter-twenty-two-2';
+import {paintPortrait} from './factions.mjs?v=chapter-twenty-two-2';
+import {HISTORICAL_STAGES} from './history-stages.mjs?v=chapter-twenty-two-2';
+import {restorationSites} from './history-missions.mjs?v=chapter-twenty-two-2';
 const el=(tag,text)=>{const e=document.createElement(tag);if(text)e.textContent=text;return e};
 export function skillSummary(g,level){const bonus=growthBonuses(g,level);return [...g.skills.map(s=>({...s,type:'active'})),...g.passives].sort((a,b)=>a.level-b.level).map(s=>`${level<s.level?'🔒 Lv.'+s.level:s.type==='active'?'主動':'被動'}｜${s.name}：${s.type==='active'?activeText(g,s,level):s.text}${s.type==='active'?`（${s.mp} MP／${Math.max(1,s.cooldown-(bonus.cooldownReduction||0))} 秒）`:''}`).join('\n')}
+
+function deploymentTip(level){
+ const stage=HISTORICAL_STAGES[level-17];
+ const lanes='第 35 關起可選四路，第 47 關起可選五路。';
+ if(stage?.mission==='supply')return lanes+'各路都要有友軍接應。備車完成後按「發送糧車」，共送三批。';
+ if(stage?.mission==='restoration')return lanes+`派友軍照應對應路線，完成${restorationSites(level).join('、')}整備。`;
+ if(stage?.mission==='withdraw'||stage?.mission==='decoy'){
+  if(stage.retreatKeys){
+   const required=stage.retreatKeys.map(key=>`第 ${SLOTS.indexOf(key)+1} 位武將`).join('、');
+   return lanes+`撤軍時，${required?required+'及':''}所有在場友軍都必須回到左側。`;
+  }
+  return lanes+'撤軍時，第一位為領隊、第三位為護衛，兩人與所有在場友軍都必須平安撤回。';
+ }
+ return lanes;
+}
 
 export function openDeployment({level,progress,save,onStart,onCancel}){
  let dialog=document.getElementById('deployment');if(!dialog){dialog=el('dialog');dialog.id='deployment';dialog.className='deployment';document.body.append(dialog)}
  let lanes=Math.min(maxLanes(level),progress.battleLanes||3),team=selectedTeam(progress.caoTeam).slice(0,lanes);for(const id of Object.keys(GENERALS))if(team.length<lanes&&!team.includes(id))team.push(id);
- dialog.replaceChildren();const title=el('h2','點將出征'),intro=el('p','先選武將，再按「出發」。點技能看介紹與展示；鎖住的招式也能先試看。選將為遊戲搭配，不代表史實到場名單。'),label=el('label','戰線與名額 '),select=el('select');select.setAttribute('aria-label','戰線與出戰名額');for(let n=3;n<=maxLanes(level);n++){const option=el('option',`${n} 路 · ${n} 位武將`);option.value=n;select.append(option)}select.value=lanes;label.append(select);const tip=el('p','第 35 關起可選四路，第 47 關起可選五路。撤軍時，第一位為領隊、第三位為護衛，兩人與所有在場友軍都必須平安撤回。'),status=el('p'),grid=el('div');grid.className='roster-grid';const error=el('p');error.setAttribute('role','status');const go=el('button','出發 →');go.id='deploymentStart';go.className='gold-button';const cancel=el('button','返回上頁');cancel.className='quiet-button';const cancelDeployment=()=>{dialog.close();onCancel?.()};cancel.onclick=cancelDeployment;dialog.oncancel=event=>{event.preventDefault();cancelDeployment()};
+ dialog.replaceChildren();const title=el('h2','點將出征'),intro=el('p','先選武將，再按「出發」。點技能看介紹與展示；鎖住的招式也能先試看。選將為遊戲搭配，不代表史實到場名單。'),label=el('label','戰線與名額 '),select=el('select');select.setAttribute('aria-label','戰線與出戰名額');for(let n=3;n<=maxLanes(level);n++){const option=el('option',`${n} 路 · ${n} 位武將`);option.value=n;select.append(option)}select.value=lanes;label.append(select);const tip=el('p',deploymentTip(level)),status=el('p'),grid=el('div');grid.className='roster-grid';const error=el('p');error.setAttribute('role','status');const go=el('button','出發 →');go.id='deploymentStart';go.className='gold-button';const cancel=el('button','返回上頁');cancel.className='quiet-button';const cancelDeployment=()=>{dialog.close();onCancel?.()};cancel.onclick=cancelDeployment;dialog.oncancel=event=>{event.preventDefault();cancelDeployment()};
  function render(){status.textContent=`已選 ${team.length} / ${lanes} 位：`+team.map(id=>GENERALS[id].name).join('、');go.disabled=team.length!==lanes;grid.replaceChildren(...Object.entries(GENERALS).map(([id,g])=>{const card=el('article'),img=el('img');paintPortrait(img,g);img.alt=g.name;const h=progress.heroGrowth[id],lv=heroLevel(h.xp),name=el('h3',`${g.name} · ${g.role}`),stats=el('p',`Lv.${lv} · 經驗 ${h.xp} · 兵器 ${h.weapon}/3 · MP 60 · ${growthHint(g,h.xp)}`),skills=el('details');skills.className='deployment-skill-picker';skills.append(el('summary','技能介紹與展示 ▸'),skillButtons(id,g,lv));const button=el('button',team.includes(id)?'已選 ✓':'選擇');button.dataset.choose=id;button.setAttribute('aria-pressed',team.includes(id));button.disabled=!team.includes(id)&&team.length>=lanes;button.onclick=()=>{team=team.includes(id)?team.filter(x=>x!==id):[...team,id];render()};card.append(img,name,stats,skills,button);return card}))}
  select.onchange=()=>{lanes=Number(select.value);team=team.slice(0,lanes);render()};go.onclick=()=>{if(team.length!==lanes)return;const old=progress.caoTeam,oldLanes=progress.battleLanes;progress.caoTeam=[...team];progress.battleLanes=lanes;if(!save()){progress.caoTeam=old;progress.battleLanes=oldLanes;error.textContent='無法保存選將，請重試；原隊伍未變動。';return}dialog.close();onStart()};dialog.append(title,intro,label,tip,status,grid,error,go,cancel);render();dialog.showModal();dialog.scrollTop=0;
 }

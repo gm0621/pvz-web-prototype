@@ -1,11 +1,11 @@
-import {GENERALS} from './roster.mjs?v=chapter-twenty-two-1';
-import {NOVEL_PAGES,CAMP_LINES} from './novel.mjs?v=chapter-twenty-two-1';
-import {campConversation} from './camp-talk.mjs?v=chapter-twenty-two-1';
-import {STORY_TASKS} from './story-play.mjs?v=chapter-twenty-two-1';
-import {CHAPTER_BACKGROUNDS,STAGE_LEADS} from './prologue.mjs?v=chapter-twenty-two-1';
-import {STORY_PEOPLE,hasPersonMention} from './characters.mjs?v=chapter-twenty-two-1';
-import {HEROES,STAGES,chapterInfo,enemyArt,heroesForLevel} from './story.mjs?v=chapter-twenty-two-1';
-import {FACTIONS,enemyPortrait} from './factions.mjs?v=chapter-twenty-two-1';
+import {GENERALS} from './roster.mjs?v=chapter-twenty-two-2';
+import {NOVEL_PAGES,CAMP_LINES} from './novel.mjs?v=chapter-twenty-two-2';
+import {campConversation} from './camp-talk.mjs?v=chapter-twenty-two-2';
+import {STORY_TASKS} from './story-play.mjs?v=chapter-twenty-two-2';
+import {CHAPTER_BACKGROUNDS,STAGE_LEADS} from './prologue.mjs?v=chapter-twenty-two-2';
+import {STORY_PEOPLE,hasPersonMention} from './characters.mjs?v=chapter-twenty-two-2';
+import {HEROES,STAGES,chapterInfo,enemyArt,heroesForLevel} from './story.mjs?v=chapter-twenty-two-2';
+import {FACTIONS,enemyPortrait} from './factions.mjs?v=chapter-twenty-two-2';
 // Child-friendly summaries; comparisons are memory aids, not historical quotations.
 const bios=[
  ['諸葛瞻','史實人物','帶兵守綿竹的諸葛亮之子','他字思遠，會書法和畫畫。鄧艾從陰平進入蜀地時，他率軍出成都，最後和兒子諸葛尚在綿竹戰死。','玉色盔飾、白色圍領和抿嘴迎敵的神情，可以幫你分清諸葛瞻和父親諸葛亮。','事蹟見《三國志》卷三十五。'],

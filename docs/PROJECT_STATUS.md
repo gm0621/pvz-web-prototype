@@ -20,6 +20,12 @@ npm run test:hero:engine
 npx playwright test --config=playwright.hero-input.config.js
 ```
 
+## 2026-11-25 第二十二章完整流程複查
+
+- 修正所有選將畫面的任務提示。第 125 關提醒各路照應、備車後送出三批軍糧，第 126 關列出關門、道路、糧冊及對應路線。撤軍關才顯示撤離規則。快取版為 `chapter-twenty-two-2`。 [第二十二章規格](hero-history-chapter-twenty-two.md)
+- 本機 399 項引擎測試通過，另用三組隨機種子各跑完第 127、128 關的正常敵波，以及驗證第 125、126 關的五路規則。320px、390px 手機 Chromium 和 820px 平板 WebKit 各走完 124→125～130。涵蓋運糧、交接暫停、涪縣使者、綿竹撤離、議降與受降、魏蜀營地各買一件兵器、過關儲存失敗重試、重整與零重複獎勵。四種畫面尺寸含手機橫向另行驗證戰前和戰場行軍圖。
+- 完整觸控測試使用模擬裝置、隔離存檔與受控敵波。原始模組的續玩與正常敵波另行驗證。重跑整章用 `npx playwright test --config=playwright.hero-twenty-two.config.js`。
+
 ## 2026-11-25 第二十二章「成都受降」
 
 - 已發布 `bd8aad7`。正式站手機 Chromium 與平板 WebKit 各走完第 124～130 關和末關重玩。用原始模組確認第 124、129 關存檔可直接續玩，兩種裝置各解碼 115 張頭像。另用四種尺寸含手機橫向逐關核對戰前與戰場圖，並核對 52 份發布資源。 [正式遊戲](https://gm0621.github.io/pvz-web-prototype/hero/?v=bd8aad7) · [人物圖鑑](https://gm0621.github.io/pvz-web-prototype/hero/people.html?v=bd8aad7) · [發布紀錄](https://github.com/gm0621/pvz-web-prototype/actions/runs/45537408923)

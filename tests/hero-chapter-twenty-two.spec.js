@@ -35,12 +35,15 @@ test('stage 124 continues through Chengdu and keeps campaign saves on touch scre
  const advance=ms=>page.clock.runFor(ms);
  const snapshot=()=>page.evaluate(()=>({time:window.chapterBattle.time,mission:window.chapterBattle.mission}));
  const readSave=()=>page.evaluate(key=>JSON.parse(localStorage.getItem(key)),saveKey);
- async function controlledBattle(wei=false){
+ async function controlledBattle(wei=false,weaponRanks,briefing){
   await tap('#storySkip');
-  if(wei)await tap('#deploymentStart');
+  if(wei){
+   if(briefing)await expect(page.locator('#deployment')).toContainText(briefing);
+   await tap('#deploymentStart');
+  }
   await expect(page.locator('#battle')).toBeVisible({timeout:25000});
   await expect(page.locator('#battleTitle')).toContainText(wei?'魏軍':'蜀漢軍');
-  expect(await page.evaluate(()=>window.chapterBattle.weapons.guanyu)).toBe(wei?1:2);
+  expect(await page.evaluate(()=>window.chapterBattle.weapons)).toMatchObject(weaponRanks||{liubei:0,guanyu:2,zhangfei:0});
   await page.locator('#battleSpeed').selectOption('2');
   // Only enemy waves and starting food are sandboxed. Mission and save paths run through UI.
   await page.evaluate(()=>{
@@ -182,7 +185,9 @@ test('stage 124 continues through Chengdu and keeps campaign saves on touch scre
   await expect(page.locator('.history-sources a').first()).toBeVisible();
   await expect(page.locator('.history-sources a').first()).toHaveAttribute('href',/wikisource/);
   await tap('#storyDetails header button');
-  await controlledBattle(stage.wei);
+  const ranks={liubei:level===126?1:0,guanyu:stage.wei?1:2,zhangfei:level>=128?1:0};
+  const briefing=stage.kind==='supply'?'各路都要有友軍接應。備車完成後按「發送糧車」，共送三批。':'關門、道路、糧冊整備';
+  await controlledBattle(stage.wei,ranks,briefing);
   if([125,126,129,130].includes(level))await expect(page.locator('#waveText')).not.toContainText(/追兵|敵軍/);
 
   await tap('#battleMenuButton');
@@ -243,6 +248,16 @@ test('stage 124 continues through Chengdu and keeps campaign saves on touch scre
     const option=page.locator('#missionChoices [data-action=site]').nth(lane);
     await expect(option).toContainText(site);
     await option.tap();
+    if(level===126&&lane===0){
+     await advance(1100);
+     await tap('#pauseBtn');
+     const frozen=await snapshot();
+     expect(frozen.mission.site).toBe(lane);
+     expect(frozen.mission.sites[lane]).toBeGreaterThan(0);
+     await advance(800);
+     expect(await snapshot()).toEqual(frozen);
+     await tap('#pauseBtn');
+    }
     await advance(6700);
     await expect(option).toBeDisabled();
    }
@@ -271,11 +286,15 @@ test('stage 124 continues through Chengdu and keeps campaign saves on touch scre
   await expect(page.locator('#resultText')).toContainText(stage.outcome);
   if(level===130){
    await expect(page.locator('#resultRetrySave')).toBeVisible();
-   expect(await readSave()).toMatchObject({completed:129,coins:550});
+   expect(await readSave()).toMatchObject({completed:129,coins:430});
    await page.evaluate(()=>window.blockSave=false);
    await tap('#resultRetrySave');
   }
-  expect(await readSave()).toMatchObject({completed:level,coins:230+80*index,weapons:{guanyu:2},inventory:{grain:2}});
+  const balance=230+80*index-60*(Number(level>125)+Number(level>127));
+  expect(await readSave()).toMatchObject({
+   completed:level,coins:balance,weapons:{liubei:0,guanyu:2,zhangfei:level>127?1:0},
+   armyWeapons:{cao:{liubei:level>125?1:0,guanyu:1,zhangfei:0}},inventory:{grain:2}
+  });
   await camp();
   await expect(page.locator('#campTitle')).toContainText(stage.name);
   await tap('[data-talk=guanyu]');
@@ -284,10 +303,19 @@ test('stage 124 continues through Chengdu and keeps campaign saves on touch scre
   await expect(portrait).toHaveAttribute('src',expressionPortrait(stage.guest));
   await portrait.evaluate(img=>img.decode());
   await tap('#campTalkNext');
+  if(level===125||level===127){
+   await tap('[data-shop=weapons]');
+   const item=page.locator('#shopGoods .goods-card').filter({hasText:level===125?'曹操・兵器整備':'張飛・兵器整備'});
+   await expect(item).toContainText('已強化 0 / 3');
+   await item.getByRole('button',{name:'購買 · 60 軍資'}).tap();
+   await expect(item).toContainText('已強化 1 / 3');
+   await expect(page.locator('#campCoins')).toHaveText(String(balance-60));
+   await tap('#campShopBack');
+  }
   if(level===130){
    await tap('[data-shop=items]');
    await tap('[data-buy=herb]');
-   await expect(page.locator('#campCoins')).toHaveText('605');
+   await expect(page.locator('#campCoins')).toHaveText('485');
    await tap('#campShopBack');
    await expect(page.locator('#campContinue')).toContainText('第二十二章尾聲');
   }
@@ -298,10 +326,10 @@ test('stage 124 continues through Chengdu and keeps campaign saves on touch scre
 
  await page.reload();
  await expect(page.locator('#homeProgress')).toContainText('第二十二章完成');
- const cleared={completed:130,coins:605,weapons:{guanyu:2},armyWeapons:{cao:{guanyu:1}},inventory:{grain:2,herb:1}};
+ const cleared={completed:130,coins:485,weapons:{liubei:0,guanyu:2,zhangfei:1},armyWeapons:{cao:{liubei:1,guanyu:1,zhangfei:0}},inventory:{grain:2,herb:1}};
  expect(await readSave()).toMatchObject(cleared);
  await choose(22,130);
- await controlledBattle();
+ await controlledBattle(false,{liubei:0,guanyu:2,zhangfei:1});
  await advance(18500);
  await expect(page.locator('#resultEarned')).toHaveText('+0');
  expect(await readSave()).toMatchObject(cleared);
