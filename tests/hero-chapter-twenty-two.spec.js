@@ -197,7 +197,7 @@ test('stage 124 continues through Chengdu and keeps campaign saves on touch scre
   await expect(page.locator('#campaignMapPeriod')).toHaveText(`263 年・${stage.wei?'魏軍':'蜀漢軍'}`);
   await expect(page.locator('#campaignMapCanvas .map-leader')).toHaveAttribute('data-person',stage.leader);
   await expect(page.locator('#campaignMapCanvas .map-leader image')).toHaveAttribute('href',expressionPortrait(stage.leader));
-  const opponent=page.locator('#campaignMapMatchup [data-side=enemy] img');
+  const opponent=page.locator(`#campaignMapMatchup [data-side=${level===130?'guest':'enemy'}] img`);
   if(stage.opponent){
    await expect(opponent).toHaveAttribute('alt',stage.opponent);
    await expect(opponent).toHaveAttribute('src',expressionPortrait(stage.opponent));

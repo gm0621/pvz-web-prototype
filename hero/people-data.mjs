@@ -1,11 +1,11 @@
-import {GENERALS} from './roster.mjs?v=chapter-twenty-three-1';
-import {NOVEL_PAGES,CAMP_LINES} from './novel.mjs?v=chapter-twenty-three-1';
-import {campConversation} from './camp-talk.mjs?v=chapter-twenty-three-1';
-import {STORY_TASKS} from './story-play.mjs?v=chapter-twenty-three-1';
-import {CHAPTER_BACKGROUNDS,STAGE_LEADS} from './prologue.mjs?v=chapter-twenty-three-1';
-import {STORY_PEOPLE,hasPersonMention} from './characters.mjs?v=chapter-twenty-three-1';
-import {HEROES,STAGES,chapterInfo,enemyArt,heroesForLevel} from './story.mjs?v=chapter-twenty-three-1';
-import {FACTIONS,enemyPortrait} from './factions.mjs?v=chapter-twenty-three-1';
+import {GENERALS} from './roster.mjs?v=chapter-twenty-three-2';
+import {NOVEL_PAGES,CAMP_LINES} from './novel.mjs?v=chapter-twenty-three-2';
+import {campConversation} from './camp-talk.mjs?v=chapter-twenty-three-2';
+import {STORY_TASKS} from './story-play.mjs?v=chapter-twenty-three-2';
+import {CHAPTER_BACKGROUNDS,STAGE_LEADS} from './prologue.mjs?v=chapter-twenty-three-2';
+import {STORY_PEOPLE,hasPersonMention} from './characters.mjs?v=chapter-twenty-three-2';
+import {HEROES,STAGES,chapterInfo,enemyArt,heroesForLevel} from './story.mjs?v=chapter-twenty-three-2';
+import {FACTIONS,enemyPortrait} from './factions.mjs?v=chapter-twenty-three-2';
 // Child-friendly summaries; comparisons are memory aids, not historical quotations.
 const bios=[
  ['衛瓘','史實人物','拿著魏廷公文來的人','他字伯玉。魏廷下令收押鄧艾時，他進城執行命令。後來成都發生兵變，他也參與了後續處理。','瓘讀 ㄍㄨㄢˋ。深藍官帽、方鬍子和一高一低的眉毛，就是愛先觀察再開口的遊戲造型。','事蹟見《晉書・衛瓘傳》及《三國志・鄧艾傳》。'],

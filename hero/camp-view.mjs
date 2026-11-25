@@ -1,14 +1,14 @@
-import {CHAPTER_NUMERALS} from './campaign-config.mjs?v=chapter-twenty-three-1';
-import {campGrowthCard} from './camp-growth.mjs?v=chapter-twenty-three-1';
-import {PEACH_GENERALS,SUN_GENERALS,SLOTS,heroLevel} from './roster.mjs?v=chapter-twenty-three-1';
-import {skillSummary} from './roster-view.mjs?v=chapter-twenty-three-1';
-import {renderHeroCamp} from './roster-view.mjs?v=chapter-twenty-three-1';
-import {STORY_PEOPLE,renderPeople} from './characters.mjs?v=chapter-twenty-three-1';
-import {STAGES,chapterInfo} from './story.mjs?v=chapter-twenty-three-1';
-import {factionFor,paintPortrait} from './factions.mjs?v=chapter-twenty-three-1';
-import {campConversation} from './camp-talk.mjs?v=chapter-twenty-three-1';
-import {GOODS,purchase,weaponsForLevel} from './campaign.mjs?v=chapter-twenty-three-1';
-import {CAMP_LINES} from './novel.mjs?v=chapter-twenty-three-1';
+import {CHAPTER_NUMERALS} from './campaign-config.mjs?v=chapter-twenty-three-2';
+import {campGrowthCard} from './camp-growth.mjs?v=chapter-twenty-three-2';
+import {PEACH_GENERALS,SUN_GENERALS,SLOTS,heroLevel} from './roster.mjs?v=chapter-twenty-three-2';
+import {skillSummary} from './roster-view.mjs?v=chapter-twenty-three-2';
+import {renderHeroCamp} from './roster-view.mjs?v=chapter-twenty-three-2';
+import {STORY_PEOPLE,renderPeople} from './characters.mjs?v=chapter-twenty-three-2';
+import {STAGES,chapterInfo} from './story.mjs?v=chapter-twenty-three-2';
+import {factionFor,paintPortrait} from './factions.mjs?v=chapter-twenty-three-2';
+import {campConversation} from './camp-talk.mjs?v=chapter-twenty-three-2';
+import {GOODS,purchase,weaponsForLevel} from './campaign.mjs?v=chapter-twenty-three-2';
+import {CAMP_LINES} from './novel.mjs?v=chapter-twenty-three-2';
 export function mountCamp({progress,level,heroes,stage,onSave,onContinue,won=true}){
  const $=id=>document.getElementById(id);let shop='items';
  let people=$('campTalkPeople');if(!people){people=document.createElement('aside');people.id='campTalkPeople';people.className='story-people';people.setAttribute('aria-label','對話提及人物');$('campTalkText').after(people)}people.hidden=true;
@@ -23,7 +23,7 @@ export function mountCamp({progress,level,heroes,stage,onSave,onContinue,won=tru
   button.querySelector('strong').textContent=prompt?.title||person.name;
   button.querySelector('small').textContent=prompt?.hint||'聊聊這一戰';
  }
- document.querySelector('.tent-banner').textContent=factionFor(level)==='sun'?'孫':factionFor(level)==='cao'?'曹':'義';
+ document.querySelector('.tent-banner').textContent=stage.campBanner||(factionFor(level)==='sun'?'孫':factionFor(level)==='cao'?'曹':'義');
  let visitors=$('campVisitors');if(!visitors){visitors=document.createElement('button');visitors.id='campVisitors';visitors.className='quiet-button';visitors.textContent='探望鄉民與傷兵';$('campNarration').after(visitors)}visitors.hidden=level<11||!won;visitors.onclick=()=>{openPanel('campTalk');people.hidden=true;$('campTalkName').textContent='鄉民與傷兵';$('campTalkPortrait').hidden=true;$('campTalkText').textContent=level===16?'孩子已吃上熱粥，郎中正在替傷兵包紮。謝謝你們把大家平安帶回來。':'鄉民圍在營火旁，郎中替傷者包紮。先歇一歇，我們會彼此照應。';$('campTalkNext').textContent='回到營帳';$('campTalkNext').onclick=()=>openPanel(null)};
  $('campTitle').textContent=won?`${stage.name} · 歇馬整備`:'重整行裝，再來一次';$('campNarration').textContent=won?CAMP_LINES[level-1]:'先回營歇一歇。將士清點行囊，準備再試一次。';
  const finale=won&&(level===STAGES.length||chapterInfo(level+1).chapter!==chapterInfo(level).chapter),chapterLabel='第'+CHAPTER_NUMERALS[chapterInfo(level).chapter]+'章';

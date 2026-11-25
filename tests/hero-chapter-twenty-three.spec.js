@@ -1,12 +1,12 @@
 const {test,expect}=require('@playwright/test');
 const saveKey='heroLegendProgress_v1';
 const stages=[
- {name:'涪城繳兵',year:263,route:'郪縣 → 涪縣',leader:'姜維',guest:'姜維',opponent:'鍾會',marker:true,kind:'dispatch',outcome:'姜維奉劉禪命令投降'},
- {name:'鄧艾被徵',year:264,route:'成都',leader:'衛瓘',guest:'衛瓘',opponent:'鄧艾',marker:true,station:'交接地',wei:true,kind:'restoration',sites:['詔令','車馬','名冊'],outcome:'鄧艾與兒子鄧忠被收押'},
- {name:'成都閉署',year:264,route:'涪縣 → 成都',leader:'鍾會',guest:'胡烈',opponent:'胡烈',marker:true,wei:true,kind:'dispatch',outcome:'魏軍得知將領被扣的消息'},
- {name:'成都亂起',year:264,route:'成都府署 → 成都街巷',leader:'衛瓘',guest:'胡烈',opponent:'鍾會',marker:true,faction:'成都護送隊',kind:'withdraw',outcome:'鍾會和姜維在成都兵變中身亡'},
- {name:'安樂公入洛',year:264,route:'成都 → 洛陽',leader:'劉禪',guest:'郤正',faction:'安樂公隨行隊',kind:'supply',outcome:'劉禪到洛陽後受封安樂公'},
- {name:'洛陽建晉',year:265,route:'洛陽',leader:'司馬炎',guest:'司馬炎',station:'受禪地',wei:true,faction:'洛陽交接隊',kind:'restoration',sites:['冊書','禮壇','公告'],outcome:'西晉建立，曹魏結束'}
+ {name:'涪城繳兵',banner:'蜀',year:263,route:'郪縣 → 涪縣',leader:'姜維',guest:'姜維',opponent:'鍾會',role:'受降',marker:true,kind:'dispatch',outcome:'姜維奉劉禪命令投降'},
+ {name:'鄧艾被徵',banner:'魏',year:264,route:'成都',leader:'衛瓘',guest:'衛瓘',opponent:'鄧艾',role:'被收押',marker:true,station:'交接地',wei:true,kind:'restoration',sites:['詔令','車馬','名冊'],outcome:'鄧艾與兒子鄧忠被收押'},
+ {name:'成都閉署',banner:'鍾',year:264,route:'涪縣 → 成都',leader:'鍾會',guest:'胡烈',opponent:'胡烈',role:'被扣魏將',marker:true,wei:true,kind:'dispatch',outcome:'魏軍得知將領被扣的消息'},
+ {name:'成都亂起',banner:'護',year:264,route:'成都府署 → 成都街巷',leader:'衛瓘',guest:'胡烈',opponent:'鍾會',role:'兵變',marker:true,faction:'成都護送隊',kind:'withdraw',outcome:'鍾會和姜維在成都兵變中身亡'},
+ {name:'安樂公入洛',banner:'行',year:264,route:'成都 → 洛陽',leader:'劉禪',guest:'郤正',faction:'安樂公隨行隊',kind:'supply',outcome:'劉禪到洛陽後受封安樂公'},
+ {name:'洛陽建晉',banner:'晉',year:265,route:'洛陽',leader:'司馬炎',guest:'司馬炎',station:'受禪地',wei:true,faction:'洛陽交接隊',kind:'restoration',sites:['冊書','禮壇','公告'],outcome:'西晉建立，曹魏結束'}
 ];
 
 test('stage 130 continues through the end of Wei and keeps campaign saves on touch screens',async({page})=>{
@@ -35,10 +35,11 @@ test('stage 130 continues through the end of Wei and keeps campaign saves on tou
  const advance=ms=>page.clock.runFor(ms);
  const snapshot=()=>page.evaluate(()=>({time:window.chapterBattle.time,mission:window.chapterBattle.mission}));
  const readSave=()=>page.evaluate(key=>JSON.parse(localStorage.getItem(key)),saveKey);
- async function controlledBattle({wei=false,faction,sites}={}){
+ async function controlledBattle({wei=false,faction,sites,kind}={}){
   await tap('#storySkip');
   if(wei){
    if(sites)await expect(page.locator('#deployment')).toContainText(sites.join('、')+'整備');
+   if(kind==='dispatch')await expect(page.locator('#deployment')).toContainText('派友軍接應三隊使者');
    await tap('#deploymentStart');
   }
   await expect(page.locator('#battle')).toBeVisible({timeout:25000});
@@ -169,6 +170,7 @@ test('stage 130 continues through the end of Wei and keeps campaign saves on tou
   await checkRouteInset('#journeyIntro',stage.route,stage.station);
   await expect(page.locator('#journeyIntro .journey-army')).toHaveAttribute('data-person',stage.leader);
   await expect(page.locator('#journeyIntro .journey-army image')).toHaveAttribute('href',expressionPortrait(stage.leader));
+  if(stage.opponent)await expect(page.locator('#journeyIntro .journey-matchup small').last()).toHaveText(stage.role);
   await tap('#storyMore');
   await tap('.history-toggle');
   const phase=page.locator('#historyLesson [aria-current=step]');
@@ -193,8 +195,11 @@ test('stage 130 continues through the end of Wei and keeps campaign saves on tou
   await expect(page.locator('#campaignMapPeriod')).toHaveText(`${stage.year} 年・${stage.faction||(stage.wei?'魏軍':'蜀漢軍')}`);
   await expect(page.locator('#campaignMapCanvas .map-leader')).toHaveAttribute('data-person',stage.leader);
   await expect(page.locator('#campaignMapCanvas .map-leader image')).toHaveAttribute('href',expressionPortrait(stage.leader));
-  const opponent=page.locator('#campaignMapMatchup [data-side=enemy] img');
+  const matchup=page.locator(`#campaignMapMatchup [data-side=${stage.kind==='withdraw'?'enemy':'guest'}]`);
+  const opponent=matchup.locator('img');
   if(stage.opponent){
+   await expect(matchup.locator('small')).toHaveText(stage.role);
+   await expect(page.locator('#campaignMapCanvas .route-inset-opponent-role')).toHaveText(stage.role);
    await expect(opponent).toHaveAttribute('alt',stage.opponent);
    await expect(opponent).toHaveAttribute('src',expressionPortrait(stage.opponent));
    await opponent.evaluate(img=>img.decode());
@@ -289,6 +294,7 @@ test('stage 130 continues through the end of Wei and keeps campaign saves on tou
   expect(await readSave()).toMatchObject({completed:level,coins:230+80*index,weapons:{guanyu:2},armyWeapons:{cao:{guanyu:1}},inventory:{grain:2}});
   await camp();
   await expect(page.locator('#campTitle')).toContainText(stage.name);
+  await expect(page.locator('.tent-banner')).toHaveText(stage.banner);
   await tap('[data-talk=guanyu]');
   const portrait=page.locator('#campTalkPortrait');
   await expect(portrait).toHaveAttribute('alt',stage.guest);
@@ -297,6 +303,12 @@ test('stage 130 continues through the end of Wei and keeps campaign saves on tou
   await tap('#campTalkNext');
   if(level===136){
    await tap('[data-shop=items]');
+   await page.evaluate(()=>window.blockSave=true);
+   await tap('[data-buy=herb]');
+   await expect(page.locator('#campMessage')).toContainText('無法保存');
+   await expect(page.locator('#campCoins')).toHaveText('630');
+   expect((await readSave()).inventory.herb).toBe(0);
+   await page.evaluate(()=>window.blockSave=false);
    await tap('[data-buy=herb]');
    await expect(page.locator('#campCoins')).toHaveText('605');
    await tap('#campShopBack');

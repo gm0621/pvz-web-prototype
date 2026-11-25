@@ -11,7 +11,7 @@ const adaptation='行軍圖以史書中的地名示意方向，遠程路線省�
 
 const stages=[
  {
-  name:'涪城繳兵',year:263,origin:'qiCounty',place:'fu',shift:true,
+  name:'涪城繳兵',campBanner:'蜀',year:263,origin:'qiCounty',place:'fu',shift:true,
   leader:'姜維',guest:'姜維',opponent:'鍾會',mapOpponentRole:'受降',historyCast:['姜維','鍾會','劉禪'],
   mission:'dispatch',scene:'supply-road',enemyArmy:'涪城交接',successTitle:'停戰軍令送達',
   history:'成都受降後，姜維等人在郪縣一帶查問消息。收到劉禪的命令後，他們放下兵器，到涪城向鍾會投降。',
@@ -21,7 +21,7 @@ const stages=[
   question:'姜維到涪城向誰投降？',choices:['鍾會','鄧艾','東吳的使者'],refs:[jiangWei,zhongHui,tongjian]
  },
  {
-  name:'鄧艾被徵',year:264,origin:'chengdu',place:'chengdu',wei:true,shift:true,
+  name:'鄧艾被徵',campBanner:'魏',year:264,origin:'chengdu',place:'chengdu',wei:true,shift:true,
   leader:'衛瓘',guest:'衛瓘',opponent:'鄧艾',mapOpponentRole:'被收押',mapStationRole:'交接地',historyCast:['衛瓘','鄧艾','鍾會'],
   mission:'restoration',missionTitle:'移交整備',missionSites:['詔令','車馬','名冊'],scene:'supply-road',enemyArmy:'軍令交接',successTitle:'移交整備完成',
   history:'攻下成都後，鄧艾自行安排官職。鍾會等人上報，魏廷下令收押鄧艾。衛瓘進成都執行命令，鄧艾被送進囚車。',
@@ -31,7 +31,7 @@ const stages=[
   question:'誰進成都執行收押鄧艾的命令？',choices:['衛瓘','蜀漢的守將','東吳的使者'],refs:[dengAi,weiGuan,tongjian]
  },
  {
-  name:'成都閉署',year:264,origin:'fu',place:'chengdu',wei:true,
+  name:'成都閉署',campBanner:'鍾',year:264,origin:'fu',place:'chengdu',wei:true,
   leader:'鍾會',guest:'胡烈',opponent:'胡烈',mapOpponentRole:'被扣魏將',historyCast:['鍾會','姜維','胡烈','衛瓘'],
   mission:'dispatch',scene:'supply-road',enemyArmy:'府署急報',successTitle:'城中急報送達',
   history:'鄧艾被押後，鍾會在成都起兵反抗魏廷，把胡烈等魏將扣在府署。消息傳到城外軍營，士兵十分不安。',
@@ -41,7 +41,7 @@ const stages=[
   question:'被鍾會扣在府署的魏將當中，有哪一位？',choices:['胡烈','成都的百姓','洛陽的使者'],refs:[zhongHui,tongjian]
  },
  {
-  name:'成都亂起',year:264,origin:'chengduOffice',place:'chengduStreets',shift:true,factionLabel:'成都護送隊',
+  name:'成都亂起',campBanner:'護',year:264,origin:'chengduOffice',place:'chengduStreets',shift:true,factionLabel:'成都護送隊',
   leader:'衛瓘',guest:'胡烈',opponent:'鍾會',mapOpponentRole:'兵變',historyCast:['衛瓘','鍾會','姜維','胡烈','鄧艾'],
   mission:'withdraw',scene:'mountain-front',enemyArmy:'混亂中的兵卒',enemyCount:12,successTitle:'護送隊平安撤回',
   history:'魏兵在成都反擊，鍾會和姜維都死在兵變中。裴松之引述的史料提到姜維曾想趁亂恢復蜀漢，事情最後沒有成功。鄧艾後來也在押送途中被殺。',
@@ -51,7 +51,7 @@ const stages=[
   question:'鍾會和姜維最後怎麼了？',choices:['兩人都在成都兵變中身亡','一起返回劍閣','成功恢復蜀漢'],refs:[zhongHui,jiangWei,dengAi,tongjian]
  },
  {
-  name:'安樂公入洛',year:264,origin:'chengdu',place:'luoyang',shift:true,factionLabel:'安樂公隨行隊',
+  name:'安樂公入洛',campBanner:'行',year:264,origin:'chengdu',place:'luoyang',shift:true,factionLabel:'安樂公隨行隊',
   leader:'劉禪',guest:'郤正',historyCast:['劉禪','郤正'],
   mission:'supply',scene:'supply-road',enemyArmy:'遷居補給',successTitle:'隨行補給送達',
   history:'魏廷讓劉禪一家遷往洛陽，封他為安樂公。熟悉典章的蜀漢舊臣郤正跟他同行，幫他適應新的生活。',
@@ -61,7 +61,7 @@ const stages=[
   question:'哪位蜀漢舊臣跟隨劉禪來到洛陽？',choices:['郤正','劍閣的守軍','東吳的使者'],refs:[ruler,xiZheng,tongjian]
  },
  {
-  name:'洛陽建晉',year:265,origin:'luoyang',place:'luoyang',wei:true,shift:true,factionLabel:'洛陽交接隊',
+  name:'洛陽建晉',campBanner:'晉',year:265,origin:'luoyang',place:'luoyang',wei:true,shift:true,factionLabel:'洛陽交接隊',
   leader:'司馬炎',guest:'司馬炎',mapStationRole:'受禪地',historyCast:['司馬炎'],
   mission:'restoration',missionTitle:'洛陽整備',missionSites:['冊書','禮壇','公告'],scene:'supply-road',enemyArmy:'洛陽交接',successTitle:'洛陽交接完成',
   history:'曹魏末年，司馬炎接過父親的地位，隨後接受魏帝讓位，建立西晉。當時東吳仍在長江以南，天下還沒有統一。',
@@ -73,7 +73,7 @@ const stages=[
 ];
 
 export const TWENTY_THIRD_CHAPTER=stages.map((stage,index)=>({
- name:stage.name,year:stage.year,chapter:23,number:index+1,faction:stage.wei?'cao':'shu',factionLabel:stage.factionLabel||(stage.wei?'魏軍':'蜀漢軍'),place:stage.name,
+ name:stage.name,year:stage.year,chapter:23,number:index+1,faction:stage.wei?'cao':'shu',factionLabel:stage.factionLabel||(stage.wei?'魏軍':'蜀漢軍'),place:stage.name,campBanner:stage.campBanner,
  mapPlace:stage.place,originPlace:stage.origin,detailedRoute:true,viaPlaces:[],viewpointShift:!!stage.shift,historyCast:stage.historyCast,
  leaderName:stage.leader,opponentName:stage.opponent,mapOpponent:stage.mapOpponent??!!stage.opponent,matchupLabel:stage.matchupLabel,mapOpponentRole:stage.mapOpponentRole,mapStationRole:stage.mapStationRole,
  scene:`./assets/scenes/${stage.scene}.jpg`,mission:stage.mission,missionTitle:stage.missionTitle,missionSites:stage.missionSites,

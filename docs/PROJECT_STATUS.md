@@ -20,6 +20,11 @@ npm run test:hero:engine
 npx playwright test --config=playwright.hero-input.config.js
 ```
 
+## 2026-11-25 第二十三章完整流程複查
+
+- 修正第 131～136 關的行軍圖人物卡、營旗與出征提示。鍾會受降、鄧艾被收押、胡烈被扣等角色的圖卡與地圖標記使用同一個身分，第 133 關點將畫面提示接應三隊使者。營旗配合當關視角，第 136 關結算後掛「晉」。 [第二十三章規格](hero-history-chapter-twenty-three.md)
+- 本機 402 項引擎測試、320px 和 390px 手機 Chromium 與 820px 平板 WebKit 三項整章觸控測試，以及前章和圖鑑回歸 8 項。涵蓋第 130 關結算接第 131 關、涪城與成都使者、鄧艾收押和洛陽交接整備、成都撤離、遷洛三批糧車、營地對話和第 136 關儲存失敗重試。另在營地模擬藥包購買儲存失敗，軍資和道具先還原，重試後重整與重玩的資料一致。完整觸控測試使用模擬裝置、隔離存檔與受控敵波；第 134 關另用原始模組正常出兵完成撤離。快取版 `chapter-twenty-three-2`。
+
 ## 2026-11-25 第二十三章「成都餘波」
 
 - 已發布 `314fa4a`。正式站手機 Chromium 與平板 WebKit 各通過第 130～136 關和末關重玩；用原始模組確認從第 130、135 關續玩，兩種裝置各解碼 119 張頭像。四種畫面尺寸核對六關戰前及戰場行軍圖的位置、箭頭和暫停恢復，另比對 53 份發布資源。 [正式遊戲](https://gm0621.github.io/pvz-web-prototype/hero/?v=314fa4a) · [人物圖鑑](https://gm0621.github.io/pvz-web-prototype/hero/people.html?v=314fa4a) · [發布紀錄](https://github.com/gm0621/pvz-web-prototype/actions/runs/45540539122)
