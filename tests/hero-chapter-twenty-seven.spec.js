@@ -156,7 +156,7 @@ test('stage 154 unlocks the campaign to restore Emperor Hui and keeps campaign s
  await page.clock.pauseAt(await page.evaluate(()=>Date.now()+700));
  await expect(page.locator('#homeExtraProgress')).toContainText('11 / 18');
  await expect(page.locator('#homeChapterCount')).toHaveText('主篇 142 關');
- await expect(page.locator('#homeStageCount')).toHaveText('番外 18 關');
+ await expect(page.locator('#homeStageCount')).toHaveText('番外 24 關');
  await expect(page.locator('#chapterDots [data-level="155"]')).toBeDisabled();
  await choose(26,154);
  await expect(page.locator('#storyTitle')).toHaveText('趙王篡位');
@@ -337,7 +337,7 @@ test('stage 154 unlocks the campaign to restore Emperor Hui and keeps campaign s
  expect(await readSave()).toMatchObject(cleared);
 
  await page.goto('/hero/people.html',{waitUntil:'domcontentloaded'});
- for(const [query,name,levels] of [['景治','司馬冏',[155,156,160]],['成都王','司馬穎',[155,157,158,160]],['子道','盧志',[155,157,158,160]],['左衛將軍','王輿',[159]],['征虜將軍','張泓',[156]],['孫秀之子','孫會',[157,158]],['河間王','司馬顒',[155]]]){
+ for(const [query,name,levels] of [['景治','司馬冏',[155,156,160,161,162,163]],['成都王','司馬穎',[155,157,158,160,164,165]],['子道','盧志',[155,157,158,160]],['左衛將軍','王輿',[159]],['征虜將軍','張泓',[156]],['孫秀之子','孫會',[157,158]],['河間王','司馬顒',[155,162,164,165]]]){
   await page.locator('#peopleSearch').fill(query);
   const card=page.locator(`[data-person="${name}"]`);
   await expect(card.locator('.stage-pills span')).toHaveText(levels.map(level=>new RegExp(`第 ${level} 關`)));

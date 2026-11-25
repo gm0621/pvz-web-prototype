@@ -42,6 +42,9 @@
 .route-inset-side,.route-inset-opponent-role{font-size:13px;font-weight:650;fill:#596750}
 .route-inset-opponent-role{fill:#873e30}
 .route-inset-army-name{font-size:18px;font-weight:750;fill:#234e3b}
+.route-inset-secondary rect{fill:#f0e1cd;stroke:#b8926c}
+.route-inset-secondary text{font-size:20px;font-weight:750;fill:#67342a}
+.route-inset-secondary path{fill:none;stroke:#873e30;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
 #story .journey-map:has(>.route-inset),#campaignMapCanvas:has(>.route-inset){max-width:560px;margin-inline:auto;background:none}
 #story .journey-map>.route-inset{height:auto;max-height:none}
 #story .journey-map .route-inset .map-person>svg,#campaignMapCanvas .route-inset .map-person>svg{width:54px;height:54px;max-height:none}

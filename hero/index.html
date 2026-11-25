@@ -8,7 +8,7 @@
  <link rel="preload" as="image" href="./assets/home/peach-720.webp" media="(max-width:700px)">
  <link rel="preload" as="image" href="./assets/home/peach-1440.webp" media="(min-width:701px)">
  <link rel="stylesheet" href="game.css?v=dispatch-supply-1">
- <link rel="stylesheet" href="finale.css?v=main-finale-2">
+ <link rel="stylesheet" href="finale.css?v=luoyang-bonus-1">
 <style>.orders{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}.orders span{flex-basis:100%;font-size:13px}.orders button{min-height:44px;min-width:64px;padding:8px 12px;border:1px solid #9aab88;border-radius:8px;background:#faf0d5;color:#244332}.orders button:disabled{opacity:.45}.unit.retreating .unit-figure{animation:unit-march .42s ease-in-out infinite}</style>
 <link rel="stylesheet" href="duel.css?v=chapter-six-1">
 <link rel="stylesheet" href="novel-camp.css?v=dispatch-supply-1">
@@ -77,11 +77,13 @@
     <button id="homeFinale" class="quiet-button" hidden>重看主篇結局</button>
     <p id="homeExtraProgress" class="subtle" hidden></p>
     <button id="homeExtra" class="quiet-button" hidden>西晉後日談 →</button>
+    <p id="homeLuoyangProgress" class="subtle" hidden></p>
+    <button id="homeLuoyang" class="quiet-button" hidden>八王之亂外傳：洛陽風雲 →</button>
     <div class="home-secondary"><a href="#chapterPicker">選擇章回 <span>↓</span></a><a class="people-link" href="people.html" target="_blank" rel="noopener">人物圖鑑 <span>↗</span></a></div>
    </div>
    <details id="chapterPicker" class="chapter-book">
     <summary><div><strong>章回目錄</strong><span>選擇關卡，或重溫走過的故事</span></div></summary>
-    <nav id="chapterTabs" aria-label="選擇章節"><section class="chapter-tab-group"><strong>英雄演義主篇</strong><div id="mainChapterTabs"></div></section><section class="chapter-tab-group"><strong>番外・西晉後日談</strong><div id="bonusChapterTabs"></div></section></nav><div id="chapterDots" aria-label="關卡列表"></div>
+    <nav id="chapterTabs" aria-label="選擇章節"><section class="chapter-tab-group"><strong>英雄演義主篇</strong><div id="mainChapterTabs"></div></section><section class="chapter-tab-group"><strong>番外・西晉後日談</strong><div id="bonusChapterTabs"></div></section><section class="chapter-tab-group"><strong>八王之亂外傳：洛陽風雲</strong><div id="luoyangChapterTabs"></div></section></nav><div id="chapterDots" aria-label="關卡列表"></div>
    </details>
    <p class="home-foot">布陣迎敵 <i>·</i> 武將單挑 <i>·</i> 走進三國</p>
   </section>
@@ -166,7 +168,7 @@
  <button id="storageRetry" class="quiet-button" hidden>重試保存進度與軍資</button>
 
  <dialog id="campaignMapDialog" aria-labelledby="campaignMapTitle"><header><div><small id="campaignMapPeriod">戰役行程</small><h2 id="campaignMapTitle">三國行軍圖</h2></div><button id="campaignMapClose" class="quiet-button">返回戰場 ✕</button></header><div class="map-location"><h3 id="campaignMapLocation"></h3><span id="campaignMapModern"></span></div><div id="campaignMapMatchup" class="map-matchup"></div><div id="campaignMapCanvas"></div><div class="map-legend"><span>⚑ 目前位置</span><span>● 本關前的行軍地點</span><span>○ 後續地點</span></div><p id="campaignMapDetail"></p><p class="map-route-caption">劇情行軍路線：<span id="campaignMapRoute"></span></p><details><summary>查看所有關卡戰役位置</summary><ol id="campaignMapStages"></ol></details><p class="map-note" id="campaignMapNote">地名與方向為戰區示意；地形與路線間距依遊戲版面調整。</p></dialog>
- <script type="module" src="app.mjs?v=main-finale-2"></script>
+ <script type="module" src="app.mjs?v=luoyang-bonus-1"></script>
  <script type="module" src="home-cover.mjs?v=home-cover-1"></script>
 </body>
 </html>

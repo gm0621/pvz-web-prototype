@@ -1,5 +1,5 @@
-import {HISTORICAL_STAGES} from './history-stages.mjs?v=main-finale-2';
-import {paintPortrait} from './factions.mjs?v=main-finale-2';
+import {HISTORICAL_STAGES} from './history-stages.mjs?v=luoyang-bonus-1';
+import {paintPortrait} from './factions.mjs?v=luoyang-bonus-1';
 import {THIRD_CHAPTER} from './chapter-three.mjs?v=passive-feedback-1';
 // History and novel adaptation are deliberately separated in the introduction.
 export const CHAPTER_BACKGROUNDS={
@@ -41,6 +41,7 @@ CHAPTER_BACKGROUNDS[13]={era:'215—219 年・漢中爭雄',history:'張魯歸�
 CHAPTER_BACKGROUNDS[12]={era:'212—215 年・隴右與漢中',history:'關中戰後，夏侯淵留守並援救祁山。曹操封魏公後，西征張魯，經陽平關進入南鄭。',story:'沿用曹操軍。西線及鄴城分段敘事，行軍、糧運與守軍交戰是遊戲改編。張魯退往巴中後才率部歸降。'};
 CHAPTER_BACKGROUNDS[11]={era:'209—211 年・江陵與關中',history:'赤壁後曹操北返，曹仁在江陵撤守。北方整備後，曹操西征，與馬超、韓遂等在潼關及渭水交戰。',story:'江陵段切換到留守軍消息，兵卡沿用抽象職能。三路接應與運糧為改編，保留江陵失守與馬超、韓遂退走的結果。'};
 CHAPTER_BACKGROUNDS[16]={era:'223—225 年・託孤與南征',history:'劉備去世前在永安託付後事，劉禪於成都即位。蜀漢與吳修好、讓百姓休息，諸葛亮在 225 年才出兵南中，年底回到成都。',story:'跟著諸葛亮、劉禪、鄧芝和李恢走過六關。從傳遞消息、守護三路到整備田間和送糧，看看打仗之外還要做哪些事。'};
+CHAPTER_BACKGROUNDS[28]={era:'302～304 年・洛陽風雲',history:'齊王司馬冏掌政後，長沙王司馬乂取而代之。成都王和河間王隨後聯手攻洛陽，司馬乂終被拘押並遇害。',story:'送上勸諫的文書，守住宮門，整備洛陽，在圍城中把走散的人接回來。'};
 CHAPTER_BACKGROUNDS[27]={era:'301 年・諸王討趙',history:'趙王奪取皇位，齊王在許昌起兵，成都王在鄴城響應。兩路戰事推進後，惠帝回宮復位，齊王掌管朝政。',story:'傳出許昌的檄文，守住潁陰，照應黃橋退下的隊伍，再把惠帝回宮的消息送出去。'};
 CHAPTER_BACKGROUNDS[26]={era:'291～301 年・東宮風雲',history:'洛陽再變後，賈皇后掌權。太子司馬遹被廢並在許昌遇害。趙王司馬倫後來廢掉賈皇后，並在 301 年奪取皇位。',story:'替東宮送消息，照應去許昌的隊伍，在洛陽的動亂中守備、撤離，再把皇位變動的消息送出去。'};
 CHAPTER_BACKGROUNDS[25]={era:'280～291 年・太康之後',history:'西晉統一後進入太康年間。孫皓到了洛陽，後來司馬衷即位。291 年朝廷連續發生政變，王族之間的衝突逐步擴大。',story:'先替前往洛陽的隊伍送糧，再接應傳遞即位消息的使者。洛陽發生動亂時，守住各路，帶隊撤往安全的地方。'};

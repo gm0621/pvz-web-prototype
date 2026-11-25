@@ -105,7 +105,7 @@ test('stage 112 continues through Jiang Wei’s northern campaigns and keeps cam
  await page.clock.pauseAt(await page.evaluate(()=>Date.now()+700));
  await expect(page.locator('#homeProgress')).toContainText('112 / 142');
  await expect(page.locator('#homeChapterCount')).toHaveText('主篇 142 關');
- await expect(page.locator('#homeStageCount')).toHaveText('番外 18 關');
+ await expect(page.locator('#homeStageCount')).toHaveText('番外 24 關');
  await expect(page.locator('#chapterDots [data-level="114"]')).toBeDisabled();
  await choose(19,112);
  await expect(page.locator('#storyTitle')).toHaveText('援軍解圍');

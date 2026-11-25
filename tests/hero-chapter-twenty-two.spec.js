@@ -144,7 +144,7 @@ test('stage 124 continues through Chengdu and keeps campaign saves on touch scre
  await page.clock.pauseAt(await page.evaluate(()=>Date.now()+700));
  await expect(page.locator('#homeProgress')).toContainText('124 / 142');
  await expect(page.locator('#homeChapterCount')).toHaveText('主篇 142 關');
- await expect(page.locator('#homeStageCount')).toHaveText('番外 18 關');
+ await expect(page.locator('#homeStageCount')).toHaveText('番外 24 關');
  await expect(page.locator('#chapterDots [data-level="126"]')).toBeDisabled();
  await choose(21,124);
  await expect(page.locator('#storyTitle')).toHaveText('劍閣守關');

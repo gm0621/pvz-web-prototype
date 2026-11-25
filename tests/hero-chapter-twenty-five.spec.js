@@ -145,7 +145,7 @@ test('stage 142 continues through the early Rebellion of the Eight Princes and k
  await page.clock.pauseAt(await page.evaluate(()=>Date.now()+700));
  await expect(page.locator('#homeProgress')).toHaveText('英雄演義・全篇通關');
  await expect(page.locator('#homeChapterCount')).toHaveText('主篇 142 關');
- await expect(page.locator('#homeStageCount')).toHaveText('番外 18 關');
+ await expect(page.locator('#homeStageCount')).toHaveText('番外 24 關');
  await expect(page.locator('#chapterDots [data-level="144"]')).toBeDisabled();
  await choose(24,142);
  await expect(page.locator('#storyTitle')).toHaveText('孫皓受降');
@@ -386,7 +386,7 @@ test('stage 142 continues through the early Rebellion of the Eight Princes and k
  expect(await readSave()).toMatchObject(cleared);
 
  await page.goto('/hero/people.html',{waitUntil:'domcontentloaded'});
- for(const [query,name,levels] of [['晉惠帝','司馬衷',[145,147,148,149,151,153,154,159,160]],['楊駿','楊駿',[145,146,147]],['賈皇后','賈南風',[145,146,148,149,150,151,152]],['汝南王','司馬亮',[146,147,148]],['彥度','司馬瑋',[146,147,148,149]]]){
+ for(const [query,name,levels] of [['晉惠帝','司馬衷',[145,147,148,149,151,153,154,159,160,163,164,166]],['楊駿','楊駿',[145,146,147]],['賈皇后','賈南風',[145,146,148,149,150,151,152]],['汝南王','司馬亮',[146,147,148]],['彥度','司馬瑋',[146,147,148,149]]]){
   await page.locator('#peopleSearch').fill(query);
   const card=page.locator(`[data-person="${name}"]`);
   await expect(card.locator('.stage-pills span')).toHaveText(levels.map(level=>new RegExp(`第 ${level} 關`)));

@@ -147,7 +147,7 @@ test('stage 148 continues through the usurpation of the Prince of Zhao and keeps
  await page.clock.pauseAt(await page.evaluate(()=>Date.now()+700));
  await expect(page.locator('#homeExtraProgress')).toContainText('6 / 18');
  await expect(page.locator('#homeChapterCount')).toHaveText('主篇 142 關');
- await expect(page.locator('#homeStageCount')).toHaveText('番外 18 關');
+ await expect(page.locator('#homeStageCount')).toHaveText('番外 24 關');
  await expect(page.locator('#chapterDots [data-level="150"]')).toBeDisabled();
  await choose(25,148);
  await expect(page.locator('#storyTitle')).toHaveText('洛陽再變');

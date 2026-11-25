@@ -1,7 +1,7 @@
-import {routeInset,routeInsetSvg} from './route-inset.mjs?v=main-finale-2';
-import {stagePeople,mapPersonSvg,renderMatchup} from './characters.mjs?v=main-finale-2';
-import {stageFactionTitle} from './factions.mjs?v=main-finale-2';
-import {HISTORICAL_STAGES} from './history-stages.mjs?v=main-finale-2';
+import {routeInset,routeInsetSvg} from './route-inset.mjs?v=luoyang-bonus-1';
+import {stagePeople,mapPersonSvg,renderMatchup} from './characters.mjs?v=luoyang-bonus-1';
+import {stageFactionTitle} from './factions.mjs?v=luoyang-bonus-1';
+import {HISTORICAL_STAGES} from './history-stages.mjs?v=luoyang-bonus-1';
 // Approximate regional placement, not historical borders or a surveyed route.
 export const MAP_PLACES={
  zhuo:{name:'涿郡',modern:'今河北涿州一帶',x:402,y:78},
@@ -135,6 +135,10 @@ Object.assign(westernPlaces,{
  jinHuangqiao:{name:'黃橋',modern:'今河南北部一帶・黃橋戰區示意',x:333,y:264},
  jinJushui:{name:'湨水',modern:'今河南濟源至孟州一帶・湨水流域示意',x:266,y:278}
 });
+Object.assign(westernPlaces,{
+ jinQiCourt:{name:'齊王府',modern:'今河南洛陽一帶・司馬冏府邸區域示意',x:227,y:323},
+ jinChangan:{name:'長安',modern:'今陝西西安一帶・西晉關中駐軍區域示意',x:18,y:340}
+});
 Object.assign(MAP_PLACES,westernPlaces);
 STAGE_LOCATIONS.push(...HISTORICAL_STAGES.map(s=>({place:s.mapPlace,detail:`${s.year} 年・${stageFactionTitle(s)}視角。${s.viewpointShift?'此處切換敘事視角，不是上一支軍隊的連續行程。':''}地點為歷史區域示意，並非精確軍事路線。`})));
 export function stageLocation(level){if(!Number.isInteger(level)||!STAGE_LOCATIONS[level-1])throw new RangeError('未知戰役關卡');const s=STAGE_LOCATIONS[level-1];return {...MAP_PLACES[s.place],...s,level}}
@@ -143,7 +147,8 @@ export function routeThrough(level){stageLocation(level);if(level>=65){const s=H
 export function journeyRoute(level){
  const to=stageLocation(level),origin=level>=17?HISTORICAL_STAGES[level-17].originPlace:null;
  const from=origin?{...MAP_PLACES[origin],place:origin}:stageLocation(Math.max(1,level-1)),same=from.place===to.place;
- if(HISTORICAL_STAGES[level-17]?.detailedRoute)return {from,to,same,...routeInset(from,to)};
+ const stage=HISTORICAL_STAGES[level-17];
+ if(stage?.detailedRoute)return {from,to,same,...routeInset(from,to,!!stage.mapSecondaryOrigin)};
  const start={x:same?to.x-90:from.x-36,y:same?to.y-10:from.y-44},end={x:to.x-36,y:to.y-44};
  const waypoints=level>=65?HISTORICAL_STAGES[level-17].viaPlaces.map(key=>MAP_PLACES[key]):[];
  const left=Math.min(start.x,end.x,...waypoints.map(p=>p.x-50))-50,right=Math.max(start.x,to.x+36,...waypoints.map(p=>p.x))+65;
@@ -154,7 +159,7 @@ export function journeyRoute(level){
 export function campaignMapSvg(level,mini=false){
  const current=stageLocation(level),route=routeThrough(level),visited=new Set(route);
  const stage=HISTORICAL_STAGES[level-17],people=mini?null:stagePeople(level);
- if(stage?.detailedRoute)return routeInsetSvg(MAP_PLACES[route[0]],current,people,stage.mapOpponent,mini,stage);
+ if(stage?.detailedRoute)return routeInsetSvg(MAP_PLACES[route[0]],current,people,stage.mapOpponent,mini,stage,MAP_PLACES[stage.mapSecondaryOrigin]);
  const markers=people?(stage?.mapLeader===false?'':mapPersonSvg(people.leader,'map-leader',current.x-36,current.y-44))
   +(stage?.mapOpponent===false?'':mapPersonSvg(people.opponent,people.diplomaticMeeting?'map-host':'map-opponent',current.x+36,current.y-44)):'';
  const points=route.map(key=>`${MAP_PLACES[key].x},${MAP_PLACES[key].y}`).join(' ');

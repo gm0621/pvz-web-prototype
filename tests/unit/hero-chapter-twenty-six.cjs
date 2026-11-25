@@ -34,7 +34,7 @@ test('the Eastern Palace chapter keeps prior saves and the historical sequence',
  assert.equal(progress.armyWeapons.cao.guanyu,1);
  assert.equal(progress.armyWeapons.sun.zhangfei,2);
  assert.equal(progress.inventory.grain,2);
- assert.equal(rewardVictory(progress,161),0);
+ assert.equal(rewardVictory(progress,167),0);
  assert.match(chapter[1].victory,/司馬遹失去太子身分/);
  assert.match(chapter[2].victory,/司馬遹在許昌遇害/);
  assert.match(chapter[3].victory,/賈南風被廢.*張華與裴頠遇害/);

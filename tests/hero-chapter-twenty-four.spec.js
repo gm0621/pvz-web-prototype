@@ -116,7 +116,7 @@ test('stage 136 continues through the surrender of Wu and keeps campaign saves o
  await page.clock.pauseAt(await page.evaluate(()=>Date.now()+700));
  await expect(page.locator('#homeProgress')).toContainText('136 / 142');
  await expect(page.locator('#homeChapterCount')).toHaveText('主篇 142 關');
- await expect(page.locator('#homeStageCount')).toHaveText('番外 18 關');
+ await expect(page.locator('#homeStageCount')).toHaveText('番外 24 關');
  await expect(page.locator('#chapterDots [data-level="138"]')).toBeDisabled();
  await expect(page.locator('#chapterDots [data-level="143"]')).toBeDisabled();
  await expect(page.locator('#homeExtra')).toBeHidden();
@@ -428,7 +428,7 @@ test('existing bonus saves can revisit the main ending and replay chapters witho
  const popupOpened=page.waitForEvent('popup');
  await tap('#finaleComplete .people-link');
  const popup=await popupOpened;
- await expect(popup.locator('.person-card')).toHaveCount(143);
+ await expect(popup.locator('.person-card')).toHaveCount(150);
  await popup.close();
  await tap('#finaleChapterPicker');
  await expect(page.locator('#mainChapterTabs [data-chapter="24"]')).toHaveAttribute('aria-pressed','true');
