@@ -32,7 +32,7 @@ test('Jiang Wei’s campaign preserves the Xingshi save and distinguishes histor
  assert.equal(progress.weapons.guanyu,2);
  assert.equal(progress.inventory.grain,2);
  assert.equal(progress.heroGrowth.caoren.weapon,2);
- assert.equal(rewardVictory(progress,149),0);
+ assert.equal(rewardVictory(progress,155),0);
  assert.match(chapter[3].victory,/費禕在漢壽遇害/);
  assert.match(chapter[4].victory,/南安仍在魏國手中/);
  assert.match(chapter[5].victory,/狄道仍由魏軍守住/);
@@ -50,7 +50,7 @@ test('Jiang Wei’s campaign preserves the Xingshi save and distinguishes histor
   assert.deepEqual(entry.levels,levels);
   assert.equal(portraitForDisplay(entry.portrait).asset,expressionPortrait(name));
  }
- assert.equal(new Set(PEOPLE.map(p=>expressionPortrait(p.name))).size,130);
+ assert.equal(new Set(PEOPLE.map(p=>expressionPortrait(p.name))).size,136);
 });
 
 test('both chapter twenty retreats require a surviving party and wait for soldiers as well as heroes',async()=>{

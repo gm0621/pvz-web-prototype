@@ -1,4 +1,4 @@
-import {createHistoryMission,stepHistoryMission,protectHistoricalOutcome,historyMissionText} from './history-missions.mjs?v=chapter-twenty-five-2';
+import {createHistoryMission,stepHistoryMission,protectHistoricalOutcome,historyMissionText} from './history-missions.mjs?v=chapter-twenty-six-1';
 // All objectives share the paused battle clock; story choices never spend resources.
 export function createMission(level){
  if(level>=17)return createHistoryMission(level);

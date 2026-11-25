@@ -1,5 +1,5 @@
-import {HISTORICAL_STAGES} from './history-stages.mjs?v=chapter-twenty-five-2';
-import {FACTIONS,factionFor,stageFactionTitle,archerArtwork} from './factions.mjs?v=chapter-twenty-five-2';
+import {HISTORICAL_STAGES} from './history-stages.mjs?v=chapter-twenty-six-1';
+import {FACTIONS,factionFor,stageFactionTitle,archerArtwork} from './factions.mjs?v=chapter-twenty-six-1';
 import {THIRD_CHAPTER} from './chapter-three.mjs?v=passive-feedback-1';
 import {WEATHER_GENERALS} from './weather-generals.mjs?v=passive-feedback-1';
 import {SECOND_CHAPTER} from './chapter-two.mjs?v=passive-feedback-1';
@@ -50,7 +50,7 @@ export const STAGES=[
 ];
 
 STAGES.push(...SECOND_CHAPTER,...THIRD_CHAPTER,...HISTORICAL_STAGES);
-export function chapterInfo(level){const chapter=STAGES[level-1]?.chapter||1;return {chapter,number:STAGES[level-1]?.number||level,count:STAGES.filter(s=>(s.chapter||1)===chapter).length,title:['','桃園同心','烽火與義氣','風雨破黃巾','群雄討董','兗州風雲','迎駕與下邳','官渡風雲','河北爭戰','北征與歸途','荊州與赤壁','江陵與關中','隴右與漢中','漢中爭雄','襄樊風雲','夷陵之戰','託孤與南征','北伐初征','五丈原秋風','興勢守漢中','姜維北伐','劍閣守關','成都受降','成都餘波','西晉一統','太康之後'][chapter]}}
+export function chapterInfo(level){const chapter=STAGES[level-1]?.chapter||1;return {chapter,number:STAGES[level-1]?.number||level,count:STAGES.filter(s=>(s.chapter||1)===chapter).length,title:['','桃園同心','烽火與義氣','風雨破黃巾','群雄討董','兗州風雲','迎駕與下邳','官渡風雲','河北爭戰','北征與歸途','荊州與赤壁','江陵與關中','隴右與漢中','漢中爭雄','襄樊風雲','夷陵之戰','託孤與南征','北伐初征','五丈原秋風','興勢守漢中','姜維北伐','劍閣守關','成都受降','成都餘波','西晉一統','太康之後','東宮風雲'][chapter]}}
 
 export const UNLOCKS={healing:2,roar:3,cleave:4,shields:5,oath:6};
 export const FEATURES=[

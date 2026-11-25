@@ -13,7 +13,7 @@ const cast=[
  "徐榮","華雄","鄧茂","程遠志","石魁","雷烈","韓旌","焦魯","杜衡"
 ];
 const portraits=new Map(cast.map((name,index)=>[name,`./assets/portraits/expressions/${String(index+5).padStart(3,"0")}.webp`]));
-for(const [name,file] of Object.entries({'魏延':'wei-yan','蔣琬':'jiang-wan','費禕':'fei-yi','曹爽':'cao-shuang','夏侯霸':'xiahou-ba','郭循':'guo-xun','陳泰':'chen-tai','王經':'wang-jing','鄧艾':'deng-ai','鍾會':'zhong-hui','廖化':'liao-hua','張翼':'zhang-yi','諸葛瞻':'zhuge-zhan','黃崇':'huang-chong','諸葛尚':'zhuge-shang','譙周':'qiao-zhou','衛瓘':'wei-guan','胡烈':'hu-lie','郤正':'xi-zheng','司馬炎':'sima-yan','羊祜':'yang-hu','陸抗':'lu-kang','步闡':'bu-chan','杜預':'du-yu','王濬':'wang-jun','孫皓':'sun-hao','司馬衷':'sima-zhong','楊駿':'yang-jun','賈南風':'jia-nanfeng','司馬亮':'sima-liang','司馬瑋':'sima-wei'})){
+for(const [name,file] of Object.entries({'魏延':'wei-yan','蔣琬':'jiang-wan','費禕':'fei-yi','曹爽':'cao-shuang','夏侯霸':'xiahou-ba','郭循':'guo-xun','陳泰':'chen-tai','王經':'wang-jing','鄧艾':'deng-ai','鍾會':'zhong-hui','廖化':'liao-hua','張翼':'zhang-yi','諸葛瞻':'zhuge-zhan','黃崇':'huang-chong','諸葛尚':'zhuge-shang','譙周':'qiao-zhou','衛瓘':'wei-guan','胡烈':'hu-lie','郤正':'xi-zheng','司馬炎':'sima-yan','羊祜':'yang-hu','陸抗':'lu-kang','步闡':'bu-chan','杜預':'du-yu','王濬':'wang-jun','孫皓':'sun-hao','司馬衷':'sima-zhong','楊駿':'yang-jun','賈南風':'jia-nanfeng','司馬亮':'sima-liang','司馬瑋':'sima-wei','張華':'zhang-hua','裴頠':'pei-wei','司馬遹':'sima-yu','司馬倫':'sima-lun','孫秀':'sun-xiu-jin','司馬允':'sima-yun'})){
  portraits.set(name,`./assets/portraits/${file}.webp?v=expression-1`);
 }
 export function expressionPortrait(name){return portraits.get(name)}

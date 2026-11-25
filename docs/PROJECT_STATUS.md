@@ -20,6 +20,12 @@ npm run test:hero:engine
 npx playwright test --config=playwright.hero-input.config.js
 ```
 
+## 2026-11-25 第二十六章「東宮風雲」
+
+- 新增第 149～154 關「賈后掌權、東宮廢立、許昌幽居、賈后被廢、淮南王起兵、趙王篡位」。沿 291～301 年史實，分開交代司馬遹被廢與許昌結局，保留司馬允敗亡、司馬倫篡位及惠帝遷往金墉城。六關沿用新版行軍圖、營地、兵器強化和首勝規則。 [第二十六章規格](hero-history-chapter-twenty-six.md)
+- 新增張華、裴頠、司馬遹、司馬倫、孫秀和司馬允六張表情各異的萌將頭像，圖鑑共 136 人。補上司馬衷、賈南風及司馬瑋的登場關卡。
+- 本機 411 項引擎測試，320px 與 390px 手機 Chromium、820px 平板 WebKit 整章觸控 3 項，前章和圖鑑回歸 8 項。涵蓋 148→149、東宮傳令、許昌運糧、護送守備、淮南王撤離、末關重整、儲存失敗重試及零重複獎勵。整章觸控採模擬裝置、隔離存檔與受控敵波，第 152、153 關另以正常敵波通關。快取版 `chapter-twenty-six-1`，整章設定 `playwright.hero-twenty-six.config.js`。
+
 ## 2026-11-25 第二十五章完整流程複查
 
 - 已發布 `ec49e98`。正式站手機 Chromium、平板 WebKit 都走完第 142～148 關及重玩。第 146、148 關另以正常敵波通關，原始模組從第 142、147 關進度續玩。以四種畫面尺寸核對六關行軍圖，兩種裝置各解碼 130 張頭像，另比對 45 份發布資源。 [正式遊戲](https://gm0621.github.io/pvz-web-prototype/hero/?v=ec49e98) · [人物圖鑑](https://gm0621.github.io/pvz-web-prototype/hero/people.html?v=ec49e98) · [發布紀錄](https://github.com/gm0621/pvz-web-prototype/actions/runs/45555920298)

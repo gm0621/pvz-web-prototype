@@ -1,7 +1,7 @@
-import {routeInset,routeInsetSvg} from './route-inset.mjs?v=chapter-twenty-five-2';
-import {stagePeople,mapPersonSvg,renderMatchup} from './characters.mjs?v=chapter-twenty-five-2';
-import {stageFactionTitle} from './factions.mjs?v=chapter-twenty-five-2';
-import {HISTORICAL_STAGES} from './history-stages.mjs?v=chapter-twenty-five-2';
+import {routeInset,routeInsetSvg} from './route-inset.mjs?v=chapter-twenty-six-1';
+import {stagePeople,mapPersonSvg,renderMatchup} from './characters.mjs?v=chapter-twenty-six-1';
+import {stageFactionTitle} from './factions.mjs?v=chapter-twenty-six-1';
+import {HISTORICAL_STAGES} from './history-stages.mjs?v=chapter-twenty-six-1';
 // Approximate regional placement, not historical borders or a surveyed route.
 export const MAP_PLACES={
  zhuo:{name:'涿郡',modern:'今河北涿州一帶',x:402,y:78},
@@ -125,6 +125,10 @@ Object.assign(westernPlaces,{
  luoyangPalace:{name:'洛陽宮城',modern:'今河南洛陽一帶・西晉宮城區域示意',x:216,y:313},
  luoyangStreets:{name:'洛陽街巷',modern:'洛陽城內・遊戲護送場景',x:228,y:333},
  luoyangGate:{name:'洛陽城門',modern:'洛陽城內・遊戲撤離場景',x:239,y:359}
+});
+Object.assign(westernPlaces,{
+ luoyangEastPalace:{name:'洛陽東宮',modern:'今河南洛陽一帶・西晉太子居所區域示意',x:236,y:318},
+ jinJinyong:{name:'金墉城',modern:'今河南洛陽一帶・魏晉洛陽城西北的金墉城示意',x:198,y:305}
 });
 Object.assign(MAP_PLACES,westernPlaces);
 STAGE_LOCATIONS.push(...HISTORICAL_STAGES.map(s=>({place:s.mapPlace,detail:`${s.year} 年・${stageFactionTitle(s)}視角。${s.viewpointShift?'此處切換敘事視角，不是上一支軍隊的連續行程。':''}地點為歷史區域示意，並非精確軍事路線。`})));

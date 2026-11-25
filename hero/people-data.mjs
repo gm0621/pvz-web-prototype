@@ -1,16 +1,22 @@
-import {GENERALS} from './roster.mjs?v=chapter-twenty-five-2';
-import {NOVEL_PAGES,CAMP_LINES} from './novel.mjs?v=chapter-twenty-five-2';
-import {campConversation} from './camp-talk.mjs?v=chapter-twenty-five-2';
-import {STORY_TASKS} from './story-play.mjs?v=chapter-twenty-five-2';
-import {CHAPTER_BACKGROUNDS,STAGE_LEADS} from './prologue.mjs?v=chapter-twenty-five-2';
-import {STORY_PEOPLE,hasPersonMention} from './characters.mjs?v=chapter-twenty-five-2';
-import {HEROES,STAGES,chapterInfo,enemyArt,heroesForLevel} from './story.mjs?v=chapter-twenty-five-2';
-import {FACTIONS,enemyPortrait} from './factions.mjs?v=chapter-twenty-five-2';
+import {GENERALS} from './roster.mjs?v=chapter-twenty-six-1';
+import {NOVEL_PAGES,CAMP_LINES} from './novel.mjs?v=chapter-twenty-six-1';
+import {campConversation} from './camp-talk.mjs?v=chapter-twenty-six-1';
+import {STORY_TASKS} from './story-play.mjs?v=chapter-twenty-six-1';
+import {CHAPTER_BACKGROUNDS,STAGE_LEADS} from './prologue.mjs?v=chapter-twenty-six-1';
+import {STORY_PEOPLE,hasPersonMention} from './characters.mjs?v=chapter-twenty-six-1';
+import {HEROES,STAGES,chapterInfo,enemyArt,heroesForLevel} from './story.mjs?v=chapter-twenty-six-1';
+import {FACTIONS,enemyPortrait} from './factions.mjs?v=chapter-twenty-six-1';
 // Child-friendly summaries; comparisons are memory aids, not historical quotations.
 const bios=[
- ['司馬衷','史實人物','接下皇位的晉惠帝','他是司馬炎的兒子。父親去世後，他在洛陽即位，史稱晉惠帝。楊駿先幫忙處理國事，後來朝廷幾次更換輔政的人。','衷讀 ㄓㄨㄥ。短玉珠、圓圓的臉和有些不安的眼神，是遊戲給他的造型。','事蹟見《晉書・惠帝紀》。'],
+ ['張華','史實人物','在朝廷替太子說話的大臣','他字茂先，喜歡讀書，也幫朝廷處理國事。賈皇后指控太子時，他和裴頠出面辯護。司馬倫發動政變後，他被殺害。','深青衣袍、銀灰長鬍和安靜的微笑，就是他。','事蹟見《晉書・張華傳》。'],
+ ['裴頠','史實人物','和張華一起為太子辯護的大臣','他是西晉大臣。朝廷討論怎麼處置太子時，他和張華都站出來說明。司馬倫發動政變後，兩人都遇害。','頠讀 ㄨㄟˇ。紫色帽帶、睜大眼睛和微張的嘴，是遊戲給他的造型。','事蹟見《晉書・裴頠傳》。'],
+ ['司馬遹','史實人物','從東宮被送往許昌的太子','他字熙祖，是晉惠帝的兒子。賈皇后說他有反心，朝廷把他廢為平民。隔年他被送往許昌，後來在那裡遇害。','遹讀 ㄩˋ。深藍衣服、往下看的眼睛和皺起的眉毛，讓你一眼認出他。','事蹟見《晉書・愍懷太子傳》。'],
+ ['司馬倫','史實人物','從趙王奪取皇位的人','賈皇后被廢後，他掌握了朝政。301 年，他在孫秀等人協助下奪取皇位，惠帝被迫搬到金墉城。','倫讀 ㄌㄨㄣˊ。黑金冠、灰色方鬍和收緊的嘴角，就是他的遊戲造型。','事蹟見《晉書・趙王倫傳》。'],
+ ['孫秀','史實人物','在趙王身邊出主意的人','他在西晉為趙王司馬倫出主意。賈皇后被廢、司馬倫奪取皇位的兩次政變，他都參與了。','褐綠衣服、側看和一邊嘴角微微翹起。秀讀 ㄒㄧㄡˋ。','事蹟附見《晉書・趙王倫傳》。'],
+ ['司馬允','史實人物','在洛陽起兵的淮南王','他是晉惠帝的弟弟。司馬倫掌權後，他在洛陽起兵反對。這場爭鬥中他最後被殺。','青藍戰甲、緊咬著牙，是遊戲給他的神情。允讀 ㄩㄣˇ。','事蹟見《晉書・淮南王允傳》。'],
+ ['司馬衷','史實人物','接下皇位的晉惠帝','他是司馬炎的兒子。父親去世後，他在洛陽即位，史稱晉惠帝。楊駿先幫忙處理國事，後來朝廷幾次更換輔政的人。301 年趙王司馬倫奪取皇位，他被迫搬到金墉城。','衷讀 ㄓㄨㄥ。短玉珠、圓圓的臉和有些不安的眼神，是遊戲給他的造型。','事蹟見《晉書・惠帝紀》。'],
  ['楊駿','史實人物','惠帝剛即位時的輔政大臣','司馬衷剛接下皇位時，楊駿掌管許多朝廷事務。291 年春，賈皇后等人發動政變，楊駿在政變中被殺。','褐色衣領、灰鬍子，嘴巴抿成一條線，眼睛朝側邊看。','事蹟見《晉書・楊駿傳》。'],
- ['賈南風','史實人物','涉入兩次洛陽政變的皇后','她是晉惠帝的皇后。楊駿倒台後，她又下令讓楚王司馬瑋對付司馬亮和衛瓘，朝廷在短時間內幾次換了掌權的人。','紫紅衣服、高髮髻和微微挑起的一邊眉毛，很容易認出來。','事蹟見《晉書・惠賈皇后》及《惠帝紀》。'],
+ ['賈南風','史實人物','涉入兩次洛陽政變的皇后','她是晉惠帝的皇后。楊駿倒台後，她又下令讓楚王司馬瑋對付司馬亮和衛瓘，朝廷在短時間內幾次換了掌權的人。她掌權後廢掉太子司馬遹，300 年也被趙王廢黜。','紫紅衣服、高髮髻和微微挑起的一邊眉毛，很容易認出來。','事蹟見《晉書・惠賈皇后》及《惠帝紀》。'],
  ['司馬亮','史實人物','從許昌回洛陽的汝南王','楊駿被殺後，司馬亮受召回洛陽，和衛瓘一起幫忙處理國事。同年夏天，兩人在另一場政變中遇害。','灰鬍子、藍帽帶、微微低頭的神情。汝南王是他的封號。','事蹟見《晉書・八王列傳》。'],
  ['司馬瑋','史實人物','捲入兩次政變的楚王','他字彥度，是晉惠帝的弟弟。291 年，他先參與對付楊駿，後來又對付司馬亮和衛瓘，最後也因此被處死。','瑋讀 ㄨㄟˇ。紅盔、皺眉和張口喊話的樣子，是遊戲給他的造型。','事蹟見《晉書・八王列傳》及《惠帝紀》。'],
  ['羊祜','史實人物','會帶兵也會種田的將軍','他字叔子。到襄陽後，他讓一部分士兵種田，把糧食慢慢存起來。他和對面的陸抗各守一邊，史書也記載過兩人互通使者。','祜讀 ㄏㄨˋ。溫和的眼神、玉色頭巾和灰鬍子，可以幫你認出他。','事蹟見《晉書・羊祜傳》。'],

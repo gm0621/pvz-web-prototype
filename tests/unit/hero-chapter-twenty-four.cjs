@@ -34,7 +34,7 @@ test('the Jin-Wu chapter extends the previous save and preserves both battles at
  assert.equal(progress.armyWeapons.cao.guanyu,1);
  assert.equal(progress.armyWeapons.sun.zhangfei,2);
  assert.equal(progress.inventory.grain,2);
- assert.equal(rewardVictory(progress,149),0);
+ assert.equal(rewardVictory(progress,155),0);
  assert.match(chapter[1].victory,/陸抗拿回西陵，晉軍撤退/);
  assert.match(chapter[4].victory,/西陵落入晉軍手中/);
  assert.match(chapter[5].victory,/孫皓在石頭城向王濬投降/);

@@ -1,7 +1,7 @@
 import {MASTER_STYLES} from './master-style.mjs?v=passive-feedback-1';
-import {ALL_GENERALS} from './roster.mjs?v=chapter-twenty-five-2';
-import {paintPortrait} from './factions.mjs?v=chapter-twenty-five-2';
-import {hitSound} from './audio.mjs?v=chapter-twenty-five-2';
+import {ALL_GENERALS} from './roster.mjs?v=chapter-twenty-six-1';
+import {paintPortrait} from './factions.mjs?v=chapter-twenty-six-1';
+import {hitSound} from './audio.mjs?v=chapter-twenty-six-1';
 const seen=new WeakMap();
 const ring=(r)=>`<circle cx="150" cy="70" r="${r}"/>`;
 const line=(x,y,x2,y2)=>`<path d="M${x} ${y}L${x2} ${y2}"/>`;

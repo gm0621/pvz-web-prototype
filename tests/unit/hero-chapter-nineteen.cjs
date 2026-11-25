@@ -31,7 +31,7 @@ test('Xingshi extends the Wuzhang campaign save with six distinct narrated stage
  assert.equal(progress.weapons.guanyu,2);
  assert.equal(progress.inventory.grain,2);
  assert.equal(progress.heroGrowth.caoren.weapon,2);
- assert.equal(rewardVictory(progress,149),0);
+ assert.equal(rewardVictory(progress,155),0);
  assert.match(STAGES[106].victory,/蜀軍內部的爭端/);
  assert.match(STAGES[111].victory,/曹爽率魏軍退去，漢中守住了/);
  assert.doesNotMatch(campaignMapSvg(112),/data-person="曹爽"/);
