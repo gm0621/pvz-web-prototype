@@ -1,7 +1,7 @@
-import {routeInset,routeInsetSvg} from './route-inset.mjs?v=chapter-twenty-seven-1';
-import {stagePeople,mapPersonSvg,renderMatchup} from './characters.mjs?v=chapter-twenty-seven-1';
-import {stageFactionTitle} from './factions.mjs?v=chapter-twenty-seven-1';
-import {HISTORICAL_STAGES} from './history-stages.mjs?v=chapter-twenty-seven-1';
+import {routeInset,routeInsetSvg} from './route-inset.mjs?v=chapter-twenty-seven-2';
+import {stagePeople,mapPersonSvg,renderMatchup} from './characters.mjs?v=chapter-twenty-seven-2';
+import {stageFactionTitle} from './factions.mjs?v=chapter-twenty-seven-2';
+import {HISTORICAL_STAGES} from './history-stages.mjs?v=chapter-twenty-seven-2';
 // Approximate regional placement, not historical borders or a surveyed route.
 export const MAP_PLACES={
  zhuo:{name:'涿郡',modern:'今河北涿州一帶',x:402,y:78},
@@ -191,9 +191,9 @@ export function mountCampaignMap({stages,getBattle,setPaused}){
   renderMatchup(document.getElementById('campaignMapMatchup'),level);
   document.getElementById('campaignMapPeriod').textContent=stage.year?`${stage.year} 年・${stageFactionTitle(stage)}`:'東漢末年・戰役行程';
   document.getElementById('campaignMapNote').textContent=stage.detailedRoute?'地名與方向為戰區示意；地形與路線間距依遊戲版面調整。':'地名與路線為戰區示意。山道、山口及驛道依史料或遊戲劇情標示。';
-  document.getElementById('campaignMapLocation').textContent=`目前：${location}`;
+  document.getElementById('campaignMapLocation').textContent=`${stage.mapMessenger?'傳檄目的地':'目前'}：${location}`;
   document.getElementById('campaignMapModern').textContent=p.modern;
-  document.getElementById('campaignMapDetail').textContent=p.detail;
+  document.getElementById('campaignMapDetail').textContent=stage.mapMessenger?'信封表示傳檄使者。'+p.detail:p.detail;
   document.getElementById('campaignMapRoute').textContent=routeThrough(level).map(key=>MAP_PLACES[key].name).join(' → ');
   document.getElementById('campaignMapStages').replaceChildren(...stages.map((s,i)=>{const li=document.createElement('li');li.textContent=`${i+1}. ${s.name} · ${MAP_PLACES[STAGE_LOCATIONS[i].place].name}`;if(i+1===level)li.setAttribute('aria-current','step');else if(i+1>level)li.className='future';return li}));
  };

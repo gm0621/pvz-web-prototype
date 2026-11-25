@@ -20,6 +20,12 @@ npm run test:hero:engine
 npx playwright test --config=playwright.hero-input.config.js
 ```
 
+## 2026-11-25 第二十七章完整流程複查
+
+- 第 155 關的戰前與戰場行軍圖以信封標示傳檄使者，分別標出許昌發信、鄴城收信。司馬冏、司馬穎的頭像在圖例中呈現各自角色。第 156、158 關的戰前提示明列守備 24 秒及等敵軍全數出場後清退兩項過關條件。 [第二十七章規格](hero-history-chapter-twenty-seven.md)
+- 本機通過 414 項引擎測試、320px、390px 手機 Chromium 與 820px 平板 WebKit 的整章觸控 3 項，以及前章和圖鑑回歸 8 項。從第 153 關存檔驗證第 154 關首勝及跨章解鎖，另測使者換路、兩關最後一波、黃橋全員撤離與暫停、惠帝回宮、三處整備、營地對話和購買、末關保存失敗重試、重整和重玩。整章用模擬裝置、隔離存檔及受控敵波，第 156～158 關另以正常敵波與起始軍糧通關。快取版 `chapter-twenty-seven-2`，測試設定 `playwright.hero-twenty-seven.config.js`。
+- 後續章節可從齊王掌管朝政後的政局發展銜接。第 157 關的完成條件是保住至少一隊、讓所有在場友軍撤回左側。
+
 ## 2026-11-25 第二十七章「諸王討趙」
 
 - 已發布 `e54784b`。正式站手機 Chromium、平板 WebKit 各完成第 154～160 關及末關重玩。第 156～158 關另以正常敵波通關，原始模組自第 154、159 關存檔續玩。四種畫面尺寸核對六關的戰前與戰場行軍圖，兩種裝置各解碼 143 張頭像，另比對 55 份發布資源。 [正式遊戲](https://gm0621.github.io/pvz-web-prototype/hero/?v=e54784b) · [人物圖鑑](https://gm0621.github.io/pvz-web-prototype/hero/people.html?v=e54784b) · [發布紀錄](https://github.com/gm0621/pvz-web-prototype/actions/runs/45568252749)

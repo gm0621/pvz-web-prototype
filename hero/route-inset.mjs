@@ -1,4 +1,4 @@
-import {mapPersonSvg} from './characters.mjs?v=chapter-twenty-seven-1';
+import {mapPersonSvg} from './characters.mjs?v=chapter-twenty-seven-2';
 
 const viewBox='0 0 400 304';
 
@@ -23,10 +23,10 @@ function location(point,name,goal,side,role=goal?'終點':'起點'){
 }
 
 // This inset preserves bearings and emphasises the active route. Spacing is schematic.
-export function routeInsetSvg(from,to,people,showOpponent,mini,{mapOpponentRole='對陣',mapStationRole='議事地',mapLeaderRole='我軍'}={}){
+export function routeInsetSvg(from,to,people,showOpponent,mini,{mapOpponentRole='對陣',mapStationRole='議事地',mapLeaderRole='我軍',mapMessenger=false}={}){
  const {origin,destination,end}=routeInset(from,to);
  const stationary=origin.x===destination.x&&origin.y===destination.y;
- const mapLabel=stationary?`${to.name}・${mapStationRole}位置示意`:`${from.name}到${to.name}的行軍方位示意`;
+ const mapLabel=stationary?`${to.name}・${mapStationRole}位置示意`:`${from.name}到${to.name}的${mapMessenger?'使者路線':'行軍方位'}示意`;
  const angle=Math.atan2(destination.y-origin.y,destination.x-origin.x)*180/Math.PI;
  const split=Math.abs(destination.x-origin.x)<150?Math.sign(destination.x-origin.x)||1:0;
  // Steep routes leave space for the badge beside the moving portrait.
@@ -50,11 +50,15 @@ export function routeInsetSvg(from,to,people,showOpponent,mini,{mapOpponentRole=
   <circle class="route-inset-direction" r="${mini?12:18}"/>
   <path class="route-inset-arrow" d="M-10 0H9M2-7 9 0 2 7" transform="rotate(${angle})"/>
  </g>`}
- ${mini?`<circle class="route-inset-arrival" cx="${destination.x}" cy="${destination.y}" r="12"/>`:`${stationary?location(destination,to.name,true,0,mapStationRole):`${location(origin,from.name,false,-split)}${location(destination,to.name,true,split)}`}
+ ${mini?`<circle class="route-inset-arrival" cx="${destination.x}" cy="${destination.y}" r="12"/>`:`${stationary?location(destination,to.name,true,0,mapStationRole):`${location(origin,from.name,false,-split,mapMessenger?'發信處':'起點')}${location(destination,to.name,true,split,mapMessenger?'收信處':'終點')}`}
  <path class="route-inset-divider" d="M20 243H380"/>
- <text class="route-inset-side" x="24" y="269">${mapLeaderRole}</text>
- <text class="route-inset-army-name" x="24" y="291">${people.leader.name}</text>
+ ${mapMessenger?mapPersonSvg(people.leader,'map-sender',52,271):''}
+ <text class="route-inset-side" x="${mapMessenger?84:24}" y="269">${mapLeaderRole}</text>
+ <text class="route-inset-army-name" x="${mapMessenger?84:24}" y="291">${people.leader.name}</text>
  ${showOpponent?`<text class="route-inset-opponent-role" x="283" y="266">${mapOpponentRole}</text>${mapPersonSvg(people.opponent,'map-opponent',251,271)}`:''}
- ${mapPersonSvg(people.leader,'map-leader',end.x,end.y)}`}
+ ${mapMessenger?`<g class="map-messenger" transform="translate(${end.x} ${end.y})">
+  <title>傳檄使者</title><circle r="18"/><rect x="-11" y="-8" width="22" height="16" rx="2"/>
+  <path d="M-10-6 0 1 10-6"/>
+ </g>`:mapPersonSvg(people.leader,'map-leader',end.x,end.y)}`}
  </svg>`;
 }

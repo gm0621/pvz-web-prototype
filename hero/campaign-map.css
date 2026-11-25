@@ -33,6 +33,11 @@
 .route-inset .map-leader>text,.route-inset .journey-trail{visibility:hidden}
 .route-inset .map-opponent{scale:.66;transform-origin:251px 271px;transform-box:view-box}
 .route-inset .map-opponent>path{display:none}
+.route-inset .map-sender{scale:.66;transform-origin:52px 271px;transform-box:view-box}
+.route-inset .map-sender>path,.route-inset .map-sender>text{display:none}
+.map-messenger circle{fill:#24513f;stroke:#fff4cc;stroke-width:2}
+.map-messenger rect{fill:#ffdf87}
+.map-messenger path{fill:none;stroke:#574522;stroke-width:1.8;stroke-linejoin:round}
 .route-inset .map-opponent>text{transform:translate(48px,-22px);text-anchor:start;font:750 26px system-ui,sans-serif;stroke:none}
 .route-inset-side,.route-inset-opponent-role{font-size:13px;font-weight:650;fill:#596750}
 .route-inset-opponent-role{fill:#873e30}

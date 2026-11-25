@@ -1,13 +1,13 @@
 import {stepDoctrine,duelDoctrine,signature} from './army-doctrine.mjs?v=army-1';
 import {passiveCue,passiveLabel,learnedPassives,passiveName,tickPassives,passiveSnapshot,castPassiveFeedback} from './passive-feedback.mjs?v=passive-feedback-1';
-import {extracted} from './history-missions.mjs?v=chapter-twenty-seven-1';
-import {createMission,stepMission,protectBarrier,missionReady,missionDuelReady} from './chapter-missions.mjs?v=chapter-twenty-seven-1';
+import {extracted} from './history-missions.mjs?v=chapter-twenty-seven-2';
+import {createMission,stepMission,protectBarrier,missionReady,missionDuelReady} from './chapter-missions.mjs?v=chapter-twenty-seven-2';
 import {duelBeats} from './duel-patterns.mjs?v=passive-feedback-1';
 export {duelBeats} from './duel-patterns.mjs?v=passive-feedback-1';
 import {WEATHER_GENERALS} from './weather-generals.mjs?v=passive-feedback-1';
-import {campaignState,weaponBonus} from './campaign.mjs?v=chapter-twenty-seven-1';
-import {heroSkill} from './skills.mjs?v=chapter-twenty-seven-1';
-import {heroesForLevel,STAGES,UNLOCKS,FEATURES} from './story.mjs?v=chapter-twenty-seven-1';
+import {campaignState,weaponBonus} from './campaign.mjs?v=chapter-twenty-seven-2';
+import {heroSkill} from './skills.mjs?v=chapter-twenty-seven-2';
+import {heroesForLevel,STAGES,UNLOCKS,FEATURES} from './story.mjs?v=chapter-twenty-seven-2';
 
 export const SWING={duration:.58,impact:.24,frameTime:.08,frames:6};
 export const DUEL_DURATION=19;

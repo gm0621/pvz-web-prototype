@@ -1,7 +1,7 @@
 const {test,expect}=require('@playwright/test');
 const saveKey='heroLegendProgress_v1';
 const stages=[
- {name:'許昌傳檄',route:'許昌 → 鄴城',leader:'司馬冏',guest:'司馬穎',opponent:'司馬穎',role:'起兵響應',leaderRole:'發出檄文',faction:'齊王傳令隊',banner:'齊',kind:'dispatch',outcome:'司馬冏從許昌傳檄'},
+ {name:'許昌傳檄',route:'許昌 → 鄴城',leader:'司馬冏',guest:'司馬穎',opponent:'司馬穎',role:'起兵響應',leaderRole:'發出檄文',messenger:true,faction:'齊王傳令隊',banner:'齊',kind:'dispatch',outcome:'司馬冏從許昌傳檄'},
  {name:'潁陰守營',route:'許昌 → 潁陰',leader:'司馬冏',guest:'司馬冏',opponent:'張泓',role:'趙王將領',faction:'齊王守營隊',banner:'齊',waves:true,kind:'holdout',enemy:'張泓軍',hold:'潁陰守營',outcome:'齊王在潁陰反擊，張泓暫退'},
  {name:'黃橋收兵',route:'鄴城 → 黃橋',leader:'司馬穎',guest:'盧志',opponent:'孫會',role:'趙王前線將領',faction:'成都王收兵隊',banner:'成',waves:true,kind:'withdraw',outcome:'成都王前鋒吃了敗仗'},
  {name:'湨水反擊',route:'黃橋 → 湨水',leader:'司馬穎',guest:'盧志',opponent:'孫會',role:'退敗一方',faction:'成都王反擊隊',banner:'成',waves:true,kind:'holdout',enemy:'趙王守兵',hold:'湨水渡路守備',outcome:'成都王在湨水得勝並渡河'},
@@ -110,19 +110,19 @@ test('stage 154 unlocks the campaign to restore Emperor Hui and keeps campaign s
   await tap('#pauseBtn');
   await advance(4500);
  }
- async function checkRouteInset(scope,route,leaderRole='我軍'){
+ async function checkRouteInset(scope,{route,leaderRole='我軍',messenger=false}){
   const map=page.locator(scope+' .route-inset');
   const places=route.split(' → ');
   await expect(map.locator('.route-inset-side')).toHaveText(leaderRole);
   await expect(map.locator('.route-inset-place')).toHaveText(places);
-  await expect(map.locator('.route-inset-role')).toHaveText(['起點','終點']);
+  await expect(map.locator('.route-inset-role')).toHaveText(messenger?['發信處','收信處']:['起點','終點']);
   await expect(map.locator('.route-inset-arrow')).toBeVisible();
   const clear=await map.evaluate(svg=>{
    const frame=svg.getBoundingClientRect();
    const badge=svg.querySelector('.route-inset-direction');
-   const leader=svg.querySelector('.map-leader');
+   const leader=svg.querySelector('.map-leader,.map-messenger');
    const leaderCircle=leader.querySelector('circle');
-   const shapes=[...svg.querySelectorAll('.route-inset-stop rect,.map-person circle'),badge];
+   const shapes=[...svg.querySelectorAll('.route-inset-stop rect,.map-person circle,.map-messenger circle'),badge];
    const boxes=shapes.map(node=>node.getBoundingClientRect());
    const center=badge.parentElement.transform.baseVal.consolidate().matrix;
    const clearance=badge.r.baseVal.value+leaderCircle.r.baseVal.value;
@@ -175,11 +175,19 @@ test('stage 154 unlocks the campaign to restore Emperor Hui and keeps campaign s
   await expect(page.locator('#storyTitle')).toHaveText(stage.name);
   await expect(page.locator('#storyChapter')).toContainText('第二十七章');
   await expect(page.locator('#journeyIntro h3')).toContainText(stage.route);
+  const courier=page.locator('#journeyIntro .map-messenger');
+  const departure=stage.messenger?await courier.getAttribute('transform'):null;
   await advance(4400);
   await expect(page.locator('#journeyIntro')).toHaveAttribute('data-arrived','true');
-  await checkRouteInset('#journeyIntro',stage.route,stage.leaderRole);
-  await expect(page.locator('#journeyIntro .journey-army')).toHaveAttribute('data-person',stage.leader);
-  await expect(page.locator('#journeyIntro .journey-army image')).toHaveAttribute('href',expressionPortrait(stage.leader));
+  if(stage.messenger){
+   await expect(courier).not.toHaveAttribute('transform',departure);
+   await expect(courier.locator('title')).toHaveText('傳檄使者');
+   await expect(page.locator('#journeyIntro .journey-army')).toHaveCount(0);
+  }
+  await checkRouteInset('#journeyIntro',stage);
+  const travelerPortrait=page.locator(stage.messenger?'#journeyIntro .map-sender':'#journeyIntro .journey-army');
+  await expect(travelerPortrait).toHaveAttribute('data-person',stage.leader);
+  await expect(travelerPortrait.locator('image')).toHaveAttribute('href',expressionPortrait(stage.leader));
   if(stage.opponent)await expect(page.locator('#journeyIntro .journey-matchup small').last()).toHaveText(stage.matchup||stage.role);
   await tap('#storyMore');
   await tap('.history-toggle');
@@ -201,10 +209,19 @@ test('stage 154 unlocks the campaign to restore Emperor Hui and keeps campaign s
   await tap('#battleMenuButton');
   await tap('#battleMapButton');
   await expect(page.locator('#campaignMapRoute')).toHaveText(stage.route);
-  await checkRouteInset('#campaignMapCanvas',stage.route,stage.leaderRole);
+  await checkRouteInset('#campaignMapCanvas',stage);
+  if(stage.messenger){
+   await expect(page.locator('#campaignMapLocation')).toHaveText('傳檄目的地：鄴城');
+   const ends=await page.locator('#journeyIntro .map-messenger,#campaignMapCanvas .map-messenger').evaluateAll(nodes=>
+    nodes.map(node=>{const {e,f}=node.transform.baseVal.consolidate().matrix;return [Math.round(e),Math.round(f)]})
+   );
+   expect(ends).toHaveLength(2);
+   expect(ends[0]).toEqual(ends[1]);
+  }
   await expect(page.locator('#campaignMapPeriod')).toHaveText(`301 年・${stage.faction||'西晉軍'}`);
-  await expect(page.locator('#campaignMapCanvas .map-leader')).toHaveAttribute('data-person',stage.leader);
-  await expect(page.locator('#campaignMapCanvas .map-leader image')).toHaveAttribute('href',expressionPortrait(stage.leader));
+  const mapLeader=page.locator(stage.messenger?'#campaignMapCanvas .map-sender':'#campaignMapCanvas .map-leader');
+  await expect(mapLeader).toHaveAttribute('data-person',stage.leader);
+  await expect(mapLeader.locator('image')).toHaveAttribute('href',expressionPortrait(stage.leader));
   const matchup=page.locator(`#campaignMapMatchup [data-side=${stage.waves?'enemy':'guest'}]`);
   const opponent=matchup.locator('img');
   if(stage.opponent){

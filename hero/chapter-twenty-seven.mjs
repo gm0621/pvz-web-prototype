@@ -9,7 +9,7 @@ const adaptation='行軍圖標示史書地名和遊戲示意路線。傳檄、�
 const stages=[
  {
   name:'許昌傳檄',year:301,origin:'jinXuchang',place:'ye',shift:true,factionLabel:'齊王傳令隊',campBanner:'齊',
-  leader:'司馬冏',guest:'司馬穎',opponent:'司馬穎',mapLeaderRole:'發出檄文',mapOpponentRole:'起兵響應',historyCast:['司馬冏','司馬穎','盧志','司馬顒','司馬倫'],
+  leader:'司馬冏',guest:'司馬穎',opponent:'司馬穎',mapLeaderRole:'發出檄文',mapMessenger:true,mapOpponentRole:'起兵響應',historyCast:['司馬冏','司馬穎','盧志','司馬顒','司馬倫'],
   mission:'dispatch',scene:'supply-road',enemyArmy:'許昌傳令',successTitle:'討趙消息送達',
   history:'趙王司馬倫奪取皇位後，鎮守許昌的齊王司馬冏起兵討伐他。司馬冏派人傳送檄文，也就是號召各地出兵的公開文書。成都王司馬穎當時駐在鄴城，聽了盧志的建議也起兵響應。',
   briefing:'接應三隊使者，把齊王發出的消息送出去。可改走有友軍照應的路線。',
@@ -22,7 +22,7 @@ const stages=[
   leader:'司馬冏',guest:'司馬冏',opponent:'張泓',mapOpponentRole:'趙王將領',historyCast:['司馬冏','張泓','司馬倫'],
   mission:'holdout',missionTitle:'潁陰守營',scene:'enemy-camp',enemyArmy:'張泓軍',enemyCount:12,successTitle:'潁陰防線守住',
   history:'司馬倫派張泓等將領迎戰。張泓先在陽翟一帶打勝幾仗，又逼近齊王駐守的潁陰。齊王反擊，打敗張泓派出的部分將領，張泓暫時退兵。',
-  briefing:'派友軍照應各路。累積守備 24 秒，再清退場上的敵兵。',
+  briefing:'派友軍照應各路。累積守備 24 秒，並等敵軍全數出場後清退。',
   ending:'齊王在潁陰反擊，張泓暫退。張泓的隊伍仍在，雙方的戰事尚未結束。',
   camp:'把每條路的守衛名單拿來。剛從前線下來的人先休息，輪到下一隊接手。',
   question:'誰替趙王出兵攻打齊王？',choices:['張泓','許昌縣令','宮門守衛'],refs:[qi,chronicle]
@@ -42,7 +42,7 @@ const stages=[
   leader:'司馬穎',guest:'盧志',opponent:'孫會',mapOpponentRole:'退敗一方',historyCast:['司馬穎','盧志','孫會','司馬倫'],
   mission:'holdout',missionTitle:'湨水渡路守備',scene:'enemy-camp',enemyArmy:'趙王守兵',enemyCount:12,successTitle:'湨水渡路守住',
   history:'黃橋得勝後，孫會等人各自領兵，彼此不聽號令。司馬穎整軍後在湨水大敗對方。孫會等人丟下部隊向南逃走，成都王的軍隊趁勝渡過黃河。',
-  briefing:'派友軍照應各路，守住渡路累積 24 秒，再清退場上的敵兵。',
+  briefing:'派友軍照應各路，守住渡路累積 24 秒，並等敵軍全數出場後清退。',
   ending:'成都王在湨水得勝並渡河。趙王軍失利的消息傳到洛陽，宮裡也有了變化。',
   camp:'前一隊先回報哪條路已經通了，後一隊再走。讓後面的人知道該往哪裡渡河。',
   question:'湨水一戰後，哪一方趁勝渡過黃河？',choices:['成都王司馬穎','趙王司馬倫','許昌的傳令隊'],refs:[chengdu,chronicle]
@@ -72,7 +72,7 @@ const stages=[
 export const TWENTY_SEVENTH_CHAPTER=stages.map((stage,index)=>({
  name:stage.name,year:stage.year,chapter:27,number:index+1,faction:'cao',factionLabel:stage.factionLabel||'西晉軍',place:stage.name,campBanner:stage.campBanner||'晉',
  mapPlace:stage.place,originPlace:stage.origin,detailedRoute:true,viaPlaces:[],viewpointShift:!!stage.shift,historyCast:stage.historyCast,
- leaderName:stage.leader,opponentName:stage.opponent,mapOpponent:stage.mapOpponent??!!stage.opponent,matchupLabel:stage.matchupLabel,mapOpponentRole:stage.mapOpponentRole,mapStationRole:stage.mapStationRole,mapLeaderRole:stage.mapLeaderRole,
+ leaderName:stage.leader,opponentName:stage.opponent,mapOpponent:stage.mapOpponent??!!stage.opponent,matchupLabel:stage.matchupLabel,mapOpponentRole:stage.mapOpponentRole,mapStationRole:stage.mapStationRole,mapLeaderRole:stage.mapLeaderRole,mapMessenger:stage.mapMessenger,
  scene:`./assets/scenes/${stage.scene}.jpg`,mission:stage.mission,missionTitle:stage.missionTitle,missionSites:stage.missionSites,
  successTitle:stage.successTitle,successRibbon:'戰 事 記 錄 ・ 回 營 整 備',
  ...(stage.mission==='withdraw'?{retreatKeys:[]}:{}),
