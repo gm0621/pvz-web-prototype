@@ -452,6 +452,7 @@ test('existing bonus saves can revisit the main ending and replay chapters witho
  for(const id of chosen)await tap(`#deployment [data-choose="${id}"]`);
  for(const id of ['caoren','xiahouyuan','yujin'])await tap(`#deployment [data-choose="${id}"]`);
  await tap('#deploymentStart');
+ await expect(page.locator('#battle')).toBeVisible({timeout:25000});
  const card=page.locator('#cards [data-hero=liubei]');
  await expect(card).toContainText('曹仁');
  await card.tap();
