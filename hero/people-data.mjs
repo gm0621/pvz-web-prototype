@@ -1,13 +1,17 @@
-import {GENERALS} from './roster.mjs?v=chapter-twenty-2';
-import {NOVEL_PAGES,CAMP_LINES} from './novel.mjs?v=chapter-twenty-2';
-import {campConversation} from './camp-talk.mjs?v=chapter-twenty-2';
-import {STORY_TASKS} from './story-play.mjs?v=chapter-twenty-2';
-import {CHAPTER_BACKGROUNDS,STAGE_LEADS} from './prologue.mjs?v=chapter-twenty-2';
-import {STORY_PEOPLE} from './characters.mjs?v=chapter-twenty-2';
-import {HEROES,STAGES,chapterInfo,enemyArt,heroesForLevel} from './story.mjs?v=chapter-twenty-2';
-import {FACTIONS,enemyPortrait} from './factions.mjs?v=chapter-twenty-2';
+import {GENERALS} from './roster.mjs?v=chapter-twenty-one-1';
+import {NOVEL_PAGES,CAMP_LINES} from './novel.mjs?v=chapter-twenty-one-1';
+import {campConversation} from './camp-talk.mjs?v=chapter-twenty-one-1';
+import {STORY_TASKS} from './story-play.mjs?v=chapter-twenty-one-1';
+import {CHAPTER_BACKGROUNDS,STAGE_LEADS} from './prologue.mjs?v=chapter-twenty-one-1';
+import {STORY_PEOPLE,hasPersonMention} from './characters.mjs?v=chapter-twenty-one-1';
+import {HEROES,STAGES,chapterInfo,enemyArt,heroesForLevel} from './story.mjs?v=chapter-twenty-one-1';
+import {FACTIONS,enemyPortrait} from './factions.mjs?v=chapter-twenty-one-1';
 // Child-friendly summaries; comparisons are memory aids, not historical quotations.
 const bios=[
+ ['鄧艾','史實人物','盯著蜀軍動向的魏將','他字士載。姜維幾次北伐，鄧艾都帶兵應對，在段谷與侯和打贏蜀軍。鍾會在劍閣受阻時，鄧艾從陰平走另一條山路。','藍頭巾、皺眉加抿嘴，就是正專心想事情的鄧艾。','事蹟見《三國志・鄧艾傳》。'],
+ ['鍾會','史實人物','來到劍閣卻被擋下的指揮官','他字士季，帶大隊魏軍經漢中南下。到了劍閣，他遇到姜維等人守住山口，攻不下，只能為軍糧發愁。','他戴深色高帽，挑一邊眉毛，嘴角斜斜一笑。鍾讀 ㄓㄨㄥ。','劍閣和陰平是兩條戰線，見《三國志・鍾會傳》。'],
+ ['廖化','史實人物','忙著集合隊伍的蜀漢老將','他原名廖淳，字元儉。魏軍進攻時，朝廷派他去支援姜維。後來，幾路蜀軍會合，他也一起守劍閣。','綠頭巾、白鬍子加瞇眼大笑，就是廖化。','事蹟見《三國志・廖化傳》與《姜維傳》。'],
+ ['張翼','史實人物','敢說出不同意見的守關將領','他字伯恭。姜維想繼續出兵時，他擔心百姓和軍隊太累，當面提出不同看法。魏軍攻入漢中後，他仍和姜維一起守劍閣。','他抬著眉、微張嘴，像是正要提醒大家先想清楚。翼讀 ㄧˋ。','事蹟見《三國志・張翼傳》。'],
  ['夏侯霸','史實人物','走過山路的兩軍老將','他字仲權，是夏侯淵的兒子。他原先和姜維交手，後來投奔蜀漢，竟和姜維一起北伐。','紅披肩加上歪起的眉毛，就是迷了路、正找人幫忙的夏侯霸。','陰平迷路和缺糧見《三國志》裴松之注引《魏略》。沔陽是遊戲的接應方向示意。'],
  ['郭循','史實人物','讓漢壽聚會變調的人','郭循原是魏人，後來到了蜀漢。253 年新年的聚會上，費禕被他殺害，消息傳開後，蜀漢得重新安排政務。','記住他抿著嘴、斜眼往旁邊看。「循」念 ㄒㄩㄣˊ。','《後主傳》和《費禕傳》稱郭循。《魏書》另記作郭脩。'],
  ['陳泰','史實人物','願意趕去救人的魏將','他字玄伯。南安被圍時，他帶兵趕來。後來王經困在狄道，陳泰也帶隊去解圍。','看到藍披肩和微微揚起的嘴角，就想起這位處理急事的援將。','事蹟見《三國志》卷二十二陳泰傳。'],
@@ -124,7 +128,7 @@ for(const name of ['鄧茂','程遠志','石魁','雷烈','韓旌','焦魯','杜
 export const PEOPLE=bios.map(([name,kind,title,intro,remember,note])=>{
  const portrait=portraits.get(name),aliases=[...new Set([...(portrait.aliases||[name]),...({曹洪:['子廉'],夏侯惇:['元讓']}[name]||[])])];
  // Reference titles are bibliography, not appearances; historical chapters show stage-specific notes.
- const levels=STAGES.flatMap((s,i)=>{const {references,...content}=s;const roster=Object.values(heroesForLevel(i+1)).some(p=>p.name===name),text=JSON.stringify([content,NOVEL_PAGES[i],CAMP_LINES[i],STORY_TASKS[i],STAGE_LEADS[i],i<16?CHAPTER_BACKGROUNDS[chapterInfo(i+1).chapter]:null,campConversation(i+1,'guanyu',true),campConversation(i+1,'zhangfei',true)]);return roster||aliases.some(a=>text.includes(a))?[i+1]:[]});
+ const levels=STAGES.flatMap((s,i)=>{const {references,...content}=s;const roster=Object.values(heroesForLevel(i+1)).some(p=>p.name===name),text=JSON.stringify([content,NOVEL_PAGES[i],CAMP_LINES[i],STORY_TASKS[i],STAGE_LEADS[i],i<16?CHAPTER_BACKGROUNDS[chapterInfo(i+1).chapter]:null,campConversation(i+1,'guanyu',true),campConversation(i+1,'zhangfei',true)]);return roster||hasPersonMention(text,portrait,aliases)?[i+1]:[]});
  return {name,kind,title,intro,remember,note,portrait,aliases,levels};
 });
 export function searchPeople(query='',kind='all'){const text=query.trim().normalize('NFKC').toLocaleLowerCase();return PEOPLE.filter(p=>(kind==='all'||p.kind===kind)&&(!text||[p.name,...p.aliases,p.title,p.intro,p.remember].join(' ').normalize('NFKC').toLocaleLowerCase().includes(text))).sort((a,b)=>Number([b.name,...b.aliases].includes(text))-Number([a.name,...a.aliases].includes(text)))}

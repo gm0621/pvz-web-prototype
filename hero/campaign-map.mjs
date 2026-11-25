@@ -1,6 +1,6 @@
-import {stagePeople,mapPersonSvg,renderMatchup} from './characters.mjs?v=chapter-twenty-2';
-import {stageFactionTitle} from './factions.mjs?v=chapter-twenty-2';
-import {HISTORICAL_STAGES} from './history-stages.mjs?v=chapter-twenty-2';
+import {stagePeople,mapPersonSvg,renderMatchup} from './characters.mjs?v=chapter-twenty-one-1';
+import {stageFactionTitle} from './factions.mjs?v=chapter-twenty-one-1';
+import {HISTORICAL_STAGES} from './history-stages.mjs?v=chapter-twenty-one-1';
 // Approximate regional placement, not historical borders or a surveyed route.
 export const MAP_PLACES={
  zhuo:{name:'涿郡',modern:'今河北涿州一帶',x:402,y:78},
@@ -92,6 +92,14 @@ Object.assign(westernPlaces,{
  didao:{name:'狄道',modern:'今甘肅臨洮一帶・魏國守城示意',x:-190,y:315},
  zhongti:{name:'鍾題',modern:'蜀軍退駐地・位置為示意',x:-219,y:415}
 });
+Object.assign(westernPlaces,{
+ duangu:{name:'段谷',modern:'隴右、上邽附近・戰區示意',x:-149,y:376},
+ luogu:{name:'駱谷',modern:'秦嶺駱谷道・北上方向示意',x:56,y:400},
+ mangshui:{name:'芒水一帶',modern:'渭水南側・兩軍相持區域示意',x:98,y:318},
+ houhe:{name:'侯和',modern:'隴右西南一帶・戰區位置示意',x:-254,y:402},
+ tazhong:{name:'沓中',modern:'今甘肅南部山區・蜀軍駐地示意',x:-241,y:489},
+ jiange:{name:'劍閣',modern:'今四川劍閣一帶・蜀軍守關區域示意',x:-132,y:574}
+});
 Object.assign(MAP_PLACES,westernPlaces);
 STAGE_LOCATIONS.push(...HISTORICAL_STAGES.map(s=>({place:s.mapPlace,detail:`${s.year} 年・${stageFactionTitle(s)}視角。${s.viewpointShift?'此處切換敘事視角，不是上一支軍隊的連續行程。':''}地點為歷史區域示意，並非精確軍事路線。`})));
 export function stageLocation(level){if(!Number.isInteger(level)||!STAGE_LOCATIONS[level-1])throw new RangeError('未知戰役關卡');const s=STAGE_LOCATIONS[level-1];return {...MAP_PLACES[s.place],...s,level}}
@@ -116,10 +124,11 @@ export function campaignMapSvg(level,mini=false){
  const cities=Object.entries(MAP_PLACES).map(([key,p])=>{
   const waypoint=stage?.viaPlaces?.includes(key);
   const active=key===current.place,labelOffset=active&&route.some(k=>k!==key&&Math.hypot(MAP_PLACES[k].x-p.x,MAP_PLACES[k].y-p.y)<55)?70:38;if(level>=17&&!visited.has(key)&&!active)return '';if(level<17&&Object.hasOwn(westernPlaces,key))return '';if(level<17&&['luoyang','chenliu','suanzhao','bian','liangdong','yangren','luyang','dongwuyang','shouzhang','jibei','juancheng','puyang','dingtao','xuxian','wan','chen','xiapi','guandu','baima','yanjin','wuchao','cangting','liyang','ye','xiping','runan','qiao','junyi','pingyuan','nanpi','guangpingNorth','huguan','chunyu','canals','wuzhong','lulong','baitan','pinggang','bailang','liucheng','yishuiSouth','xiangyang','changban','jiangling','chibi','tongguan','puban','weinan'].includes(key))return '';if(key.startsWith('side')&&!visited.has(key)&&!active)return '';
-  const originNearDestination=key===stage?.originPlace&&stage.viaPlaces?.length>0&&!active&&Math.hypot(p.x-current.x,p.y-current.y)<85;
-  const labelOnLeft=waypoint||originNearDestination||level>=41&&key==='guandu';
+  const originNearDestination=key===stage?.originPlace&&(stage.viaPlaces?.length>0||stage.mapOriginLabel)&&!active&&Math.hypot(p.x-current.x,p.y-current.y)<85;
+  const labelOnLeft=waypoint||originNearDestination&&(!stage.mapOriginLabel||p.x<current.x)||level>=41&&key==='guandu';
+  const labelDistance=originNearDestination&&stage.mapOriginLabel?38:labelOnLeft?14:32;
   const hideLabel=mini||key.startsWith('side')&&!active||level>=35&&!active&&!waypoint&&!originNearDestination&&Math.hypot(p.x-current.x,p.y-current.y)<85;
-  return `<g class="map-city ${active?'current':visited.has(key)?'visited':'future'}"><circle cx="${p.x}" cy="${p.y}" r="${active?16:7}"/>${active?`<circle class="map-current-ring" cx="${p.x}" cy="${p.y}" r="24"/><path class="map-flag" d="M${p.x},${p.y-14}v-34l26,7 -26,9"/>`:''}${hideLabel?'':`<text x="${active?p.x:labelOnLeft?p.x-14:p.x+32}" text-anchor="${active?'middle':labelOnLeft?'end':'start'}" y="${p.y+(active?labelOffset:7)}">${p.name}</text>`}</g>`;
+  return `<g class="map-city ${active?'current':visited.has(key)?'visited':'future'}"><circle cx="${p.x}" cy="${p.y}" r="${active?16:7}"/>${active?`<circle class="map-current-ring" cx="${p.x}" cy="${p.y}" r="24"/><path class="map-flag" d="M${p.x},${p.y-14}v-34l26,7 -26,9"/>`:''}${hideLabel?'':`<text x="${active?p.x:p.x+(labelOnLeft?-labelDistance:labelDistance)}" text-anchor="${active?'middle':labelOnLeft?'end':'start'}" y="${p.y+(active?labelOffset:7)}">${p.name}</text>`}</g>`;
  }).join('');
  const xs=route.map(key=>MAP_PLACES[key].x),ys=route.map(key=>MAP_PLACES[key].y);
  const chapterView=[Math.min(...xs)-86,Math.min(...ys)-94,Math.max(...xs)-Math.min(...xs)+190,Math.max(...ys)-Math.min(...ys)+181].join(' ');
