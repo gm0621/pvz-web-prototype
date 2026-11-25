@@ -1,6 +1,6 @@
-import {stagePeople,mapPersonSvg,renderMatchup} from './characters.mjs?v=chapter-nineteen-2';
-import {stageFactionTitle} from './factions.mjs?v=chapter-nineteen-2';
-import {HISTORICAL_STAGES} from './history-stages.mjs?v=chapter-nineteen-2';
+import {stagePeople,mapPersonSvg,renderMatchup} from './characters.mjs?v=chapter-twenty-1';
+import {stageFactionTitle} from './factions.mjs?v=chapter-twenty-1';
+import {HISTORICAL_STAGES} from './history-stages.mjs?v=chapter-twenty-1';
 // Approximate regional placement, not historical borders or a surveyed route.
 export const MAP_PLACES={
  zhuo:{name:'涿郡',modern:'今河北涿州一帶',x:402,y:78},
@@ -85,6 +85,13 @@ Object.assign(westernPlaces,{
  fu:{name:'涪縣',modern:'今四川綿陽一帶・漢代涪縣示意',x:-125,y:591},
  xingshi:{name:'興勢一帶',modern:'今陝西洋縣北一帶・駱谷南段戰區示意',x:48,y:405}
 });
+Object.assign(westernPlaces,{
+ hanshou:{name:'漢壽',modern:'今四川廣元昭化一帶・蜀漢漢壽縣示意',x:-101,y:545},
+ taoxi:{name:'洮西',modern:'洮河西岸・戰區示意',x:-240,y:337},
+ nanan:{name:'南安',modern:'今甘肅隴西、武山一帶・南安郡示意',x:-173,y:369},
+ didao:{name:'狄道',modern:'今甘肅臨洮一帶・魏國守城示意',x:-190,y:315},
+ zhongti:{name:'鍾題',modern:'蜀軍退駐地・位置為示意',x:-219,y:415}
+});
 Object.assign(MAP_PLACES,westernPlaces);
 STAGE_LOCATIONS.push(...HISTORICAL_STAGES.map(s=>({place:s.mapPlace,detail:`${s.year} 年・${stageFactionTitle(s)}視角。${s.viewpointShift?'此處切換敘事視角，不是上一支軍隊的連續行程。':''}地點為歷史區域示意，並非精確軍事路線。`})));
 export function stageLocation(level){if(!Number.isInteger(level)||!STAGE_LOCATIONS[level-1])throw new RangeError('未知戰役關卡');const s=STAGE_LOCATIONS[level-1];return {...MAP_PLACES[s.place],...s,level}}
@@ -94,7 +101,9 @@ export function journeyRoute(level){
  const to=stageLocation(level),origin=level>=17?HISTORICAL_STAGES[level-17].originPlace:null;
  const from=origin?{...MAP_PLACES[origin],place:origin}:stageLocation(Math.max(1,level-1)),same=from.place===to.place;
  const start={x:same?to.x-90:from.x-36,y:same?to.y-10:from.y-44},end={x:to.x-36,y:to.y-44};
- const left=Math.min(start.x,end.x)-50,right=Math.max(start.x,to.x+36)+65,top=Math.min(start.y,end.y)-45,bottom=Math.max(from.y,to.y)+95;
+ const waypoints=level>=65?HISTORICAL_STAGES[level-17].viaPlaces.map(key=>MAP_PLACES[key]):[];
+ const left=Math.min(start.x,end.x,...waypoints.map(p=>p.x-50))-50,right=Math.max(start.x,to.x+36,...waypoints.map(p=>p.x))+65;
+ const top=Math.min(start.y,end.y,...waypoints.map(p=>p.y-44))-45,bottom=Math.max(from.y,to.y,...waypoints.map(p=>p.y))+95;
  const width=Math.max(320,right-left),height=Math.max(210,bottom-top);
  return {from,to,same,start,end,viewBox:`${(left+right-width)/2} ${(top+bottom-height)/2} ${width} ${height}`};
 }
@@ -112,7 +121,7 @@ export function campaignMapSvg(level,mini=false){
  const xs=route.map(key=>MAP_PLACES[key].x),ys=route.map(key=>MAP_PLACES[key].y);
  const chapterView=[Math.min(...xs)-86,Math.min(...ys)-94,Math.max(...xs)-Math.min(...xs)+190,Math.max(...ys)-Math.min(...ys)+181].join(' ');
  return `<svg viewBox="${level>=65?chapterView:level>=61?'-35 110 525 325':level===60?'180 500 260 220':level===59?'185 285 400 420':level>=53?'185 0 395 780':level>=47?'220 -65 565 430':level>=41?'285 115 285 430':level>=35?'280 190 380 310':level>=29?'145 245 530 285':level>=23?'345 165 250 260':level>=17?'150 190 340 280':'220 0 440 440'}" xmlns="http://www.w3.org/2000/svg" ${mini?'aria-hidden="true"':'role="img" aria-label="戰役方位示意圖，目前位於'+current.name+'"'}>
- <rect x="-300" y="-100" width="1150" height="950" rx="18" fill="#eaddb9"/>
+ <rect x="-360" y="-100" width="1210" height="950" rx="18" fill="#eaddb9"/>
  ${level>=47?'':`<path d="M580 0L720 0V440H655L632 395 660 350 638 310 675 276 646 239 681 216 658 191 606 206 577 181 563 140 593 109 567 68Z" fill="#a9c1bb" opacity=".75"/>`}
  <path d="M35 70L95 22 140 101 180 50 224 143 186 218 235 260 173 321 196 405 40 425Z" fill="#8c987c" opacity=".2"/>
  <path d="M82 180l25-46 28 46m13 28 22-40 24 40m-90 118 26-48 27 48m55-65 23-37 22 37" fill="none" stroke="#78826b" stroke-width="3" opacity=".4"/>

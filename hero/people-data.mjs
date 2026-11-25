@@ -1,20 +1,24 @@
-import {GENERALS} from './roster.mjs?v=chapter-nineteen-2';
-import {NOVEL_PAGES,CAMP_LINES} from './novel.mjs?v=chapter-nineteen-2';
-import {campConversation} from './camp-talk.mjs?v=chapter-nineteen-2';
-import {STORY_TASKS} from './story-play.mjs?v=chapter-nineteen-2';
-import {CHAPTER_BACKGROUNDS,STAGE_LEADS} from './prologue.mjs?v=chapter-nineteen-2';
-import {STORY_PEOPLE} from './characters.mjs?v=chapter-nineteen-2';
-import {HEROES,STAGES,chapterInfo,enemyArt,heroesForLevel} from './story.mjs?v=chapter-nineteen-2';
-import {FACTIONS,enemyPortrait} from './factions.mjs?v=chapter-nineteen-2';
+import {GENERALS} from './roster.mjs?v=chapter-twenty-1';
+import {NOVEL_PAGES,CAMP_LINES} from './novel.mjs?v=chapter-twenty-1';
+import {campConversation} from './camp-talk.mjs?v=chapter-twenty-1';
+import {STORY_TASKS} from './story-play.mjs?v=chapter-twenty-1';
+import {CHAPTER_BACKGROUNDS,STAGE_LEADS} from './prologue.mjs?v=chapter-twenty-1';
+import {STORY_PEOPLE} from './characters.mjs?v=chapter-twenty-1';
+import {HEROES,STAGES,chapterInfo,enemyArt,heroesForLevel} from './story.mjs?v=chapter-twenty-1';
+import {FACTIONS,enemyPortrait} from './factions.mjs?v=chapter-twenty-1';
 // Child-friendly summaries; comparisons are memory aids, not historical quotations.
 const bios=[
+ ['夏侯霸','史實人物','走過山路的兩軍老將','他字仲權，是夏侯淵的兒子。他原先和姜維交手，後來投奔蜀漢，竟和姜維一起北伐。','紅披肩加上歪起的眉毛，就是迷了路、正找人幫忙的夏侯霸。','陰平迷路和缺糧見《三國志》裴松之注引《魏略》。沔陽是遊戲的接應方向示意。'],
+ ['郭循','史實人物','讓漢壽聚會變調的人','郭循原是魏人，後來到了蜀漢。253 年新年的聚會上，費禕被他殺害，消息傳開後，蜀漢得重新安排政務。','記住他抿著嘴、斜眼往旁邊看。「循」念 ㄒㄩㄣˊ。','《後主傳》和《費禕傳》稱郭循。《魏書》另記作郭脩。'],
+ ['陳泰','史實人物','願意趕去救人的魏將','他字玄伯。南安被圍時，他帶兵趕來。後來王經困在狄道，陳泰也帶隊去解圍。','看到藍披肩和微微揚起的嘴角，就想起這位處理急事的援將。','事蹟見《三國志》卷二十二陳泰傳。'],
+ ['王經','史實人物','匆匆退回狄道的守將','他字彥緯。洮西一戰打輸後，他退到狄道守城，等到陳泰來解圍。','張大眼睛、喊大家進城的紅纓將軍，就是王經。','記載見《三國志・姜維傳》和陳泰傳。'],
  ['魏延','史實人物','守過漢中的紅巾將軍','魏延字文長，劉備曾讓他守漢中。諸葛亮去世後，他想繼續作戰，與準備撤軍的楊儀發生衝突。','棧道像是沿著山壁搭起的路。第 107 關的爭端發生在撤軍途中。','《三國志》正文與裴松之注引《魏略》對爭端經過記載不同。本作依正文交代結局。'],
  ['蔣琬','史實人物','接手難題的糧冊管家','他字公琰，曾幫北伐軍送糧、補人手。諸葛亮病逝後，他接手朝廷事務，後來到沔陽駐軍。','琬讀 ㄨㄢˇ。看見翡翠色帽邊，就想起這位接班人。','第 108 關的三項交接工作為遊戲改編。'],
  ['費禕','史實人物','來得及趕到的援軍隊長','他字文偉，很會替蜀漢和鄰國談事情。曹爽進攻漢中時，他從成都帶援軍趕來幫王平。','禕讀 ㄧ。想記誰去救興勢，就找拿竹簡、戴藍綠色帽子的費禕。','救援經過見《三國志・費禕傳》和《王平傳》。'],
  ['曹爽','史實人物','走進狹窄山谷的魏軍指揮官','他字昭伯，是曹真的兒子。244 年，他率魏軍走駱谷進攻漢中，山道難走、糧食也送不上來，只好撤走。','記住「曹真遇雨，曹爽缺糧」。父子都帶魏軍往漢中，卻是不同年份。','興勢戰後曹爽返回魏國，章末保留撤軍結果。'],
  ['司馬懿','史實人物','在渭南守住陣地的魏軍主帥','他字仲達。諸葛亮在祁山和五丈原兩次遇到他帶領的魏軍。234 年，兩軍在五丈原附近對峙了好幾個月。','司馬是複姓，懿讀 ㄧˋ。紫袍銀邊的萌將就是他。','五丈原的相持見《三國志・諸葛亮傳》。'],
  ['楊儀','史實人物','把各營帶回漢中的人','他字威公，擅長編排隊伍和計算糧食。諸葛亮在五丈原病逝後，他帶著各營撤回。','想像幫遠足隊伍點名、排順序，讓每一隊都知道什麼時候出發。','事蹟見《三國志・楊儀傳》，營地對話為遊戲改編。'],
- ['姜維','史實人物','從天水來的新隊友','他字伯約。諸葛亮第一次北伐時，他原在魏國的天水郡做事，後來投奔蜀軍，隨隊回漢中。','搜尋「伯約」就能找到姜維。','他投奔的過程在《三國志》正文與注文所引的記載有不同說法。'],
+ ['姜維','史實人物','從天水來的新隊友','他字伯約。諸葛亮第一次北伐時，他原在魏國的天水郡做事，後來投奔蜀軍，隨隊回漢中。多年後，他自己領兵北伐，曾和夏侯霸並肩作戰。','搜尋「伯約」就能找到姜維。','他投奔的過程在《三國志》正文與注文所引的記載有不同說法。'],
  ['馬謖','史實人物','在街亭沒有照部署行事','他字幼常。諸葛亮讓他領前軍，卻在街亭被魏將張郃擊敗。那時同隊的王平曾勸他改變安排。','謖讀 ㄙㄨˋ。記住馬謖守街亭，王平收攏散兵。','戰後馬謖被處置。《諸葛亮傳》和《馬良傳》對他的最後經過記述不同。'],
  ['王平','史實人物','大家走散時的領隊人','他字子均。街亭失利時，他還能把散開的隊伍收攏後撤回。多年後，他守住興勢，等到了費禕的援軍。','混亂時，先找到隊友再一起回去。這就是王平在街亭的工作。','本作的撤離操作是遊戲改編。'],
  ['曹真','史實人物','守在魏國西邊的指揮官','他字子丹。首次北伐時，他領魏軍去應付箕谷的趙雲與鄧芝。後來他讓人提前準備陳倉的防守。','先記「曹真在箕谷，郝昭守陳倉」。','本章在地圖標明兩條不同的戰線。'],

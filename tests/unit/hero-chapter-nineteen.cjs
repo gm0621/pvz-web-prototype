@@ -11,8 +11,8 @@ test('Xingshi extends the Wuzhang campaign save with six distinct narrated stage
  const routes=[['xiegu','southValley'],['chengdu'],['chengdu','mianyang'],['mianyang','fu'],['nanzheng','xingshi'],['chengdu','xingshi']];
  let progress=normalizeProgress({completed:106,coins:150,weapons:{guanyu:2},inventory:{grain:2},heroGrowth:{caoren:{weapon:2}}});
  assert.equal(rewardVictory(progress,106),0);
- assert.deepEqual(STAGES.slice(106).map(stage=>stage.year),[234,234,238,243,244,244]);
- assert.deepEqual(STAGES.slice(106).map(stage=>stage.mission),['dispatch','restoration','holdout','supply','holdout','dispatch']);
+ assert.deepEqual(STAGES.slice(106,112).map(stage=>stage.year),[234,234,238,243,244,244]);
+ assert.deepEqual(STAGES.slice(106,112).map(stage=>stage.mission),['dispatch','restoration','holdout','supply','holdout','dispatch']);
  for(let level=107;level<=112;level++){
   const stage=STAGES[level-1];
   assert.deepEqual(chapterInfo(level),{chapter:19,number:level-106,count:6,title:'興勢守漢中'});
@@ -31,11 +31,11 @@ test('Xingshi extends the Wuzhang campaign save with six distinct narrated stage
  assert.equal(progress.weapons.guanyu,2);
  assert.equal(progress.inventory.grain,2);
  assert.equal(progress.heroGrowth.caoren.weapon,2);
- assert.equal(rewardVictory(progress,113),0);
+ assert.equal(rewardVictory(progress,119),0);
  assert.match(STAGES[106].victory,/蜀軍內部的爭端/);
  assert.match(STAGES[111].victory,/曹爽率魏軍退去，漢中守住了/);
  assert.doesNotMatch(campaignMapSvg(112),/data-person="曹爽"/);
- for(const [query,levels] of [['文長',[107]],['公琰',[108,109,110]],['文偉',[110,111,112]],['昭伯',[111,112]]]){
+ for(const [query,levels] of [['文長',[107]],['公琰',[108,109,110,113]],['文偉',[110,111,112,113,116,117]],['昭伯',[111,112,115]]]){
   assert.deepEqual(searchPeople(query)[0].levels,levels,query);
  }
 });

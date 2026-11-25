@@ -20,6 +20,12 @@ npm run test:hero:engine
 npx playwright test --config=playwright.hero-input.config.js
 ```
 
+## 2026-11-25 第二十章「姜維北伐」
+
+- 新增第 113～118 關「涪城新訊、洮西接應、陰平迎將、漢壽新訊、南安糧盡、洮西收兵」。沿 246～255 年史事，從興勢解圍後的政務交接到姜維出兵、南安退軍與狄道解圍。保留行軍圖、歷史小檔案、營地及蜀漢三路選將養成。 [第二十章規格](hero-history-chapter-twenty.md)
+- 新增夏侯霸、郭循、陳泰、王經四張各有神情的萌將頭像，圖鑑共 107 人。四位可用仲權、郭脩、玄伯、彥緯搜尋，對應各自的登場關卡。
+- 引擎 393 項。320px、390px 手機 Chromium 與 820px 平板 WebKit 完整觸控 3 項，第十九章與人物圖鑑回歸 8 項。覆蓋第 112 關接第 113 關、整備及使者暫停恢復、糧車缺路、南安與狄道撤離、末關保存重試、營地購物、重整和重玩。觸控使用模擬裝置、隔離存檔及受控敵波，引擎另有正常敵波。快取版 `chapter-twenty-1`，回歸設定為 `playwright.hero-twenty.config.js`。
+
 ## 2026-11-25 第十九章複查與全圖鑑人物表情
 
 - 已發布 `cfe426f`。正式站手機 Chromium 與平板 WebKit 各完成第 106～112 關和末關重玩，並各解碼 103 張頭像，核對 148 份變更資源。 另用原始遊戲模組確認第 106、111 關存檔可直接續玩。 [正式遊戲](https://gm0621.github.io/pvz-web-prototype/hero/?v=cfe426f) · [人物圖鑑](https://gm0621.github.io/pvz-web-prototype/hero/people.html?v=cfe426f) · [發布紀錄](https://github.com/gm0621/pvz-web-prototype/actions/runs/45521411607)
