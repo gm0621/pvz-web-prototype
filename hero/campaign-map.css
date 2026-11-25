@@ -20,6 +20,7 @@
 .route-inset-road-edge,.route-inset-road{fill:none;stroke-linecap:round}
 .route-inset-road-edge{stroke:#fffaf0;stroke-width:21}
 .route-inset-road{stroke:#214b3b;stroke-width:11}
+.route-inset-direction-link{fill:none;stroke:#786845;stroke-width:1.8;stroke-dasharray:3 4}
 .route-inset-direction{fill:#f6cf70;stroke:#352c19;stroke-width:2}
 .route-inset-arrow{fill:none;stroke:#2f291b;stroke-width:3.4;stroke-linejoin:round;stroke-linecap:round}
 .route-inset-arrival{fill:#a2412b;stroke:#f9edc7;stroke-width:3}

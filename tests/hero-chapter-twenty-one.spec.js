@@ -90,17 +90,32 @@ test('stage 118 continues through Jiange and keeps campaign saves on touch scree
   await tap('#pauseBtn');
   await advance(4500);
  }
- async function checkRouteInset(scope){
+ async function checkRouteInset(scope,route){
   const map=page.locator(scope+' .route-inset');
   await expect(map.locator('.route-inset-role')).toHaveText(['起點','終點']);
-  await expect(map.locator('.route-inset-place')).toHaveText(['漢壽','劍閣']);
+  await expect(map.locator('.route-inset-place')).toHaveText(route.split(' → '));
   await expect(map.locator('.route-inset-arrow')).toBeVisible();
   const clear=await map.evaluate(svg=>{
    const frame=svg.getBoundingClientRect();
-   const boxes=[...svg.querySelectorAll('.route-inset-stop rect,.map-person circle')].map(node=>node.getBoundingClientRect());
+   const badge=svg.querySelector('.route-inset-direction');
+   const leader=svg.querySelector('.map-leader');
+   const leaderCircle=leader.querySelector('circle');
+   const shapes=[...svg.querySelectorAll('.route-inset-stop rect,.map-person circle'),badge];
+   const boxes=shapes.map(node=>node.getBoundingClientRect());
+   const center=badge.parentElement.transform.baseVal.consolidate().matrix;
+   const clearance=badge.r.baseVal.value+leaderCircle.r.baseVal.value;
+   const separates=point=>Math.hypot(point.x-center.e,point.y-center.f)>=clearance;
+   const trail=svg.querySelector('.journey-trail');
+   if(trail){
+    const length=trail.getTotalLength();
+    if(!Array.from({length:41},(_,i)=>trail.getPointAtLength(length*i/40)).every(separates))return false;
+   }
    const inside=boxes.every(box=>box.left>=frame.left&&box.right<=frame.right&&box.top>=frame.top&&box.bottom<=frame.bottom);
    const overlaps=(a,b)=>a.left<b.right&&a.right>b.left&&a.top<b.bottom&&a.bottom>b.top;
-   return inside&&boxes.every((box,i)=>boxes.slice(i+1).every(other=>!overlaps(box,other)));
+   const pose=leader.transform.baseVal.consolidate().matrix;
+   return inside&&separates({x:pose.e,y:pose.f})&&boxes.every((box,i)=>boxes.slice(i+1).every((other,j)=>
+    (shapes[i]===leaderCircle&&shapes[i+j+1]===badge)||!overlaps(box,other)
+   ));
   });
   expect(clear).toBe(true);
  }
@@ -141,8 +156,8 @@ test('stage 118 continues through Jiange and keeps campaign saves on touch scree
   if(level===124){
    await advance(4400);
    await expect(page.locator('#journeyIntro')).toHaveAttribute('data-arrived','true');
-   await checkRouteInset('#journeyIntro');
   }
+  await checkRouteInset('#journeyIntro',stage.route);
   await expect(page.locator('#journeyIntro .journey-army')).toHaveAttribute('data-person',stage.leader);
   await expect(page.locator('#journeyIntro .journey-army image')).toHaveAttribute('href',expressionPortrait(stage.leader));
   await tap('#storyMore');
@@ -163,10 +178,8 @@ test('stage 118 continues through Jiange and keeps campaign saves on touch scree
   await tap('#battleMenuButton');
   await tap('#battleMapButton');
   await expect(page.locator('#campaignMapRoute')).toHaveText(stage.route);
-  if(level===124){
-   await checkRouteInset('#campaignMapCanvas');
-   await expect(page.locator('#campaignMapPeriod')).toHaveText('263 年・蜀漢軍');
-  }
+  await checkRouteInset('#campaignMapCanvas',stage.route);
+  await expect(page.locator('#campaignMapPeriod')).toHaveText(`${stage.year} 年・蜀漢軍`);
   await expect(page.locator('#campaignMapCanvas .map-leader')).toHaveAttribute('data-person',stage.leader);
   await expect(page.locator('#campaignMapCanvas .map-leader image')).toHaveAttribute('href',expressionPortrait(stage.leader));
   const opponent=page.locator('#campaignMapMatchup [data-side=enemy] img');

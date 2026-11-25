@@ -1,6 +1,6 @@
-import {stageFactionTitle} from './factions.mjs?v=chapter-twenty-one-3';
-import {stagePeople,mapPersonSvg,renderMatchup} from './characters.mjs?v=chapter-twenty-one-3';
-import {campaignMapSvg,journeyRoute,MAP_PLACES,routeThrough} from './campaign-map.mjs?v=chapter-twenty-one-3';
+import {stageFactionTitle} from './factions.mjs?v=chapter-twenty-one-4';
+import {stagePeople,mapPersonSvg,renderMatchup} from './characters.mjs?v=chapter-twenty-one-4';
+import {campaignMapSvg,journeyRoute,MAP_PLACES,routeThrough} from './campaign-map.mjs?v=chapter-twenty-one-4';
 let cancelJourney=()=>{};
 export function mountJourney(level,stage){
  cancelJourney();let root=document.getElementById('journeyIntro');
@@ -20,7 +20,8 @@ export function mountJourney(level,stage){
  if(stage.mapLeader===false)return;
  const trail=document.createElementNS(ns,'path');
  const waypoints=level>=65?(stage.viaPlaces||[]).map(key=>MAP_PLACES[key]):[];
- const path=stage.detailedRoute?`M${start.x} ${start.y}L${end.x} ${end.y}`:waypoints.length
+ // The portrait lifts over the direction badge while following the same endpoints.
+ const path=stage.detailedRoute?`M${start.x} ${start.y} Q${(start.x+end.x)/2} ${(start.y+end.y)/2-38} ${end.x} ${end.y}`:waypoints.length
   ? [start,...waypoints.map(place=>({x:place.x-36,y:place.y-44})),end].map(({x,y},i)=>`${i?'L':'M'}${x} ${y}`).join(' ')
   : `M${start.x} ${start.y} Q${(start.x+end.x)/2+24} ${(start.y+end.y)/2-20} ${end.x} ${end.y}`;
  trail.setAttribute('d',path);trail.setAttribute('class','journey-trail');trail.setAttribute('pathLength','1');svg.append(trail);

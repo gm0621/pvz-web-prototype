@@ -1,5 +1,5 @@
-import {portraitForDisplay} from './portrait-expressions.mjs?v=chapter-twenty-one-3';
-import {HISTORICAL_STAGES} from './history-stages.mjs?v=chapter-twenty-one-3';
+import {portraitForDisplay} from './portrait-expressions.mjs?v=chapter-twenty-one-4';
+import {HISTORICAL_STAGES} from './history-stages.mjs?v=chapter-twenty-one-4';
 export const BLANK_PORTRAIT='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22256%22 height=%22256%22/%3E';
 const person=(name,faction,row,stats,weapon,description)=>({name,short:name,faction,atlas:`./assets/factions/${faction}.png`,row,asset:BLANK_PORTRAIT,...stats,weapon,description});
 export const FACTIONS={

@@ -1,4 +1,4 @@
-import {mapPersonSvg} from './characters.mjs?v=chapter-twenty-one-3';
+import {mapPersonSvg} from './characters.mjs?v=chapter-twenty-one-4';
 
 const viewBox='0 0 400 304';
 
@@ -27,6 +27,8 @@ export function routeInsetSvg(from,to,people,showOpponent,mini){
  const {origin,destination,end}=routeInset(from,to);
  const angle=Math.atan2(destination.y-origin.y,destination.x-origin.x)*180/Math.PI;
  const split=Math.abs(destination.x-origin.x)<150?Math.sign(destination.x-origin.x)||1:0;
+ // Steep routes leave space for the badge beside the moving portrait.
+ const arrowX=200+split*(destination.y<111?54:66);
  const line=`M${origin.x} ${origin.y}L${destination.x} ${destination.y}`;
  return `<svg class="route-inset" viewBox="${viewBox}" xmlns="http://www.w3.org/2000/svg" ${mini?'aria-hidden="true"':`role="img" aria-label="${from.name}到${to.name}的行軍方位示意"`}>
  <rect class="route-inset-paper" width="400" height="304" rx="14"/>
@@ -39,9 +41,10 @@ export function routeInsetSvg(from,to,people,showOpponent,mini){
  <rect class="route-inset-frame" x="8" y="8" width="384" height="288" rx="9"/>
  ${mini?'':`<g class="route-inset-compass" transform="translate(29 34)"><path d="M0-13 6 3 0 0-6 3Z"/><text y="17" text-anchor="middle">北</text></g>`}
  <path class="route-inset-road-edge" d="${line}"/><path class="route-inset-road" d="${line}"/>
- <g transform="translate(200 111) rotate(${angle})">
+ ${split?`<path class="route-inset-direction-link" d="M200 111H${arrowX}"/>`:''}
+ <g transform="translate(${arrowX} 111)">
   <circle class="route-inset-direction" r="${mini?12:18}"/>
-  <path class="route-inset-arrow" d="M-10 0H9M2-7 9 0 2 7"/>
+  <path class="route-inset-arrow" d="M-10 0H9M2-7 9 0 2 7" transform="rotate(${angle})"/>
  </g>
  ${mini?`<circle class="route-inset-arrival" cx="${destination.x}" cy="${destination.y}" r="12"/>`:`${location(origin,from.name,false,-split)}${location(destination,to.name,true,split)}
  <path class="route-inset-divider" d="M20 243H380"/>

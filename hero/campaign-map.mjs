@@ -1,7 +1,7 @@
-import {routeInset,routeInsetSvg} from './route-inset.mjs?v=chapter-twenty-one-3';
-import {stagePeople,mapPersonSvg,renderMatchup} from './characters.mjs?v=chapter-twenty-one-3';
-import {stageFactionTitle} from './factions.mjs?v=chapter-twenty-one-3';
-import {HISTORICAL_STAGES} from './history-stages.mjs?v=chapter-twenty-one-3';
+import {routeInset,routeInsetSvg} from './route-inset.mjs?v=chapter-twenty-one-4';
+import {stagePeople,mapPersonSvg,renderMatchup} from './characters.mjs?v=chapter-twenty-one-4';
+import {stageFactionTitle} from './factions.mjs?v=chapter-twenty-one-4';
+import {HISTORICAL_STAGES} from './history-stages.mjs?v=chapter-twenty-one-4';
 // Approximate regional placement, not historical borders or a surveyed route.
 export const MAP_PLACES={
  zhuo:{name:'涿郡',modern:'今河北涿州一帶',x:402,y:78},

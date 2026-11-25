@@ -1,11 +1,11 @@
-import {paintPortrait} from './factions.mjs?v=chapter-twenty-one-3';
-import {renderTeamDuel} from './team-duel-view.mjs?v=chapter-twenty-one-3';
+import {paintPortrait} from './factions.mjs?v=chapter-twenty-one-4';
+import {renderTeamDuel} from './team-duel-view.mjs?v=chapter-twenty-one-4';
 import {renderDuelCinematic} from './duel-cinematic.mjs?v=passive-feedback-1';
 import {duelPattern} from './duel-patterns.mjs?v=passive-feedback-1';
-import {renderDuelEntrance} from './duel-entrance.mjs?v=chapter-twenty-one-3';
-import {HEROES,enemyArt,STAGES} from './story.mjs?v=chapter-twenty-one-3';
-import {hitSound} from './audio.mjs?v=chapter-twenty-one-3';
-import {duelBeats,duelBeat} from './engine.mjs?v=chapter-twenty-one-3';
+import {renderDuelEntrance} from './duel-entrance.mjs?v=chapter-twenty-one-4';
+import {HEROES,enemyArt,STAGES} from './story.mjs?v=chapter-twenty-one-4';
+import {hitSound} from './audio.mjs?v=chapter-twenty-one-4';
+import {duelBeats,duelBeat} from './engine.mjs?v=chapter-twenty-one-4';
 export function renderDuel(b){
  const d=b.duel,dialog=document.getElementById('duelDialog');if(!d)return;
  dialog.dataset.team=String(d.format==='two-v-one');
