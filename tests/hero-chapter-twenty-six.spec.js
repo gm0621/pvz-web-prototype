@@ -145,9 +145,9 @@ test('stage 148 continues through the usurpation of the Prince of Zhao and keeps
 
  await page.goto('/hero/');
  await page.clock.pauseAt(await page.evaluate(()=>Date.now()+700));
- await expect(page.locator('#homeProgress')).toContainText('148 / 160');
- await expect(page.locator('#homeChapterCount')).toHaveText('第二十七章已開放');
- await expect(page.locator('#homeStageCount')).toHaveText('160 場征途');
+ await expect(page.locator('#homeExtraProgress')).toContainText('6 / 18');
+ await expect(page.locator('#homeChapterCount')).toHaveText('主篇 142 關');
+ await expect(page.locator('#homeStageCount')).toHaveText('番外 18 關');
  await expect(page.locator('#chapterDots [data-level="150"]')).toBeDisabled();
  await choose(25,148);
  await expect(page.locator('#storyTitle')).toHaveText('洛陽再變');
@@ -352,7 +352,7 @@ test('stage 148 continues through the usurpation of the Prince of Zhao and keeps
 
  await expect(page.locator('#storyTitle')).toHaveText('許昌傳檄');
  await page.reload();
- await expect(page.locator('#homeProgress')).toContainText('154 / 160');
+ await expect(page.locator('#homeExtraProgress')).toContainText('12 / 18');
  const cleared={completed:154,coins:605,weapons:{liubei:0,guanyu:2,zhangfei:0},armyWeapons:{cao:{liubei:0,guanyu:1,zhangfei:0},sun:{zhangfei:2}},inventory:{grain:2,herb:1}};
  expect(await readSave()).toMatchObject(cleared);
  await choose(26,154);

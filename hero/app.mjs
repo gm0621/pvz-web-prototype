@@ -1,37 +1,38 @@
-import {CHAPTER_NUMERALS} from './campaign-config.mjs?v=chapter-twenty-seven-2';
-import {mountExperienceView} from './experience-view.mjs?v=chapter-twenty-seven-2';
+import {CHAPTER_NUMERALS,MAIN_STORY_END,MAIN_STORY_CLEAR,BONUS_TITLE} from './campaign-config.mjs?v=main-finale-1';
+import {mountFinale} from './finale-view.mjs?v=main-finale-1';
+import {mountExperienceView} from './experience-view.mjs?v=main-finale-1';
 import {preloadBattleAssets,battleAssetsReady,prepareBattleAssets} from './battle-assets.mjs?v=images-1';
-import {mountBattleFocus} from './battle-focus.mjs?v=chapter-twenty-seven-2';
+import {mountBattleFocus} from './battle-focus.mjs?v=main-finale-1';
 import {advanceAutoSkills} from './auto-skills.mjs?v=battle-focus-1';
 import {renderPassiveFeedback} from './passive-view.mjs?v=passive-feedback-1';
-import {mountSkillIntro} from './skill-intro.mjs?v=chapter-twenty-seven-2';
-import {beginReading,installStoryReader} from './story-reader.mjs?v=chapter-twenty-seven-2';
+import {mountSkillIntro} from './skill-intro.mjs?v=main-finale-1';
+import {beginReading,installStoryReader} from './story-reader.mjs?v=main-finale-1';
 import {shortPages} from './story-pages.mjs?v=passive-feedback-1';
-import {configureRoster,configurePeachRoster,configureSunRoster,awardExperience,SLOTS,ALL_GENERALS as GENERALS} from './roster.mjs?v=chapter-twenty-seven-2';
-import {openDeployment,mountActiveSkills} from './roster-view.mjs?v=chapter-twenty-seven-2';
-import {castActive,lanesFor,laneLabel} from './engine.mjs?v=chapter-twenty-seven-2';
-import {mountSkillGuide} from './skill-guide.mjs?v=chapter-twenty-seven-2';
-import {battleBossPortrait,renderPeople,STORY_PEOPLE} from './characters.mjs?v=chapter-twenty-seven-2';
-import {factionFor,stageFactionTitle,enemyPortrait,paintPortrait} from './factions.mjs?v=chapter-twenty-seven-2';
-import {mountHistoryLesson} from './history-view.mjs?v=chapter-twenty-seven-2';
-import {renderSkillCutin} from './skill-cutin.mjs?v=chapter-twenty-seven-2';
-import {renderMasterCutin} from './master-cutin.mjs?v=chapter-twenty-seven-2';
-import {renderBossCutin} from './boss-cutin.mjs?v=chapter-twenty-seven-2';
+import {configureRoster,configurePeachRoster,configureSunRoster,awardExperience,SLOTS,ALL_GENERALS as GENERALS} from './roster.mjs?v=main-finale-1';
+import {openDeployment,mountActiveSkills} from './roster-view.mjs?v=main-finale-1';
+import {castActive,lanesFor,laneLabel} from './engine.mjs?v=main-finale-1';
+import {mountSkillGuide} from './skill-guide.mjs?v=main-finale-1';
+import {battleBossPortrait,renderPeople,STORY_PEOPLE} from './characters.mjs?v=main-finale-1';
+import {factionFor,stageFactionTitle,enemyPortrait,paintPortrait} from './factions.mjs?v=main-finale-1';
+import {mountHistoryLesson} from './history-view.mjs?v=main-finale-1';
+import {renderSkillCutin} from './skill-cutin.mjs?v=main-finale-1';
+import {renderMasterCutin} from './master-cutin.mjs?v=main-finale-1';
+import {renderBossCutin} from './boss-cutin.mjs?v=main-finale-1';
 import {mountBattleKeys} from './battle-keys.mjs?v=battle-focus-1';
-import {mountJourney} from './journey-view.mjs?v=chapter-twenty-seven-2';
-import {renderMission} from './chapter-mission-view.mjs?v=chapter-twenty-seven-2';
-import {mountCampaignMap} from './campaign-map.mjs?v=chapter-twenty-seven-2';
-import {advanceBattleFrame,normalizeBattleSpeed} from './battle-speed.mjs?v=chapter-twenty-seven-2';
-import {mountNovel} from './novel.mjs?v=chapter-twenty-seven-2';
-import {mountCamp} from './camp-view.mjs?v=chapter-twenty-seven-2';
-import {rewardVictory,useSupply,weaponsForLevel} from './campaign.mjs?v=chapter-twenty-seven-2';
+import {mountJourney} from './journey-view.mjs?v=main-finale-1';
+import {renderMission} from './chapter-mission-view.mjs?v=main-finale-1';
+import {mountCampaignMap} from './campaign-map.mjs?v=main-finale-1';
+import {advanceBattleFrame,normalizeBattleSpeed} from './battle-speed.mjs?v=main-finale-1';
+import {mountNovel} from './novel.mjs?v=main-finale-1';
+import {mountCamp} from './camp-view.mjs?v=main-finale-1';
+import {rewardVictory,useSupply,weaponsForLevel} from './campaign.mjs?v=main-finale-1';
 import {createFirstGuide} from './first-guide.mjs?v=passive-feedback-1';
-import {mountStoryTask} from './story-play.mjs?v=chapter-twenty-seven-2';
-import {CHAPTER_BACKGROUNDS,STAGE_LEADS} from './prologue.mjs?v=chapter-twenty-seven-2';
-import {setMusic,setMusicMode,setMusicHome,musicTheme,musicOn,setSfx,unlockAudio,hitSound} from './audio.mjs?v=chapter-twenty-seven-2';
-import {renderDuel} from './duel-view.mjs?v=chapter-twenty-seven-2';
-import {chapterInfo,enemyArt,HEROES as BASE_HEROES,heroesForLevel,STAGES,ENEMY_ART,SHIELD_ART,FEATURES,heroDescription} from './story.mjs?v=chapter-twenty-seven-2';
-import {bossProfile,LANE_CAPACITY,laneCount,ENEMY_SWING,enemyAttackFrame,skipDuelEntrance,positionHero,commandHero,moveHero,BOSS_SKILLS,SAVE_KEY,normalizeProgress,createBattle,deploy,canDeploy,attackFrame,SWING} from './engine.mjs?v=chapter-twenty-seven-2';
+import {mountStoryTask} from './story-play.mjs?v=main-finale-1';
+import {CHAPTER_BACKGROUNDS,STAGE_LEADS} from './prologue.mjs?v=main-finale-1';
+import {setMusic,setMusicMode,setMusicHome,musicTheme,musicOn,setSfx,unlockAudio,hitSound} from './audio.mjs?v=main-finale-1';
+import {renderDuel} from './duel-view.mjs?v=main-finale-1';
+import {chapterInfo,enemyArt,HEROES as BASE_HEROES,heroesForLevel,STAGES,ENEMY_ART,SHIELD_ART,FEATURES,heroDescription} from './story.mjs?v=main-finale-1';
+import {bossProfile,LANE_CAPACITY,laneCount,ENEMY_SWING,enemyAttackFrame,skipDuelEntrance,positionHero,commandHero,moveHero,BOSS_SKILLS,SAVE_KEY,normalizeProgress,createBattle,deploy,canDeploy,attackFrame,SWING} from './engine.mjs?v=main-finale-1';
 
 const $=id=>document.getElementById(id);
 let HEROES=BASE_HEROES;
@@ -59,15 +60,34 @@ function focusBattle(active){
 function show(id){if(id!=='result')experienceView?.cancel();battleFocus?.close();screen=id;document.body.classList.toggle('story-focus',id==='story');focusBattle(id==='battle');for(const s of document.querySelectorAll('.screen')){s.hidden=s.id!==id;s.classList.toggle('active',s.id===id)}window.scrollTo(0,0)}
 function updateHome(){
  const unfinished=battle&&!battle.over;
- $('startBtn').innerHTML=`${unfinished?'繼續戰鬥':progress.completed===STAGES.length?'重溫故事':progress.completed?'繼續故事':'開始故事'} <span>→</span>`;
- $('homeProgress').textContent=unfinished?`停在 ${chapterInfo(battle.level).chapter}-${chapterInfo(battle.level).number} · ${STAGES[battle.level-1].name}`:progress.completed===STAGES.length?`第${CHAPTER_NUMERALS[chapterInfo(STAGES.length).chapter]}章完成 · ${chapterInfo(STAGES.length).title}`:`已完成 ${progress.completed} / ${STAGES.length} 關 · 下一站：${STAGES[progress.completed].name}`;
- const currentChapter=chapterInfo(Math.min(progress.completed+1,STAGES.length)).chapter;
+ const cleared=progress.completed>=MAIN_STORY_END;
+ const extraCleared=progress.completed-MAIN_STORY_END;
+ const extraTotal=STAGES.length-MAIN_STORY_END;
+ $('startBtn').innerHTML=`${unfinished?'繼續戰鬥':cleared?'重看主篇結局':progress.completed?'繼續故事':'開始故事'} <span>→</span>`;
+ $('homeProgress').textContent=unfinished?`停在 ${chapterInfo(battle.level).chapter}-${chapterInfo(battle.level).number} · ${STAGES[battle.level-1].name}`:cleared?MAIN_STORY_CLEAR:`已完成 ${progress.completed} / ${MAIN_STORY_END} 關 · 下一站：${STAGES[progress.completed].name}`;
+ $('homeFinale').hidden=!(cleared&&unfinished);
+ $('homeExtra').hidden=!cleared;
+ $('homeExtraProgress').hidden=!cleared;
+ $('homeExtraProgress').textContent=`番外・${BONUS_TITLE} ${extraCleared} / ${extraTotal} 關`;
+ $('homeExtra').textContent=extraCleared===extraTotal?`重玩番外・${BONUS_TITLE} →`:extraCleared>0?`繼續番外・${BONUS_TITLE} →`:`開始番外・${BONUS_TITLE} →`;
+ const currentChapter=chapterInfo(Math.min(progress.completed+1,MAIN_STORY_END)).chapter;
  const chapters=[...new Set(STAGES.map((_,i)=>chapterInfo(i+1).chapter))];
  function selectChapter(chapter){
-  for(const button of $('chapterTabs').children)button.setAttribute('aria-pressed',String(Number(button.dataset.chapter)===chapter));
+  for(const button of $('chapterTabs').querySelectorAll('[data-chapter]'))button.setAttribute('aria-pressed',String(Number(button.dataset.chapter)===chapter));
   for(const button of $('chapterDots').children)button.hidden=Number(button.dataset.chapter)!==chapter;
  }
- $('chapterTabs').replaceChildren(...chapters.map(chapter=>{const button=document.createElement('button');button.type='button';button.dataset.chapter=chapter;const level=STAGES.findIndex((_,i)=>chapterInfo(i+1).chapter===chapter)+1;button.textContent=`第 ${chapter} 章 · ${chapterInfo(level).title}`;button.onclick=()=>selectChapter(chapter);return button}));
+ const mainChapters=document.createDocumentFragment(),bonusChapters=document.createDocumentFragment();
+ for(const chapter of chapters){
+  const button=document.createElement('button');
+  const level=STAGES.findIndex((_,i)=>chapterInfo(i+1).chapter===chapter)+1;
+  button.type='button';
+  button.dataset.chapter=chapter;
+  button.textContent=`第 ${chapter} 章 · ${chapterInfo(level).title}`;
+  button.onclick=()=>selectChapter(chapter);
+  (level<=MAIN_STORY_END?mainChapters:bonusChapters).append(button);
+ }
+ $('mainChapterTabs').replaceChildren(mainChapters);
+ $('bonusChapterTabs').replaceChildren(bonusChapters);
  $('chapterDots').replaceChildren(...STAGES.map((stage,i)=>{const button=document.createElement('button');button.type='button';const info=chapterInfo(i+1);button.dataset.chapter=info.chapter;button.dataset.level=i+1;button.disabled=i>progress.completed;button.classList.toggle('complete',i<progress.completed);const number=document.createElement('span'),name=document.createElement('strong'),status=document.createElement('small');number.textContent=String(info.number).padStart(2,'0');name.textContent=stage.name;status.textContent=i<progress.completed?'✓ 已完成・重溫':i===progress.completed?'下一站 →':'尚未解鎖';button.append(number,name,status);button.onclick=()=>startStory(i+1);return button}));
  selectChapter(currentChapter);
 }
@@ -76,6 +96,32 @@ function goHome(){
  if($('duelDialog').open)$('duelDialog').close();duelShown=false;
  setMusicHome();syncMusicButton();
  show('home');updateHome();$('startBtn').focus({preventScroll:true});
+}
+function viewMainFinale(){
+ setMusicMode('victory',MAIN_STORY_END);
+ syncMusicButton();
+ show('finale');
+ resetFinale();
+}
+function openChapterBook(chapter){
+ goHome();
+ $('chapterPicker').open=true;
+ const tab=$('chapterTabs').querySelector(`[data-chapter="${chapter}"]`);
+ tab.click();
+ $('chapterPicker').scrollIntoView({block:'start'});
+ tab.focus({preventScroll:true});
+}
+function resumeBattle(){
+ setMusicMode('battle',battle.level);
+ syncMusicButton();
+ show('battle');
+ setPause(false);
+ renderBattle();
+}
+function openBonus(){
+ if(battle&&!battle.over&&battle.level>MAIN_STORY_END){resumeBattle();return}
+ if(progress.completed<STAGES.length)startStory(progress.completed+1);
+ else openChapterBook(chapterInfo(MAIN_STORY_END+1).chapter);
 }
 function startStory(level,phase='opening'){useRoster(level);if(phase==='opening')void preloadBattleAssets(battleAssetUrls(level));mountHistoryLesson(STAGES[level-1],HEROES);
  setMusicMode(phase==='ending'?'victory':'story',level);syncMusicButton();storyLevel=level;storyPhase=phase;lineIndex=0;battle=null;selected=null;selectedUnitId=null;show('story');
@@ -91,14 +137,14 @@ function setPrologue(visible){
  (visible?$('prologueContinue'):$('storyNext')).focus({preventScroll:true});
 }
 function storyLines(){const stage=STAGES[storyLevel-1];return shortPages(storyPhase==='ending'?stage.ending:stage.opening,40)}
-function finishStory(){if(storyPhase==='opening')beginBattle(storyLevel);else if(storyLevel<STAGES.length)startStory(storyLevel+1);else goHome()}
+function finishStory(){if(storyPhase==='opening')beginBattle(storyLevel);else if(storyLevel===MAIN_STORY_END)viewMainFinale();else if(storyLevel<STAGES.length)startStory(storyLevel+1);else goHome()}
 function renderStory(){
  const stage=STAGES[storyLevel-1],lines=storyLines(),[speaker,text]=lines[lineIndex],last=lineIndex===lines.length-1;
  $('storyChapter').textContent=`第${CHAPTER_NUMERALS[chapterInfo(storyLevel).chapter]}章 · 第 ${chapterInfo(storyLevel).number} / ${chapterInfo(storyLevel).count} 關 · ${storyPhase==='ending'?'戰後':'戰前'}`;$('storyTitle').textContent=stage.name;$('storyAdaptation').textContent=storyLevel>=5?stage.note:'劇情依《三國演義》第一回改編；對話與小型遭遇為遊戲補寫。';$('storyPlace').textContent=stage.place;
  $('storySpeaker').textContent=speaker;$('storyLine').textContent=text;renderPeople($('storyPeople'),text,speaker);$('storyCount').textContent=`${lineIndex+1} / ${lines.length}`;
  $('storyPrevious').disabled=lineIndex===0;
- const finalLabel=storyPhase==='ending'?(storyLevel<STAGES.length?'下一段故事 →':'回主選單 →'):'出發迎戰 →';
- $('storyNext').textContent=last?finalLabel:'下一句 →';$('storySkip').textContent=storyPhase==='ending'?(storyLevel<STAGES.length?'前往下一關':'回主選單'):'直接開戰';
+ const finalLabel=storyPhase==='ending'?(storyLevel===MAIN_STORY_END?'觀看全篇回顧 →':storyLevel<STAGES.length?'下一段故事 →':'回主選單 →'):'出發迎戰 →';
+ $('storyNext').textContent=last?finalLabel:'下一句 →';$('storySkip').textContent=storyPhase==='ending'?(storyLevel===MAIN_STORY_END?'前往全篇回顧':storyLevel<STAGES.length?'前往下一關':'回主選單'):'直接開戰';
  const key=Object.keys(HEROES).find(k=>HEROES[k].name===speaker);
  const person=HEROES[key]||STORY_PEOPLE.find(p=>p.name===speaker);$('storyPortrait').hidden=!person;if(person){paintPortrait($('storyPortrait'),person);$('storyPortrait').alt=speaker}
  $('storyScene').dataset.level=String(storyLevel);
@@ -245,7 +291,17 @@ function frame(now){
  if(screen==='battle'&&battle&&!battle.over){advanceBattleFrame(battle,dt,battleSpeed);advanceAutoSkills(battle,castActive);renderBattle()}
  requestAnimationFrame(frame);
 }
-$('startBtn').onclick=()=>{if(battle&&!battle.over){setMusicMode('battle',battle.level);syncMusicButton();show('battle');setPause(false);renderBattle()}else startStory(progress.completed<STAGES.length?progress.completed+1:1)};
+const resetFinale=mountFinale($('finale'));
+$('startBtn').onclick=()=>{
+ if(battle&&!battle.over)resumeBattle();
+ else if(progress.completed>=MAIN_STORY_END)viewMainFinale();
+ else startStory(progress.completed+1);
+};
+$('homeFinale').onclick=viewMainFinale;
+$('homeExtra').onclick=openBonus;
+$('finaleExtra').onclick=openBonus;
+$('finaleChapterPicker').onclick=()=>openChapterBook(chapterInfo(MAIN_STORY_END).chapter);
+$('finaleCamp').onclick=()=>openCamp(MAIN_STORY_END,true);
 $('storyNext').onclick=()=>{if(lineIndex<storyLines().length-1){lineIndex++;renderStory()}else finishStory()};
 $('prologueContinue').onclick=()=>setPrologue(false);
 $('storyPrevious').onclick=()=>{if(lineIndex>0){lineIndex--;renderStory()}};
@@ -278,8 +334,8 @@ function toggleAutoSkill(){const u=selectedUnit();if(!u?.heroId||!battle||battle
 const renderActiveSkills=mountActiveSkills({getBattle:()=>battle,cast:castActive,refresh:renderBattle,getSelected:selectedUnit});
 mountBattleKeys({getBattle:()=>battle,getSelected:selectedUnit,isBattle:()=>screen==='battle',refresh:renderBattle,selectUnit:selectBattleUnit,cast:castActive,toggleAutoSkill,togglePause:()=>setPause(!battle.paused),onOrder:(b,id,order)=>{if(commandHero(b,id,order))firstGuide?.event(order==='hold'?'hold':order==='forward'?'move':'')}});
 let battleFocus;const experienceView=mountExperienceView();
-$('homeChapterCount').textContent=`第${CHAPTER_NUMERALS[chapterInfo(STAGES.length).chapter]}章已開放`;
-$('homeStageCount').textContent=`${STAGES.length} 場征途`;
+$('homeChapterCount').textContent=`主篇 ${MAIN_STORY_END} 關`;
+$('homeStageCount').textContent=`番外 ${STAGES.length-MAIN_STORY_END} 關`;
 updateHome();requestAnimationFrame(frame);
 
 mountSkillGuide({getBattle:()=>battle,getProgress:()=>progress,setPaused:setPause});

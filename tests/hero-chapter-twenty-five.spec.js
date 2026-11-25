@@ -143,12 +143,12 @@ test('stage 142 continues through the early Rebellion of the Eight Princes and k
 
  await page.goto('/hero/');
  await page.clock.pauseAt(await page.evaluate(()=>Date.now()+700));
- await expect(page.locator('#homeProgress')).toContainText('142 / 160');
- await expect(page.locator('#homeChapterCount')).toHaveText('第二十七章已開放');
- await expect(page.locator('#homeStageCount')).toHaveText('160 場征途');
+ await expect(page.locator('#homeProgress')).toHaveText('英雄演義・全篇通關');
+ await expect(page.locator('#homeChapterCount')).toHaveText('主篇 142 關');
+ await expect(page.locator('#homeStageCount')).toHaveText('番外 18 關');
  await expect(page.locator('#chapterDots [data-level="144"]')).toBeDisabled();
  await choose(24,142);
- await expect(page.locator('#storyTitle')).toHaveText('石頭城受降');
+ await expect(page.locator('#storyTitle')).toHaveText('孫皓受降');
  await controlledBattle();
  await tap('#missionDrawerButton');
  for(let lane=0;lane<3;lane++){
@@ -158,10 +158,12 @@ test('stage 142 continues through the early Rebellion of the Eight Princes and k
  await advance(300);
  await expect(page.locator('#resultEarned')).toHaveText('+0');
  await camp();
- await expect(page.locator('#campContinue')).toContainText('第二十四章尾聲');
+ await expect(page.locator('#campContinue')).toContainText('主篇尾聲');
  await tap('#campContinue');
  await expect(page.locator('#storyLine')).toContainText('孫皓在石頭城向王濬投降');
  await tap('#storySkip');
+ await tap('#finaleSkip');
+ await tap('#finaleExtra');
 
  for(const [index,stage] of stages.entries()){
   const level=143+index;
@@ -365,7 +367,7 @@ test('stage 142 continues through the early Rebellion of the Eight Princes and k
 
  await expect(page.locator('#storyTitle')).toHaveText('賈后掌權');
  await page.reload();
- await expect(page.locator('#homeProgress')).toContainText('148 / 160');
+ await expect(page.locator('#homeExtraProgress')).toContainText('6 / 18');
  const cleared={completed:148,coins:425,weapons:{liubei:0,guanyu:2,zhangfei:0},armyWeapons:{cao:{liubei:0,guanyu:1,zhangfei:0},sun:{zhangfei:3}},inventory:{grain:2,herb:1}};
  expect(await readSave()).toMatchObject(cleared);
  await choose(25,148);

@@ -6,7 +6,7 @@ const stages=[
  {name:'襄陽交印',year:278,route:'襄陽',leader:'杜預',guest:'杜預',opponent:'羊祜',role:'舉薦',station:'接任地',kind:'dispatch',outcome:'羊祜舉薦的杜預接掌荊州'},
  {name:'益州備舟',year:279,route:'益州',leader:'王濬',guest:'王濬',station:'備舟地',kind:'supply',outcome:'王濬的船隊從長江上游出發'},
  {name:'西陵順流',year:280,route:'永安 → 西陵',leader:'王濬',guest:'王濬',enemyArmy:'吳軍沿江守兵',kind:'dispatch',outcome:'這次西陵落入晉軍手中'},
- {name:'石頭城受降',year:280,route:'武昌 → 石頭城',leader:'王濬',guest:'孫皓',opponent:'孫皓',role:'請降',kind:'restoration',sites:['降書','印綬','城門'],outcome:'孫皓在石頭城向王濬投降'}
+ {name:'孫皓受降',year:280,route:'武昌 → 石頭城',leader:'王濬',guest:'孫皓',opponent:'孫皓',role:'請降',kind:'restoration',sites:['降書','印綬','城門'],outcome:'孫皓在石頭城向王濬投降'}
 ];
 
 test('stage 136 continues through the surrender of Wu and keeps campaign saves on touch screens',async({page})=>{
@@ -114,10 +114,13 @@ test('stage 136 continues through the surrender of Wu and keeps campaign saves o
 
  await page.goto('/hero/');
  await page.clock.pauseAt(await page.evaluate(()=>Date.now()+700));
- await expect(page.locator('#homeProgress')).toContainText('136 / 160');
- await expect(page.locator('#homeChapterCount')).toHaveText('第二十七章已開放');
- await expect(page.locator('#homeStageCount')).toHaveText('160 場征途');
+ await expect(page.locator('#homeProgress')).toContainText('136 / 142');
+ await expect(page.locator('#homeChapterCount')).toHaveText('主篇 142 關');
+ await expect(page.locator('#homeStageCount')).toHaveText('番外 18 關');
  await expect(page.locator('#chapterDots [data-level="138"]')).toBeDisabled();
+ await expect(page.locator('#chapterDots [data-level="143"]')).toBeDisabled();
+ await expect(page.locator('#homeExtra')).toBeHidden();
+ await expect(page.locator('#finale')).toBeHidden();
  await choose(23,136);
  await expect(page.locator('#storyTitle')).toHaveText('洛陽建晉');
  await controlledBattle({faction:'洛陽交接隊'});
@@ -338,16 +341,36 @@ test('stage 136 continues through the surrender of Wu and keeps campaign saves o
    await tap('[data-buy=herb]');
    await expect(page.locator('#campCoins')).toHaveText('365');
    await tap('#campShopBack');
-   await expect(page.locator('#campContinue')).toContainText('第二十四章尾聲');
+   await expect(page.locator('#campContinue')).toContainText('主篇尾聲');
   }
   await tap('#campContinue');
   if(level===142)await expect(page.locator('#storyLine')).toContainText('孫皓在石頭城向王濬投降');
   await tap('#storySkip');
  }
 
+ const recap=page.locator('#finaleCard');
+ await expect(page.locator('#finale')).toBeVisible();
+ const portraits=[['劉備','關羽','張飛'],['周瑜','諸葛亮'],['曹丕','劉備','孫權'],['司馬炎'],['王濬','孫皓']];
+ for(const [index,title] of ['桃園與黃巾','赤壁相助','三國鼎立','西晉建立','天下歸一'].entries()){
+  await expect(recap.locator('h2')).toHaveText(title);
+  await expect(recap.locator('figcaption')).toHaveText(portraits[index]);
+  for(const image of await recap.locator('img').all())await image.evaluate(node=>node.decode());
+  await tap('#finaleNext');
+ }
+ await expect(page.locator('#finaleComplete h2')).toHaveText('英雄演義・全篇通關');
+ await expect(page.locator('#story')).toBeHidden();
+ await tap('#finaleCamp');
+ await expect(page.locator('#campTitle')).toContainText('孫皓受降');
+ expect((await readSave()).coins).toBe(365);
+ await tap('#campContinue');
+ await tap('#storySkip');
+ await tap('#finaleSkip');
+ await expect(page.locator('#finaleComplete')).toBeVisible();
+ await tap('#finaleExtra');
  await expect(page.locator('#storyTitle')).toHaveText('孫皓入洛');
+ expect((await readSave()).completed).toBe(142);
  await page.reload();
- await expect(page.locator('#homeProgress')).toContainText('142 / 160');
+ await expect(page.locator('#homeProgress')).toHaveText('英雄演義・全篇通關');
  const cleared={completed:142,coins:365,weapons:{liubei:0,guanyu:2,zhangfei:0},armyWeapons:{cao:{liubei:1,guanyu:1,zhangfei:0},sun:{zhangfei:3}},inventory:{grain:2,herb:1}};
  expect(await readSave()).toMatchObject(cleared);
  await choose(24,142);
@@ -372,4 +395,47 @@ test('stage 136 continues through the surrender of Wu and keeps campaign saves o
  expect(await page.evaluate(()=>document.documentElement.scrollWidth)).toBeLessThanOrEqual(await page.evaluate(()=>innerWidth));
  expect(await readSave()).toMatchObject(cleared);
  expect(errors).toEqual([]);
+});
+
+test('existing bonus saves can revisit the main ending and replay chapters without writing progress',async({page})=>{
+ const key='heroLegendProgress_v1';
+ const legacy={completed:160,coins:705,weapons:{guanyu:2},armyWeapons:{cao:{guanyu:1},sun:{zhangfei:3}},inventory:{herb:2}};
+ await page.addInitScript(({key,legacy})=>{
+  if(localStorage.getItem(key)===null)localStorage.setItem(key,JSON.stringify(legacy));
+ },{key,legacy});
+ await page.goto('/hero/');
+ const saved=()=>page.evaluate(key=>localStorage.getItem(key),key);
+ const tap=selector=>page.locator(selector).tap();
+ await expect(page.locator('#homeProgress')).toHaveText('英雄演義・全篇通關');
+ await expect(page.locator('#homeExtraProgress')).toHaveText('番外・西晉後日談 18 / 18 關');
+ await tap('#startBtn');
+ await expect(page.locator('#finaleCard h2')).toHaveText('桃園與黃巾');
+ await tap('#finaleNext');
+ await expect(page.locator('#finaleCard h2')).toHaveText('赤壁相助');
+ await tap('#finalePrevious');
+ await expect(page.locator('#finaleCard h2')).toHaveText('桃園與黃巾');
+ await tap('#finaleSkip');
+ await expect(page.locator('#finaleComplete h2')).toHaveText('英雄演義・全篇通關');
+ expect(await page.evaluate(()=>document.documentElement.scrollWidth)).toBeLessThanOrEqual(await page.evaluate(()=>innerWidth));
+ const popupOpened=page.waitForEvent('popup');
+ await tap('#finaleComplete .people-link');
+ const popup=await popupOpened;
+ await expect(popup.locator('.person-card')).toHaveCount(143);
+ await popup.close();
+ await tap('#finaleChapterPicker');
+ await expect(page.locator('#mainChapterTabs [data-chapter="24"]')).toHaveAttribute('aria-pressed','true');
+ await expect(page.locator('#chapterDots [data-level="142"]')).toBeEnabled();
+ await tap('#homeExtra');
+ await expect(page.locator('#bonusChapterTabs [data-chapter="25"]')).toHaveAttribute('aria-pressed','true');
+ await tap('#bonusChapterTabs [data-chapter="27"]');
+ await expect(page.locator('#chapterDots [data-level="160"]')).toBeEnabled();
+ expect(await saved()).toBe(JSON.stringify(legacy));
+
+ const midBonus={...legacy,completed:148};
+ await page.evaluate(({key,midBonus})=>localStorage.setItem(key,JSON.stringify(midBonus)),{key,midBonus});
+ await page.reload();
+ await expect(page.locator('#homeExtraProgress')).toHaveText('番外・西晉後日談 6 / 18 關');
+ await tap('#homeExtra');
+ await expect(page.locator('#storyTitle')).toHaveText('賈后掌權');
+ expect(await saved()).toBe(JSON.stringify(midBonus));
 });

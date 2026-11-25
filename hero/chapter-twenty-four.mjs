@@ -61,7 +61,7 @@ const stages=[
   question:'280 年攻下西陵等據點的晉軍船隊，由誰率領？',choices:['王濬','一位吳國使者','襄陽的農兵'],refs:[wangJun,duYu,tongjian81]
  },
  {
-  name:'石頭城受降',year:280,origin:'wuWuchang',place:'shitou',shift:true,
+  name:'孫皓受降',year:280,origin:'wuWuchang',place:'shitou',shift:true,
   leader:'王濬',guest:'孫皓',opponent:'孫皓',mapOpponentRole:'請降',historyCast:['王濬','孫皓','司馬炎'],
   mission:'restoration',missionTitle:'石頭城交接',missionSites:['降書','印綬','城門'],scene:'supply-road',enemyArmy:'建業交接',successTitle:'石頭城交接完成',
   history:'王濬由武昌順江抵達建業石頭城。東吳皇帝孫皓出降，王濬接受投降。魏、蜀、吳分立的局面至此結束。',

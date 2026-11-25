@@ -1,6 +1,6 @@
-import {stageFactionTitle} from './factions.mjs?v=chapter-twenty-seven-2';
-import {stagePeople,mapPersonSvg,renderMatchup} from './characters.mjs?v=chapter-twenty-seven-2';
-import {campaignMapSvg,journeyRoute,MAP_PLACES,routeThrough} from './campaign-map.mjs?v=chapter-twenty-seven-2';
+import {stageFactionTitle} from './factions.mjs?v=main-finale-1';
+import {stagePeople,mapPersonSvg,renderMatchup} from './characters.mjs?v=main-finale-1';
+import {campaignMapSvg,journeyRoute,MAP_PLACES,routeThrough} from './campaign-map.mjs?v=main-finale-1';
 let cancelJourney=()=>{};
 export function mountJourney(level,stage){
  cancelJourney();let root=document.getElementById('journeyIntro');

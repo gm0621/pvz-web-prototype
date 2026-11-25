@@ -29,8 +29,8 @@ test('home and pause freeze battle and continue resumes the same units',async({p
 });
 test('own progress survives reload and leaves original zombie and legacy story records untouched',async({page})=>{
  await page.addInitScript(()=>{localStorage.setItem('sgZombieProfile','{"gold":12345}');localStorage.setItem('sgzRomance_progress_v1:guest%3Aold','{"highestLevel":4}');localStorage.setItem('heroLegendProgress_v1','{"version":1,"completed":2}')});
- await open(page);await expect(page.locator('#homeProgress')).toContainText('2 / 160');await page.locator('#startBtn').click();await expect(page.locator('#storyTitle')).toHaveText('大興山迎敵');
- await page.reload();await expect(page.locator('#homeProgress')).toContainText('2 / 160');
+ await open(page);await expect(page.locator('#homeProgress')).toContainText('2 / 142');await page.locator('#startBtn').click();await expect(page.locator('#storyTitle')).toHaveText('大興山迎敵');
+ await page.reload();await expect(page.locator('#homeProgress')).toContainText('2 / 142');
  expect(await page.evaluate(()=>localStorage.getItem('sgZombieProfile'))).toBe('{"gold":12345}');
  expect(await page.evaluate(()=>localStorage.getItem('sgzRomance_progress_v1:guest%3Aold'))).toBe('{"highestLevel":4}');
 });

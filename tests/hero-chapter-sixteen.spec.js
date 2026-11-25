@@ -71,7 +71,7 @@ test('chapter sixteen continues a White Emperor save and completes the southern 
 
  await page.goto('/hero/');
  await page.clock.pauseAt(await page.evaluate(()=>Date.now()+600));
- await expect(page.locator('#homeProgress')).toContainText('88 / 160');
+ await expect(page.locator('#homeProgress')).toContainText('88 / 142');
  await page.locator('#chapterPicker').evaluate(el=>el.open=true);
  await tap('#chapterTabs [data-chapter="15"]');
  await tap('#chapterDots [data-level="88"]');
@@ -247,7 +247,7 @@ test('chapter sixteen continues a White Emperor save and completes the southern 
  }
  await expect(page.locator('#storyTitle')).toHaveText('漢中出師');
  await page.reload();
- await expect(page.locator('#homeProgress')).toContainText('94 / 160');
+ await expect(page.locator('#homeProgress')).toContainText('94 / 142');
  expect(await readSave()).toMatchObject({completed:94,coins:605,weapons:{guanyu:2},inventory:{herb:1,grain:2}});
  await page.locator('#chapterPicker').evaluate(el=>el.open=true);
  await tap('#chapterTabs [data-chapter="16"]');

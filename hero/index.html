@@ -8,6 +8,7 @@
  <link rel="preload" as="image" href="./assets/home/peach-720.webp" media="(max-width:700px)">
  <link rel="preload" as="image" href="./assets/home/peach-1440.webp" media="(min-width:701px)">
  <link rel="stylesheet" href="game.css?v=dispatch-supply-1">
+ <link rel="stylesheet" href="finale.css?v=main-finale-1">
 <style>.orders{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}.orders span{flex-basis:100%;font-size:13px}.orders button{min-height:44px;min-width:64px;padding:8px 12px;border:1px solid #9aab88;border-radius:8px;background:#faf0d5;color:#244332}.orders button:disabled{opacity:.45}.unit.retreating .unit-figure{animation:unit-march .42s ease-in-out infinite}</style>
 <link rel="stylesheet" href="duel.css?v=chapter-six-1">
 <link rel="stylesheet" href="novel-camp.css?v=dispatch-supply-1">
@@ -73,11 +74,14 @@
     <span class="journey-label">你的征途</span>
     <p id="homeProgress" class="subtle"></p>
     <button id="startBtn" class="gold-button">開始故事 <span>→</span></button>
+    <button id="homeFinale" class="quiet-button" hidden>重看主篇結局</button>
+    <p id="homeExtraProgress" class="subtle" hidden></p>
+    <button id="homeExtra" class="quiet-button" hidden>西晉後日談 →</button>
     <div class="home-secondary"><a href="#chapterPicker">選擇章回 <span>↓</span></a><a class="people-link" href="people.html" target="_blank" rel="noopener">人物圖鑑 <span>↗</span></a></div>
    </div>
    <details id="chapterPicker" class="chapter-book">
     <summary><div><strong>章回目錄</strong><span>選擇關卡，或重溫走過的故事</span></div></summary>
-    <nav id="chapterTabs" aria-label="選擇章節"></nav><div id="chapterDots" aria-label="關卡列表"></div>
+    <nav id="chapterTabs" aria-label="選擇章節"><section class="chapter-tab-group"><strong>英雄演義主篇</strong><div id="mainChapterTabs"></div></section><section class="chapter-tab-group"><strong>番外・西晉後日談</strong><div id="bonusChapterTabs"></div></section></nav><div id="chapterDots" aria-label="關卡列表"></div>
    </details>
    <p class="home-foot">布陣迎敵 <i>·</i> 武將單挑 <i>·</i> 走進三國</p>
   </section>
@@ -136,6 +140,25 @@
    <footer class="camp-departure"><div><small>下一步</small><strong>整備好了，就繼續冒險！</strong></div><button id="campContinue" class="gold-button">繼續故事 →</button></footer>
   </section>
   <section id="result" class="screen result" aria-labelledby="resultTitle" hidden><button class="home-button" data-home>← 回主選單</button><div class="result-panel"><span id="resultMark" class="result-mark" aria-hidden="true">勝</span><span id="resultChapter" class="eyebrow"></span><h2 id="resultTitle" tabindex="-1"></h2><div class="result-company" aria-hidden="true"><img loading="lazy" decoding="async" src="assets/guanyu.webp" alt=""><img loading="lazy" decoding="async" src="assets/liubei.png" alt=""><img loading="lazy" decoding="async" src="assets/zhangfei.png" alt=""></div><p id="resultText"></p><div class="victory-ribbon" aria-hidden="true">捷 報 傳 回 ・ 凱 旋 歸 營</div><section class="reward-ledger" aria-label="本場軍資結算"><div class="reward-particles" aria-hidden="true"><i style="--i:0"></i><i style="--i:1"></i><i style="--i:2"></i><i style="--i:3"></i><i style="--i:4"></i><i style="--i:5"></i><i style="--i:6"></i><i style="--i:7"></i><i style="--i:8"></i><i style="--i:9"></i><i style="--i:10"></i><i style="--i:11"></i></div><div class="reward-coins" aria-hidden="true"><i style="--i:0"></i><i style="--i:1"></i><i style="--i:2"></i><i style="--i:3"></i><i style="--i:4"></i><i style="--i:5"></i></div><span class="reward-label">本次獲得軍資</span><strong id="resultEarned">+0</strong><p id="resultRewardReason"></p><div class="reward-balance"><span>目前持有</span><strong><span id="resultBalance">0</span> 軍資</strong></div><small id="resultSaved" aria-live="polite">軍資已存入行囊，可在營地使用</small><button id="resultRetrySave" class="quiet-button" hidden>重試保存</button></section><p class="result-next-step">戰報看完了？回營歇一歇，再聽三兄弟的故事。</p><div class="result-actions"><button id="resultNext" class="gold-button">前往戰後營地 →</button><button id="replayLevel" class="quiet-button">再玩本關</button><button class="quiet-button" data-home>回主選單</button></div></div></section>
+  <section id="finale" class="screen" aria-label="英雄演義主篇結局" hidden>
+   <div id="finaleStep">
+    <header><button class="home-button" data-home>← 回主選單</button><button id="finaleSkip" class="quiet-button">略過回顧</button></header>
+    <article id="finaleCard" class="finale-frame" aria-label="全篇回顧">
+     <small></small><h2 tabindex="-1"></h2><div class="finale-portraits"></div><p></p>
+     <div class="finale-controls"><button id="finalePrevious" class="quiet-button">← 上一幕</button><button id="finaleNext" class="gold-button">下一幕 →</button></div>
+    </article>
+   </div>
+   <div id="finaleComplete" hidden>
+    <div class="finale-frame"><h2 tabindex="-1">英雄演義・全篇通關</h2><p>從桃園出發的冒險，到天下歸一告一段落。謝謝你陪萌將們走完這段旅程！</p></div>
+    <div class="finale-links finale-actions">
+     <button class="gold-button" data-home>回主選單</button>
+     <button id="finaleCamp" class="quiet-button">回到戰後營地</button>
+     <button id="finaleChapterPicker" class="quiet-button">重玩關卡</button>
+     <a class="people-link" href="people.html" target="_blank" rel="noopener">人物圖鑑 ↗</a>
+     <button id="finaleExtra" class="quiet-button">前往番外・西晉後日談 →</button>
+    </div>
+   </div>
+  </section>
  </main>
  <dialog id="bossIntro" class="duel-dialog" aria-labelledby="bossIntroTitle"><span class="eyebrow">敵將登場</span><img loading="lazy" decoding="async" id="bossIntroArt" class="boss-intro-art" alt=""><h2 id="bossIntroTitle"></h2><p id="bossIntroText" style="white-space:pre-line"></p><section class="boss-tactics" aria-label="破敵要訣"><strong class="boss-tactics-title">⚑ 破敵要訣</strong><p id="bossIntroTip"></p><ol id="bossDuelSteps"></ol><small class="boss-counter-tip">護身架勢會減傷；換路避開大招，再趁兩秒破綻反擊！</small></section><button id="bossIntroContinue" class="gold-button">迎戰！</button></dialog>
  <dialog id="duelDialog" class="duel-dialog" aria-labelledby="duelTitle"><span class="eyebrow">武將交鋒 · 自動單挑</span><h2 id="duelTitle"></h2><div id="duelCombat"><div class="duel-enemy-talk"><img loading="lazy" decoding="async" id="duelEnemyFace" alt=""><p id="duelEnemyLine"></p></div><div class="duel-portraits"><img loading="lazy" decoding="async" id="duelHero" alt=""><span>交鋒</span><img loading="lazy" decoding="async" id="duelEnemy" alt="敵將"></div><div class="duel-vitals"><div><strong id="duelHeroHpText"></strong><div id="duelHeroHealth" class="duel-health ally-health" role="progressbar" aria-valuemin="0"><i id="duelHeroHp"></i></div></div><div><strong id="duelEnemyHpText"></strong><div id="duelEnemyHealth" class="duel-health" role="progressbar" aria-valuemin="0"><i id="duelHp"></i></div></div></div><p id="duelStyle" class="duel-style"></p><p id="duelCallout" role="status"></p><p id="duelCaption"></p><div class="duel-hero-talk"><img loading="lazy" decoding="async" id="duelHeroFace" alt=""><p id="duelDialogue" aria-live="polite"></p></div><small id="duelOutcomeNote">終結一擊斬殺敵將・其餘敵兵仍需清除</small></div><div id="duelVersus" hidden aria-label="雙將對峙開場"><div class="versus-rays" aria-hidden="true"></div><div class="versus-side versus-ally"><img loading="lazy" decoding="async" id="versusHero" alt=""><div class="versus-name"><small id="versusHeroTitle"></small><strong id="versusHeroName"></strong><span id="versusHeroWeapon"></span></div></div><div class="versus-side versus-foe"><img loading="lazy" decoding="async" id="versusEnemy" alt=""><div class="versus-name"><small id="versusEnemyTitle"></small><strong id="versusEnemyName"></strong><span id="versusEnemyWeapon"></span></div></div><div class="versus-cut" aria-hidden="true"></div><div class="versus-ring" aria-hidden="true"></div><strong class="versus-seal" aria-hidden="true">對決</strong><div class="versus-sparks" aria-hidden="true"></div><p id="versusCallout"></p><div class="versus-progress" aria-hidden="true"><i></i></div></div><div class="duel-controls"><button id="duelEnter" class="quiet-button" hidden>略過開場 →</button><button id="duelPause" class="quiet-button">暫停單挑</button></div></dialog>
@@ -143,7 +166,7 @@
  <button id="storageRetry" class="quiet-button" hidden>重試保存進度與軍資</button>
 
  <dialog id="campaignMapDialog" aria-labelledby="campaignMapTitle"><header><div><small id="campaignMapPeriod">戰役行程</small><h2 id="campaignMapTitle">三國行軍圖</h2></div><button id="campaignMapClose" class="quiet-button">返回戰場 ✕</button></header><div class="map-location"><h3 id="campaignMapLocation"></h3><span id="campaignMapModern"></span></div><div id="campaignMapMatchup" class="map-matchup"></div><div id="campaignMapCanvas"></div><div class="map-legend"><span>⚑ 目前位置</span><span>● 本關前的行軍地點</span><span>○ 後續地點</span></div><p id="campaignMapDetail"></p><p class="map-route-caption">劇情行軍路線：<span id="campaignMapRoute"></span></p><details><summary>查看所有關卡戰役位置</summary><ol id="campaignMapStages"></ol></details><p class="map-note" id="campaignMapNote">地名與方向為戰區示意；地形與路線間距依遊戲版面調整。</p></dialog>
- <script type="module" src="app.mjs?v=chapter-twenty-seven-2"></script>
+ <script type="module" src="app.mjs?v=main-finale-1"></script>
  <script type="module" src="home-cover.mjs?v=home-cover-1"></script>
 </body>
 </html>
