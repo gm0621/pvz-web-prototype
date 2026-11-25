@@ -1,38 +1,38 @@
-import {CHAPTER_NUMERALS,MAIN_STORY_END,MAIN_STORY_CLEAR,BONUS_TITLE} from './campaign-config.mjs?v=main-finale-1';
-import {mountFinale} from './finale-view.mjs?v=main-finale-1';
-import {mountExperienceView} from './experience-view.mjs?v=main-finale-1';
+import {CHAPTER_NUMERALS,MAIN_STORY_END,MAIN_STORY_CLEAR,BONUS_TITLE} from './campaign-config.mjs?v=main-finale-2';
+import {mountFinale} from './finale-view.mjs?v=main-finale-2';
+import {mountExperienceView} from './experience-view.mjs?v=main-finale-2';
 import {preloadBattleAssets,battleAssetsReady,prepareBattleAssets} from './battle-assets.mjs?v=images-1';
-import {mountBattleFocus} from './battle-focus.mjs?v=main-finale-1';
+import {mountBattleFocus} from './battle-focus.mjs?v=main-finale-2';
 import {advanceAutoSkills} from './auto-skills.mjs?v=battle-focus-1';
 import {renderPassiveFeedback} from './passive-view.mjs?v=passive-feedback-1';
-import {mountSkillIntro} from './skill-intro.mjs?v=main-finale-1';
-import {beginReading,installStoryReader} from './story-reader.mjs?v=main-finale-1';
+import {mountSkillIntro} from './skill-intro.mjs?v=main-finale-2';
+import {beginReading,installStoryReader} from './story-reader.mjs?v=main-finale-2';
 import {shortPages} from './story-pages.mjs?v=passive-feedback-1';
-import {configureRoster,configurePeachRoster,configureSunRoster,awardExperience,SLOTS,ALL_GENERALS as GENERALS} from './roster.mjs?v=main-finale-1';
-import {openDeployment,mountActiveSkills} from './roster-view.mjs?v=main-finale-1';
-import {castActive,lanesFor,laneLabel} from './engine.mjs?v=main-finale-1';
-import {mountSkillGuide} from './skill-guide.mjs?v=main-finale-1';
-import {battleBossPortrait,renderPeople,STORY_PEOPLE} from './characters.mjs?v=main-finale-1';
-import {factionFor,stageFactionTitle,enemyPortrait,paintPortrait} from './factions.mjs?v=main-finale-1';
-import {mountHistoryLesson} from './history-view.mjs?v=main-finale-1';
-import {renderSkillCutin} from './skill-cutin.mjs?v=main-finale-1';
-import {renderMasterCutin} from './master-cutin.mjs?v=main-finale-1';
-import {renderBossCutin} from './boss-cutin.mjs?v=main-finale-1';
+import {configureRoster,configurePeachRoster,configureSunRoster,awardExperience,SLOTS,ALL_GENERALS as GENERALS} from './roster.mjs?v=main-finale-2';
+import {openDeployment,mountActiveSkills} from './roster-view.mjs?v=main-finale-2';
+import {castActive,lanesFor,laneLabel} from './engine.mjs?v=main-finale-2';
+import {mountSkillGuide} from './skill-guide.mjs?v=main-finale-2';
+import {battleBossPortrait,renderPeople,STORY_PEOPLE} from './characters.mjs?v=main-finale-2';
+import {factionFor,stageFactionTitle,enemyPortrait,paintPortrait} from './factions.mjs?v=main-finale-2';
+import {mountHistoryLesson} from './history-view.mjs?v=main-finale-2';
+import {renderSkillCutin} from './skill-cutin.mjs?v=main-finale-2';
+import {renderMasterCutin} from './master-cutin.mjs?v=main-finale-2';
+import {renderBossCutin} from './boss-cutin.mjs?v=main-finale-2';
 import {mountBattleKeys} from './battle-keys.mjs?v=battle-focus-1';
-import {mountJourney} from './journey-view.mjs?v=main-finale-1';
-import {renderMission} from './chapter-mission-view.mjs?v=main-finale-1';
-import {mountCampaignMap} from './campaign-map.mjs?v=main-finale-1';
-import {advanceBattleFrame,normalizeBattleSpeed} from './battle-speed.mjs?v=main-finale-1';
-import {mountNovel} from './novel.mjs?v=main-finale-1';
-import {mountCamp} from './camp-view.mjs?v=main-finale-1';
-import {rewardVictory,useSupply,weaponsForLevel} from './campaign.mjs?v=main-finale-1';
+import {mountJourney} from './journey-view.mjs?v=main-finale-2';
+import {renderMission} from './chapter-mission-view.mjs?v=main-finale-2';
+import {mountCampaignMap} from './campaign-map.mjs?v=main-finale-2';
+import {advanceBattleFrame,normalizeBattleSpeed} from './battle-speed.mjs?v=main-finale-2';
+import {mountNovel} from './novel.mjs?v=main-finale-2';
+import {mountCamp} from './camp-view.mjs?v=main-finale-2';
+import {rewardVictory,useSupply,weaponsForLevel} from './campaign.mjs?v=main-finale-2';
 import {createFirstGuide} from './first-guide.mjs?v=passive-feedback-1';
-import {mountStoryTask} from './story-play.mjs?v=main-finale-1';
-import {CHAPTER_BACKGROUNDS,STAGE_LEADS} from './prologue.mjs?v=main-finale-1';
-import {setMusic,setMusicMode,setMusicHome,musicTheme,musicOn,setSfx,unlockAudio,hitSound} from './audio.mjs?v=main-finale-1';
-import {renderDuel} from './duel-view.mjs?v=main-finale-1';
-import {chapterInfo,enemyArt,HEROES as BASE_HEROES,heroesForLevel,STAGES,ENEMY_ART,SHIELD_ART,FEATURES,heroDescription} from './story.mjs?v=main-finale-1';
-import {bossProfile,LANE_CAPACITY,laneCount,ENEMY_SWING,enemyAttackFrame,skipDuelEntrance,positionHero,commandHero,moveHero,BOSS_SKILLS,SAVE_KEY,normalizeProgress,createBattle,deploy,canDeploy,attackFrame,SWING} from './engine.mjs?v=main-finale-1';
+import {mountStoryTask} from './story-play.mjs?v=main-finale-2';
+import {CHAPTER_BACKGROUNDS,STAGE_LEADS} from './prologue.mjs?v=main-finale-2';
+import {setMusic,setMusicMode,setMusicHome,musicTheme,musicOn,setSfx,unlockAudio,hitSound} from './audio.mjs?v=main-finale-2';
+import {renderDuel} from './duel-view.mjs?v=main-finale-2';
+import {chapterInfo,enemyArt,HEROES as BASE_HEROES,heroesForLevel,STAGES,ENEMY_ART,SHIELD_ART,FEATURES,heroDescription} from './story.mjs?v=main-finale-2';
+import {bossProfile,LANE_CAPACITY,laneCount,ENEMY_SWING,enemyAttackFrame,skipDuelEntrance,positionHero,commandHero,moveHero,BOSS_SKILLS,SAVE_KEY,normalizeProgress,createBattle,deploy,canDeploy,attackFrame,SWING} from './engine.mjs?v=main-finale-2';
 
 const $=id=>document.getElementById(id);
 let HEROES=BASE_HEROES;
@@ -97,11 +97,12 @@ function goHome(){
  setMusicHome();syncMusicButton();
  show('home');updateHome();$('startBtn').focus({preventScroll:true});
 }
-function viewMainFinale(){
+function viewMainFinale(returningFromCamp=false){
  setMusicMode('victory',MAIN_STORY_END);
  syncMusicButton();
  show('finale');
- resetFinale();
+ if(returningFromCamp)finaleView.complete();
+ else finaleView.start();
 }
 function openChapterBook(chapter){
  goHome();
@@ -285,23 +286,31 @@ function showResult(){
  $('resultRetrySave').hidden=saved||storageReadFailed;
  $('resultNext').textContent='前往戰後營地 →';show('result');$('resultTitle').focus({preventScroll:true});const resultBattle=battle;experienceView.start(xp,progress,()=>{if(screen==='result'&&battle===resultBattle)skillIntro.upgrades(xp)});
 }
-function openCamp(level,won){useRoster(level);setMusicMode('camp',level);syncMusicButton();show('camp');mountCamp({progress,level,won,heroes:HEROES,stage:STAGES[level-1],onSave:saveProgress,onContinue:()=>won?startStory(level,'ending'):beginBattle(level)});$('campTitle').tabIndex=-1;$('campTitle').focus({preventScroll:true})}
+function openCamp(level,won,{fromFinale=false}={}){
+ setMusicMode('camp',level);
+ syncMusicButton();
+ show('camp');
+ const onContinue=fromFinale?()=>viewMainFinale(true):()=>won?startStory(level,'ending'):beginBattle(level);
+ mountCamp({progress,level,won,fromFinale,heroes:heroesForLevel(level),stage:STAGES[level-1],onSave:saveProgress,onContinue});
+ $('campTitle').tabIndex=-1;
+ $('campTitle').focus({preventScroll:true});
+}
 function frame(now){
  const dt=Math.min(.1,Math.max(0,(now-lastFrame)/1000));lastFrame=now;
  if(screen==='battle'&&battle&&!battle.over){advanceBattleFrame(battle,dt,battleSpeed);advanceAutoSkills(battle,castActive);renderBattle()}
  requestAnimationFrame(frame);
 }
-const resetFinale=mountFinale($('finale'));
+const finaleView=mountFinale($('finale'));
 $('startBtn').onclick=()=>{
  if(battle&&!battle.over)resumeBattle();
  else if(progress.completed>=MAIN_STORY_END)viewMainFinale();
  else startStory(progress.completed+1);
 };
-$('homeFinale').onclick=viewMainFinale;
+$('homeFinale').onclick=()=>viewMainFinale();
 $('homeExtra').onclick=openBonus;
 $('finaleExtra').onclick=openBonus;
 $('finaleChapterPicker').onclick=()=>openChapterBook(chapterInfo(MAIN_STORY_END).chapter);
-$('finaleCamp').onclick=()=>openCamp(MAIN_STORY_END,true);
+$('finaleCamp').onclick=()=>openCamp(MAIN_STORY_END,true,{fromFinale:true});
 $('storyNext').onclick=()=>{if(lineIndex<storyLines().length-1){lineIndex++;renderStory()}else finishStory()};
 $('prologueContinue').onclick=()=>setPrologue(false);
 $('storyPrevious').onclick=()=>{if(lineIndex>0){lineIndex--;renderStory()}};

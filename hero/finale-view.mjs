@@ -1,10 +1,10 @@
-import {STORY_PEOPLE} from './characters.mjs?v=main-finale-1';
-import {paintPortrait} from './factions.mjs?v=main-finale-1';
+import {STORY_PEOPLE} from './characters.mjs?v=main-finale-2';
+import {paintPortrait} from './factions.mjs?v=main-finale-2';
 
 const recap=[
  {title:'桃園與黃巾',people:['劉備','關羽','張飛'],text:'故事從桃園的約定開始。劉備、關羽和張飛結伴踏上征途，在黃巾戰亂中互相照應。'},
  {title:'赤壁相助',people:['周瑜','諸葛亮'],text:'孫權和劉備聯手。周瑜率軍在赤壁迎戰，曹操退回北方。'},
- {title:'三國鼎立',people:['曹丕','劉備','孫權'],text:'魏、蜀、吳各有自己的地盤。從前在戰場相遇的人，成了三個國家的領袖。'},
+ {title:'三國鼎立',people:['曹丕','劉備','孫權'],text:'魏、蜀、吳各有自己的地盤。曹丕、劉備和孫權各自領導一國。'},
  {title:'西晉建立',people:['司馬炎'],text:'司馬炎建立西晉，接掌了魏國的土地。蜀漢已亡，東吳仍守著長江。'},
  {title:'天下歸一',people:['王濬','孫皓'],text:'王濬的船隊抵達石頭城。孫皓投降，西晉統一天下。從桃園出發的故事，走到了終點。'}
 ];
@@ -46,5 +46,8 @@ export function mountFinale(root){
  previous.onclick=()=>{index--;render()};
  next.onclick=()=>{if(index===recap.length-1)showComplete();else{index++;render()}};
  root.querySelector('#finaleSkip').onclick=showComplete;
- return ()=>{index=0;complete.hidden=true;step.hidden=false;render()};
+ return {
+  start(){index=0;complete.hidden=true;step.hidden=false;render()},
+  complete:showComplete
+ };
 }

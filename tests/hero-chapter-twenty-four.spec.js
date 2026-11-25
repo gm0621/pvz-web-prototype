@@ -363,9 +363,14 @@ test('stage 136 continues through the surrender of Wu and keeps campaign saves o
  await expect(page.locator('#campTitle')).toContainText('孫皓受降');
  expect((await readSave()).coins).toBe(365);
  await tap('#campContinue');
- await tap('#storySkip');
- await tap('#finaleSkip');
  await expect(page.locator('#finaleComplete')).toBeVisible();
+ await tap('#finaleComplete [data-home]');
+ await expect(page.locator('#homeProgress')).toHaveText('英雄演義・全篇通關');
+ await expect(page.locator('#homeExtraProgress')).toHaveText('番外・西晉後日談 0 / 18 關');
+ await expect(page.locator('#story')).toBeHidden();
+ await tap('#startBtn');
+ await expect(page.locator('#finaleCard h2')).toHaveText('桃園與黃巾');
+ await tap('#finaleSkip');
  await tap('#finaleExtra');
  await expect(page.locator('#storyTitle')).toHaveText('孫皓入洛');
  expect((await readSave()).completed).toBe(142);
@@ -399,8 +404,11 @@ test('stage 136 continues through the surrender of Wu and keeps campaign saves o
 
 test('existing bonus saves can revisit the main ending and replay chapters without writing progress',async({page})=>{
  const key='heroLegendProgress_v1';
- const legacy={completed:160,coins:705,weapons:{guanyu:2},armyWeapons:{cao:{guanyu:1},sun:{zhangfei:3}},inventory:{herb:2}};
+ const legacy={completed:160,coins:705,weapons:{guanyu:2},armyWeapons:{cao:{guanyu:1},sun:{zhangfei:3}},inventory:{herb:2},
+  skillSeen:['caoren','xiahouyuan','yujin'].flatMap(id=>[1,3,5,7,10].map(level=>id+':'+level))};
+ await page.clock.install();
  await page.addInitScript(({key,legacy})=>{
+  Element.prototype.requestFullscreen=undefined;
   if(localStorage.getItem(key)===null)localStorage.setItem(key,JSON.stringify(legacy));
  },{key,legacy});
  await page.goto('/hero/');
@@ -438,4 +446,34 @@ test('existing bonus saves can revisit the main ending and replay chapters witho
  await tap('#homeExtra');
  await expect(page.locator('#storyTitle')).toHaveText('賈后掌權');
  expect(await saved()).toBe(JSON.stringify(midBonus));
+
+ await tap('#storySkip');
+ const chosen=await page.locator('#deployment [data-choose][aria-pressed=true]').evaluateAll(buttons=>buttons.map(button=>button.dataset.choose));
+ for(const id of chosen)await tap(`#deployment [data-choose="${id}"]`);
+ for(const id of ['caoren','xiahouyuan','yujin'])await tap(`#deployment [data-choose="${id}"]`);
+ await tap('#deploymentStart');
+ const card=page.locator('#cards [data-hero=liubei]');
+ await expect(card).toContainText('曹仁');
+ await card.tap();
+ await page.locator('.lane').first().tap({position:{x:40,y:25}});
+ const ally=page.locator('#units .ally[data-kind=liubei]');
+ await expect(ally).toContainText('曹仁');
+ const id=await ally.getAttribute('data-id');
+ const deployedSave=await saved();
+ await tap('#battle [data-home]');
+ await expect(page.locator('#startBtn')).toContainText('繼續戰鬥');
+ await tap('#homeFinale');
+ await tap('#finaleSkip');
+ await tap('#finaleCamp');
+ await expect(page.locator('#campTitle')).toContainText('孫皓受降');
+ await tap('#campContinue');
+ await expect(page.locator('#finaleComplete')).toBeVisible();
+ await tap('#finaleExtra');
+ await expect(page.locator('#battle')).toBeVisible();
+ await expect(page.locator('#battleTitle')).toContainText('賈后掌權');
+ await expect(page.locator('#pauseBtn')).toHaveAttribute('aria-pressed','false');
+ await expect(ally).toHaveAttribute('data-id',id);
+ await expect(ally).toContainText('曹仁');
+ await expect(card).toContainText('曹仁');
+ expect(await saved()).toBe(deployedSave);
 });

@@ -1,11 +1,11 @@
-import {GENERALS} from './roster.mjs?v=main-finale-1';
-import {NOVEL_PAGES,CAMP_LINES} from './novel.mjs?v=main-finale-1';
-import {campConversation} from './camp-talk.mjs?v=main-finale-1';
-import {STORY_TASKS} from './story-play.mjs?v=main-finale-1';
-import {CHAPTER_BACKGROUNDS,STAGE_LEADS} from './prologue.mjs?v=main-finale-1';
-import {STORY_PEOPLE,hasPersonMention} from './characters.mjs?v=main-finale-1';
-import {HEROES,STAGES,chapterInfo,enemyArt,heroesForLevel} from './story.mjs?v=main-finale-1';
-import {FACTIONS,enemyPortrait} from './factions.mjs?v=main-finale-1';
+import {GENERALS} from './roster.mjs?v=main-finale-2';
+import {NOVEL_PAGES,CAMP_LINES} from './novel.mjs?v=main-finale-2';
+import {campConversation} from './camp-talk.mjs?v=main-finale-2';
+import {STORY_TASKS} from './story-play.mjs?v=main-finale-2';
+import {CHAPTER_BACKGROUNDS,STAGE_LEADS} from './prologue.mjs?v=main-finale-2';
+import {STORY_PEOPLE,hasPersonMention} from './characters.mjs?v=main-finale-2';
+import {HEROES,STAGES,chapterInfo,enemyArt,heroesForLevel} from './story.mjs?v=main-finale-2';
+import {FACTIONS,enemyPortrait} from './factions.mjs?v=main-finale-2';
 // Child-friendly summaries; comparisons are memory aids, not historical quotations.
 const bios=[
  ['司馬顒','史實人物','原本幫趙王，後來改變主意','諸王起兵時，他鎮守關中。起初派兵幫趙王，聽說齊王和成都王的兵力很強，便把軍隊叫回來，改支持兩王。','顒讀 ㄩㄥˊ。青黑帽、一眼眯起、嘴角往下歪，像還在盤算。','事蹟見《晉書・河間王顒傳》。'],

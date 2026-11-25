@@ -20,6 +20,12 @@ npm run test:hero:engine
 npx playwright test --config=playwright.hero-input.config.js
 ```
 
+## 2026-11-25 主篇結局與番外流程複查
+
+- 修正回看通關畫面後造訪第 142 關營地的返回流程。由通關畫面進營地時，按「回通關畫面」直接返回，保留暫停中的番外戰鬥、選將與已部署部隊。由第 142 關結算進營地時，仍經過主篇尾聲與五幕回顧。
+- 本機通過 414 項引擎測試、320px／390px 手機 Chromium 及 820px 平板 WebKit 的主篇整章與舊存檔測試 6 項，另有番外第 25～27 章與圖鑑回歸 12 項。涵蓋第 141→142 關、五幕回顧、可選番外、戰鬥暫停後回看結局、從營地返回、暫停戰局續玩、圖鑑、營地購買與重玩保存。另用原始引擎完成第 141、142 關首勝。快取版 `main-finale-2`，整章設定 `playwright.hero-twenty-four.config.js`。
+- 第 142 關為主篇終點，番外從第 143 關起由玩家自行進入。戰局可在同一頁面暫停、回看與繼續。跨頁重整沿用原本以通關進度、軍資及整備為主的存檔。
+
 ## 2026-11-25 主篇結局與西晉後日談
 
 - 已發布 `16a2f4a`。正式站手機 Chromium 與平板 WebKit 均通過第 136～142 關、全篇回顧、番外入口、重玩和第 148、160 關的舊存檔測試。另以原始引擎在兩種裝置上完成第 142 關整備並進入正式結局。兩種裝置各核對 143 張圖鑑頭像，比對 49 份發布資源。 [正式遊戲](https://gm0621.github.io/pvz-web-prototype/hero/?v=16a2f4a) · [人物圖鑑](https://gm0621.github.io/pvz-web-prototype/hero/people.html?v=16a2f4a) · [發布紀錄](https://github.com/gm0621/pvz-web-prototype/actions/runs/45572629355)
