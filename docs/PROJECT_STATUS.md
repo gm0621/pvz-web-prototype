@@ -8,7 +8,7 @@
 
 ## Obsidian 尚未同步時，從這裡接手
 
-1. **確認版本。** 在剛拉下來的 `main` 執行 `git status --short --branch`、`git log -1 --oneline`。`git log` 顯示目前 checkout 的提交。正式遊戲版本另看下方最新一筆含「已發布」及 Pages 工作的功能紀錄。截至 2026-11-25，最新已驗證的正式遊戲版本為 `f40f388`（第二十章，共 118 關）。 [正式遊戲](https://gm0621.github.io/pvz-web-prototype/hero/?v=f40f388) · [人物圖鑑](https://gm0621.github.io/pvz-web-prototype/hero/people.html?v=f40f388) · [發布紀錄](https://github.com/gm0621/pvz-web-prototype/actions/runs/45525286187)
+1. **確認版本。** 在剛拉下來的 `main` 執行 `git status --short --branch`、`git log -1 --oneline`。`git log` 顯示目前 checkout 的提交。正式遊戲版本另看下方最新一筆含「已發布」及 Pages 工作的功能紀錄。截至 2026-11-25，最新已驗證的正式遊戲版本為 `008caab`（第二十一章，共 124 關）。 [正式遊戲](https://gm0621.github.io/pvz-web-prototype/hero/?v=008caab) · [人物圖鑑](https://gm0621.github.io/pvz-web-prototype/hero/people.html?v=008caab) · [發布紀錄](https://github.com/gm0621/pvz-web-prototype/actions/runs/45528824304)
 2. **安裝並做基本驗證。** 在專案根目錄用 Node.js 20 以上與 npm。執行下列指令可驗證引擎、桌面滑鼠／鍵盤及手機平板觸控。更多測試和本機預覽見 [開發指南](DEVELOPMENT.md)。Playwright 會啟動 4174 埠的測試服務，先關閉佔用該埠的手動預覽。
 3. **開工前看目前進度。** 先讀 [AGENTS.md](../AGENTS.md) 的「重要約束」及下方與任務相關的紀錄。英雄演義是獨立的 `/hero/` 遊戲，關卡上限見 `hero/campaign-config.mjs`。正式存檔 `heroLegendProgress_v1` 與本機、線上跳關測試的存檔分開。跨電腦時瀏覽器存檔和未提交的檔案需另外移轉。保留滑鼠、鍵盤與觸控操作，也要保留首勝軍資、重玩及暫停的既有規則。 [跳關工具和存檔說明](hero-local-testing.md)
 4. **繼續當次工作。** 依使用者的新需求從最新 `main` 開分支，保留原工作區修改。完成後把變更、實際測試結果、版本與注意事項記在本檔。Obsidian 未同步時註明待補，能讀取後再更新。正式發布依當次授權。
@@ -21,6 +21,8 @@ npx playwright test --config=playwright.hero-input.config.js
 ```
 
 ## 2026-11-25 第二十一章「劍閣守關」
+
+- 已發布 `008caab`。正式站手機 Chromium 與平板 WebKit 各完成第 118～124 關和末關重玩。用原始模組確認第 118、123 關存檔可直接續玩，兩種裝置各解碼 111 張圖鑑頭像，並核對 53 份發布資源。 [正式遊戲](https://gm0621.github.io/pvz-web-prototype/hero/?v=008caab) · [人物圖鑑](https://gm0621.github.io/pvz-web-prototype/hero/people.html?v=008caab) · [發布紀錄](https://github.com/gm0621/pvz-web-prototype/actions/runs/45528824304)
 
 - 新增第 119～124 關「段谷撤兵、芒水相持、侯和退屯、沓中脫身、漢壽會師、劍閣守關」。接續狄道撤軍及 256～263 年史實。保留段谷與侯和失利，魏軍在劍閣受阻與鄧艾另走陰平。沿用歷史小檔案、營地與蜀漢三路養成。六關地圖放大路線並標示起點、終點、北方與方向箭頭，對手頭像另放圖下方。 [第二十一章規格](hero-history-chapter-twenty-one.md)
 - 新增鄧艾、鍾會、廖化、張翼四張各有神情的萌將頭像，圖鑑共 111 人。可用士載、士季、元儉、伯恭搜尋，並修正「張翼德」被列作張翼登場的問題。
