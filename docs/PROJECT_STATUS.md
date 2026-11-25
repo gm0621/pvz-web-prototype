@@ -20,6 +20,11 @@ npm run test:hero:engine
 npx playwright test --config=playwright.hero-input.config.js
 ```
 
+## 2026-11-25 第二十一章行軍圖加強對比
+
+- 本機完成，待發布。第 119～124 關的戰前與戰場行軍圖改用較粗的深綠路線、大金色方向箭頭和高對比地名牌。起點用深綠，終點用朱紅。南北向路段把牌面分到兩側，地形線退到背景。資源版本為 `chapter-twenty-one-3`、`jiange-map-2`。
+- 396 項引擎測試通過。320×568、390×844、667×375 的 Chromium 與 820×1180 的 WebKit 模擬觸控都逐關打開六張戰前與戰場圖，核對地名、頭像與邊界。正式站仍為 `008caab`。
+
 ## 2026-11-25 第二十一章「劍閣守關」
 
 - 已發布 `008caab`。正式站手機 Chromium 與平板 WebKit 各完成第 118～124 關和末關重玩。用原始模組確認第 118、123 關存檔可直接續玩，兩種裝置各解碼 111 張圖鑑頭像，並核對 53 份發布資源。 [正式遊戲](https://gm0621.github.io/pvz-web-prototype/hero/?v=008caab) · [人物圖鑑](https://gm0621.github.io/pvz-web-prototype/hero/people.html?v=008caab) · [發布紀錄](https://github.com/gm0621/pvz-web-prototype/actions/runs/45528824304)
