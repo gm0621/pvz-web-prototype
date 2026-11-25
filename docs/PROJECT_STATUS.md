@@ -8,7 +8,7 @@
 
 ## Obsidian 尚未同步時，從這裡接手
 
-1. **確認版本。** 在剛拉下來的 `main` 執行 `git status --short --branch`、`git log -1 --oneline`。`git log` 顯示目前 checkout 的提交。正式遊戲版本另看下方最新一筆含「已發布」及 Pages 工作的功能紀錄。截至 2026-11-25，最新已驗證的正式遊戲版本為 `f6fe49c`（第二十六章，共 154 關）。 [正式遊戲](https://gm0621.github.io/pvz-web-prototype/hero/?v=f6fe49c) · [人物圖鑑](https://gm0621.github.io/pvz-web-prototype/hero/people.html?v=f6fe49c) · [發布紀錄](https://github.com/gm0621/pvz-web-prototype/actions/runs/45557632895)
+1. **確認版本。** 在剛拉下來的 `main` 執行 `git status --short --branch`、`git log -1 --oneline`。`git log` 顯示目前 checkout 的提交。正式遊戲版本另看下方最新一筆含「已發布」及 Pages 工作的功能紀錄。截至 2026-11-25，最新已驗證的正式遊戲版本為 `5c442d9`（第二十六章，共 154 關）。 [正式遊戲](https://gm0621.github.io/pvz-web-prototype/hero/?v=5c442d9) · [人物圖鑑](https://gm0621.github.io/pvz-web-prototype/hero/people.html?v=5c442d9) · [發布紀錄](https://github.com/gm0621/pvz-web-prototype/actions/runs/45559879755)
 2. **安裝並做基本驗證。** 在專案根目錄用 Node.js 20 以上與 npm。執行下列指令可驗證引擎、桌面滑鼠／鍵盤及手機平板觸控。更多測試和本機預覽見 [開發指南](DEVELOPMENT.md)。Playwright 會啟動 4174 埠的測試服務，先關閉佔用該埠的手動預覽。
 3. **開工前看目前進度。** 先讀 [AGENTS.md](../AGENTS.md) 的「重要約束」及下方與任務相關的紀錄。英雄演義是獨立的 `/hero/` 遊戲，關卡上限見 `hero/campaign-config.mjs`。正式存檔 `heroLegendProgress_v1` 與本機、線上跳關測試的存檔分開。跨電腦時瀏覽器存檔和未提交的檔案需另外移轉。保留滑鼠、鍵盤與觸控操作，也要保留首勝軍資、重玩及暫停的既有規則。 [跳關工具和存檔說明](hero-local-testing.md)
 4. **繼續當次工作。** 依使用者的新需求從最新 `main` 開分支，保留原工作區修改。完成後把變更、實際測試結果、版本與注意事項記在本檔。Obsidian 未同步時註明待補，能讀取後再更新。正式發布依當次授權。
@@ -21,6 +21,8 @@ npx playwright test --config=playwright.hero-input.config.js
 ```
 
 ## 2026-11-25 第二十六章完整流程複查
+
+- 已發布 `5c442d9`。正式站手機 Chromium、平板 WebKit 各完成第 148～154 關及重玩。第 148、152、153 關另以正常敵波通關，確認第 148 關首勝軍資與跨章解鎖，原始模組從第 148、153 關進度續玩。四種畫面尺寸核對六關的戰前與戰場行軍圖，兩種裝置各解碼 136 張頭像，另比對 46 份發布資源。 [正式遊戲](https://gm0621.github.io/pvz-web-prototype/hero/?v=5c442d9) · [人物圖鑑](https://gm0621.github.io/pvz-web-prototype/hero/people.html?v=5c442d9) · [發布紀錄](https://github.com/gm0621/pvz-web-prototype/actions/runs/45559879755)
 
 - 第 150、151、154 關在戰前和戰場行軍圖上改用「被廢太子」「赴許昌幽居」「被迫遷居」，讓頭像與劇情身分一致。暫停撤離時，任務欄與任務面板會顯示「已暫停，保留進度」，並保留尚未回到左側的友軍人數。 [第二十六章規格](hero-history-chapter-twenty-six.md)
 - 本機通過 411 項引擎測試、320px 與 390px 手機 Chromium、820px 平板 WebKit 整章觸控 3 項，以及前章和圖鑑回歸 8 項。涵蓋 148→149 首勝解鎖、東宮使者暫停後換路、三批糧車與缺路補位、守備滿 24 秒後等最後一波並清退、全員撤回、營地對話與購買、末關儲存失敗重試、重整與重玩零軍資。整章採模擬裝置、隔離存檔和受控敵波，第 148、152、153 關另以正常敵波操作。快取版 `chapter-twenty-six-2`，整章設定 `playwright.hero-twenty-six.config.js`。
