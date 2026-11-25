@@ -2,11 +2,11 @@ const {test,expect}=require('@playwright/test');
 const saveKey='heroLegendProgress_v1';
 const stages=[
  {name:'賈后掌權',year:291,route:'洛陽宮城',leader:'賈南風',guest:'張華',opponent:'張華',role:'處理朝政',station:'議事地',faction:'洛陽朝廷',kind:'restoration',sites:['奏章','官籍','驛書'],outcome:'賈南風掌權'},
- {name:'東宮廢立',year:299,route:'洛陽東宮',leader:'司馬遹',guest:'裴頠',opponent:'賈南風',role:'主張廢立',station:'東宮',faction:'東宮傳令隊',banner:'東',kind:'dispatch',outcome:'司馬遹失去太子身分'},
- {name:'許昌幽居',year:300,route:'洛陽 → 許昌',leader:'司馬遹',guest:'司馬衷',faction:'許昌隨行隊',banner:'行',kind:'supply',outcome:'司馬遹在許昌遇害'},
+ {name:'東宮廢立',year:299,route:'洛陽東宮',leader:'司馬遹',guest:'裴頠',opponent:'賈南風',role:'主張廢立',station:'東宮',leaderRole:'被廢太子',faction:'東宮傳令隊',banner:'東',kind:'dispatch',outcome:'司馬遹失去太子身分'},
+ {name:'許昌幽居',year:300,route:'洛陽 → 許昌',leader:'司馬遹',guest:'司馬衷',leaderRole:'赴許昌幽居',faction:'許昌隨行隊',banner:'行',kind:'supply',outcome:'司馬遹在許昌遇害'},
  {name:'賈后被廢',year:300,route:'洛陽宮城 → 金墉城',leader:'司馬倫',guest:'孫秀',opponent:'賈南風',role:'被廢皇后',faction:'洛陽護送隊',banner:'護',waves:true,kind:'holdout',outcome:'賈南風被廢，張華與裴頠遇害'},
  {name:'淮南王起兵',year:300,route:'洛陽街巷 → 洛陽城門',leader:'司馬允',guest:'司馬衷',opponent:'司馬倫',role:'掌權一方',faction:'洛陽撤離隊',banner:'護',waves:true,kind:'withdraw',outcome:'淮南王司馬允敗亡'},
- {name:'趙王篡位',year:301,route:'洛陽宮城 → 金墉城',leader:'司馬衷',guest:'司馬衷',opponent:'司馬倫',role:'篡取皇位',faction:'洛陽傳訊隊',kind:'dispatch',outcome:'趙王司馬倫篡位'}
+ {name:'趙王篡位',year:301,route:'洛陽宮城 → 金墉城',leader:'司馬衷',guest:'司馬衷',opponent:'司馬倫',role:'篡取皇位',leaderRole:'被迫遷居',faction:'洛陽傳訊隊',kind:'dispatch',outcome:'趙王司馬倫篡位'}
 ];
 
 test('stage 148 continues through the usurpation of the Prince of Zhao and keeps campaign saves on touch screens',async({page})=>{
@@ -45,12 +45,12 @@ test('stage 148 continues through the usurpation of the Prince of Zhao and keeps
   expect(await page.evaluate(()=>window.chapterBattle.weapons)).toMatchObject({liubei:0,guanyu:1,zhangfei:0});
   await page.locator('#battleSpeed').selectOption('2');
   // Only enemy waves and starting food are sandboxed. Mission and save paths run through UI.
-  await page.evaluate(()=>{
+  await page.evaluate(kind=>{
    const battle=window.chapterBattle;
-   battle.bossSpawned=true;
+   battle.bossSpawned=kind!=='holdout';
    battle.nextSpawn=Infinity;
    battle.food=300;
-  });
+  },kind);
   for(const [lane,key] of ['liubei','guanyu','zhangfei'].entries()){
    await tap(`#cards [data-hero=${key}]`);
    await page.locator('.lane').nth(lane).tap({position:{x:40,y:25}});
@@ -90,12 +90,16 @@ test('stage 148 continues through the usurpation of the Prince of Zhao and keeps
   await advance(550);
   expect(await snapshot()).toEqual(frozen);
   expect(await position()).toBe(before);
+  await expect(page.locator('#missionQuick p')).toHaveText('已暫停，保留進度 · 1 名友軍尚未回到左側');
+  await expect(page.locator('#missionObjective')).toContainText('已暫停，保留進度');
+  await expect(page.locator('#missionQuickAction')).toBeDisabled();
   await tap('#pauseBtn');
   await advance(4500);
  }
- async function checkRouteInset(scope,route,station){
+ async function checkRouteInset(scope,route,station,leaderRole='我軍'){
   const map=page.locator(scope+' .route-inset');
   const places=route.split(' → ');
+  await expect(map.locator('.route-inset-side')).toHaveText(leaderRole);
   await expect(map.locator('.route-inset-place')).toHaveText(places);
   if(places.length===1){
    await expect(map.locator('.route-inset-role')).toHaveText([station]);
@@ -168,7 +172,7 @@ test('stage 148 continues through the usurpation of the Prince of Zhao and keeps
    await advance(4400);
    await expect(page.locator('#journeyIntro')).toHaveAttribute('data-arrived','true');
   }
-  await checkRouteInset('#journeyIntro',stage.route,stage.station);
+  await checkRouteInset('#journeyIntro',stage.route,stage.station,stage.leaderRole);
   await expect(page.locator('#journeyIntro .journey-army')).toHaveAttribute('data-person',stage.leader);
   await expect(page.locator('#journeyIntro .journey-army image')).toHaveAttribute('href',expressionPortrait(stage.leader));
   if(stage.opponent)await expect(page.locator('#journeyIntro .journey-matchup small').last()).toHaveText(stage.matchup||stage.role);
@@ -192,7 +196,7 @@ test('stage 148 continues through the usurpation of the Prince of Zhao and keeps
   await tap('#battleMenuButton');
   await tap('#battleMapButton');
   await expect(page.locator('#campaignMapRoute')).toHaveText(stage.route);
-  await checkRouteInset('#campaignMapCanvas',stage.route,stage.station);
+  await checkRouteInset('#campaignMapCanvas',stage.route,stage.station,stage.leaderRole);
   await expect(page.locator('#campaignMapPeriod')).toHaveText(`${stage.year} 年・${stage.faction||'西晉軍'}`);
   await expect(page.locator('#campaignMapCanvas .map-leader')).toHaveAttribute('data-person',stage.leader);
   await expect(page.locator('#campaignMapCanvas .map-leader image')).toHaveAttribute('href',expressionPortrait(stage.leader));
@@ -275,6 +279,18 @@ test('stage 148 continues through the usurpation of the Prince of Zhao and keeps
    expect(await snapshot()).toEqual(frozen);
    await tap('#pauseBtn');
    await advance(18500);
+   expect((await snapshot()).mission).toMatchObject({hold:24,done:true});
+   await expect(page.locator('#result')).toBeHidden();
+   await expect(page.locator('#missionQuick')).toContainText('清退後續敵軍');
+   await page.evaluate(()=>{
+    const battle=window.chapterBattle;
+    battle.spawned=11;
+    battle.nextSpawn=battle.time;
+   });
+   await advance(3300);
+   await expect(page.locator('#waveText')).toHaveText('城中亂兵已全數出現');
+   await expect(page.locator('#result')).toBeHidden();
+   await advance(31000);
   }else if(stage.kind==='withdraw'){
    await withdraw();
   }else if(stage.kind==='dispatch'){
@@ -286,6 +302,8 @@ test('stage 148 continues through the usurpation of the Prince of Zhao and keeps
    const frozen=await snapshot();
    await advance(800);
    expect(await snapshot()).toEqual(frozen);
+   await expect(page.locator('#missionQuick')).toContainText('已暫停，保留進度');
+   await expect(page.locator('#missionObjective')).toContainText('已暫停，保留進度');
    await expect(page.locator('#missionChoices [data-action=route]:nth-child(2)')).toBeDisabled();
    await tap('#pauseBtn');
    await advance(100);

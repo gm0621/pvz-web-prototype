@@ -1,7 +1,7 @@
-import {routeInset,routeInsetSvg} from './route-inset.mjs?v=chapter-twenty-six-1';
-import {stagePeople,mapPersonSvg,renderMatchup} from './characters.mjs?v=chapter-twenty-six-1';
-import {stageFactionTitle} from './factions.mjs?v=chapter-twenty-six-1';
-import {HISTORICAL_STAGES} from './history-stages.mjs?v=chapter-twenty-six-1';
+import {routeInset,routeInsetSvg} from './route-inset.mjs?v=chapter-twenty-six-2';
+import {stagePeople,mapPersonSvg,renderMatchup} from './characters.mjs?v=chapter-twenty-six-2';
+import {stageFactionTitle} from './factions.mjs?v=chapter-twenty-six-2';
+import {HISTORICAL_STAGES} from './history-stages.mjs?v=chapter-twenty-six-2';
 // Approximate regional placement, not historical borders or a surveyed route.
 export const MAP_PLACES={
  zhuo:{name:'涿郡',modern:'今河北涿州一帶',x:402,y:78},
@@ -149,7 +149,7 @@ export function journeyRoute(level){
 export function campaignMapSvg(level,mini=false){
  const current=stageLocation(level),route=routeThrough(level),visited=new Set(route);
  const stage=HISTORICAL_STAGES[level-17],people=mini?null:stagePeople(level);
- if(stage?.detailedRoute)return routeInsetSvg(MAP_PLACES[route[0]],current,people,stage.mapOpponent,mini,stage.mapOpponentRole,stage.mapStationRole);
+ if(stage?.detailedRoute)return routeInsetSvg(MAP_PLACES[route[0]],current,people,stage.mapOpponent,mini,stage);
  const markers=people?(stage?.mapLeader===false?'':mapPersonSvg(people.leader,'map-leader',current.x-36,current.y-44))
   +(stage?.mapOpponent===false?'':mapPersonSvg(people.opponent,people.diplomaticMeeting?'map-host':'map-opponent',current.x+36,current.y-44)):'';
  const points=route.map(key=>`${MAP_PLACES[key].x},${MAP_PLACES[key].y}`).join(' ');

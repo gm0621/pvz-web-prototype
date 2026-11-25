@@ -1,11 +1,11 @@
-import {GENERALS} from './roster.mjs?v=chapter-twenty-six-1';
-import {NOVEL_PAGES,CAMP_LINES} from './novel.mjs?v=chapter-twenty-six-1';
-import {campConversation} from './camp-talk.mjs?v=chapter-twenty-six-1';
-import {STORY_TASKS} from './story-play.mjs?v=chapter-twenty-six-1';
-import {CHAPTER_BACKGROUNDS,STAGE_LEADS} from './prologue.mjs?v=chapter-twenty-six-1';
-import {STORY_PEOPLE,hasPersonMention} from './characters.mjs?v=chapter-twenty-six-1';
-import {HEROES,STAGES,chapterInfo,enemyArt,heroesForLevel} from './story.mjs?v=chapter-twenty-six-1';
-import {FACTIONS,enemyPortrait} from './factions.mjs?v=chapter-twenty-six-1';
+import {GENERALS} from './roster.mjs?v=chapter-twenty-six-2';
+import {NOVEL_PAGES,CAMP_LINES} from './novel.mjs?v=chapter-twenty-six-2';
+import {campConversation} from './camp-talk.mjs?v=chapter-twenty-six-2';
+import {STORY_TASKS} from './story-play.mjs?v=chapter-twenty-six-2';
+import {CHAPTER_BACKGROUNDS,STAGE_LEADS} from './prologue.mjs?v=chapter-twenty-six-2';
+import {STORY_PEOPLE,hasPersonMention} from './characters.mjs?v=chapter-twenty-six-2';
+import {HEROES,STAGES,chapterInfo,enemyArt,heroesForLevel} from './story.mjs?v=chapter-twenty-six-2';
+import {FACTIONS,enemyPortrait} from './factions.mjs?v=chapter-twenty-six-2';
 // Child-friendly summaries; comparisons are memory aids, not historical quotations.
 const bios=[
  ['張華','史實人物','在朝廷替太子說話的大臣','他字茂先，喜歡讀書，也幫朝廷處理國事。賈皇后指控太子時，他和裴頠出面辯護。司馬倫發動政變後，他被殺害。','深青衣袍、銀灰長鬍和安靜的微笑，就是他。','事蹟見《晉書・張華傳》。'],

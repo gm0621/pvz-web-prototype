@@ -1,5 +1,5 @@
-import {HISTORICAL_STAGES} from './history-stages.mjs?v=chapter-twenty-six-1';
-import {FACTIONS,factionFor} from './factions.mjs?v=chapter-twenty-six-1';
+import {HISTORICAL_STAGES} from './history-stages.mjs?v=chapter-twenty-six-2';
+import {FACTIONS,factionFor} from './factions.mjs?v=chapter-twenty-six-2';
 import {PEACH_HEROES} from './hero-base.mjs?v=passive-feedback-1';
 const defaultRetreatSlots=['liubei','zhangfei'];
 const retreatSlots=battle=>HISTORICAL_STAGES[battle.level-17]?.retreatKeys||defaultRetreatSlots;
@@ -78,17 +78,18 @@ export function historyMissionText(b){const fronts=['','','','三','四','五'][
   return `${stage.enemyCount!==0&&b.bossSpawned&&!b.enemies.some(e=>e.hp>0)?'敵軍已清退，還要完成運糧！ · ':''}${progress} · ${next}`;
  }
  if(['withdraw','decoy'].includes(m.kind)&&m.ordered){
+  const paused=b.paused?' · 已暫停，保留進度':'';
   const missing=retreatPartyNames(b,{missingOnly:true});
-  if(missing.length)return `${missing.join('、')}尚未在場，請整備後召回，再帶隊撤離${stage.noBoss?'':` · ${opponent}無須擊倒`}`;
-  if(!b.allies.some(u=>u.hp>0))return '請先召回至少一隊友軍，再撤回左側';
+  if(missing.length)return `${missing.join('、')}尚未在場，請整備後召回，再帶隊撤離${stage.noBoss?'':` · ${opponent}無須擊倒`}${paused}`;
+  if(!b.allies.some(u=>u.hp>0))return '請先召回至少一隊友軍，再撤回左側'+paused;
   const remaining=b.allies.filter(u=>u.hp>0&&u.x>.18).length;
-  return remaining?`撤離中：尚有 ${remaining} 名友軍未回到左側 · 所有在場友軍都需撤回`:'隊伍已撤回左側，確認全員平安';
+  return (remaining?`${b.paused?'':'撤離中：'}尚有 ${remaining} 名友軍未回到左側 · 所有在場友軍都需撤回`:'隊伍已撤回左側，確認全員平安')+paused;
  }
  if(['withdraw','decoy'].includes(m.kind)){
   const status=m.withdrawAt===null?(stage.noBoss?`守住${fronts}路，等待後隊接應`:`守住${fronts}路，等${opponent}出陣`):b.time<m.withdrawAt?`接應尚需 ${Math.ceil(m.withdrawAt-b.time)} 秒`:'接應完成，按全軍撤離';
   const party=stage.noBoss||stage.retreatKeys?` · ${retreatPartyLabel(b)}須撤回左側`:'';
   const goal=stage.noBoss?'':` · 無須擊倒${opponent}`;
-  return (m.kind==='decoy'&&!m.decoyUsed?'先放置赤幘誘餌 · ':'')+status+party+goal;
+  return (m.kind==='decoy'&&!m.decoyUsed?'先放置赤幘誘餌 · ':'')+status+party+goal+(b.paused?' · 已暫停，保留進度':'');
  }
  if(m.kind==='restoration'){
   const title=`${stage.missionTitle||'城內整備'} ${m.sites.filter(t=>t>=8).length}／3`;

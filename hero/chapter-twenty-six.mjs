@@ -23,7 +23,7 @@ const stages=[
  },
  {
   name:'東宮廢立',year:299,origin:'luoyangEastPalace',place:'luoyangEastPalace',shift:true,factionLabel:'東宮傳令隊',campBanner:'東',
-  leader:'司馬遹',guest:'裴頠',opponent:'賈南風',mapOpponentRole:'主張廢立',mapStationRole:'東宮',historyCast:['司馬遹','賈南風','張華','裴頠'],
+  leader:'司馬遹',guest:'裴頠',opponent:'賈南風',mapOpponentRole:'主張廢立',mapStationRole:'東宮',mapLeaderRole:'被廢太子',historyCast:['司馬遹','賈南風','張華','裴頠'],
   mission:'dispatch',scene:'supply-road',enemyArmy:'東宮傳令',successTitle:'東宮消息送達',
   history:'299 年末，賈皇后拿出一份太子司馬遹在受欺騙下寫的文字，指控他有謀反的意思。張華、裴頠出面為太子辯護，太子仍被廢為平民。',
   briefing:'接應三隊送消息的使者，可選擇有友軍照應的路線。',
@@ -33,7 +33,7 @@ const stages=[
  },
  {
   name:'許昌幽居',year:300,origin:'luoyang',place:'jinXuchang',shift:true,factionLabel:'許昌隨行隊',campBanner:'行',
-  leader:'司馬遹',guest:'司馬衷',historyCast:['司馬遹','賈南風'],
+  leader:'司馬遹',guest:'司馬衷',mapLeaderRole:'赴許昌幽居',historyCast:['司馬遹','賈南風'],
   mission:'supply',scene:'supply-road',enemyArmy:'許昌隨行補給',successTitle:'隨行補給送達',
   history:'300 年，已失去太子身分的司馬遹被送到許昌，關在城內一處宮院。他後來在許昌被賈皇后派來的人殺害。朝廷中反對賈皇后的人，因這件事採取了行動。',
   briefing:'讓每一路都有友軍接應。備車完成後按「發送糧車」，送出三批路上補給。',
@@ -63,7 +63,7 @@ const stages=[
  },
  {
   name:'趙王篡位',year:301,origin:'luoyangPalace',place:'jinJinyong',shift:true,factionLabel:'洛陽傳訊隊',campBanner:'晉',
-  leader:'司馬衷',guest:'司馬衷',opponent:'司馬倫',mapOpponentRole:'篡取皇位',historyCast:['司馬衷','司馬倫','孫秀'],
+  leader:'司馬衷',guest:'司馬衷',opponent:'司馬倫',mapOpponentRole:'篡取皇位',mapLeaderRole:'被迫遷居',historyCast:['司馬衷','司馬倫','孫秀'],
   mission:'dispatch',scene:'supply-road',enemyArmy:'洛陽傳令',successTitle:'皇位消息送達',
   history:'301 年初，孫秀等人假造讓位詔書，趙王司馬倫奪取皇位。晉惠帝司馬衷被迫離開宮城，住到受人看守的金墉城。各地宗王很快有了新的動作。',
   briefing:'接應三隊使者，把洛陽的消息送出去。派友軍照應使者前進的路線。',
@@ -76,7 +76,7 @@ const stages=[
 export const TWENTY_SIXTH_CHAPTER=stages.map((stage,index)=>({
  name:stage.name,year:stage.year,chapter:26,number:index+1,faction:'cao',factionLabel:stage.factionLabel||'西晉軍',place:stage.name,campBanner:stage.campBanner||'晉',
  mapPlace:stage.place,originPlace:stage.origin,detailedRoute:true,viaPlaces:[],viewpointShift:!!stage.shift,historyCast:stage.historyCast,
- leaderName:stage.leader,opponentName:stage.opponent,mapOpponent:stage.mapOpponent??!!stage.opponent,matchupLabel:stage.matchupLabel,mapOpponentRole:stage.mapOpponentRole,mapStationRole:stage.mapStationRole,
+ leaderName:stage.leader,opponentName:stage.opponent,mapOpponent:stage.mapOpponent??!!stage.opponent,matchupLabel:stage.matchupLabel,mapOpponentRole:stage.mapOpponentRole,mapStationRole:stage.mapStationRole,mapLeaderRole:stage.mapLeaderRole,
  scene:`./assets/scenes/${stage.scene}.jpg`,mission:stage.mission,missionTitle:stage.missionTitle,missionSites:stage.missionSites,
  successTitle:stage.successTitle,successRibbon:'戰 事 記 錄 ・ 回 營 整 備',
  ...(stage.mission==='withdraw'?{retreatKeys:[]}:{}),

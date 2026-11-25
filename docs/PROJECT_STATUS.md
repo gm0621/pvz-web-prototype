@@ -20,6 +20,12 @@ npm run test:hero:engine
 npx playwright test --config=playwright.hero-input.config.js
 ```
 
+## 2026-11-25 第二十六章完整流程複查
+
+- 第 150、151、154 關在戰前和戰場行軍圖上改用「被廢太子」「赴許昌幽居」「被迫遷居」，讓頭像與劇情身分一致。暫停撤離時，任務欄與任務面板會顯示「已暫停，保留進度」，並保留尚未回到左側的友軍人數。 [第二十六章規格](hero-history-chapter-twenty-six.md)
+- 本機通過 411 項引擎測試、320px 與 390px 手機 Chromium、820px 平板 WebKit 整章觸控 3 項，以及前章和圖鑑回歸 8 項。涵蓋 148→149 首勝解鎖、東宮使者暫停後換路、三批糧車與缺路補位、守備滿 24 秒後等最後一波並清退、全員撤回、營地對話與購買、末關儲存失敗重試、重整與重玩零軍資。整章採模擬裝置、隔離存檔和受控敵波，第 148、152、153 關另以正常敵波操作。快取版 `chapter-twenty-six-2`，整章設定 `playwright.hero-twenty-six.config.js`。
+- 續開新章前請以第 154 關結算與營地尾聲為銜接點。第 152 關等最後一波清退才過關，第 153 關可在仍有追兵時撤離，須至少留一隊友軍並讓所有存活友軍撤回。
+
 ## 2026-11-25 第二十六章「東宮風雲」
 
 - 已發布 `f6fe49c`。正式站手機 Chromium 和平板 WebKit 各走完第 148～154 關與末關重玩。兩種裝置另跑第 152、153 關正常敵波，並以原始模組從第 148、153 關進度續玩，各驗證 136 張圖鑑頭像。四種畫面尺寸核對六關戰前及戰場路線，另比對 54 份發布資源。 [正式遊戲](https://gm0621.github.io/pvz-web-prototype/hero/?v=f6fe49c) · [人物圖鑑](https://gm0621.github.io/pvz-web-prototype/hero/people.html?v=f6fe49c) · [發布紀錄](https://github.com/gm0621/pvz-web-prototype/actions/runs/45557632895)

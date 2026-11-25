@@ -1,4 +1,4 @@
-import {mapPersonSvg} from './characters.mjs?v=chapter-twenty-six-1';
+import {mapPersonSvg} from './characters.mjs?v=chapter-twenty-six-2';
 
 const viewBox='0 0 400 304';
 
@@ -23,10 +23,10 @@ function location(point,name,goal,side,role=goal?'終點':'起點'){
 }
 
 // This inset preserves bearings and emphasises the active route. Spacing is schematic.
-export function routeInsetSvg(from,to,people,showOpponent,mini,opponentRole='對陣',stationRole='議事地'){
+export function routeInsetSvg(from,to,people,showOpponent,mini,{mapOpponentRole='對陣',mapStationRole='議事地',mapLeaderRole='我軍'}={}){
  const {origin,destination,end}=routeInset(from,to);
  const stationary=origin.x===destination.x&&origin.y===destination.y;
- const mapLabel=stationary?`${to.name}・${stationRole}位置示意`:`${from.name}到${to.name}的行軍方位示意`;
+ const mapLabel=stationary?`${to.name}・${mapStationRole}位置示意`:`${from.name}到${to.name}的行軍方位示意`;
  const angle=Math.atan2(destination.y-origin.y,destination.x-origin.x)*180/Math.PI;
  const split=Math.abs(destination.x-origin.x)<150?Math.sign(destination.x-origin.x)||1:0;
  // Steep routes leave space for the badge beside the moving portrait.
@@ -50,11 +50,11 @@ export function routeInsetSvg(from,to,people,showOpponent,mini,opponentRole='對
   <circle class="route-inset-direction" r="${mini?12:18}"/>
   <path class="route-inset-arrow" d="M-10 0H9M2-7 9 0 2 7" transform="rotate(${angle})"/>
  </g>`}
- ${mini?`<circle class="route-inset-arrival" cx="${destination.x}" cy="${destination.y}" r="12"/>`:`${stationary?location(destination,to.name,true,0,stationRole):`${location(origin,from.name,false,-split)}${location(destination,to.name,true,split)}`}
+ ${mini?`<circle class="route-inset-arrival" cx="${destination.x}" cy="${destination.y}" r="12"/>`:`${stationary?location(destination,to.name,true,0,mapStationRole):`${location(origin,from.name,false,-split)}${location(destination,to.name,true,split)}`}
  <path class="route-inset-divider" d="M20 243H380"/>
- <text class="route-inset-side" x="24" y="269">我軍</text>
+ <text class="route-inset-side" x="24" y="269">${mapLeaderRole}</text>
  <text class="route-inset-army-name" x="24" y="291">${people.leader.name}</text>
- ${showOpponent?`<text class="route-inset-opponent-role" x="283" y="266">${opponentRole}</text>${mapPersonSvg(people.opponent,'map-opponent',251,271)}`:''}
+ ${showOpponent?`<text class="route-inset-opponent-role" x="283" y="266">${mapOpponentRole}</text>${mapPersonSvg(people.opponent,'map-opponent',251,271)}`:''}
  ${mapPersonSvg(people.leader,'map-leader',end.x,end.y)}`}
  </svg>`;
 }
