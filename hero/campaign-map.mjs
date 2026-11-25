@@ -1,7 +1,7 @@
-import {routeInset,routeInsetSvg} from './route-inset.mjs?v=chapter-twenty-one-4';
-import {stagePeople,mapPersonSvg,renderMatchup} from './characters.mjs?v=chapter-twenty-one-4';
-import {stageFactionTitle} from './factions.mjs?v=chapter-twenty-one-4';
-import {HISTORICAL_STAGES} from './history-stages.mjs?v=chapter-twenty-one-4';
+import {routeInset,routeInsetSvg} from './route-inset.mjs?v=chapter-twenty-two-1';
+import {stagePeople,mapPersonSvg,renderMatchup} from './characters.mjs?v=chapter-twenty-two-1';
+import {stageFactionTitle} from './factions.mjs?v=chapter-twenty-two-1';
+import {HISTORICAL_STAGES} from './history-stages.mjs?v=chapter-twenty-two-1';
 // Approximate regional placement, not historical borders or a surveyed route.
 export const MAP_PLACES={
  zhuo:{name:'涿郡',modern:'今河北涿州一帶',x:402,y:78},
@@ -101,6 +101,12 @@ Object.assign(westernPlaces,{
  tazhong:{name:'沓中',modern:'今甘肅南部山區・蜀軍駐地示意',x:-241,y:489},
  jiange:{name:'劍閣',modern:'今四川劍閣一帶・蜀軍守關區域示意',x:-132,y:574}
 });
+Object.assign(westernPlaces,{
+ jinggu:{name:'景谷山道',modern:'陰平入蜀山路・路段示意',x:-226,y:560},
+ jiangyou:{name:'江由',modern:'四川平武一帶・古江由關區域示意',x:-184,y:587},
+ mianzhu:{name:'綿竹',modern:'四川德陽一帶・古綿竹戰區示意',x:-149,y:622},
+ chengduNorth:{name:'成都城北',modern:'成都北側・受降位置示意',x:-149,y:644}
+});
 Object.assign(MAP_PLACES,westernPlaces);
 STAGE_LOCATIONS.push(...HISTORICAL_STAGES.map(s=>({place:s.mapPlace,detail:`${s.year} 年・${stageFactionTitle(s)}視角。${s.viewpointShift?'此處切換敘事視角，不是上一支軍隊的連續行程。':''}地點為歷史區域示意，並非精確軍事路線。`})));
 export function stageLocation(level){if(!Number.isInteger(level)||!STAGE_LOCATIONS[level-1])throw new RangeError('未知戰役關卡');const s=STAGE_LOCATIONS[level-1];return {...MAP_PLACES[s.place],...s,level}}
@@ -120,7 +126,7 @@ export function journeyRoute(level){
 export function campaignMapSvg(level,mini=false){
  const current=stageLocation(level),route=routeThrough(level),visited=new Set(route);
  const stage=HISTORICAL_STAGES[level-17],people=mini?null:stagePeople(level);
- if(stage?.detailedRoute)return routeInsetSvg(MAP_PLACES[route[0]],current,people,stage.mapOpponent,mini);
+ if(stage?.detailedRoute)return routeInsetSvg(MAP_PLACES[route[0]],current,people,stage.mapOpponent,mini,stage.mapOpponentRole);
  const markers=people?(stage?.mapLeader===false?'':mapPersonSvg(people.leader,'map-leader',current.x-36,current.y-44))
   +(stage?.mapOpponent===false?'':mapPersonSvg(people.opponent,people.diplomaticMeeting?'map-host':'map-opponent',current.x+36,current.y-44)):'';
  const points=route.map(key=>`${MAP_PLACES[key].x},${MAP_PLACES[key].y}`).join(' ');

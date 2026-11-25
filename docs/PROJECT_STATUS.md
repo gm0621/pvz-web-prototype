@@ -20,6 +20,12 @@ npm run test:hero:engine
 npx playwright test --config=playwright.hero-input.config.js
 ```
 
+## 2026-11-25 第二十二章「成都受降」
+
+- 新增第 125～130 關「陰平越險、江由開城、涪縣急報、綿竹撤兵、成都議降、成都受降」。延續 263 年史實，保留綿竹失守與劉禪投降。前兩關切到魏軍視角，第 127 關切回蜀軍，沿用獨立強化、營地及新版行軍圖。成都朝議顯示單一議事地，城北受降標示鄧艾；運補及交接關無敵波。 [第二十二章規格](hero-history-chapter-twenty-two.md)
+- 新增諸葛瞻、黃崇、諸葛尚、譙周四張神情各異的萌將頭像，人物圖鑑共 115 人。
+- 399 項引擎測試，320px 與 390px 手機 Chromium 及 820px 平板 WebKit 完整觸控 3 項，前章與圖鑑回歸 8 項。涵蓋第 124 關接第 125 關、魏蜀強化、備車、江由交接、涪縣使者、綿竹撤離、成都議降及受降，並驗證營地、過關保存重試、重整及末關重玩。觸控用模擬裝置、隔離存檔與受控敵波，引擎另驗證正常敵波和非交戰任務。快取版 `chapter-twenty-two-1`，回歸設定為 `playwright.hero-twenty-two.config.js`。
+
 ## 2026-11-25 第二十一章完整流程複查
 
 - 已發布 `a0e2042`。正式站手機 Chromium 與平板 WebKit 各完成第 118～124 關和末關重玩。用原始模組確認第 118、123 關存檔可直接續玩，兩種裝置各解碼 111 張頭像。另用四種尺寸含手機橫向逐關驗證戰前與戰場地圖的可讀性及暫停恢復，核對 46 份發布資源。 [正式遊戲](https://gm0621.github.io/pvz-web-prototype/hero/?v=a0e2042) · [人物圖鑑](https://gm0621.github.io/pvz-web-prototype/hero/people.html?v=a0e2042) · [發布紀錄](https://github.com/gm0621/pvz-web-prototype/actions/runs/45535188585)

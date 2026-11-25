@@ -42,7 +42,7 @@ test('the new chapter extends white emperor saves with six documented routes, co
  assert.match(campaignMapSvg(91),/map-host" data-person="孫權"/);
  assert.doesNotMatch(campaignMapSvg(91),/map-opponent/);
  assert.doesNotMatch(campaignMapSvg(94),/data-person="孟獲"/);
- for(const [query,levels] of [['阿斗',[89,90,91,92,95,108]],['正方',[89,101,102,106]],['伯苗',[91,98]],['高定',[93]],['德昂',[93,94]],['孟獲',[94]]]){
+ for(const [query,levels] of [['阿斗',[89,90,91,92,95,108,128,129,130]],['正方',[89,101,102,106]],['伯苗',[91,98]],['高定',[93]],['德昂',[93,94]],['孟獲',[94]]]){
   assert.deepEqual(searchPeople(query)[0].levels,levels,query);
  }
 });

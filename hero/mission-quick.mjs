@@ -1,19 +1,19 @@
-import {HISTORICAL_STAGES} from './history-stages.mjs?v=chapter-twenty-one-4';
-import {missionText} from './chapter-missions.mjs?v=chapter-twenty-one-4';
-import {retreatPartyNames,retreatPartyLabel,supplyReady} from './history-missions.mjs?v=chapter-twenty-one-4';
+import {HISTORICAL_STAGES} from './history-stages.mjs?v=chapter-twenty-two-1';
+import {missionText} from './chapter-missions.mjs?v=chapter-twenty-two-1';
+import {retreatPartyNames,retreatPartyLabel,supplyReady} from './history-missions.mjs?v=chapter-twenty-two-1';
 const names=['上','中','下'];
 export function missionQuickState(b){
- const m=b.mission;if(!m)return null;if(!['supply','withdraw','decoy'].includes(m.kind))return {text:missionText(b),button:m.done?'查看目標':'進行任務'};
+ const m=b.mission;if(!m)return null;const stage=HISTORICAL_STAGES[b.level-17];if(!['supply','withdraw','decoy'].includes(m.kind))return {text:missionText(b),button:m.done?'查看目標':'進行任務'};
  if(m.kind==='supply'){
-  const cleared=b.bossSpawned&&!b.enemies.some(e=>e.hp>0),prefix=`軍糧 ${m.delivered}／3`;
-  if(m.done)return {text:`${prefix} · 運糧完成，清退餘兵`,button:'查看任務'};
+  const cleared=stage?.enemyCount!==0&&b.bossSpawned&&!b.enemies.some(e=>e.hp>0),prefix=`軍糧 ${m.delivered}／3`;
+  if(m.done)return {text:`${prefix} · 運糧完成${stage?.enemyCount===0?'':'，清退餘兵'}`,button:'查看任務'};
   if(supplyReady(b))return {text:`${prefix} · ${cleared?'敵軍已清退，仍需送糧':'備車完成！'}`,button:'發送糧車',action:'supply'};
   const lanes=Array.from({length:b.laneTotal||3},(_,i)=>i),missing=lanes.filter(l=>!b.allies.some(u=>u.hp>0&&u.lane===l));
   const blocked=lanes.filter(l=>b.enemies.some(e=>e.hp>0&&e.lane===l&&e.x<.48));
   const label=ls=>ls.map(l=>lanes.length===3?names[l]:String(l+1)).join('、')+'路';
   return {text:`${prefix} · `+(missing.length?`${label(missing)}缺接應，派友軍駐守`:blocked.length?`${label(blocked)}受阻，先清退敵人`:`備車 ${Math.floor(m.charge/10*100)}%，完成後送出`),button:'查看任務'};
  }
- const stage=HISTORICAL_STAGES[b.level-17],noBoss=stage?.noBoss;
+ const noBoss=stage?.noBoss;
  const wait=m.withdrawAt===null?(noBoss?'守線等待接應':'等待敵將出場'):b.time<m.withdrawAt?`接應尚需 ${Math.ceil(m.withdrawAt-b.time)} 秒`:'接應完成';
  if(m.ordered){const missing=retreatPartyNames(b,{missingOnly:true});return {text:missing.length?`請召回${missing.join('、')}，才能撤離`:!b.allies.some(u=>u.hp>0)?'請先召回至少一隊友軍':`撤離中 · ${b.allies.filter(u=>u.hp>0&&u.x>.18).length} 名友軍尚未回到左側`,button:'重新撤離',action:'retreat'}}
  if(m.kind==='decoy'&&!m.decoyUsed)return {text:`${wait} · 先放赤幘誘餌`,button:'放置誘餌'};

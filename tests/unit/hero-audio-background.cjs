@@ -61,14 +61,14 @@ test('fallback synth timer is cleared on background and not restarted by foregro
  f.hide();assert.equal(f.timers.size,0);assert.equal(f.ctx.gains[0].gain.value,0);f.show();assert.equal(f.timers.size,0);await f.audio.unlockAudio();assert.equal(f.timers.size,1);await f.audio.setMusic(false);assert.equal(f.timers.size,0);
 });
 
-for(const level of [6,10,16,22,28,34,40,46,52,58,64,70,76,82,88,94,100,106,112,118,124])test(`chapter ending ${level} switches to a distinct coda and next stage switches back`,async t=>{
+for(const level of [6,10,16,22,28,34,40,46,52,58,64,70,76,82,88,94,100,106,112,118,124,130])test(`chapter ending ${level} switches to a distinct coda and next stage switches back`,async t=>{
  const f=await setup(t);f.audio.setMusicMode('victory',level);assert.equal(f.audio.audioStatus().source,'chapter-synth');assert.match(f.audio.musicTheme().name,/章末/);assert.equal(f.audio.musicTheme().calm,true);
  await f.audio.setMusic(true);assert.equal(f.timers.size,1);f.hide();assert.equal(f.timers.size,0);f.show();await f.audio.unlockAudio();assert.equal(f.timers.size,1);
- f.audio.setMusicMode('battle',Math.min(124,level+1));await Promise.resolve();assert.equal(f.audio.audioStatus().source,'stage-synth');assert.match(f.audio.musicTheme().name,/行軍/);await f.audio.setMusic(false);
+ f.audio.setMusicMode('battle',Math.min(130,level+1));await Promise.resolve();assert.equal(f.audio.audioStatus().source,'stage-synth');assert.match(f.audio.musicTheme().name,/行軍/);await f.audio.setMusic(false);
 });
-test('all 124 stages and 21 chapter codas have distinct musical scores',async t=>{
- const {audio}=await setup(t);assert.equal(audio.THEMES.length,124);assert.equal(audio.CHAPTER_THEMES.length,21);
- assert.equal(new Set(audio.THEMES.map(t=>JSON.stringify(t.notes))).size,124);
- assert.equal(new Set(audio.CHAPTER_THEMES.map(t=>JSON.stringify(t.notes))).size,21);
+test('all 130 stages and 22 chapter codas have distinct musical scores',async t=>{
+ const {audio}=await setup(t);assert.equal(audio.THEMES.length,130);assert.equal(audio.CHAPTER_THEMES.length,22);
+ assert.equal(new Set(audio.THEMES.map(t=>JSON.stringify(t.notes))).size,130);
+ assert.equal(new Set(audio.CHAPTER_THEMES.map(t=>JSON.stringify(t.notes))).size,22);
  audio.setMusicMode('victory',17);assert.equal(audio.audioStatus().source,'victory-recording');
 });

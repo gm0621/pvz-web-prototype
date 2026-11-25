@@ -1,13 +1,17 @@
-import {GENERALS} from './roster.mjs?v=chapter-twenty-one-4';
-import {NOVEL_PAGES,CAMP_LINES} from './novel.mjs?v=chapter-twenty-one-4';
-import {campConversation} from './camp-talk.mjs?v=chapter-twenty-one-4';
-import {STORY_TASKS} from './story-play.mjs?v=chapter-twenty-one-4';
-import {CHAPTER_BACKGROUNDS,STAGE_LEADS} from './prologue.mjs?v=chapter-twenty-one-4';
-import {STORY_PEOPLE,hasPersonMention} from './characters.mjs?v=chapter-twenty-one-4';
-import {HEROES,STAGES,chapterInfo,enemyArt,heroesForLevel} from './story.mjs?v=chapter-twenty-one-4';
-import {FACTIONS,enemyPortrait} from './factions.mjs?v=chapter-twenty-one-4';
+import {GENERALS} from './roster.mjs?v=chapter-twenty-two-1';
+import {NOVEL_PAGES,CAMP_LINES} from './novel.mjs?v=chapter-twenty-two-1';
+import {campConversation} from './camp-talk.mjs?v=chapter-twenty-two-1';
+import {STORY_TASKS} from './story-play.mjs?v=chapter-twenty-two-1';
+import {CHAPTER_BACKGROUNDS,STAGE_LEADS} from './prologue.mjs?v=chapter-twenty-two-1';
+import {STORY_PEOPLE,hasPersonMention} from './characters.mjs?v=chapter-twenty-two-1';
+import {HEROES,STAGES,chapterInfo,enemyArt,heroesForLevel} from './story.mjs?v=chapter-twenty-two-1';
+import {FACTIONS,enemyPortrait} from './factions.mjs?v=chapter-twenty-two-1';
 // Child-friendly summaries; comparisons are memory aids, not historical quotations.
 const bios=[
+ ['諸葛瞻','史實人物','帶兵守綿竹的諸葛亮之子','他字思遠，會書法和畫畫。鄧艾從陰平進入蜀地時，他率軍出成都，最後和兒子諸葛尚在綿竹戰死。','玉色盔飾、白色圍領和抿嘴迎敵的神情，可以幫你分清諸葛瞻和父親諸葛亮。','事蹟見《三國志》卷三十五。'],
+ ['黃崇','史實人物','提醒大家先守山路的人','他跟著諸葛瞻到涪縣，一再勸蜀軍搶先守住險要，以免魏軍進入平地。後來他在綿竹一戰中殉難。','褐金頭帶、抬起眉毛、像在急著提醒大家的就是他。','事蹟附見《三國志・黃權傳》。部分版本寫作黃祟。'],
+ ['諸葛尚','史實人物','和父親一起守關的年輕將士','他是諸葛瞻的長子、諸葛亮的孫子。綿竹失守時，他和父親都在這場戰事中殉難。','紅頭帶、年輕圓臉、張嘴像在喊大家跟上，就是諸葛尚。','事蹟附見《三國志》卷三十五諸葛瞻條。'],
+ ['譙周','史實人物','在成都朝議中提出降魏的大臣','他字允南，喜歡讀書。綿竹失守後，劉禪召大家商議去留，譙周提出向魏國投降，劉禪採納了。','譙讀 ㄑㄧㄠˊ。看見深色高帽、灰色長鬍子和低頭思索的神情，就想起他。','朝議內容見《三國志・譙周傳》。'],
  ['鄧艾','史實人物','盯著蜀軍動向的魏將','他字士載。姜維幾次北伐，鄧艾都帶兵應對，在段谷與侯和打贏蜀軍。鍾會在劍閣受阻時，鄧艾從陰平走另一條山路。','藍頭巾、皺眉加抿嘴，就是正專心想事情的鄧艾。','事蹟見《三國志・鄧艾傳》。'],
  ['鍾會','史實人物','來到劍閣卻被擋下的指揮官','他字士季，帶大隊魏軍經漢中南下。到了劍閣，他遇到姜維等人守住山口，攻不下，只能為軍糧發愁。','他戴深色高帽，挑一邊眉毛，嘴角斜斜一笑。鍾讀 ㄓㄨㄥ。','劍閣和陰平是兩條戰線，見《三國志・鍾會傳》。'],
  ['廖化','史實人物','忙著集合隊伍的蜀漢老將','他原名廖淳，字元儉。魏軍進攻時，朝廷派他去支援姜維。後來，幾路蜀軍會合，他也一起守劍閣。','綠頭巾、白鬍子加瞇眼大笑，就是廖化。','事蹟見《三國志・廖化傳》與《姜維傳》。'],

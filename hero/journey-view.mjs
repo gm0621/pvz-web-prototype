@@ -1,6 +1,6 @@
-import {stageFactionTitle} from './factions.mjs?v=chapter-twenty-one-4';
-import {stagePeople,mapPersonSvg,renderMatchup} from './characters.mjs?v=chapter-twenty-one-4';
-import {campaignMapSvg,journeyRoute,MAP_PLACES,routeThrough} from './campaign-map.mjs?v=chapter-twenty-one-4';
+import {stageFactionTitle} from './factions.mjs?v=chapter-twenty-two-1';
+import {stagePeople,mapPersonSvg,renderMatchup} from './characters.mjs?v=chapter-twenty-two-1';
+import {campaignMapSvg,journeyRoute,MAP_PLACES,routeThrough} from './campaign-map.mjs?v=chapter-twenty-two-1';
 let cancelJourney=()=>{};
 export function mountJourney(level,stage){
  cancelJourney();let root=document.getElementById('journeyIntro');
@@ -31,5 +31,5 @@ export function mountJourney(level,stage){
  function finish(){stopped=true;cancelAnimationFrame(id);draw(1);root.dataset.arrived='true';root.querySelector('button').textContent='已抵達 · 繼續讀故事 ↓';root.querySelector('button').onclick=()=>document.getElementById('novelPage').scrollIntoView({block:'start',behavior:reduced?'instant':'smooth'})}
  root.querySelector('button').onclick=finish;
  function frame(now){if(stopped)return;if(!document.hidden)elapsed+=Math.min(100,now-last);last=now;draw(reduced?1:Math.min(1,elapsed/3600));if(elapsed>=4200)finish();else id=requestAnimationFrame(frame)}
- draw(reduced?1:0);if(reduced)finish();else id=requestAnimationFrame(frame);cancelJourney=()=>{stopped=true;cancelAnimationFrame(id)};
+ if(reduced||stage.detailedRoute&&same)finish();else{draw(0);id=requestAnimationFrame(frame)}cancelJourney=()=>{stopped=true;cancelAnimationFrame(id)};
 }

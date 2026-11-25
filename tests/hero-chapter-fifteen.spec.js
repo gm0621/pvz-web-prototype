@@ -70,7 +70,7 @@ test('chapter fifteen carries a completed Xiangfan save through the retreat to Y
 
  await page.goto('/hero/');
  await page.clock.pauseAt(await page.evaluate(()=>Date.now()+600));
- await expect(page.locator('#homeProgress')).toContainText('82 / 124');
+ await expect(page.locator('#homeProgress')).toContainText('82 / 130');
  await page.locator('#chapterPicker').evaluate(el=>el.open=true);
  await tap('#chapterTabs [data-chapter="14"]');
  await tap('#chapterDots [data-level="82"]');
@@ -235,7 +235,7 @@ test('chapter fifteen carries a completed Xiangfan save through the retreat to Y
  }
  await expect(page.locator('#storyTitle')).toHaveText('白帝託孤');
  await page.reload();
- await expect(page.locator('#homeProgress')).toContainText('88 / 124');
+ await expect(page.locator('#homeProgress')).toContainText('88 / 130');
  expect(await save()).toMatchObject({completed:88,coins:555,weapons:{guanyu:2},inventory:{grain:2,herb:1}});
  await page.locator('#chapterPicker').evaluate(el=>el.open=true);
  await tap('#chapterTabs [data-chapter="15"]');
