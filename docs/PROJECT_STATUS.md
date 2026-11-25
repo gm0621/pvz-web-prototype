@@ -8,7 +8,7 @@
 
 ## Obsidian 尚未同步時，從這裡接手
 
-1. **確認版本。** 在剛拉下來的 `main` 執行 `git status --short --branch`、`git log -1 --oneline`。`git log` 顯示目前 checkout 的提交。正式遊戲版本另看下方最新一筆含「已發布」及 Pages 工作的功能紀錄。截至 2026-11-25，最新已驗證的正式遊戲版本為 `008caab`（第二十一章，共 124 關）。 [正式遊戲](https://gm0621.github.io/pvz-web-prototype/hero/?v=008caab) · [人物圖鑑](https://gm0621.github.io/pvz-web-prototype/hero/people.html?v=008caab) · [發布紀錄](https://github.com/gm0621/pvz-web-prototype/actions/runs/45528824304)
+1. **確認版本。** 在剛拉下來的 `main` 執行 `git status --short --branch`、`git log -1 --oneline`。`git log` 顯示目前 checkout 的提交。正式遊戲版本另看下方最新一筆含「已發布」及 Pages 工作的功能紀錄。截至 2026-11-25，最新已驗證的正式遊戲版本為 `8e86ddf`（第二十一章，共 124 關）。 [正式遊戲](https://gm0621.github.io/pvz-web-prototype/hero/?v=8e86ddf) · [人物圖鑑](https://gm0621.github.io/pvz-web-prototype/hero/people.html?v=8e86ddf) · [發布紀錄](https://github.com/gm0621/pvz-web-prototype/actions/runs/45533730969)
 2. **安裝並做基本驗證。** 在專案根目錄用 Node.js 20 以上與 npm。執行下列指令可驗證引擎、桌面滑鼠／鍵盤及手機平板觸控。更多測試和本機預覽見 [開發指南](DEVELOPMENT.md)。Playwright 會啟動 4174 埠的測試服務，先關閉佔用該埠的手動預覽。
 3. **開工前看目前進度。** 先讀 [AGENTS.md](../AGENTS.md) 的「重要約束」及下方與任務相關的紀錄。英雄演義是獨立的 `/hero/` 遊戲，關卡上限見 `hero/campaign-config.mjs`。正式存檔 `heroLegendProgress_v1` 與本機、線上跳關測試的存檔分開。跨電腦時瀏覽器存檔和未提交的檔案需另外移轉。保留滑鼠、鍵盤與觸控操作，也要保留首勝軍資、重玩及暫停的既有規則。 [跳關工具和存檔說明](hero-local-testing.md)
 4. **繼續當次工作。** 依使用者的新需求從最新 `main` 開分支，保留原工作區修改。完成後把變更、實際測試結果、版本與注意事項記在本檔。Obsidian 未同步時註明待補，能讀取後再更新。正式發布依當次授權。
@@ -22,8 +22,8 @@ npx playwright test --config=playwright.hero-input.config.js
 
 ## 2026-11-25 第二十一章行軍圖加強對比
 
-- 本機完成，待發布。第 119～124 關的戰前與戰場行軍圖改用較粗的深綠路線、大金色方向箭頭和高對比地名牌。起點用深綠，終點用朱紅。南北向路段把牌面分到兩側，地形線退到背景。資源版本為 `chapter-twenty-one-3`、`jiange-map-2`。
-- 396 項引擎測試通過。320×568、390×844、667×375 的 Chromium 與 820×1180 的 WebKit 模擬觸控都逐關打開六張戰前與戰場圖，核對地名、頭像與邊界。正式站仍為 `008caab`。
+- 已發布 `8e86ddf`。第 119～124 關的戰前與戰場行軍圖改用較粗的深綠路線、大金色方向箭頭和高對比地名牌。起點用深綠，終點用朱紅。南北向路段把牌面分到兩側，地形線退到背景。資源版本為 `chapter-twenty-one-3`、`jiange-map-2`。
+- 396 項引擎測試通過。320×568、390×844、667×375 的 Chromium 與 820×1180 的 WebKit 模擬觸控都逐關打開六張戰前與戰場圖，核對地名、頭像與邊界。正式站用 320×568、390×844、667×375 的手機 Chromium 與 820×1180 的平板 WebKit 模擬觸控，逐關驗證第 119～124 關的戰前與戰場地圖，每種尺寸 12 張。地名在牌面內，牌面與頭像無重疊或裁切，方向箭頭與新版配色正確。開啟戰場地圖時暫停，關閉後可恢復戰鬥。核對 46 份發布資源。 [正式遊戲](https://gm0621.github.io/pvz-web-prototype/hero/?v=8e86ddf) · [人物圖鑑](https://gm0621.github.io/pvz-web-prototype/hero/people.html?v=8e86ddf) · [發布紀錄](https://github.com/gm0621/pvz-web-prototype/actions/runs/45533730969)
 
 ## 2026-11-25 第二十一章「劍閣守關」
 
