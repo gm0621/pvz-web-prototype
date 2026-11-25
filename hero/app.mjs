@@ -1,37 +1,37 @@
-import {CHAPTER_NUMERALS} from './campaign-config.mjs?v=chapter-twenty-four-1';
-import {mountExperienceView} from './experience-view.mjs?v=chapter-twenty-four-1';
+import {CHAPTER_NUMERALS} from './campaign-config.mjs?v=chapter-twenty-four-2';
+import {mountExperienceView} from './experience-view.mjs?v=chapter-twenty-four-2';
 import {preloadBattleAssets,battleAssetsReady,prepareBattleAssets} from './battle-assets.mjs?v=images-1';
-import {mountBattleFocus} from './battle-focus.mjs?v=chapter-twenty-four-1';
+import {mountBattleFocus} from './battle-focus.mjs?v=chapter-twenty-four-2';
 import {advanceAutoSkills} from './auto-skills.mjs?v=battle-focus-1';
 import {renderPassiveFeedback} from './passive-view.mjs?v=passive-feedback-1';
-import {mountSkillIntro} from './skill-intro.mjs?v=chapter-twenty-four-1';
-import {beginReading,installStoryReader} from './story-reader.mjs?v=chapter-twenty-four-1';
+import {mountSkillIntro} from './skill-intro.mjs?v=chapter-twenty-four-2';
+import {beginReading,installStoryReader} from './story-reader.mjs?v=chapter-twenty-four-2';
 import {shortPages} from './story-pages.mjs?v=passive-feedback-1';
-import {configureRoster,configurePeachRoster,configureSunRoster,awardExperience,SLOTS,ALL_GENERALS as GENERALS} from './roster.mjs?v=chapter-twenty-four-1';
-import {openDeployment,mountActiveSkills} from './roster-view.mjs?v=chapter-twenty-four-1';
-import {castActive,lanesFor,laneLabel} from './engine.mjs?v=chapter-twenty-four-1';
-import {mountSkillGuide} from './skill-guide.mjs?v=chapter-twenty-four-1';
-import {battleBossPortrait,renderPeople,STORY_PEOPLE} from './characters.mjs?v=chapter-twenty-four-1';
-import {factionFor,stageFactionTitle,enemyPortrait,paintPortrait} from './factions.mjs?v=chapter-twenty-four-1';
-import {mountHistoryLesson} from './history-view.mjs?v=chapter-twenty-four-1';
-import {renderSkillCutin} from './skill-cutin.mjs?v=chapter-twenty-four-1';
-import {renderMasterCutin} from './master-cutin.mjs?v=chapter-twenty-four-1';
-import {renderBossCutin} from './boss-cutin.mjs?v=chapter-twenty-four-1';
+import {configureRoster,configurePeachRoster,configureSunRoster,awardExperience,SLOTS,ALL_GENERALS as GENERALS} from './roster.mjs?v=chapter-twenty-four-2';
+import {openDeployment,mountActiveSkills} from './roster-view.mjs?v=chapter-twenty-four-2';
+import {castActive,lanesFor,laneLabel} from './engine.mjs?v=chapter-twenty-four-2';
+import {mountSkillGuide} from './skill-guide.mjs?v=chapter-twenty-four-2';
+import {battleBossPortrait,renderPeople,STORY_PEOPLE} from './characters.mjs?v=chapter-twenty-four-2';
+import {factionFor,stageFactionTitle,enemyPortrait,paintPortrait} from './factions.mjs?v=chapter-twenty-four-2';
+import {mountHistoryLesson} from './history-view.mjs?v=chapter-twenty-four-2';
+import {renderSkillCutin} from './skill-cutin.mjs?v=chapter-twenty-four-2';
+import {renderMasterCutin} from './master-cutin.mjs?v=chapter-twenty-four-2';
+import {renderBossCutin} from './boss-cutin.mjs?v=chapter-twenty-four-2';
 import {mountBattleKeys} from './battle-keys.mjs?v=battle-focus-1';
-import {mountJourney} from './journey-view.mjs?v=chapter-twenty-four-1';
-import {renderMission} from './chapter-mission-view.mjs?v=chapter-twenty-four-1';
-import {mountCampaignMap} from './campaign-map.mjs?v=chapter-twenty-four-1';
-import {advanceBattleFrame,normalizeBattleSpeed} from './battle-speed.mjs?v=chapter-twenty-four-1';
-import {mountNovel} from './novel.mjs?v=chapter-twenty-four-1';
-import {mountCamp} from './camp-view.mjs?v=chapter-twenty-four-1';
-import {rewardVictory,useSupply,weaponsForLevel} from './campaign.mjs?v=chapter-twenty-four-1';
+import {mountJourney} from './journey-view.mjs?v=chapter-twenty-four-2';
+import {renderMission} from './chapter-mission-view.mjs?v=chapter-twenty-four-2';
+import {mountCampaignMap} from './campaign-map.mjs?v=chapter-twenty-four-2';
+import {advanceBattleFrame,normalizeBattleSpeed} from './battle-speed.mjs?v=chapter-twenty-four-2';
+import {mountNovel} from './novel.mjs?v=chapter-twenty-four-2';
+import {mountCamp} from './camp-view.mjs?v=chapter-twenty-four-2';
+import {rewardVictory,useSupply,weaponsForLevel} from './campaign.mjs?v=chapter-twenty-four-2';
 import {createFirstGuide} from './first-guide.mjs?v=passive-feedback-1';
-import {mountStoryTask} from './story-play.mjs?v=chapter-twenty-four-1';
-import {CHAPTER_BACKGROUNDS,STAGE_LEADS} from './prologue.mjs?v=chapter-twenty-four-1';
-import {setMusic,setMusicMode,setMusicHome,musicTheme,musicOn,setSfx,unlockAudio,hitSound} from './audio.mjs?v=chapter-twenty-four-1';
-import {renderDuel} from './duel-view.mjs?v=chapter-twenty-four-1';
-import {chapterInfo,enemyArt,HEROES as BASE_HEROES,heroesForLevel,STAGES,ENEMY_ART,SHIELD_ART,FEATURES,heroDescription} from './story.mjs?v=chapter-twenty-four-1';
-import {bossProfile,LANE_CAPACITY,laneCount,ENEMY_SWING,enemyAttackFrame,skipDuelEntrance,positionHero,commandHero,moveHero,BOSS_SKILLS,SAVE_KEY,normalizeProgress,createBattle,deploy,canDeploy,attackFrame,SWING} from './engine.mjs?v=chapter-twenty-four-1';
+import {mountStoryTask} from './story-play.mjs?v=chapter-twenty-four-2';
+import {CHAPTER_BACKGROUNDS,STAGE_LEADS} from './prologue.mjs?v=chapter-twenty-four-2';
+import {setMusic,setMusicMode,setMusicHome,musicTheme,musicOn,setSfx,unlockAudio,hitSound} from './audio.mjs?v=chapter-twenty-four-2';
+import {renderDuel} from './duel-view.mjs?v=chapter-twenty-four-2';
+import {chapterInfo,enemyArt,HEROES as BASE_HEROES,heroesForLevel,STAGES,ENEMY_ART,SHIELD_ART,FEATURES,heroDescription} from './story.mjs?v=chapter-twenty-four-2';
+import {bossProfile,LANE_CAPACITY,laneCount,ENEMY_SWING,enemyAttackFrame,skipDuelEntrance,positionHero,commandHero,moveHero,BOSS_SKILLS,SAVE_KEY,normalizeProgress,createBattle,deploy,canDeploy,attackFrame,SWING} from './engine.mjs?v=chapter-twenty-four-2';
 
 const $=id=>document.getElementById(id);
 let HEROES=BASE_HEROES;
@@ -195,7 +195,10 @@ function renderBattle(){
  for(const button of $('orders').querySelectorAll('button')){const order=button.dataset.order;if(order==='up'||order==='down'){const target=controlled?controlled.lane+(order==='up'?-1:1):-1;const full=target>=0&&target<lanesFor(battle)&&laneCount(battle,target)>=LANE_CAPACITY;button.textContent=(order==='up'?'↑ ':'↓ ')+(full?'該路已滿':order==='up'?'上移':'下移');button.title=full?'先調走該路一名友軍，再移入':''}button.disabled=!controlled||battle.paused||battle.over||!!battle.duel||!!battle.introPending||((order==='up'||order==='down')&&(battle.time<(controlled.moveReadyAt||0)||(order==='up'?controlled.lane===0:controlled.lane===lanesFor(battle)-1)));}
  if(battle.introPending&&!$('bossIntro').open){const stage=STAGES[battle.level-1];paintPortrait($('bossIntroArt'),battleBossPortrait(stage.bossName,battle.level));$('bossIntroArt').alt=stage.bossName;$('bossIntroTitle').textContent=`${stage.bossTitle||'敵軍大將'}・${stage.bossName}`; $('bossIntroText').textContent=stage.bossIntro||(battle.level===3?'鄧茂：「黃巾先鋒鄧茂在此！誰敢擋我大軍？」\n張飛：「燕人張翼德在此！待俺前來會你！」':`${stage.bossName}：「想過此地，先接我一招！」\n劉備：「眾將留意，照應三路！」`); $('bossIntroTip').textContent=stage.bossTip||`${BOSS_SKILLS[battle.level-1]}：蓄力後重擊同路近處友軍。點場上武將，再點戰場位置即可調動（換路冷卻 2 秒）。`;const steps=[];if(stage.duelHero){if(stage.mission==='barrier')steps.push('先依符號提示，破掉兩面真旗');if(stage.duelPartner)steps.push(`${HEROES[stage.duelHero].short}與${HEROES[stage.duelPartner].short}都要存活在場`);if(stage.duelHpRatio)steps.push(`將${stage.bossName}生命打到 ${Math.round(stage.duelHpRatio*100)}% 以下`);steps.push(`讓${HEROES[stage.duelHero].short}與${stage.bossName}同路近身 → ${stage.duelPartner?'聯手交鋒':'自動單挑'}`);}$('bossDuelSteps').replaceChildren(...steps.map(text=>{const li=document.createElement('li');li.textContent=text;return li}));$('bossDuelSteps').hidden=!steps.length;$('bossIntro').showModal();}
  $('food').textContent=Math.floor(battle.food);$('lives').textContent='♥ '.repeat(Math.max(0,battle.lives)).trim()||'防線失守';$('lives').setAttribute('aria-label',`剩餘 ${Math.max(0,battle.lives)} 次防線`);
- $('waveText').textContent=stage.enemyCount===0?stage.enemyArmy:battle.bossSpawned?(stage.noBoss?'追兵已全數出現':'敵將已出陣'):`敵軍 ${battle.spawned} / ${stage.enemyCount}`;
+ const waveLabel=(stage.noBoss?stage.enemyArmy:null)||'敵軍';
+ $('waveText').textContent=stage.enemyCount===0?stage.enemyArmy:battle.bossSpawned
+  ?(stage.noBoss?`${waveLabel}已全數出現`:'敵將已出陣')
+  :`${waveLabel} ${battle.spawned} / ${stage.enemyCount}`;
  const notice=battle.time<battle.noticeUntil?battle.notice:FEATURES[battle.level-1].text;
  const commandMessage=battle.duelHint&&battle.time<battle.duelHint.until?battle.duelHint.text:battle.time<battle.noticeUntil?battle.notice:'';
  $('commandFeedback').hidden=!/路已滿|調動整備中|軍糧不足|先破盾/.test(commandMessage);if(!$('commandFeedback').hidden)$('commandFeedback').textContent=commandMessage;
@@ -228,7 +231,7 @@ function showResult(){
  document.querySelector('.victory-ribbon').textContent=stage.successRibbon||(stage.successTitle?'保 全 隊 伍 ・ 回 營 整 備':'捷 報 傳 回 ・ 凱 旋 歸 營');
  $('resultMark').textContent=battle.won?(stage.enemyCount===0?'成':stage.successTitle?'全':'勝'):'再起';$('resultChapter').textContent=`第${CHAPTER_NUMERALS[chapterInfo(battle.level).chapter]}章 · ${chapterInfo(battle.level).number}`;
  $('resultTitle').textContent=battle.won?(stage.successTitle||((!STAGES[battle.level]||chapterInfo(battle.level+1).chapter!==chapterInfo(battle.level).chapter)?chapterInfo(battle.level).title:'此戰告捷')):'重整陣形，再來一次';
- $('resultText').textContent=battle.won?stage.victory:battle.lossReason==='commander-breach'?'敵方主將突破防線，本關未完成。調動部隊攔住主將，再挑戰一次。':(battle.level>=17?`先讓友軍照應${['','','','三','四','五'][lanesFor(battle)]}路，閱讀本關任務；撤軍關不必擊倒主將，接應完成後帶隊退回左側。`:'先讓弓兵照應三路，再用張飛頂住前線、關羽斬擊敵軍、劉備回復友軍。軍糧會持續補給，留意空著的路線。');
+ $('resultText').textContent=battle.won?stage.victory:battle.lossReason==='commander-breach'?'敵方主將突破防線，本關未完成。調動部隊攔住主將，再挑戰一次。':(stage.noBoss&&stage.bossTip?stage.bossTip:battle.level>=17?`先讓友軍照應${['','','','三','四','五'][lanesFor(battle)]}路，閱讀本關任務；撤軍關不必擊倒主將，接應完成後帶隊退回左側。`:'先讓弓兵照應三路，再用張飛頂住前線、關羽斬擊敵軍、劉備回復友軍。軍糧會持續補給，留意空著的路線。');
  $('result').dataset.outcome=battle.won?'victory':'defeat';$('result').dataset.reward=String(progress.coins>balanceBefore);if(battle.won&&!xp.some(x=>x.amount>0))void hitSound('oath');
  $('resultEarned').textContent=`+${progress.coins-balanceBefore}`;$('resultBalance').textContent=progress.coins.toLocaleString('en-US');
  $('resultRewardReason').textContent=!battle.won?'這次未能守住防線，沒有獲得軍資；已有軍資不扣除。':!earned?'本關首次通關獎勵已領取，重玩不重複發放。':progress.coins-balanceBefore<earned?'首次通關！軍資已補至持有上限 99,999。':'首次通關獎勵・80 軍資';

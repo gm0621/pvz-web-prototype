@@ -1,11 +1,11 @@
-import {GENERALS} from './roster.mjs?v=chapter-twenty-four-1';
-import {NOVEL_PAGES,CAMP_LINES} from './novel.mjs?v=chapter-twenty-four-1';
-import {campConversation} from './camp-talk.mjs?v=chapter-twenty-four-1';
-import {STORY_TASKS} from './story-play.mjs?v=chapter-twenty-four-1';
-import {CHAPTER_BACKGROUNDS,STAGE_LEADS} from './prologue.mjs?v=chapter-twenty-four-1';
-import {STORY_PEOPLE,hasPersonMention} from './characters.mjs?v=chapter-twenty-four-1';
-import {HEROES,STAGES,chapterInfo,enemyArt,heroesForLevel} from './story.mjs?v=chapter-twenty-four-1';
-import {FACTIONS,enemyPortrait} from './factions.mjs?v=chapter-twenty-four-1';
+import {GENERALS} from './roster.mjs?v=chapter-twenty-four-2';
+import {NOVEL_PAGES,CAMP_LINES} from './novel.mjs?v=chapter-twenty-four-2';
+import {campConversation} from './camp-talk.mjs?v=chapter-twenty-four-2';
+import {STORY_TASKS} from './story-play.mjs?v=chapter-twenty-four-2';
+import {CHAPTER_BACKGROUNDS,STAGE_LEADS} from './prologue.mjs?v=chapter-twenty-four-2';
+import {STORY_PEOPLE,hasPersonMention} from './characters.mjs?v=chapter-twenty-four-2';
+import {HEROES,STAGES,chapterInfo,enemyArt,heroesForLevel} from './story.mjs?v=chapter-twenty-four-2';
+import {FACTIONS,enemyPortrait} from './factions.mjs?v=chapter-twenty-four-2';
 // Child-friendly summaries; comparisons are memory aids, not historical quotations.
 const bios=[
  ['羊祜','史實人物','會帶兵也會種田的將軍','他字叔子。到襄陽後，他讓一部分士兵種田，把糧食慢慢存起來。他和對面的陸抗各守一邊，史書也記載過兩人互通使者。','祜讀 ㄏㄨˋ。溫和的眼神、玉色頭巾和灰鬍子，可以幫你認出他。','事蹟見《晉書・羊祜傳》。'],

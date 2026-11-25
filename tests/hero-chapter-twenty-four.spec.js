@@ -2,10 +2,10 @@ const {test,expect}=require('@playwright/test');
 const saveKey='heroLegendProgress_v1';
 const stages=[
  {name:'襄陽屯田',year:269,route:'洛陽 → 襄陽',leader:'羊祜',guest:'羊祜',kind:'restoration',sites:['田地','水渠','糧倉'],outcome:'羊祜在襄陽屯田'},
- {name:'西陵守圍',year:272,route:'樂鄉 → 西陵',leader:'陸抗',guest:'陸抗',opponent:'羊祜',role:'江陵另路',matchup:'晉援軍・羊祜另一路往江陵',wu:true,kind:'holdout',outcome:'陸抗拿回西陵，晉軍撤退'},
+ {name:'西陵守圍',year:272,route:'樂鄉 → 西陵',leader:'陸抗',guest:'陸抗',opponent:'羊祜',role:'江陵另路',matchup:'晉援軍・羊祜另一路往江陵',wu:true,enemyArmy:'晉軍援兵',kind:'holdout',outcome:'陸抗拿回西陵，晉軍撤退'},
  {name:'襄陽交印',year:278,route:'襄陽',leader:'杜預',guest:'杜預',opponent:'羊祜',role:'舉薦',station:'接任地',kind:'dispatch',outcome:'羊祜舉薦的杜預接掌荊州'},
  {name:'益州備舟',year:279,route:'益州',leader:'王濬',guest:'王濬',station:'備舟地',kind:'supply',outcome:'王濬的船隊從長江上游出發'},
- {name:'西陵順流',year:280,route:'永安 → 西陵',leader:'王濬',guest:'王濬',kind:'dispatch',outcome:'這次西陵落入晉軍手中'},
+ {name:'西陵順流',year:280,route:'永安 → 西陵',leader:'王濬',guest:'王濬',enemyArmy:'吳軍沿江守兵',kind:'dispatch',outcome:'這次西陵落入晉軍手中'},
  {name:'石頭城受降',year:280,route:'武昌 → 石頭城',leader:'王濬',guest:'孫皓',opponent:'孫皓',role:'請降',kind:'restoration',sites:['降書','印綬','城門'],outcome:'孫皓在石頭城向王濬投降'}
 ];
 
@@ -35,7 +35,7 @@ test('stage 136 continues through the surrender of Wu and keeps campaign saves o
  const advance=ms=>page.clock.runFor(ms);
  const snapshot=()=>page.evaluate(()=>({time:window.chapterBattle.time,mission:window.chapterBattle.mission}));
  const readSave=()=>page.evaluate(key=>JSON.parse(localStorage.getItem(key)),saveKey);
- async function controlledBattle({wu=false,faction='西晉軍',sites,kind}={}){
+ async function controlledBattle({wu=false,faction='西晉軍',sites,kind,enemyArmy,weaponRanks}={}){
   await tap('#storySkip');
   if(!wu){
    if(sites)await expect(page.locator('#deployment')).toContainText(sites.join('、')+'整備');
@@ -44,15 +44,15 @@ test('stage 136 continues through the surrender of Wu and keeps campaign saves o
   }
   await expect(page.locator('#battle')).toBeVisible({timeout:25000});
   await expect(page.locator('#battleTitle')).toContainText(wu?'東吳軍':faction);
-  expect(await page.evaluate(()=>window.chapterBattle.weapons)).toMatchObject(wu?{liubei:0,guanyu:0,zhangfei:2}:{liubei:0,guanyu:1,zhangfei:0});
+  expect(await page.evaluate(()=>window.chapterBattle.weapons)).toMatchObject(weaponRanks||{liubei:0,guanyu:1,zhangfei:0});
   await page.locator('#battleSpeed').selectOption('2');
   // Only enemy waves and starting food are sandboxed. Mission and save paths run through UI.
-  await page.evaluate(()=>{
+  await page.evaluate(hasWaves=>{
    const battle=window.chapterBattle;
-   battle.bossSpawned=true;
+   battle.bossSpawned=!hasWaves;
    battle.nextSpawn=Infinity;
    battle.food=300;
-  });
+  },Boolean(enemyArmy));
   for(const [lane,key] of ['liubei','guanyu','zhangfei'].entries()){
    await tap(`#cards [data-hero=${key}]`);
    await page.locator('.lane').nth(lane).tap({position:{x:40,y:25}});
@@ -161,8 +161,10 @@ test('stage 136 continues through the surrender of Wu and keeps campaign saves o
   await expect(page.locator('.history-sources a').first()).toBeVisible();
   await expect(page.locator('.history-sources a').first()).toHaveAttribute('href',/wikisource/);
   await tap('#storyDetails header button');
-  await controlledBattle(stage);
-  if(![138,141].includes(level))await expect(page.locator('#waveText')).not.toContainText(/追兵|敵軍/);
+  const weaponRanks=stage.wu?{liubei:0,guanyu:0,zhangfei:2}:{liubei:level>137?1:0,guanyu:1,zhangfei:0};
+  await controlledBattle({...stage,weaponRanks});
+  if(stage.enemyArmy)await expect(page.locator('#waveText')).toHaveText(stage.enemyArmy+' 0 / 12');
+  else await expect(page.locator('#waveText')).not.toContainText(/追兵|敵軍/);
 
   await tap('#battleMenuButton');
   await tap('#battleMapButton');
@@ -248,6 +250,18 @@ test('stage 136 continues through the surrender of Wu and keeps campaign saves o
    await advance(1000);
    expect(await snapshot()).toEqual(frozen);
    await tap('#pauseBtn');
+   await advance(100);
+   const guardId=await page.evaluate(()=>String(window.chapterBattle.allies.find(u=>u.key==='zhangfei').id));
+   await page.locator('#unitSelect').selectOption(guardId);
+   await tap('#commandDrawerButton');
+   await tap('#orders [data-order="up"]');
+   await tap('#commandDrawerClose');
+   const missing=(await snapshot()).mission.hold;
+   await advance(1000);
+   expect((await snapshot()).mission.hold).toBe(missing);
+   await expect(page.locator('#missionQuick')).toContainText('下路缺接應');
+   await tap('#cards [data-hero=archer]');
+   await page.locator('.lane').nth(2).tap({position:{x:40,y:25}});
    await advance(18500);
   }else if(stage.kind==='dispatch'){
    await tap('#missionDrawerButton');
@@ -266,17 +280,34 @@ test('stage 136 continues through the surrender of Wu and keeps campaign saves o
    await advance(18500);
   }else await advance(18500);
 
+  if(stage.enemyArmy){
+   expect((await snapshot()).mission.done).toBe(true);
+   await expect(page.locator('#result')).toBeHidden();
+   await page.evaluate(()=>{
+    const battle=window.chapterBattle;
+    battle.spawned=11;
+    battle.nextSpawn=battle.time;
+   });
+   await advance(3300);
+   await expect(page.locator('#waveText')).toHaveText(stage.enemyArmy+'已全數出現');
+   await expect(page.locator('#result')).toBeHidden();
+   await advance(31000);
+  }
   await advance(300);
   await expect(page.locator('#result')).toBeVisible();
   await expect(page.locator('#resultEarned')).toHaveText('+80');
   await expect(page.locator('#resultText')).toContainText(stage.outcome);
   if(level===142){
    await expect(page.locator('#resultRetrySave')).toBeVisible();
-   expect(await readSave()).toMatchObject({completed:141,coins:550});
+   expect(await readSave()).toMatchObject({completed:141,coins:310});
    await page.evaluate(()=>window.blockSave=false);
    await tap('#resultRetrySave');
   }
-  expect(await readSave()).toMatchObject({completed:level,coins:230+80*index,weapons:{guanyu:2},armyWeapons:{cao:{guanyu:1},sun:{zhangfei:2}},inventory:{grain:2}});
+  const balance=230+80*index-(level>137?60:0)-(level>138?180:0);
+  expect(await readSave()).toMatchObject({
+   completed:level,coins:balance,weapons:{guanyu:2},
+   armyWeapons:{cao:{liubei:level>137?1:0,guanyu:1},sun:{zhangfei:level>138?3:2}},inventory:{grain:2}
+  });
   await camp();
   await expect(page.locator('#campTitle')).toContainText(stage.name);
   await expect(page.locator('.tent-banner')).toHaveText(stage.wu?'吳':'晉');
@@ -286,16 +317,26 @@ test('stage 136 continues through the surrender of Wu and keeps campaign saves o
   await expect(portrait).toHaveAttribute('src',expressionPortrait(stage.guest));
   await portrait.evaluate(img=>img.decode());
   await tap('#campTalkNext');
+  if(level===137||level===138){
+   await tap('[data-shop=weapons]');
+   const name=level===137?'曹操':'黃蓋',rank=level===137?0:2,price=level===137?60:180;
+   const item=page.locator('#shopGoods .goods-card').filter({hasText:name+'・兵器整備'});
+   await expect(item).toContainText(`已強化 ${rank} / 3`);
+   await item.getByRole('button',{name:`購買 · ${price} 軍資`}).tap();
+   await expect(item).toContainText(`已強化 ${rank+1} / 3`);
+   await expect(page.locator('#campCoins')).toHaveText(String(balance-price));
+   await tap('#campShopBack');
+  }
   if(level===142){
    await tap('[data-shop=items]');
    await page.evaluate(()=>window.blockSave=true);
    await tap('[data-buy=herb]');
    await expect(page.locator('#campMessage')).toContainText('無法保存');
-   await expect(page.locator('#campCoins')).toHaveText('630');
+   await expect(page.locator('#campCoins')).toHaveText('390');
    expect((await readSave()).inventory.herb).toBe(0);
    await page.evaluate(()=>window.blockSave=false);
    await tap('[data-buy=herb]');
-   await expect(page.locator('#campCoins')).toHaveText('605');
+   await expect(page.locator('#campCoins')).toHaveText('365');
    await tap('#campShopBack');
    await expect(page.locator('#campContinue')).toContainText('第二十四章尾聲');
   }
@@ -306,10 +347,10 @@ test('stage 136 continues through the surrender of Wu and keeps campaign saves o
 
  await page.reload();
  await expect(page.locator('#homeProgress')).toContainText('第二十四章完成');
- const cleared={completed:142,coins:605,weapons:{liubei:0,guanyu:2,zhangfei:0},armyWeapons:{cao:{liubei:0,guanyu:1,zhangfei:0},sun:{zhangfei:2}},inventory:{grain:2,herb:1}};
+ const cleared={completed:142,coins:365,weapons:{liubei:0,guanyu:2,zhangfei:0},armyWeapons:{cao:{liubei:1,guanyu:1,zhangfei:0},sun:{zhangfei:3}},inventory:{grain:2,herb:1}};
  expect(await readSave()).toMatchObject(cleared);
  await choose(24,142);
- await controlledBattle(stages[5]);
+ await controlledBattle({...stages[5],weaponRanks:{liubei:1,guanyu:1,zhangfei:0}});
  await tap('#missionDrawerButton');
  for(let lane=0;lane<3;lane++){
   await page.locator('#missionChoices [data-action=site]').nth(lane).tap();

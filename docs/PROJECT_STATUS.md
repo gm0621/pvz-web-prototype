@@ -20,6 +20,11 @@ npm run test:hero:engine
 npx playwright test --config=playwright.hero-input.config.js
 ```
 
+## 2026-11-25 第二十四章完整流程複查
+
+- 兩場西陵的波次改顯示「晉軍援兵」和「吳軍沿江守兵」，敵軍出齊後也沿用當關名稱。無主將關卡在失敗結算時會直接提示本關任務，第 138 關已用手機和平板核對。 [第二十四章規格](hero-history-chapter-twenty-four.md)
+- 405 項引擎測試、320px 與 390px 手機 Chromium、820px 平板 WebKit 整章觸控 3 項，前章與圖鑑回歸 8 項。檢查 136→137、襄陽三處整備、兩場西陵完成條件、益州三批軍糧、石頭城交接、營地及末關儲存重試。實際為晉方曹操和吳方黃蓋各買兵器一次，確認換軍、重整與重玩各自保留。第 138 關派友軍離開下路時暫停守備計時。兩場西陵即使任務完成，仍須等最後一名敵軍入場並清退才結算。整章觸控使用模擬裝置、隔離存檔和受控敵波，兩場西陵另以正常敵波驗證。快取版 `chapter-twenty-four-2`，整章設定 `playwright.hero-twenty-four.config.js`。
+
 ## 2026-11-25 第二十四章「西晉一統」
 
 - 已發布 `9b434e6`。正式站手機 Chromium 和平板 WebKit 都通過第 136～142 關、末關重玩，以及兩場西陵的正常敵波觸控測試。以原始模組確認從第 136、141 關續玩，兩種裝置各解碼 125 張頭像。四種畫面尺寸核對六關戰前及戰場行軍圖，另比對 54 份發布資源。 [正式遊戲](https://gm0621.github.io/pvz-web-prototype/hero/?v=9b434e6) · [人物圖鑑](https://gm0621.github.io/pvz-web-prototype/hero/people.html?v=9b434e6) · [發布紀錄](https://github.com/gm0621/pvz-web-prototype/actions/runs/45543466293)
