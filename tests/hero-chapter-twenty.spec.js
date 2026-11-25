@@ -103,9 +103,9 @@ test('stage 112 continues through Jiang Wei’s northern campaigns and keeps cam
 
  await page.goto('/hero/');
  await page.clock.pauseAt(await page.evaluate(()=>Date.now()+700));
- await expect(page.locator('#homeProgress')).toContainText('112 / 130');
- await expect(page.locator('#homeChapterCount')).toHaveText('第二十二章已開放');
- await expect(page.locator('#homeStageCount')).toHaveText('130 場征途');
+ await expect(page.locator('#homeProgress')).toContainText('112 / 136');
+ await expect(page.locator('#homeChapterCount')).toHaveText('第二十三章已開放');
+ await expect(page.locator('#homeStageCount')).toHaveText('136 場征途');
  await expect(page.locator('#chapterDots [data-level="114"]')).toBeDisabled();
  await choose(19,112);
  await expect(page.locator('#storyTitle')).toHaveText('援軍解圍');
@@ -269,7 +269,7 @@ test('stage 112 continues through Jiang Wei’s northern campaigns and keeps cam
 
  await expect(page.locator('#storyTitle')).toHaveText('段谷撤兵');
  await page.reload();
- await expect(page.locator('#homeProgress')).toContainText('118 / 130');
+ await expect(page.locator('#homeProgress')).toContainText('118 / 136');
  const cleared={completed:118,coins:605,weapons:{guanyu:2},inventory:{grain:2,herb:1}};
  expect(await readSave()).toMatchObject(cleared);
  await choose(20,118);

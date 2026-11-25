@@ -142,9 +142,9 @@ test('stage 124 continues through Chengdu and keeps campaign saves on touch scre
 
  await page.goto('/hero/');
  await page.clock.pauseAt(await page.evaluate(()=>Date.now()+700));
- await expect(page.locator('#homeProgress')).toContainText('124 / 130');
- await expect(page.locator('#homeChapterCount')).toHaveText('第二十二章已開放');
- await expect(page.locator('#homeStageCount')).toHaveText('130 場征途');
+ await expect(page.locator('#homeProgress')).toContainText('124 / 136');
+ await expect(page.locator('#homeChapterCount')).toHaveText('第二十三章已開放');
+ await expect(page.locator('#homeStageCount')).toHaveText('136 場征途');
  await expect(page.locator('#chapterDots [data-level="126"]')).toBeDisabled();
  await choose(21,124);
  await expect(page.locator('#storyTitle')).toHaveText('劍閣守關');
@@ -324,8 +324,9 @@ test('stage 124 continues through Chengdu and keeps campaign saves on touch scre
   await tap('#storySkip');
  }
 
+ await expect(page.locator('#storyTitle')).toHaveText('涪城繳兵');
  await page.reload();
- await expect(page.locator('#homeProgress')).toContainText('第二十二章完成');
+ await expect(page.locator('#homeProgress')).toContainText('130 / 136');
  const cleared={completed:130,coins:485,weapons:{liubei:0,guanyu:2,zhangfei:1},armyWeapons:{cao:{liubei:1,guanyu:1,zhangfei:0}},inventory:{grain:2,herb:1}};
  expect(await readSave()).toMatchObject(cleared);
  await choose(22,130);

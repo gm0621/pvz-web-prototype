@@ -1,5 +1,5 @@
-import {HISTORICAL_STAGES} from './history-stages.mjs?v=chapter-twenty-two-2';
-import {paintPortrait} from './factions.mjs?v=chapter-twenty-two-2';
+import {HISTORICAL_STAGES} from './history-stages.mjs?v=chapter-twenty-three-1';
+import {paintPortrait} from './factions.mjs?v=chapter-twenty-three-1';
 import {THIRD_CHAPTER} from './chapter-three.mjs?v=passive-feedback-1';
 // History and novel adaptation are deliberately separated in the introduction.
 export const CHAPTER_BACKGROUNDS={
@@ -41,6 +41,7 @@ CHAPTER_BACKGROUNDS[13]={era:'215—219 年・漢中爭雄',history:'張魯歸�
 CHAPTER_BACKGROUNDS[12]={era:'212—215 年・隴右與漢中',history:'關中戰後，夏侯淵留守並援救祁山。曹操封魏公後，西征張魯，經陽平關進入南鄭。',story:'沿用曹操軍。西線及鄴城分段敘事，行軍、糧運與守軍交戰是遊戲改編。張魯退往巴中後才率部歸降。'};
 CHAPTER_BACKGROUNDS[11]={era:'209—211 年・江陵與關中',history:'赤壁後曹操北返，曹仁在江陵撤守。北方整備後，曹操西征，與馬超、韓遂等在潼關及渭水交戰。',story:'江陵段切換到留守軍消息，兵卡沿用抽象職能。三路接應與運糧為改編，保留江陵失守與馬超、韓遂退走的結果。'};
 CHAPTER_BACKGROUNDS[16]={era:'223—225 年・託孤與南征',history:'劉備去世前在永安託付後事，劉禪於成都即位。蜀漢與吳修好、讓百姓休息，諸葛亮在 225 年才出兵南中，年底回到成都。',story:'跟著諸葛亮、劉禪、鄧芝和李恢走過六關。從傳遞消息、守護三路到整備田間和送糧，看看打仗之外還要做哪些事。'};
+CHAPTER_BACKGROUNDS[23]={era:'263～265 年・成都餘波',history:'成都受降後，姜維在涪城向鍾會投降。鍾會在成都起兵反抗魏廷，兵變中身亡。劉禪遷居洛陽，接著曹魏由西晉取代。',story:'把停戰令送到涪城，接應成都兵變中的護送隊，再替遷往洛陽的隨行隊伍補給。'};
 CHAPTER_BACKGROUNDS[22]={era:'263 年・成都受降',history:'鍾會在劍閣受阻，鄧艾另走陰平進入蜀地。諸葛瞻在綿竹戰敗殉難，劉禪接受譙周的建議，出成都城向鄧艾投降。',story:'護送陰平山路的糧車，接應涪縣和綿竹的隊伍，最後把停戰交接的消息送到各營。'};
 CHAPTER_BACKGROUNDS[21]={era:'256—263 年・劍閣守關',history:'姜維從狄道退兵後仍幾次北伐，在段谷與侯和失利。263 年魏軍分路進軍，蜀軍會合後在劍閣擋住鍾會，鄧艾另走陰平。',story:'先接回敗退的隊伍、護送軍糧，再與援軍會合，守住劍閣。'};
 CHAPTER_BACKGROUNDS[20]={era:'246—255 年・姜維北伐',history:'興勢解圍後，費禕主持蜀漢政務。夏侯霸由魏入蜀。費禕遇害後，姜維數次出兵，255 年在洮西取勝，後因魏軍解圍而撤離狄道。',story:'六關從點清各營家底、接應投奔蜀漢的部眾，到押糧與把狄道前線的隊伍撤回。'};

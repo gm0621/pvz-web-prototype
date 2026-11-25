@@ -34,7 +34,7 @@ test('Jiange extends a finished Di Dao save with six historical routes and disti
  assert.equal(progress.weapons.guanyu,2);
  assert.equal(progress.inventory.grain,2);
  assert.equal(progress.heroGrowth.caoren.weapon,2);
- assert.equal(rewardVictory(progress,131),0);
+ assert.equal(rewardVictory(progress,137),0);
  assert.match(chapter[0].victory,/段谷戰敗/);
  assert.match(chapter[2].victory,/侯和失利.*留駐沓中/);
  assert.match(chapter[5].victory,/劍閣擋住了鍾會.*鄧艾走陰平/);
@@ -44,7 +44,7 @@ test('Jiange extends a finished Di Dao save with six historical routes and disti
  assert.deepEqual(mentionedPeople('燕人張翼德在此！').map(p=>p.name),['張飛']);
  assert.deepEqual(mentionedPeople('張翼與廖化守關。').map(p=>p.name).sort(),['廖化','張翼']);
  for(const [alias,name,levels] of [
-  ['士載','鄧艾',[119,120,121,122,124,125,126,127,128,129,130]],['士季','鍾會',[122,123,124,125,130]],['元儉','廖化',[122,123,124,129]],['伯恭','張翼',[123,124]]
+  ['士載','鄧艾',[119,120,121,122,124,125,126,127,128,129,130,131,132,133,134]],['士季','鍾會',[122,123,124,125,130,131,132,133,134]],['元儉','廖化',[122,123,124,129]],['伯恭','張翼',[123,124]]
  ]){
   const [entry]=searchPeople(alias);
   assert.equal(entry.name,name);

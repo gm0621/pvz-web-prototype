@@ -34,7 +34,7 @@ test('the Wuzhang chapter extends chapter seventeen saves and keeps its missions
  assert.equal(progress.weapons.guanyu,2);
  assert.equal(progress.inventory.grain,2);
  assert.equal(progress.heroGrowth.caoren.weapon,2);
- assert.equal(rewardVictory(progress,131),0);
+ assert.equal(rewardVictory(progress,137),0);
  assert.match(STAGES[101].victory,/糧運仍接不上/);
  assert.match(STAGES[102].victory,/張郃在木門中箭身亡/);
  assert.match(STAGES[105].victory,/楊儀.*撤回漢中.*諸葛亮病逝於五丈原/);

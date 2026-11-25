@@ -1,13 +1,17 @@
-import {GENERALS} from './roster.mjs?v=chapter-twenty-two-2';
-import {NOVEL_PAGES,CAMP_LINES} from './novel.mjs?v=chapter-twenty-two-2';
-import {campConversation} from './camp-talk.mjs?v=chapter-twenty-two-2';
-import {STORY_TASKS} from './story-play.mjs?v=chapter-twenty-two-2';
-import {CHAPTER_BACKGROUNDS,STAGE_LEADS} from './prologue.mjs?v=chapter-twenty-two-2';
-import {STORY_PEOPLE,hasPersonMention} from './characters.mjs?v=chapter-twenty-two-2';
-import {HEROES,STAGES,chapterInfo,enemyArt,heroesForLevel} from './story.mjs?v=chapter-twenty-two-2';
-import {FACTIONS,enemyPortrait} from './factions.mjs?v=chapter-twenty-two-2';
+import {GENERALS} from './roster.mjs?v=chapter-twenty-three-1';
+import {NOVEL_PAGES,CAMP_LINES} from './novel.mjs?v=chapter-twenty-three-1';
+import {campConversation} from './camp-talk.mjs?v=chapter-twenty-three-1';
+import {STORY_TASKS} from './story-play.mjs?v=chapter-twenty-three-1';
+import {CHAPTER_BACKGROUNDS,STAGE_LEADS} from './prologue.mjs?v=chapter-twenty-three-1';
+import {STORY_PEOPLE,hasPersonMention} from './characters.mjs?v=chapter-twenty-three-1';
+import {HEROES,STAGES,chapterInfo,enemyArt,heroesForLevel} from './story.mjs?v=chapter-twenty-three-1';
+import {FACTIONS,enemyPortrait} from './factions.mjs?v=chapter-twenty-three-1';
 // Child-friendly summaries; comparisons are memory aids, not historical quotations.
 const bios=[
+ ['衛瓘','史實人物','拿著魏廷公文來的人','他字伯玉。魏廷下令收押鄧艾時，他進城執行命令。後來成都發生兵變，他也參與了後續處理。','瓘讀 ㄍㄨㄢˋ。深藍官帽、方鬍子和一高一低的眉毛，就是愛先觀察再開口的遊戲造型。','事蹟見《晉書・衛瓘傳》及《三國志・鄧艾傳》。'],
+ ['胡烈','史實人物','被扣住的魏軍將領','鍾會在成都把多位魏將扣住，胡烈也在其中。他被扣的消息傳到部下耳中，魏兵很快聚集起來。','戴著紅色盔飾、睜大眼睛、像在急著傳話的人，就是他。','事蹟見《三國志・鍾會傳》及《資治通鑑》卷七十八。'],
+ ['郤正','史實人物','陪劉禪到洛陽的寫書人','他字令先，喜歡讀書和寫文章。蜀漢滅亡後，他跟著劉禪到洛陽，提醒劉禪那裡的禮節。','郤讀 ㄒㄧˋ。看到紫衣、歪頭和安慰人的小小笑容，就想起他。','事蹟見《三國志・郤正傳》。'],
+ ['司馬炎','史實人物','建立西晉的新皇帝','他字安世。曹魏末年，魏帝把皇位交給他，他建立西晉。這時東吳還在，天下仍未統一。','帝冠上垂著一串串珠子，嘴角微微翹起。司馬是複姓，炎是他的名字。','事蹟見《晉書・武帝紀》。'],
  ['諸葛瞻','史實人物','帶兵守綿竹的諸葛亮之子','他字思遠，會書法和畫畫。鄧艾從陰平進入蜀地時，他率軍出成都，最後和兒子諸葛尚在綿竹戰死。','玉色盔飾、白色圍領和抿嘴迎敵的神情，可以幫你分清諸葛瞻和父親諸葛亮。','事蹟見《三國志》卷三十五。'],
  ['黃崇','史實人物','提醒大家先守山路的人','他跟著諸葛瞻到涪縣，一再勸蜀軍搶先守住險要，以免魏軍進入平地。後來他在綿竹一戰中殉難。','褐金頭帶、抬起眉毛、像在急著提醒大家的就是他。','事蹟附見《三國志・黃權傳》。部分版本寫作黃祟。'],
  ['諸葛尚','史實人物','和父親一起守關的年輕將士','他是諸葛瞻的長子、諸葛亮的孫子。綿竹失守時，他和父親都在這場戰事中殉難。','紅頭帶、年輕圓臉、張嘴像在喊大家跟上，就是諸葛尚。','事蹟附見《三國志》卷三十五諸葛瞻條。'],
@@ -33,7 +37,7 @@ const bios=[
  ['郝昭','史實人物','城門守得住的將領','他字伯道。諸葛亮冬天圍攻陳倉時，他負責守城，等到蜀軍缺糧撤退。','郝讀 ㄏㄠˇ。看到陳倉，就想起守城的郝昭。','事蹟見《曹真傳》及裴松之注。'],
  ['郭淮','史實人物','趕來接應的魏將','他字伯濟。蜀軍進攻武都和陰平時，他原想帶兵救援。諸葛亮到了建威，他就退兵。','淮讀 ㄏㄨㄞˊ，記得郭淮和郭嘉是不同年代的兩個人。','第 100 關從陳式一方看戰事，郭淮在圖上列為另一戰線的援將。'],
 
- ['劉禪','史實人物','接過責任的少年皇帝','他是劉備的兒子，字公嗣。父親去世後，他在成都即位，把新年號定為建興。諸葛亮繼續做丞相，幫他打理國事。','禪在這裡念 ㄕㄢˋ。搜尋「阿斗」，也能找到他。','本章的營地對話是遊戲改編，劉禪在成都即位有史書記載。'],
+ ['劉禪','史實人物','接過責任的少年皇帝','他是劉備的兒子，字公嗣。父親去世後，他在成都即位，把新年號定為建興。諸葛亮繼續做丞相，幫他打理國事。蜀漢滅亡後，他搬到洛陽，受封安樂公。','禪在這裡念 ㄕㄢˋ。搜尋「阿斗」，也能找到他。','本章的營地對話是遊戲改編，劉禪在成都即位有史書記載。'],
  ['李嚴','史實人物','白帝託孤的另一位大臣','大家常記得諸葛亮聽劉備交代後事，李嚴也受了託付。他先留守永安，後來調往漢中，也曾負責北伐的糧運。','同樣姓李，李嚴守永安，李恢帶隊南征。','李嚴字正方，後來改名李平。'],
  ['鄧芝','史實人物','靠談話搭橋的使者','夷陵打完後，蜀與吳的關係還要修補。鄧芝代表蜀漢去見孫權，把兩邊合作的理由說清楚，讓彼此恢復往來。','看到手上的信，就想起這位去吳國談合作的人。','223 年出使見《三國志・鄧芝傳》與《後主傳》。'],
  ['高定','史實人物','越巂的地方首領','劉禪接位那段時間，高定在越巂反叛。225 年，諸葛亮帶主軍從越巂進入南中，高定兵敗。','高定在越巂，孟獲的故事則在南征的後段。','頭像和山路接應是遊戲設計。'],

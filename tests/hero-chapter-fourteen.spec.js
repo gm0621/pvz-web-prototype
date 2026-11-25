@@ -62,7 +62,7 @@ test('chapter fourteen continues a completed Hanzhong save through Xiangfan',asy
 
  await page.goto('/hero/');
  await page.clock.pauseAt(await page.evaluate(()=>Date.now()+600));
- await expect(page.locator('#homeProgress')).toContainText('76 / 130');
+ await expect(page.locator('#homeProgress')).toContainText('76 / 136');
  await page.locator('#chapterPicker').evaluate(el=>el.open=true);
  await tap('#chapterTabs [data-chapter="13"]');
  await tap('#chapterDots [data-level="76"]');
@@ -208,7 +208,7 @@ test('chapter fourteen continues a completed Hanzhong save through Xiangfan',asy
  }
  await expect(page.locator('#storyTitle')).toHaveText('成都即位');
  await page.reload();
- await expect(page.locator('#homeProgress')).toContainText('82 / 130');
+ await expect(page.locator('#homeProgress')).toContainText('82 / 136');
  expect(await save()).toMatchObject({completed:82,coins:460,weapons:{guanyu:2},heroGrowth:{caocao:{weapon:2}}});
  await page.locator('#chapterPicker').evaluate(el=>el.open=true);
  await tap('#chapterTabs [data-chapter="14"]');

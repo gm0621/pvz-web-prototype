@@ -11,7 +11,7 @@ test('Chengdu extends a finished Jiange save while preserving the historical sur
  const routes=[['yinping','jinggu'],['jinggu','jiangyou'],['chengdu','fu'],['fu','mianzhu'],['chengdu'],['chengdu','chengduNorth']];
  let progress=normalizeProgress({completed:124,coins:150,weapons:{guanyu:2},armyWeapons:{cao:{guanyu:1}},inventory:{grain:2}});
  assert.equal(rewardVictory(progress,124),0);
- const chapter=STAGES.slice(124);
+ const chapter=STAGES.slice(124,130);
  assert.equal(chapter.length,6);
  assert.deepEqual(chapter.map(stage=>stage.faction),['cao','cao','shu','shu','shu','shu']);
  assert.deepEqual(chapter.map(stage=>stage.mission),['supply','restoration','dispatch','withdraw','restoration','dispatch']);
@@ -33,7 +33,7 @@ test('Chengdu extends a finished Jiange save while preserving the historical sur
  assert.equal(progress.weapons.guanyu,2);
  assert.equal(progress.armyWeapons.cao.guanyu,1);
  assert.equal(progress.inventory.grain,2);
- assert.equal(rewardVictory(progress,131),0);
+ assert.equal(rewardVictory(progress,137),0);
  assert.match(chapter[3].victory,/綿竹失守.*諸葛瞻、諸葛尚與黃崇殉難/);
  assert.match(chapter[5].victory,/劉禪向鄧艾投降，蜀漢至此滅亡/);
  assert.doesNotMatch(campaignMapSvg(129),/route-inset-arrow/);

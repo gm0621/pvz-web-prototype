@@ -20,6 +20,12 @@ npm run test:hero:engine
 npx playwright test --config=playwright.hero-input.config.js
 ```
 
+## 2026-11-25 第二十三章「成都餘波」
+
+- 新增第 131～136 關「涪城繳兵、鄧艾被徵、成都閉署、成都亂起、安樂公入洛、洛陽建晉」。保留姜維向鍾會投降、鍾會與姜維死於兵變、劉禪遷洛和東吳仍在的史實。新版行軍圖含原地交接和受禪的專用地點標籤。營地、歷史時間軸和 136 關存檔上限同步接入。 [第二十三章規格](hero-history-chapter-twenty-three.md)
+- 新增衛瓘、胡烈、郤正、司馬炎四張表情各異的萌將頭像，人物圖鑑共 119 人。
+- 402 項引擎測試，320px 與 390px 手機 Chromium、820px 平板 WebKit 全章觸控 3 項，以及前章與圖鑑回歸 8 項。涵蓋 130→131、接應使者、兩處整備、成都撤離、遷洛運糧、營地、儲存失敗重試、重整及末關重玩。觸控測試使用模擬裝置和隔離存檔，完整旅程採受控敵波，並另以三組種子驗證第 134 關的正常敵波。快取版 `chapter-twenty-three-1`，整章測試設定為 `playwright.hero-twenty-three.config.js`。
+
 ## 2026-11-25 第二十二章完整流程複查
 
 - 已發布 `70e560a`。正式站手機 Chromium 和平板 WebKit 各走完第 124～130 關及末關重玩。第 124、129 關的存檔以原始模組成功續玩，兩種裝置各解碼圖鑑中的 115 張萌將頭像。四種尺寸核對戰前及戰場六幅行軍圖的地名、箭頭、頭像和暫停恢復，並比對 45 份發布資源。 [正式遊戲](https://gm0621.github.io/pvz-web-prototype/hero/?v=70e560a) · [人物圖鑑](https://gm0621.github.io/pvz-web-prototype/hero/people.html?v=70e560a) · [發布紀錄](https://github.com/gm0621/pvz-web-prototype/actions/runs/45538625847)

@@ -13,7 +13,7 @@ const cast=[
  "徐榮","華雄","鄧茂","程遠志","石魁","雷烈","韓旌","焦魯","杜衡"
 ];
 const portraits=new Map(cast.map((name,index)=>[name,`./assets/portraits/expressions/${String(index+5).padStart(3,"0")}.webp`]));
-for(const [name,file] of Object.entries({'魏延':'wei-yan','蔣琬':'jiang-wan','費禕':'fei-yi','曹爽':'cao-shuang','夏侯霸':'xiahou-ba','郭循':'guo-xun','陳泰':'chen-tai','王經':'wang-jing','鄧艾':'deng-ai','鍾會':'zhong-hui','廖化':'liao-hua','張翼':'zhang-yi','諸葛瞻':'zhuge-zhan','黃崇':'huang-chong','諸葛尚':'zhuge-shang','譙周':'qiao-zhou'})){
+for(const [name,file] of Object.entries({'魏延':'wei-yan','蔣琬':'jiang-wan','費禕':'fei-yi','曹爽':'cao-shuang','夏侯霸':'xiahou-ba','郭循':'guo-xun','陳泰':'chen-tai','王經':'wang-jing','鄧艾':'deng-ai','鍾會':'zhong-hui','廖化':'liao-hua','張翼':'zhang-yi','諸葛瞻':'zhuge-zhan','黃崇':'huang-chong','諸葛尚':'zhuge-shang','譙周':'qiao-zhou','衛瓘':'wei-guan','胡烈':'hu-lie','郤正':'xi-zheng','司馬炎':'sima-yan'})){
  portraits.set(name,`./assets/portraits/${file}.webp?v=expression-1`);
 }
 export function expressionPortrait(name){return portraits.get(name)}
