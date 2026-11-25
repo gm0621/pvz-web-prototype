@@ -14,7 +14,10 @@ export function installStoryReader(){
   back.disabled=phase==='journey'||phase==='dialogue'&&current===1;
   const rearReport=phase==='journey'&&$('journeyIntro')?.dataset.rearReport==='true';
   count.textContent=phase==='journey'?(rearReport?'後方消息':'行軍'):phase==='novel'?$('novelCount').textContent:phase==='quiz'?'想一想':`${current} / ${total}`;
-  next.textContent=rearReport?'查看後方消息 →':phase==='dialogue'&&current===total?(ending?'繼續故事 →':'出發 →'):'下一步 →';
+  // The final epilogue button names its destination in renderStory.
+  if(!(ending&&phase==='dialogue'&&current===total)){
+   next.textContent=rearReport?'查看後方消息 →':phase==='dialogue'&&current===total?'出發 →':'下一步 →';
+  }
   next.setAttribute('aria-label',phase==='quiz'&&$('storyTask').dataset.solved!=='true'?'略過問答，繼續故事':next.textContent);
  }
  function setPhase(value){phase=value;sync();$('storyPrologue').scrollTop=0;$('storyLine').scrollTop=0;$('novelText').scrollTop=0}

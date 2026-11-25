@@ -344,8 +344,13 @@ test('stage 136 continues through the surrender of Wu and keeps campaign saves o
    await expect(page.locator('#campContinue')).toContainText('主篇尾聲');
   }
   await tap('#campContinue');
-  if(level===142)await expect(page.locator('#storyLine')).toContainText('孫皓在石頭城向王濬投降');
-  await tap('#storySkip');
+  if(level===142){
+   await expect(page.locator('#storyLine')).toContainText('孫皓在石頭城向王濬投降');
+   const count=Number((await page.locator('#storyCount').textContent()).split(' / ')[1]);
+   for(let i=1;i<count;i++)await tap('#storyNext');
+   await expect(page.locator('#storyNext')).toHaveText('觀看全篇回顧 →');
+   await tap('#storyNext');
+  }else await tap('#storySkip');
  }
 
  const recap=page.locator('#finaleCard');

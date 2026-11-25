@@ -1,6 +1,6 @@
 import {stageFactionTitle} from './factions.mjs?v=luoyang-bonus-1';
 import {stagePeople,mapPersonSvg,renderMatchup} from './characters.mjs?v=luoyang-bonus-1';
-import {campaignMapSvg,journeyRoute,MAP_PLACES,routeThrough} from './campaign-map.mjs?v=luoyang-bonus-1';
+import {campaignMapSvg,includeSecondaryRoute,journeyRoute,MAP_PLACES,routeThrough} from './campaign-map.mjs?v=luoyang-bonus-2';
 let cancelJourney=()=>{};
 export function mountJourney(level,stage){
  cancelJourney();let root=document.getElementById('journeyIntro');
@@ -10,7 +10,7 @@ export function mountJourney(level,stage){
  root.innerHTML='<div class="journey-heading"><div><small>義軍行程 · 地理位置示意</small><h3></h3><p></p></div><button type="button">略過行軍動畫 →</button></div><div class="journey-map"></div><div class="journey-matchup map-matchup"></div><small class="journey-caption"></small>';
  root.querySelector('.journey-heading small').textContent=stage.mapLeader===false?`${stage.mapReportRegion||'荊州'}後方消息 · 地理位置示意`:(stage.faction?stageFactionTitle(stage):'義軍')+'行程 · 地理位置示意';
  const route=stage.viaPlaces?.length?routeThrough(level).map(key=>MAP_PLACES[key].name).join(' → '):same?`${to.name} · ${stage.place}`:`${from.name} → ${to.name}`;
- root.querySelector('h3').textContent=(stage.viewpointShift?'轉換視角 · ':'')+route;
+ root.querySelector('h3').textContent=(stage.viewpointShift?'轉換視角 · ':'')+includeSecondaryRoute(route,stage);
  root.querySelector('p').textContent=stage.lead||`${same?'義軍繼續前往':'隊伍整裝出發，前往'}${stage.place}，${stage.name}。`;
  root.querySelector('.journey-caption').textContent=to.detail;root.querySelector('.journey-map').innerHTML=campaignMapSvg(level);
  renderMatchup(root.querySelector('.journey-matchup'),level);

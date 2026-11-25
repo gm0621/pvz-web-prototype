@@ -156,6 +156,10 @@ export function journeyRoute(level){
  const width=Math.max(320,right-left),height=Math.max(210,bottom-top);
  return {from,to,same,start,end,viewBox:`${(left+right-width)/2} ${(top+bottom-height)/2} ${width} ${height}`};
 }
+export function includeSecondaryRoute(primary,stage){
+ if(!stage.mapSecondaryOrigin)return primary;
+ return `${primary} ／ ${MAP_PLACES[stage.mapSecondaryOrigin].name} → ${MAP_PLACES[stage.mapPlace].name}`;
+}
 export function campaignMapSvg(level,mini=false){
  const current=stageLocation(level),route=routeThrough(level),visited=new Set(route);
  const stage=HISTORICAL_STAGES[level-17],people=mini?null:stagePeople(level);
@@ -199,7 +203,8 @@ export function mountCampaignMap({stages,getBattle,setPaused}){
   document.getElementById('campaignMapLocation').textContent=`${stage.mapMessenger?'傳檄目的地':'目前'}：${location}`;
   document.getElementById('campaignMapModern').textContent=p.modern;
   document.getElementById('campaignMapDetail').textContent=stage.mapMessenger?'信封表示傳檄使者。'+p.detail:p.detail;
-  document.getElementById('campaignMapRoute').textContent=routeThrough(level).map(key=>MAP_PLACES[key].name).join(' → ');
+  const primary=routeThrough(level).map(key=>MAP_PLACES[key].name).join(' → ');
+  document.getElementById('campaignMapRoute').textContent=includeSecondaryRoute(primary,stage);
   document.getElementById('campaignMapStages').replaceChildren(...stages.map((s,i)=>{const li=document.createElement('li');li.textContent=`${i+1}. ${s.name} · ${MAP_PLACES[STAGE_LOCATIONS[i].place].name}`;if(i+1===level)li.setAttribute('aria-current','step');else if(i+1>level)li.className='future';return li}));
  };
  trigger.onclick=()=>{const b=getBattle();if(!b||b.over||b.duel||b.introPending)return;render(b.level);openedBattle=b;wasPaused=b.paused;interrupted=false;setPaused(true);dialog.showModal();dialog.scrollTop=0;document.getElementById('campaignMapClose').focus()};

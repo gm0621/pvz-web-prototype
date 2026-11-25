@@ -155,6 +155,17 @@ test('stage 160 unlocks the optional Luoyang campaign and keeps campaign saves o
   while(await page.locator('#skillIntro[open]').isVisible())await tap('#skillIntroContinue');
   await tap('#resultNext');
  }
+ async function readEpilogue(){
+  const count=Number((await page.locator('#storyCount').textContent()).split(' / ')[1]);
+  const lines=[];
+  for(let i=0;i<count;i++){
+   lines.push(await page.locator('#storyLine').textContent());
+   if(i===count-1)await expect(page.locator('#storyNext')).toHaveText('回主選單 →');
+   await tap('#storyNext');
+  }
+  await expect(page.locator('#home')).toBeVisible();
+  return lines.join('');
+ }
  await page.goto('/hero/');
  await page.clock.pauseAt(await page.evaluate(()=>Date.now()+700));
  await expect(page.locator('#homeProgress')).toHaveText('英雄演義・全篇通關');
@@ -173,9 +184,7 @@ test('stage 160 unlocks the optional Luoyang campaign and keeps campaign saves o
  await camp();
  await expect(page.locator('#campContinue')).toContainText('第二十七章尾聲');
  await tap('#campContinue');
- await expect(page.locator('#storyLine')).toContainText('司馬冏以大司馬身分掌管朝政');
- await tap('#storySkip');
- await expect(page.locator('#home')).toBeVisible();
+ expect(await readEpilogue()).toContain('司馬冏以大司馬身分掌管朝政');
  await expect(page.locator('#story')).toBeHidden();
  await expect(page.locator('#homeExtraProgress')).toContainText('18 / 18');
  await expect(page.locator('#homeLuoyangProgress')).toContainText('0 / 6');
@@ -185,7 +194,8 @@ test('stage 160 unlocks the optional Luoyang campaign and keeps campaign saves o
   const level=161+index;
   await expect(page.locator('#storyTitle')).toHaveText(stage.name);
   await expect(page.locator('#storyChapter')).toContainText('第二十八章');
-  await expect(page.locator('#journeyIntro h3')).toContainText(stage.route);
+  const routeSummary=stage.secondary?`${stage.route} ／ ${stage.secondary.join(' → ')}`:stage.route;
+  await expect(page.locator('#journeyIntro h3')).toContainText(routeSummary);
   const courier=page.locator('#journeyIntro .map-messenger');
   const departure=stage.messenger?await courier.getAttribute('transform'):null;
   await advance(4400);
@@ -219,7 +229,7 @@ test('stage 160 unlocks the optional Luoyang campaign and keeps campaign saves o
 
   await tap('#battleMenuButton');
   await tap('#battleMapButton');
-  await expect(page.locator('#campaignMapRoute')).toHaveText(stage.route);
+  await expect(page.locator('#campaignMapRoute')).toHaveText(routeSummary);
   await checkRouteInset('#campaignMapCanvas',stage);
   if(stage.messenger){
    await expect(page.locator('#campaignMapLocation')).toHaveText('傳檄目的地：洛陽');
@@ -332,8 +342,11 @@ test('stage 160 unlocks the optional Luoyang campaign and keeps campaign saves o
    await expect(page.locator('#campContinue')).toContainText('第二十八章尾聲');
   }
   await tap('#campContinue');
-  if(level===166)await expect(page.locator('#storyLine')).toContainText('撤離隊護住了撤回的人');
-  await tap('#storySkip');
+  if(level===166){
+   const ending=await readEpilogue();
+   expect(ending).toContain('撤離隊護住了撤回的人');
+   expect(ending).toContain('長沙王司馬乂被關在金墉城，後來遭張方部下帶走並遇害');
+  }else await tap('#storySkip');
  }
 
  await page.reload();
