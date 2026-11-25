@@ -1,8 +1,8 @@
-import {portraitForDisplay} from './portrait-expressions.mjs?v=chapter-twenty-six-2';
-import {GENERALS} from './roster.mjs?v=chapter-twenty-six-2';
+import {portraitForDisplay} from './portrait-expressions.mjs?v=chapter-twenty-seven-1';
+import {GENERALS} from './roster.mjs?v=chapter-twenty-seven-1';
 import {WEATHER_GENERALS} from './weather-generals.mjs?v=passive-feedback-1';
-import {HEROES,STAGES,ENEMY_ART,enemyArt} from './story.mjs?v=chapter-twenty-six-2';
-import {BLANK_PORTRAIT,FACTIONS,factionFor,enemyPortrait,paintPortrait} from './factions.mjs?v=chapter-twenty-six-2';
+import {HEROES,STAGES,ENEMY_ART,enemyArt} from './story.mjs?v=chapter-twenty-seven-1';
+import {BLANK_PORTRAIT,FACTIONS,factionFor,enemyPortrait,paintPortrait} from './factions.mjs?v=chapter-twenty-seven-1';
 const fifthPortraits=['董卓','王允','荀彧','程昱','陳宮','鮑信'].map((name,i)=>({name,aliases:[name],asset:BLANK_PORTRAIT,atlas:'./assets/portraits/chapter-five.png',atlasRows:2,row:Math.floor(i/3),col:i%3,role:['掌權於洛陽、長安的軍閥','參與誅董卓的朝臣','守住鄄城的曹操軍謀士','協助保全兗州據點的謀士','迎呂布入兗州的謀士','迎曹操領兗州、戰死壽張的盟友'][i]}));
 const sixthPortraits=['漢獻帝','袁術','典韋','曹昂','曹安民','賈詡','郭嘉','荀攸','棗祗'].map((name,i)=>({name,aliases:name==='漢獻帝'?['漢獻帝','劉協']:[name],asset:BLANK_PORTRAIT,atlas:'./assets/portraits/chapter-six.png',row:Math.floor(i/3),col:i%3,role:['東漢皇帝・輾轉遷到許縣','淮南軍閥・197 年稱帝','曹操護衛・宛城遇害','曹操長子・宛城遇害','曹操的侄子・宛城遇害','張繡的謀士・後歸曹操','曹操軍謀士・參與下邳之計','曹操軍謀士・參與下邳之計','推動屯田的官員'][i]}));
 const seventhPortraits=['袁紹','顏良','文醜','許攸','張遼','淳于瓊'].map((name,i)=>({name,aliases:[name],asset:BLANK_PORTRAIT,atlas:'./assets/portraits/chapter-seven.png',atlasRows:2,row:Math.floor(i/3),col:i%3,role:['河北軍閥・官渡敗退','袁紹部將・白馬戰死','袁紹部將・延津戰死','由袁紹轉投曹操的謀士','白馬先鋒・與關羽同戰','袁軍糧屯守將・烏巢戰敗'][i]}));
@@ -11,6 +11,13 @@ const ninthPortraits=["高幹", "袁熙", "田疇", "蹋頓", "公孫康"].map((
 const tenthPortraits=["劉琮", "趙雲", "諸葛亮", "孫權", "周瑜", "魯肅"].map((name,i)=>({name,aliases:[name,...({趙雲:['子龍'],諸葛亮:['孔明'],孫權:['仲謀'],周瑜:['公瑾'],魯肅:['子敬']}[name]||[])],asset:BLANK_PORTRAIT,atlas:'./assets/portraits/chapter-ten.png',atlasRows:2,row:Math.floor(i/3),col:i%3,role:["劉表之子・荊州歸降", "劉備部將・長坂護人", "劉備的謀士・出使孫權", "江東領袖・決定抗曹", "孫權軍統帥・赤壁抗曹", "孫權的謀士・聯絡劉備"][i]}));
 const eleventhPortraits=['馬超','韓遂','許褚','徐晃','曹丕'].map((name,i)=>({name,aliases:[name,...({馬超:['孟起'],韓遂:['文約'],許褚:['仲康'],徐晃:['公明'],曹丕:['子桓']}[name]||[])],asset:BLANK_PORTRAIT,atlas:'./assets/portraits/chapter-eleven.png',atlasRows:2,row:Math.floor(i/3),col:i%3,role:['關中將領・潼關迎戰曹操','關中將領・與馬超聯合','曹操護衛・危急渡河護主','曹操部將・渡河設營','曹操之子・留守鄴城'][i]}));
 export const STORY_PEOPLE=[
+ {name:'司馬顒',aliases:['司馬顒','文載','河間王'],asset:'./assets/portraits/sima-yong-jin.webp',role:'西晉河間王・先助趙王，後改支持齊王與成都王'},
+ {name:'司馬冏',aliases:['司馬冏','景治','齊王'],asset:'./assets/portraits/sima-jiong.webp',role:'西晉齊王・由許昌起兵討趙'},
+ {name:'司馬穎',aliases:['司馬穎','章度','成都王'],asset:'./assets/portraits/sima-ying.webp',role:'西晉成都王・由鄴城響應討趙'},
+ {name:'盧志',aliases:['盧志','子道'],asset:'./assets/portraits/lu-zhi-jin.webp',role:'西晉謀士・協助成都王'},
+ {name:'王輿',aliases:['王輿','左衛將軍'],asset:'./assets/portraits/wang-yu-jin.webp',role:'西晉左衛將軍・參與迎回晉惠帝'},
+ {name:'張泓',aliases:['張泓','征虜將軍'],asset:'./assets/portraits/zhang-hong-jin.webp',role:'趙王部將・與齊王在潁陰交戰'},
+ {name:'孫會',aliases:['孫會','孫秀之子'],asset:'./assets/portraits/sun-hui-jin.webp',role:'西晉將領・孫秀的兒子'},
  {name:'張華',aliases:['張華','茂先'],asset:'./assets/portraits/zhang-hua.webp',role:'西晉大臣・賈后掌權期間處理朝政'},
  {name:'裴頠',aliases:['裴頠','逸民'],asset:'./assets/portraits/pei-wei.webp',role:'西晉大臣・曾為司馬遹辯護'},
  {name:'司馬遹',aliases:['司馬遹','熙祖','愍懷太子'],asset:'./assets/portraits/sima-yu.webp',role:'晉惠帝的太子・被廢後送往許昌'},

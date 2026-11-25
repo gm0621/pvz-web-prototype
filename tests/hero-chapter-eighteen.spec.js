@@ -81,9 +81,9 @@ test('completed chapter seventeen saves continue through Wuzhang Plains on touch
 
  await page.goto('/hero/');
  await page.clock.pauseAt(await page.evaluate(()=>Date.now()+700));
- await expect(page.locator('#homeProgress')).toContainText('100 / 154');
- await expect(page.locator('#homeChapterCount')).toHaveText('第二十六章已開放');
- await expect(page.locator('#homeStageCount')).toHaveText('154 場征途');
+ await expect(page.locator('#homeProgress')).toContainText('100 / 160');
+ await expect(page.locator('#homeChapterCount')).toHaveText('第二十七章已開放');
+ await expect(page.locator('#homeStageCount')).toHaveText('160 場征途');
  await choose(17,100);
  await expect(page.locator('#storyTitle')).toHaveText('武都陰平');
  await controlledBattle();
@@ -210,7 +210,7 @@ test('completed chapter seventeen saves continue through Wuzhang Plains on touch
 
  await expect(page.locator('#storyTitle')).toHaveText('棧道爭路');
  await page.reload();
- await expect(page.locator('#homeProgress')).toContainText('106 / 154');
+ await expect(page.locator('#homeProgress')).toContainText('106 / 160');
  const cleared={completed:106,coins:605,weapons:{guanyu:2},inventory:{grain:2,herb:1}};
  expect(await readSave()).toMatchObject(cleared);
  await choose(18,106);

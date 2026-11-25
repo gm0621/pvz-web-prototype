@@ -34,7 +34,7 @@ test('the Taikang chapter extends the previous save through the early palace cri
  assert.equal(progress.armyWeapons.cao.guanyu,1);
  assert.equal(progress.armyWeapons.sun.zhangfei,2);
  assert.equal(progress.inventory.grain,2);
- assert.equal(rewardVictory(progress,155),0);
+ assert.equal(rewardVictory(progress,161),0);
  assert.match(chapter[0].victory,/受封歸命侯/);
  assert.match(chapter[2].victory,/司馬衷即位/);
  assert.match(chapter[3].victory,/楊駿被殺/);
@@ -42,7 +42,7 @@ test('the Taikang chapter extends the previous save through the early palace cri
  assert.match(campaignMapSvg(145),/route-inset-opponent-role[^>]*>輔政<\/text>/);
  const portraits=new Set();
  for(const [alias,name,levels] of [
-  ['晉惠帝','司馬衷',[145,147,148,149,151,153,154]],['楊駿','楊駿',[145,146,147]],
+  ['晉惠帝','司馬衷',[145,147,148,149,151,153,154,159,160]],['楊駿','楊駿',[145,146,147]],
   ['賈皇后','賈南風',[145,146,148,149,150,151,152]],['汝南王','司馬亮',[146,147,148]],['彥度','司馬瑋',[146,147,148,149]]
  ]){
   const [entry]=searchPeople(alias);

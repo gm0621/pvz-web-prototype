@@ -145,9 +145,9 @@ test('stage 148 continues through the usurpation of the Prince of Zhao and keeps
 
  await page.goto('/hero/');
  await page.clock.pauseAt(await page.evaluate(()=>Date.now()+700));
- await expect(page.locator('#homeProgress')).toContainText('148 / 154');
- await expect(page.locator('#homeChapterCount')).toHaveText('第二十六章已開放');
- await expect(page.locator('#homeStageCount')).toHaveText('154 場征途');
+ await expect(page.locator('#homeProgress')).toContainText('148 / 160');
+ await expect(page.locator('#homeChapterCount')).toHaveText('第二十七章已開放');
+ await expect(page.locator('#homeStageCount')).toHaveText('160 場征途');
  await expect(page.locator('#chapterDots [data-level="150"]')).toBeDisabled();
  await choose(25,148);
  await expect(page.locator('#storyTitle')).toHaveText('洛陽再變');
@@ -350,8 +350,9 @@ test('stage 148 continues through the usurpation of the Prince of Zhao and keeps
   await tap('#storySkip');
  }
 
+ await expect(page.locator('#storyTitle')).toHaveText('許昌傳檄');
  await page.reload();
- await expect(page.locator('#homeProgress')).toContainText('第二十六章完成');
+ await expect(page.locator('#homeProgress')).toContainText('154 / 160');
  const cleared={completed:154,coins:605,weapons:{liubei:0,guanyu:2,zhangfei:0},armyWeapons:{cao:{liubei:0,guanyu:1,zhangfei:0},sun:{zhangfei:2}},inventory:{grain:2,herb:1}};
  expect(await readSave()).toMatchObject(cleared);
  await choose(26,154);
@@ -361,7 +362,7 @@ test('stage 148 continues through the usurpation of the Prince of Zhao and keeps
  expect(await readSave()).toMatchObject(cleared);
 
  await page.goto('/hero/people.html',{waitUntil:'domcontentloaded'});
- for(const [query,name,levels] of [['茂先','張華',[149,150,152]],['裴頠','裴頠',[150,152]],['熙祖','司馬遹',[150,151,152]],['趙王','司馬倫',[151,152,153,154]],['孫秀','孫秀',[152,153,154]],['淮南王','司馬允',[153]]]){
+ for(const [query,name,levels] of [['茂先','張華',[149,150,152]],['裴頠','裴頠',[150,152]],['熙祖','司馬遹',[150,151,152]],['趙王','司馬倫',[151,152,153,154,155,156,157,158,159,160]],['孫秀','孫秀',[152,153,154,157,159]],['淮南王','司馬允',[153]]]){
   await page.locator('#peopleSearch').fill(query);
   const card=page.locator(`[data-person="${name}"]`);
   await expect(card.locator('.stage-pills span')).toHaveText(levels.map(level=>new RegExp(`第 ${level} 關`)));

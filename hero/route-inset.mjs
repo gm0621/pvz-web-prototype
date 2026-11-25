@@ -1,4 +1,4 @@
-import {mapPersonSvg} from './characters.mjs?v=chapter-twenty-six-2';
+import {mapPersonSvg} from './characters.mjs?v=chapter-twenty-seven-1';
 
 const viewBox='0 0 400 304';
 

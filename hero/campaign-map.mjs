@@ -1,7 +1,7 @@
-import {routeInset,routeInsetSvg} from './route-inset.mjs?v=chapter-twenty-six-2';
-import {stagePeople,mapPersonSvg,renderMatchup} from './characters.mjs?v=chapter-twenty-six-2';
-import {stageFactionTitle} from './factions.mjs?v=chapter-twenty-six-2';
-import {HISTORICAL_STAGES} from './history-stages.mjs?v=chapter-twenty-six-2';
+import {routeInset,routeInsetSvg} from './route-inset.mjs?v=chapter-twenty-seven-1';
+import {stagePeople,mapPersonSvg,renderMatchup} from './characters.mjs?v=chapter-twenty-seven-1';
+import {stageFactionTitle} from './factions.mjs?v=chapter-twenty-seven-1';
+import {HISTORICAL_STAGES} from './history-stages.mjs?v=chapter-twenty-seven-1';
 // Approximate regional placement, not historical borders or a surveyed route.
 export const MAP_PLACES={
  zhuo:{name:'涿郡',modern:'今河北涿州一帶',x:402,y:78},
@@ -129,6 +129,11 @@ Object.assign(westernPlaces,{
 Object.assign(westernPlaces,{
  luoyangEastPalace:{name:'洛陽東宮',modern:'今河南洛陽一帶・西晉太子居所區域示意',x:236,y:318},
  jinJinyong:{name:'金墉城',modern:'今河南洛陽一帶・魏晉洛陽城西北的金墉城示意',x:198,y:305}
+});
+Object.assign(westernPlaces,{
+ jinYingyin:{name:'潁陰',modern:'今河南許昌一帶・潁水附近守營區域示意',x:336,y:391},
+ jinHuangqiao:{name:'黃橋',modern:'今河南北部一帶・黃橋戰區示意',x:333,y:264},
+ jinJushui:{name:'湨水',modern:'今河南濟源至孟州一帶・湨水流域示意',x:266,y:278}
 });
 Object.assign(MAP_PLACES,westernPlaces);
 STAGE_LOCATIONS.push(...HISTORICAL_STAGES.map(s=>({place:s.mapPlace,detail:`${s.year} 年・${stageFactionTitle(s)}視角。${s.viewpointShift?'此處切換敘事視角，不是上一支軍隊的連續行程。':''}地點為歷史區域示意，並非精確軍事路線。`})));

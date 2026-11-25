@@ -8,7 +8,7 @@ test('the Eastern Palace chapter keeps prior saves and the historical sequence',
  const {routeThrough,campaignMapSvg,MAP_PLACES}=await import('../../hero/campaign-map.mjs');
  const {searchPeople}=await import('../../hero/people-data.mjs');
  const {expressionPortrait}=await import('../../hero/portrait-expressions.mjs');
- const chapter=STAGES.slice(148);
+ const chapter=STAGES.slice(148,154);
  const routes=[['luoyangPalace'],['luoyangEastPalace'],['luoyang','jinXuchang'],['luoyangPalace','jinJinyong'],['luoyangStreets','luoyangGate'],['luoyangPalace','jinJinyong']];
  let progress=normalizeProgress({completed:148,coins:150,weapons:{guanyu:2},armyWeapons:{cao:{guanyu:1},sun:{zhangfei:2}},inventory:{grain:2}});
  assert.equal(rewardVictory(progress,148),0);
@@ -34,7 +34,7 @@ test('the Eastern Palace chapter keeps prior saves and the historical sequence',
  assert.equal(progress.armyWeapons.cao.guanyu,1);
  assert.equal(progress.armyWeapons.sun.zhangfei,2);
  assert.equal(progress.inventory.grain,2);
- assert.equal(rewardVictory(progress,155),0);
+ assert.equal(rewardVictory(progress,161),0);
  assert.match(chapter[1].victory,/司馬遹失去太子身分/);
  assert.match(chapter[2].victory,/司馬遹在許昌遇害/);
  assert.match(chapter[3].victory,/賈南風被廢.*張華與裴頠遇害/);
@@ -44,7 +44,7 @@ test('the Eastern Palace chapter keeps prior saves and the historical sequence',
  const portraits=new Set();
  for(const [alias,name,levels] of [
   ['茂先','張華',[149,150,152]],['裴頠','裴頠',[150,152]],['熙祖','司馬遹',[150,151,152]],
-  ['趙王','司馬倫',[151,152,153,154]],['孫秀','孫秀',[152,153,154]],['淮南王','司馬允',[153]]
+  ['趙王','司馬倫',[151,152,153,154,155,156,157,158,159,160]],['孫秀','孫秀',[152,153,154,157,159]],['淮南王','司馬允',[153]]
  ]){
   const [entry]=searchPeople(alias);
   assert.equal(entry.name,name);

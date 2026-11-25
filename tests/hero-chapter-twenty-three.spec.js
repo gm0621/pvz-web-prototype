@@ -143,9 +143,9 @@ test('stage 130 continues through the end of Wei and keeps campaign saves on tou
 
  await page.goto('/hero/');
  await page.clock.pauseAt(await page.evaluate(()=>Date.now()+700));
- await expect(page.locator('#homeProgress')).toContainText('130 / 154');
- await expect(page.locator('#homeChapterCount')).toHaveText('第二十六章已開放');
- await expect(page.locator('#homeStageCount')).toHaveText('154 場征途');
+ await expect(page.locator('#homeProgress')).toContainText('130 / 160');
+ await expect(page.locator('#homeChapterCount')).toHaveText('第二十七章已開放');
+ await expect(page.locator('#homeStageCount')).toHaveText('160 場征途');
  await expect(page.locator('#chapterDots [data-level="132"]')).toBeDisabled();
  await choose(22,130);
  await expect(page.locator('#storyTitle')).toHaveText('成都受降');
@@ -321,7 +321,7 @@ test('stage 130 continues through the end of Wei and keeps campaign saves on tou
 
  await expect(page.locator('#storyTitle')).toHaveText('襄陽屯田');
  await page.reload();
- await expect(page.locator('#homeProgress')).toContainText('136 / 154');
+ await expect(page.locator('#homeProgress')).toContainText('136 / 160');
  const cleared={completed:136,coins:605,weapons:{liubei:0,guanyu:2,zhangfei:0},armyWeapons:{cao:{liubei:0,guanyu:1,zhangfei:0}},inventory:{grain:2,herb:1}};
  expect(await readSave()).toMatchObject(cleared);
  await choose(23,136);

@@ -25,7 +25,7 @@ test('chapter twelve brings a finished chapter eleven save forward and credits e
  assert.equal(progress.coins,580);
  assert.equal(progress.inventory.grain,2);
  assert.equal(progress.heroGrowth.caocao.weapon,2);
- assert.equal(rewardVictory(progress,155),0);
+ assert.equal(rewardVictory(progress,161),0);
  assert.deepEqual(routeThrough(69),['sanguan','wudu','yangping']);
  assert.equal(stagePeople(67).leader.name,'夏侯淵');
  assert.equal(stagePeople(69).opponent.name,'張魯');
