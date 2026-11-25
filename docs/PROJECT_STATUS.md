@@ -8,7 +8,7 @@
 
 ## Obsidian 尚未同步時，從這裡接手
 
-1. **確認版本。** 在剛拉下來的 `main` 執行 `git status --short --branch`、`git log -1 --oneline`。`git log` 顯示目前 checkout 的提交。正式遊戲版本另看下方最新一筆含「已發布」及 Pages 工作的功能紀錄。截至 2026-11-25，最新已驗證的正式遊戲版本為 `f529363`（第二十五章，共 148 關）。 [正式遊戲](https://gm0621.github.io/pvz-web-prototype/hero/?v=f529363) · [人物圖鑑](https://gm0621.github.io/pvz-web-prototype/hero/people.html?v=f529363) · [發布紀錄](https://github.com/gm0621/pvz-web-prototype/actions/runs/45552988365)
+1. **確認版本。** 在剛拉下來的 `main` 執行 `git status --short --branch`、`git log -1 --oneline`。`git log` 顯示目前 checkout 的提交。正式遊戲版本另看下方最新一筆含「已發布」及 Pages 工作的功能紀錄。截至 2026-11-25，最新已驗證的正式遊戲版本為 `ec49e98`（第二十五章，共 148 關）。 [正式遊戲](https://gm0621.github.io/pvz-web-prototype/hero/?v=ec49e98) · [人物圖鑑](https://gm0621.github.io/pvz-web-prototype/hero/people.html?v=ec49e98) · [發布紀錄](https://github.com/gm0621/pvz-web-prototype/actions/runs/45555920298)
 2. **安裝並做基本驗證。** 在專案根目錄用 Node.js 20 以上與 npm。執行下列指令可驗證引擎、桌面滑鼠／鍵盤及手機平板觸控。更多測試和本機預覽見 [開發指南](DEVELOPMENT.md)。Playwright 會啟動 4174 埠的測試服務，先關閉佔用該埠的手動預覽。
 3. **開工前看目前進度。** 先讀 [AGENTS.md](../AGENTS.md) 的「重要約束」及下方與任務相關的紀錄。英雄演義是獨立的 `/hero/` 遊戲，關卡上限見 `hero/campaign-config.mjs`。正式存檔 `heroLegendProgress_v1` 與本機、線上跳關測試的存檔分開。跨電腦時瀏覽器存檔和未提交的檔案需另外移轉。保留滑鼠、鍵盤與觸控操作，也要保留首勝軍資、重玩及暫停的既有規則。 [跳關工具和存檔說明](hero-local-testing.md)
 4. **繼續當次工作。** 依使用者的新需求從最新 `main` 開分支，保留原工作區修改。完成後把變更、實際測試結果、版本與注意事項記在本檔。Obsidian 未同步時註明待補，能讀取後再更新。正式發布依當次授權。
@@ -21,6 +21,8 @@ npx playwright test --config=playwright.hero-input.config.js
 ```
 
 ## 2026-11-25 第二十五章完整流程複查
+
+- 已發布 `ec49e98`。正式站手機 Chromium、平板 WebKit 都走完第 142～148 關及重玩。第 146、148 關另以正常敵波通關，原始模組從第 142、147 關進度續玩。以四種畫面尺寸核對六關行軍圖，兩種裝置各解碼 130 張頭像，另比對 45 份發布資源。 [正式遊戲](https://gm0621.github.io/pvz-web-prototype/hero/?v=ec49e98) · [人物圖鑑](https://gm0621.github.io/pvz-web-prototype/hero/people.html?v=ec49e98) · [發布紀錄](https://github.com/gm0621/pvz-web-prototype/actions/runs/45555920298)
 
 - 修正歷史運糧、接應使者的暫停提示。任務欄和任務面板會顯示「已暫停，保留進度」，並保留已送糧批次、備車百分比、使者路線及進度。運糧備妥時，暫停也會保留原按鈕文字。 [第二十五章規格](hero-history-chapter-twenty-five.md)
 - 本機 408 項引擎測試、320px 與 390px 手機 Chromium、820px 平板 WebKit 整章觸控 3 項，前章與圖鑑回歸 8 項。涵蓋第 142 關結算接第 143 關、三批糧車、兩關整備中途暫停、即位使者換路、楊駿之變守備達標後仍須清退敵軍、洛陽撤離、末關儲存重試與重玩。第 143 關營地實際強化黃蓋，切到晉軍後各軍升級獨立，重整後回玩第 143 關仍裝備新兵器。整章採模擬裝置、隔離存檔與受控敵波，第 146、148 關另用正常敵波通關。快取版 `chapter-twenty-five-2`，整章設定 `playwright.hero-twenty-five.config.js`。
