@@ -1,7 +1,7 @@
-import {routeInset,routeInsetSvg} from './route-inset.mjs?v=chapter-twenty-four-2';
-import {stagePeople,mapPersonSvg,renderMatchup} from './characters.mjs?v=chapter-twenty-four-2';
-import {stageFactionTitle} from './factions.mjs?v=chapter-twenty-four-2';
-import {HISTORICAL_STAGES} from './history-stages.mjs?v=chapter-twenty-four-2';
+import {routeInset,routeInsetSvg} from './route-inset.mjs?v=chapter-twenty-five-1';
+import {stagePeople,mapPersonSvg,renderMatchup} from './characters.mjs?v=chapter-twenty-five-1';
+import {stageFactionTitle} from './factions.mjs?v=chapter-twenty-five-1';
+import {HISTORICAL_STAGES} from './history-stages.mjs?v=chapter-twenty-five-1';
 // Approximate regional placement, not historical borders or a surveyed route.
 export const MAP_PLACES={
  zhuo:{name:'涿郡',modern:'今河北涿州一帶',x:402,y:78},
@@ -119,6 +119,12 @@ Object.assign(westernPlaces,{
  xiling:{name:'西陵',modern:'今湖北宜昌一帶・東吳西陵戰區示意',x:183,y:600},
  wuWuchang:{name:'武昌',modern:'今湖北鄂州一帶・三國時的武昌',x:457,y:636},
  shitou:{name:'石頭城',modern:'今江蘇南京清涼山一帶・建業石頭城區域示意',x:681,y:542}
+});
+Object.assign(westernPlaces,{
+ jinXuchang:{name:'許昌',modern:'今河南許昌一帶・西晉時期的許昌',x:350,y:380},
+ luoyangPalace:{name:'洛陽宮城',modern:'今河南洛陽一帶・西晉宮城區域示意',x:216,y:313},
+ luoyangStreets:{name:'洛陽街巷',modern:'洛陽城內・遊戲護送場景',x:228,y:333},
+ luoyangGate:{name:'洛陽城門',modern:'洛陽城內・遊戲撤離場景',x:239,y:359}
 });
 Object.assign(MAP_PLACES,westernPlaces);
 STAGE_LOCATIONS.push(...HISTORICAL_STAGES.map(s=>({place:s.mapPlace,detail:`${s.year} 年・${stageFactionTitle(s)}視角。${s.viewpointShift?'此處切換敘事視角，不是上一支軍隊的連續行程。':''}地點為歷史區域示意，並非精確軍事路線。`})));

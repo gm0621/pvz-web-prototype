@@ -132,9 +132,9 @@ test('stage 118 continues through Jiange and keeps campaign saves on touch scree
 
  await page.goto('/hero/');
  await page.clock.pauseAt(await page.evaluate(()=>Date.now()+700));
- await expect(page.locator('#homeProgress')).toContainText('118 / 142');
- await expect(page.locator('#homeChapterCount')).toHaveText('第二十四章已開放');
- await expect(page.locator('#homeStageCount')).toHaveText('142 場征途');
+ await expect(page.locator('#homeProgress')).toContainText('118 / 148');
+ await expect(page.locator('#homeChapterCount')).toHaveText('第二十五章已開放');
+ await expect(page.locator('#homeStageCount')).toHaveText('148 場征途');
  await expect(page.locator('#chapterDots [data-level="120"]')).toBeDisabled();
  await choose(20,118);
  await expect(page.locator('#storyTitle')).toHaveText('洮西收兵');
@@ -293,7 +293,7 @@ test('stage 118 continues through Jiange and keeps campaign saves on touch scree
 
  await expect(page.locator('#storyTitle')).toHaveText('陰平越險');
  await page.reload();
- await expect(page.locator('#homeProgress')).toContainText('124 / 142');
+ await expect(page.locator('#homeProgress')).toContainText('124 / 148');
  const cleared={completed:124,coins:605,weapons:{guanyu:2},inventory:{grain:2,herb:1}};
  expect(await readSave()).toMatchObject(cleared);
  await choose(21,124);

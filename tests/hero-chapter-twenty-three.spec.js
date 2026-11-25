@@ -143,9 +143,9 @@ test('stage 130 continues through the end of Wei and keeps campaign saves on tou
 
  await page.goto('/hero/');
  await page.clock.pauseAt(await page.evaluate(()=>Date.now()+700));
- await expect(page.locator('#homeProgress')).toContainText('130 / 142');
- await expect(page.locator('#homeChapterCount')).toHaveText('第二十四章已開放');
- await expect(page.locator('#homeStageCount')).toHaveText('142 場征途');
+ await expect(page.locator('#homeProgress')).toContainText('130 / 148');
+ await expect(page.locator('#homeChapterCount')).toHaveText('第二十五章已開放');
+ await expect(page.locator('#homeStageCount')).toHaveText('148 場征途');
  await expect(page.locator('#chapterDots [data-level="132"]')).toBeDisabled();
  await choose(22,130);
  await expect(page.locator('#storyTitle')).toHaveText('成都受降');
@@ -321,7 +321,7 @@ test('stage 130 continues through the end of Wei and keeps campaign saves on tou
 
  await expect(page.locator('#storyTitle')).toHaveText('襄陽屯田');
  await page.reload();
- await expect(page.locator('#homeProgress')).toContainText('136 / 142');
+ await expect(page.locator('#homeProgress')).toContainText('136 / 148');
  const cleared={completed:136,coins:605,weapons:{liubei:0,guanyu:2,zhangfei:0},armyWeapons:{cao:{liubei:0,guanyu:1,zhangfei:0}},inventory:{grain:2,herb:1}};
  expect(await readSave()).toMatchObject(cleared);
  await choose(23,136);
@@ -336,7 +336,7 @@ test('stage 130 continues through the end of Wei and keeps campaign saves on tou
  expect(await readSave()).toMatchObject(cleared);
 
  await page.goto('/hero/people.html',{waitUntil:'domcontentloaded'});
- for(const [query,name,levels] of [['伯玉','衛瓘',[132,133,134]],['胡烈','胡烈',[133,134]],['令先','郤正',[135]],['晉武帝','司馬炎',[136,137,139,140,142]]]){
+ for(const [query,name,levels] of [['伯玉','衛瓘',[132,133,134,147,148]],['胡烈','胡烈',[133,134]],['令先','郤正',[135]],['晉武帝','司馬炎',[136,137,139,140,142,143,144,145]]]){
   await page.locator('#peopleSearch').fill(query);
   const card=page.locator(`[data-person="${name}"]`);
   await expect(card.locator('.stage-pills span')).toHaveText(levels.map(level=>new RegExp(`第 ${level} 關`)));

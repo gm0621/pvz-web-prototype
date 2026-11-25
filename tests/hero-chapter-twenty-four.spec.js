@@ -114,9 +114,9 @@ test('stage 136 continues through the surrender of Wu and keeps campaign saves o
 
  await page.goto('/hero/');
  await page.clock.pauseAt(await page.evaluate(()=>Date.now()+700));
- await expect(page.locator('#homeProgress')).toContainText('136 / 142');
- await expect(page.locator('#homeChapterCount')).toHaveText('第二十四章已開放');
- await expect(page.locator('#homeStageCount')).toHaveText('142 場征途');
+ await expect(page.locator('#homeProgress')).toContainText('136 / 148');
+ await expect(page.locator('#homeChapterCount')).toHaveText('第二十五章已開放');
+ await expect(page.locator('#homeStageCount')).toHaveText('148 場征途');
  await expect(page.locator('#chapterDots [data-level="138"]')).toBeDisabled();
  await choose(23,136);
  await expect(page.locator('#storyTitle')).toHaveText('洛陽建晉');
@@ -345,8 +345,9 @@ test('stage 136 continues through the surrender of Wu and keeps campaign saves o
   await tap('#storySkip');
  }
 
+ await expect(page.locator('#storyTitle')).toHaveText('孫皓入洛');
  await page.reload();
- await expect(page.locator('#homeProgress')).toContainText('第二十四章完成');
+ await expect(page.locator('#homeProgress')).toContainText('142 / 148');
  const cleared={completed:142,coins:365,weapons:{liubei:0,guanyu:2,zhangfei:0},armyWeapons:{cao:{liubei:1,guanyu:1,zhangfei:0},sun:{zhangfei:3}},inventory:{grain:2,herb:1}};
  expect(await readSave()).toMatchObject(cleared);
  await choose(24,142);
@@ -361,7 +362,7 @@ test('stage 136 continues through the surrender of Wu and keeps campaign saves o
  expect(await readSave()).toMatchObject(cleared);
 
  await page.goto('/hero/people.html',{waitUntil:'domcontentloaded'});
- for(const [query,name,levels] of [['叔子','羊祜',[137,138,139]],['幼節','陸抗',[137,138,139]],['步闡','步闡',[138]],['元凱','杜預',[139,141]],['王浚','王濬',[140,141,142]],['吳末帝','孫皓',[142]]]){
+ for(const [query,name,levels] of [['叔子','羊祜',[137,138,139]],['幼節','陸抗',[137,138,139]],['步闡','步闡',[138]],['元凱','杜預',[139,141]],['王浚','王濬',[140,141,142]],['吳末帝','孫皓',[142,143]]]){
   await page.locator('#peopleSearch').fill(query);
   const card=page.locator(`[data-person="${name}"]`);
   await expect(card.locator('.stage-pills span')).toHaveText(levels.map(level=>new RegExp(`第 ${level} 關`)));

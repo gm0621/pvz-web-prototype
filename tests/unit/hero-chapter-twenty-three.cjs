@@ -32,14 +32,14 @@ test('the six post-surrender stages preserve the previous chapter save and histo
  assert.equal(progress.weapons.guanyu,2);
  assert.equal(progress.armyWeapons.cao.guanyu,1);
  assert.equal(progress.inventory.grain,2);
- assert.equal(rewardVictory(progress,143),0);
+ assert.equal(rewardVictory(progress,149),0);
  assert.match(chapter[0].history,/到涪城向鍾會投降/);
  assert.match(chapter[3].victory,/鍾會和姜維在成都兵變中身亡/);
  assert.match(chapter[5].victory,/東吳仍然存在/);
  assert.match(campaignMapSvg(131),/route-inset-opponent-role[^>]*>受降<\/text>/);
  const portraits=new Set();
  for(const [alias,name,levels] of [
-  ['伯玉','衛瓘',[132,133,134]],['胡烈','胡烈',[133,134]],['令先','郤正',[135]],['晉武帝','司馬炎',[136,137,139,140,142]]
+  ['伯玉','衛瓘',[132,133,134,147,148]],['胡烈','胡烈',[133,134]],['令先','郤正',[135]],['晉武帝','司馬炎',[136,137,139,140,142,143,144,145]]
  ]){
   const [entry]=searchPeople(alias);
   assert.equal(entry.name,name);

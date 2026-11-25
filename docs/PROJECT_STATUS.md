@@ -20,6 +20,12 @@ npm run test:hero:engine
 npx playwright test --config=playwright.hero-input.config.js
 ```
 
+## 2026-11-25 第二十五章「太康之後」
+
+- 新增第 143～148 關「孫皓入洛、太康裁兵、惠帝即位、楊駿之變、汝南王入朝、洛陽再變」。承接石頭城受降，沿 280～291 年史實，保留孫皓受封歸命侯、州郡裁兵、惠帝即位、楊駿被殺及兩位輔政大臣遇害的結局。洛陽城內撤離路線和任務為改編。沿用新版行軍圖、分軍強化、營地與首勝規則。 [第二十五章規格](hero-history-chapter-twenty-five.md)
+- 新增司馬衷、楊駿、賈南風、司馬亮、司馬瑋五張萌將頭像，圖鑑共 130 人，並補上孫皓、司馬炎與衛瓘的新登場關卡。
+- 本機 408 項引擎測試，320px 與 390px 手機 Chromium、820px 平板 WebKit 整章觸控 3 項，前章與圖鑑回歸 8 項。四種畫面尺寸檢查六關戰前與戰場地圖，整章涵蓋 142→143、入洛運糧、換軍與兵器、裁兵整備、即位傳令、洛陽守備和撤離、輔政交接、末關存檔失敗重試和重玩。整章觸控使用模擬裝置及受控敵波，兩場洛陽政變另以正常敵波通關。快取版 `chapter-twenty-five-1`。整章測試設定為 `playwright.hero-twenty-five.config.js`。
+
 ## 2026-11-25 第二十四章完整流程複查
 
 - 已發布 `476ae71`。正式站手機 Chromium 和平板 WebKit 各通過第 136～142 關、末關重玩，以及第 138、141 關的正常敵波觸控測試。以原始模組確認從第 136、141 關續玩，兩種裝置各解碼 125 張頭像。四種畫面尺寸核對六關戰前及戰場行軍圖，另比對 45 份發布資源。 [正式遊戲](https://gm0621.github.io/pvz-web-prototype/hero/?v=476ae71) · [人物圖鑑](https://gm0621.github.io/pvz-web-prototype/hero/people.html?v=476ae71) · [發布紀錄](https://github.com/gm0621/pvz-web-prototype/actions/runs/45544802688)
