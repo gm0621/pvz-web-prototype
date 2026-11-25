@@ -1,11 +1,11 @@
-import {GENERALS} from './roster.mjs?v=chapter-twenty-one-1';
-import {NOVEL_PAGES,CAMP_LINES} from './novel.mjs?v=chapter-twenty-one-1';
-import {campConversation} from './camp-talk.mjs?v=chapter-twenty-one-1';
-import {STORY_TASKS} from './story-play.mjs?v=chapter-twenty-one-1';
-import {CHAPTER_BACKGROUNDS,STAGE_LEADS} from './prologue.mjs?v=chapter-twenty-one-1';
-import {STORY_PEOPLE,hasPersonMention} from './characters.mjs?v=chapter-twenty-one-1';
-import {HEROES,STAGES,chapterInfo,enemyArt,heroesForLevel} from './story.mjs?v=chapter-twenty-one-1';
-import {FACTIONS,enemyPortrait} from './factions.mjs?v=chapter-twenty-one-1';
+import {GENERALS} from './roster.mjs?v=chapter-twenty-one-2';
+import {NOVEL_PAGES,CAMP_LINES} from './novel.mjs?v=chapter-twenty-one-2';
+import {campConversation} from './camp-talk.mjs?v=chapter-twenty-one-2';
+import {STORY_TASKS} from './story-play.mjs?v=chapter-twenty-one-2';
+import {CHAPTER_BACKGROUNDS,STAGE_LEADS} from './prologue.mjs?v=chapter-twenty-one-2';
+import {STORY_PEOPLE,hasPersonMention} from './characters.mjs?v=chapter-twenty-one-2';
+import {HEROES,STAGES,chapterInfo,enemyArt,heroesForLevel} from './story.mjs?v=chapter-twenty-one-2';
+import {FACTIONS,enemyPortrait} from './factions.mjs?v=chapter-twenty-one-2';
 // Child-friendly summaries; comparisons are memory aids, not historical quotations.
 const bios=[
  ['鄧艾','史實人物','盯著蜀軍動向的魏將','他字士載。姜維幾次北伐，鄧艾都帶兵應對，在段谷與侯和打贏蜀軍。鍾會在劍閣受阻時，鄧艾從陰平走另一條山路。','藍頭巾、皺眉加抿嘴，就是正專心想事情的鄧艾。','事蹟見《三國志・鄧艾傳》。'],

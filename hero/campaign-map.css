@@ -10,3 +10,32 @@
 @media(max-height:550px){.battle-map-button{min-height:44px}#battleMapThumb{height:28px}.battle-map-copy small{display:none}}
 
 #campaignMapLocation{margin:8px 0 2px}.map-location{margin-bottom:10px}
+
+.route-inset{font-family:system-ui,sans-serif}
+.route-inset-paper{fill:#f6efd9}
+.route-inset-ridge{fill:#dedfc1}
+.route-inset-contours{stroke:#8f9a77;stroke-width:1;opacity:.53}
+.route-inset-frame,.route-inset-divider{fill:none;stroke:#ad9e70;opacity:.6}
+.route-inset-compass{fill:#53654d;font-size:13px;font-weight:700}
+.route-inset-road-edge,.route-inset-road{fill:none;stroke-linecap:round}
+.route-inset-road-edge{stroke:#fff8df;stroke-width:13}
+.route-inset-road{stroke:#32614e;stroke-width:6}
+.route-inset-arrow{fill:none;stroke:#fff5ce;stroke-width:3;stroke-linejoin:round;stroke-linecap:round}
+.route-inset-arrival{fill:#a2412b;stroke:#f9edc7;stroke-width:3}
+.route-inset .route-inset-stop rect{fill:#fffae9;stroke:#829076;stroke-width:1.3}
+.route-inset .route-inset-stop.current rect{fill:#fff3dd;stroke:#bb6b50}
+.route-inset .route-inset-stop text{font-family:inherit;stroke:none;paint-order:normal;font-weight:750}
+.route-inset .route-inset-stop .route-inset-role{font-size:12px;fill:#596750}
+.route-inset .route-inset-stop.current .route-inset-role{fill:#873e30}
+.route-inset .route-inset-stop .route-inset-place{font-size:18px}
+.route-inset .map-leader>text,.route-inset .journey-trail{visibility:hidden}
+.route-inset .map-opponent{scale:.66;transform-origin:251px 253px;transform-box:view-box}
+.route-inset .map-opponent>path{display:none}
+.route-inset .map-opponent>text{transform:translate(48px,-22px);text-anchor:start;font:750 26px system-ui,sans-serif;stroke:none}
+.route-inset-side,.route-inset-opponent-role{font-size:13px;font-weight:650;fill:#596750}
+.route-inset-opponent-role{fill:#873e30}
+.route-inset-army-name{font-size:18px;font-weight:750;fill:#234e3b}
+#story .journey-map:has(>.route-inset),#campaignMapCanvas:has(>.route-inset){max-width:520px;margin-inline:auto;background:none}
+#story .journey-map>.route-inset{height:auto;max-height:none}
+#story .journey-map .route-inset .map-person>svg,#campaignMapCanvas .route-inset .map-person>svg{width:54px;height:54px;max-height:none}
+#campaignMapDialog:has(.route-inset) .map-legend{display:none}

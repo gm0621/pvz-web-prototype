@@ -1,6 +1,7 @@
-import {stagePeople,mapPersonSvg,renderMatchup} from './characters.mjs?v=chapter-twenty-one-1';
-import {stageFactionTitle} from './factions.mjs?v=chapter-twenty-one-1';
-import {HISTORICAL_STAGES} from './history-stages.mjs?v=chapter-twenty-one-1';
+import {routeInset,routeInsetSvg} from './route-inset.mjs?v=chapter-twenty-one-2';
+import {stagePeople,mapPersonSvg,renderMatchup} from './characters.mjs?v=chapter-twenty-one-2';
+import {stageFactionTitle} from './factions.mjs?v=chapter-twenty-one-2';
+import {HISTORICAL_STAGES} from './history-stages.mjs?v=chapter-twenty-one-2';
 // Approximate regional placement, not historical borders or a surveyed route.
 export const MAP_PLACES={
  zhuo:{name:'涿郡',modern:'今河北涿州一帶',x:402,y:78},
@@ -108,6 +109,7 @@ export function routeThrough(level){stageLocation(level);if(level>=65){const s=H
 export function journeyRoute(level){
  const to=stageLocation(level),origin=level>=17?HISTORICAL_STAGES[level-17].originPlace:null;
  const from=origin?{...MAP_PLACES[origin],place:origin}:stageLocation(Math.max(1,level-1)),same=from.place===to.place;
+ if(HISTORICAL_STAGES[level-17]?.detailedRoute)return {from,to,same,...routeInset(from,to)};
  const start={x:same?to.x-90:from.x-36,y:same?to.y-10:from.y-44},end={x:to.x-36,y:to.y-44};
  const waypoints=level>=65?HISTORICAL_STAGES[level-17].viaPlaces.map(key=>MAP_PLACES[key]):[];
  const left=Math.min(start.x,end.x,...waypoints.map(p=>p.x-50))-50,right=Math.max(start.x,to.x+36,...waypoints.map(p=>p.x))+65;
@@ -118,17 +120,17 @@ export function journeyRoute(level){
 export function campaignMapSvg(level,mini=false){
  const current=stageLocation(level),route=routeThrough(level),visited=new Set(route);
  const stage=HISTORICAL_STAGES[level-17],people=mini?null:stagePeople(level);
+ if(stage?.detailedRoute)return routeInsetSvg(MAP_PLACES[route[0]],current,people,stage.mapOpponent,mini);
  const markers=people?(stage?.mapLeader===false?'':mapPersonSvg(people.leader,'map-leader',current.x-36,current.y-44))
   +(stage?.mapOpponent===false?'':mapPersonSvg(people.opponent,people.diplomaticMeeting?'map-host':'map-opponent',current.x+36,current.y-44)):'';
  const points=route.map(key=>`${MAP_PLACES[key].x},${MAP_PLACES[key].y}`).join(' ');
  const cities=Object.entries(MAP_PLACES).map(([key,p])=>{
   const waypoint=stage?.viaPlaces?.includes(key);
   const active=key===current.place,labelOffset=active&&route.some(k=>k!==key&&Math.hypot(MAP_PLACES[k].x-p.x,MAP_PLACES[k].y-p.y)<55)?70:38;if(level>=17&&!visited.has(key)&&!active)return '';if(level<17&&Object.hasOwn(westernPlaces,key))return '';if(level<17&&['luoyang','chenliu','suanzhao','bian','liangdong','yangren','luyang','dongwuyang','shouzhang','jibei','juancheng','puyang','dingtao','xuxian','wan','chen','xiapi','guandu','baima','yanjin','wuchao','cangting','liyang','ye','xiping','runan','qiao','junyi','pingyuan','nanpi','guangpingNorth','huguan','chunyu','canals','wuzhong','lulong','baitan','pinggang','bailang','liucheng','yishuiSouth','xiangyang','changban','jiangling','chibi','tongguan','puban','weinan'].includes(key))return '';if(key.startsWith('side')&&!visited.has(key)&&!active)return '';
-  const originNearDestination=key===stage?.originPlace&&(stage.viaPlaces?.length>0||stage.mapOriginLabel)&&!active&&Math.hypot(p.x-current.x,p.y-current.y)<85;
-  const labelOnLeft=waypoint||originNearDestination&&(!stage.mapOriginLabel||p.x<current.x)||level>=41&&key==='guandu';
-  const labelDistance=originNearDestination&&stage.mapOriginLabel?38:labelOnLeft?14:32;
+  const originNearDestination=key===stage?.originPlace&&stage.viaPlaces?.length>0&&!active&&Math.hypot(p.x-current.x,p.y-current.y)<85;
+  const labelOnLeft=waypoint||originNearDestination||level>=41&&key==='guandu';
   const hideLabel=mini||key.startsWith('side')&&!active||level>=35&&!active&&!waypoint&&!originNearDestination&&Math.hypot(p.x-current.x,p.y-current.y)<85;
-  return `<g class="map-city ${active?'current':visited.has(key)?'visited':'future'}"><circle cx="${p.x}" cy="${p.y}" r="${active?16:7}"/>${active?`<circle class="map-current-ring" cx="${p.x}" cy="${p.y}" r="24"/><path class="map-flag" d="M${p.x},${p.y-14}v-34l26,7 -26,9"/>`:''}${hideLabel?'':`<text x="${active?p.x:p.x+(labelOnLeft?-labelDistance:labelDistance)}" text-anchor="${active?'middle':labelOnLeft?'end':'start'}" y="${p.y+(active?labelOffset:7)}">${p.name}</text>`}</g>`;
+  return `<g class="map-city ${active?'current':visited.has(key)?'visited':'future'}"><circle cx="${p.x}" cy="${p.y}" r="${active?16:7}"/>${active?`<circle class="map-current-ring" cx="${p.x}" cy="${p.y}" r="24"/><path class="map-flag" d="M${p.x},${p.y-14}v-34l26,7 -26,9"/>`:''}${hideLabel?'':`<text x="${active?p.x:labelOnLeft?p.x-14:p.x+32}" text-anchor="${active?'middle':labelOnLeft?'end':'start'}" y="${p.y+(active?labelOffset:7)}">${p.name}</text>`}</g>`;
  }).join('');
  const xs=route.map(key=>MAP_PLACES[key].x),ys=route.map(key=>MAP_PLACES[key].y);
  const chapterView=[Math.min(...xs)-86,Math.min(...ys)-94,Math.max(...xs)-Math.min(...xs)+190,Math.max(...ys)-Math.min(...ys)+181].join(' ');
@@ -153,6 +155,8 @@ export function mountCampaignMap({stages,getBattle,setPaused}){
   document.getElementById('battleMapStage').textContent=`第 ${level} 關・${stage.name}`;
   document.getElementById('campaignMapCanvas').innerHTML=campaignMapSvg(level);
   renderMatchup(document.getElementById('campaignMapMatchup'),level);
+  document.getElementById('campaignMapPeriod').textContent=stage.year?`${stage.year} 年・${stageFactionTitle(stage)}`:'東漢末年・戰役行程';
+  document.getElementById('campaignMapNote').textContent=stage.detailedRoute?'地名與方向為戰區示意；地形與路線間距依遊戲版面調整。':'地名與路線為戰區示意。山道、山口及驛道依史料或遊戲劇情標示。';
   document.getElementById('campaignMapLocation').textContent=`目前：${location}`;
   document.getElementById('campaignMapModern').textContent=p.modern;
   document.getElementById('campaignMapDetail').textContent=p.detail;

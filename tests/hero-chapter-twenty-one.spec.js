@@ -90,6 +90,20 @@ test('stage 118 continues through Jiange and keeps campaign saves on touch scree
   await tap('#pauseBtn');
   await advance(4500);
  }
+ async function checkRouteInset(scope){
+  const map=page.locator(scope+' .route-inset');
+  await expect(map.locator('.route-inset-role')).toHaveText(['起點','終點']);
+  await expect(map.locator('.route-inset-place')).toHaveText(['漢壽','劍閣']);
+  await expect(map.locator('.route-inset-arrow')).toBeVisible();
+  const clear=await map.evaluate(svg=>{
+   const frame=svg.getBoundingClientRect();
+   const boxes=[...svg.querySelectorAll('.route-inset-stop rect,.map-person circle')].map(node=>node.getBoundingClientRect());
+   const inside=boxes.every(box=>box.left>=frame.left&&box.right<=frame.right&&box.top>=frame.top&&box.bottom<=frame.bottom);
+   const overlaps=(a,b)=>a.left<b.right&&a.right>b.left&&a.top<b.bottom&&a.bottom>b.top;
+   return inside&&boxes.every((box,i)=>boxes.slice(i+1).every(other=>!overlaps(box,other)));
+  });
+  expect(clear).toBe(true);
+ }
  async function camp(){
   await advance(4200);
   while(await page.locator('#skillIntro[open]').isVisible())await tap('#skillIntroContinue');
@@ -124,7 +138,11 @@ test('stage 118 continues through Jiange and keeps campaign saves on touch scree
   await expect(page.locator('#storyTitle')).toHaveText(stage.name);
   await expect(page.locator('#storyChapter')).toContainText('第二十一章');
   await expect(page.locator('#journeyIntro h3')).toContainText(stage.route);
-  if(level===124)for(const place of ['漢壽','劍閣'])await expect(page.locator('#journeyIntro .map-city text').filter({hasText:new RegExp(`^${place}$`)})).toBeVisible();
+  if(level===124){
+   await advance(4400);
+   await expect(page.locator('#journeyIntro')).toHaveAttribute('data-arrived','true');
+   await checkRouteInset('#journeyIntro');
+  }
   await expect(page.locator('#journeyIntro .journey-army')).toHaveAttribute('data-person',stage.leader);
   await expect(page.locator('#journeyIntro .journey-army image')).toHaveAttribute('href',expressionPortrait(stage.leader));
   await tap('#storyMore');
@@ -145,7 +163,10 @@ test('stage 118 continues through Jiange and keeps campaign saves on touch scree
   await tap('#battleMenuButton');
   await tap('#battleMapButton');
   await expect(page.locator('#campaignMapRoute')).toHaveText(stage.route);
-  if(level===124)for(const place of ['漢壽','劍閣'])await expect(page.locator('#campaignMapCanvas .map-city text').filter({hasText:new RegExp(`^${place}$`)})).toBeVisible();
+  if(level===124){
+   await checkRouteInset('#campaignMapCanvas');
+   await expect(page.locator('#campaignMapPeriod')).toHaveText('263 年・蜀漢軍');
+  }
   await expect(page.locator('#campaignMapCanvas .map-leader')).toHaveAttribute('data-person',stage.leader);
   await expect(page.locator('#campaignMapCanvas .map-leader image')).toHaveAttribute('href',expressionPortrait(stage.leader));
   const opponent=page.locator('#campaignMapMatchup [data-side=enemy] img');

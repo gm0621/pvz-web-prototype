@@ -69,7 +69,7 @@ const stages=[
 
 export const TWENTY_FIRST_CHAPTER=stages.map((stage,index)=>({
  name:stage.name,year:stage.year,chapter:21,number:index+1,faction:'shu',factionLabel:'蜀漢軍',place:stage.name,
- mapPlace:stage.place,originPlace:stage.origin,mapOriginLabel:true,viaPlaces:[],viewpointShift:!!stage.shift,historyCast:stage.historyCast,
+ mapPlace:stage.place,originPlace:stage.origin,detailedRoute:true,viaPlaces:[],viewpointShift:!!stage.shift,historyCast:stage.historyCast,
  leaderName:stage.leader,opponentName:stage.opponent,mapOpponent:stage.mapOpponent??!!stage.opponent,matchupLabel:stage.matchupLabel,
  scene:`./assets/scenes/${stage.scene}.jpg`,mission:stage.mission,missionTitle:stage.missionTitle,missionSites:stage.missionSites,
  ...(stage.mission==='withdraw'?{retreatKeys:[],successTitle:'全軍撤回'}:{}),
