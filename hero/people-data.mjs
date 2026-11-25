@@ -1,11 +1,11 @@
-import {GENERALS} from './roster.mjs?v=chapter-twenty-five-1';
-import {NOVEL_PAGES,CAMP_LINES} from './novel.mjs?v=chapter-twenty-five-1';
-import {campConversation} from './camp-talk.mjs?v=chapter-twenty-five-1';
-import {STORY_TASKS} from './story-play.mjs?v=chapter-twenty-five-1';
-import {CHAPTER_BACKGROUNDS,STAGE_LEADS} from './prologue.mjs?v=chapter-twenty-five-1';
-import {STORY_PEOPLE,hasPersonMention} from './characters.mjs?v=chapter-twenty-five-1';
-import {HEROES,STAGES,chapterInfo,enemyArt,heroesForLevel} from './story.mjs?v=chapter-twenty-five-1';
-import {FACTIONS,enemyPortrait} from './factions.mjs?v=chapter-twenty-five-1';
+import {GENERALS} from './roster.mjs?v=chapter-twenty-five-2';
+import {NOVEL_PAGES,CAMP_LINES} from './novel.mjs?v=chapter-twenty-five-2';
+import {campConversation} from './camp-talk.mjs?v=chapter-twenty-five-2';
+import {STORY_TASKS} from './story-play.mjs?v=chapter-twenty-five-2';
+import {CHAPTER_BACKGROUNDS,STAGE_LEADS} from './prologue.mjs?v=chapter-twenty-five-2';
+import {STORY_PEOPLE,hasPersonMention} from './characters.mjs?v=chapter-twenty-five-2';
+import {HEROES,STAGES,chapterInfo,enemyArt,heroesForLevel} from './story.mjs?v=chapter-twenty-five-2';
+import {FACTIONS,enemyPortrait} from './factions.mjs?v=chapter-twenty-five-2';
 // Child-friendly summaries; comparisons are memory aids, not historical quotations.
 const bios=[
  ['司馬衷','史實人物','接下皇位的晉惠帝','他是司馬炎的兒子。父親去世後，他在洛陽即位，史稱晉惠帝。楊駿先幫忙處理國事，後來朝廷幾次更換輔政的人。','衷讀 ㄓㄨㄥ。短玉珠、圓圓的臉和有些不安的眼神，是遊戲給他的造型。','事蹟見《晉書・惠帝紀》。'],

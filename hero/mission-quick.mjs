@@ -1,12 +1,13 @@
-import {HISTORICAL_STAGES} from './history-stages.mjs?v=chapter-twenty-five-1';
-import {missionText} from './chapter-missions.mjs?v=chapter-twenty-five-1';
-import {retreatPartyNames,retreatPartyLabel,supplyReady} from './history-missions.mjs?v=chapter-twenty-five-1';
+import {HISTORICAL_STAGES} from './history-stages.mjs?v=chapter-twenty-five-2';
+import {missionText} from './chapter-missions.mjs?v=chapter-twenty-five-2';
+import {retreatPartyNames,retreatPartyLabel,supplyReady} from './history-missions.mjs?v=chapter-twenty-five-2';
 const names=['上','中','下'];
 export function missionQuickState(b){
  const m=b.mission;if(!m)return null;const stage=HISTORICAL_STAGES[b.level-17];if(!['supply','withdraw','decoy'].includes(m.kind))return {text:missionText(b),button:m.done?'查看目標':'進行任務'};
  if(m.kind==='supply'){
   const cleared=stage?.enemyCount!==0&&b.bossSpawned&&!b.enemies.some(e=>e.hp>0),prefix=`軍糧 ${m.delivered}／3`;
   if(m.done)return {text:`${prefix} · 運糧完成${stage?.enemyCount===0?'':'，清退餘兵'}`,button:'查看任務'};
+  if(b.paused)return {text:missionText(b),button:supplyReady(b)?'發送糧車':'查看任務'};
   if(supplyReady(b))return {text:`${prefix} · ${cleared?'敵軍已清退，仍需送糧':'備車完成！'}`,button:'發送糧車',action:'supply'};
   const lanes=Array.from({length:b.laneTotal||3},(_,i)=>i),missing=lanes.filter(l=>!b.allies.some(u=>u.hp>0&&u.lane===l));
   const blocked=lanes.filter(l=>b.enemies.some(e=>e.hp>0&&e.lane===l&&e.x<.48));

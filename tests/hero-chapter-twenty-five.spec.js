@@ -35,7 +35,7 @@ test('stage 142 continues through the early Rebellion of the Eight Princes and k
  const advance=ms=>page.clock.runFor(ms);
  const snapshot=()=>page.evaluate(()=>({time:window.chapterBattle.time,mission:window.chapterBattle.mission}));
  const readSave=()=>page.evaluate(key=>JSON.parse(localStorage.getItem(key)),saveKey);
- async function controlledBattle({wu=false,faction='西晉軍',sites,kind}={}){
+ async function controlledBattle({wu=false,faction='西晉軍',sites,kind,wuRank=2}={}){
   await tap('#storySkip');
   if(!wu){
    if(sites)await expect(page.locator('#deployment')).toContainText(sites.join('、')+'整備');
@@ -44,15 +44,15 @@ test('stage 142 continues through the early Rebellion of the Eight Princes and k
   }
   await expect(page.locator('#battle')).toBeVisible({timeout:25000});
   await expect(page.locator('#battleTitle')).toContainText(faction);
-  expect(await page.evaluate(()=>window.chapterBattle.weapons)).toMatchObject(wu?{liubei:0,guanyu:0,zhangfei:2}:{liubei:0,guanyu:1,zhangfei:0});
+  expect(await page.evaluate(()=>window.chapterBattle.weapons)).toMatchObject(wu?{liubei:0,guanyu:0,zhangfei:wuRank}:{liubei:0,guanyu:1,zhangfei:0});
   await page.locator('#battleSpeed').selectOption('2');
   // Only enemy waves and starting food are sandboxed. Mission and save paths run through UI.
-  await page.evaluate(()=>{
+  await page.evaluate(waitForWaves=>{
    const battle=window.chapterBattle;
-   battle.bossSpawned=true;
+   battle.bossSpawned=!waitForWaves;
    battle.nextSpawn=Infinity;
    battle.food=300;
-  });
+  },kind==='holdout');
   for(const [lane,key] of ['liubei','guanyu','zhangfei'].entries()){
    await tap(`#cards [data-hero=${key}]`);
    await page.locator('.lane').nth(lane).tap({position:{x:40,y:25}});
@@ -227,6 +227,7 @@ test('stage 142 continues through the early Rebellion of the Eight Princes and k
    expect(prepping.mission.charge).toBeLessThan(10);
    await advance(650);
    expect(await snapshot()).toEqual(prepping);
+   await expect(page.locator('#missionQuick')).toContainText('已暫停，保留進度');
    await expect(page.locator('#missionQuickAction')).toBeDisabled();
    await tap('#pauseBtn');
    await advance(5100);
@@ -254,7 +255,7 @@ test('stage 142 continues through the early Rebellion of the Eight Princes and k
     const option=page.locator('#missionChoices [data-action=site]').nth(lane);
     await expect(option).toContainText(site);
     await option.tap();
-    if(level===144&&lane===0){
+    if(lane===0){
      await advance(1100);
      await tap('#pauseBtn');
      const frozen=await snapshot();
@@ -262,6 +263,7 @@ test('stage 142 continues through the early Rebellion of the Eight Princes and k
      expect(frozen.mission.sites[lane]).toBeGreaterThan(0);
      await advance(800);
      expect(await snapshot()).toEqual(frozen);
+     await expect(page.locator('#missionObjective')).toContainText('已暫停');
      await tap('#pauseBtn');
     }
     await advance(6700);
@@ -278,6 +280,18 @@ test('stage 142 continues through the early Rebellion of the Eight Princes and k
    expect(await snapshot()).toEqual(frozen);
    await tap('#pauseBtn');
    await advance(18500);
+   expect((await snapshot()).mission).toMatchObject({hold:24,done:true});
+   await expect(page.locator('#result')).toBeHidden();
+   await expect(page.locator('#missionQuick')).toContainText('清退後續敵軍');
+   await page.evaluate(()=>{
+    const battle=window.chapterBattle;
+    battle.spawned=11;
+    battle.nextSpawn=battle.time;
+   });
+   await advance(3300);
+   await expect(page.locator('#waveText')).toHaveText('城中亂兵已全數出現');
+   await expect(page.locator('#result')).toBeHidden();
+   await advance(31000);
   }else if(stage.kind==='withdraw'){
    await withdraw();
   }else if(stage.kind==='dispatch'){
@@ -289,6 +303,8 @@ test('stage 142 continues through the early Rebellion of the Eight Princes and k
    const frozen=await snapshot();
    await advance(800);
    expect(await snapshot()).toEqual(frozen);
+   await expect(page.locator('#missionQuick')).toContainText('已暫停，保留進度');
+   await expect(page.locator('#missionObjective')).toContainText('已暫停，保留進度');
    await expect(page.locator('#missionChoices [data-action=route]:nth-child(2)')).toBeDisabled();
    await tap('#pauseBtn');
    await advance(100);
@@ -303,11 +319,14 @@ test('stage 142 continues through the early Rebellion of the Eight Princes and k
   await expect(page.locator('#resultText')).toContainText(stage.outcome);
   if(level===148){
    await expect(page.locator('#resultRetrySave')).toBeVisible();
-   expect(await readSave()).toMatchObject({completed:147,coins:550});
+   expect(await readSave()).toMatchObject({completed:147,coins:370});
    await page.evaluate(()=>window.blockSave=false);
    await tap('#resultRetrySave');
   }
-  expect(await readSave()).toMatchObject({completed:level,coins:230+80*index,weapons:{guanyu:2},armyWeapons:{cao:{guanyu:1},sun:{zhangfei:2}},inventory:{grain:2}});
+  const balance=230+80*index-(level>143?180:0);
+  expect(await readSave()).toMatchObject({
+   completed:level,coins:balance,weapons:{guanyu:2},armyWeapons:{cao:{guanyu:1},sun:{zhangfei:level>143?3:2}},inventory:{grain:2}
+  });
   await camp();
   await expect(page.locator('#campTitle')).toContainText(stage.name);
   await expect(page.locator('.tent-banner')).toHaveText(stage.banner||'晉');
@@ -317,16 +336,25 @@ test('stage 142 continues through the early Rebellion of the Eight Princes and k
   await expect(portrait).toHaveAttribute('src',expressionPortrait(stage.guest));
   await portrait.evaluate(img=>img.decode());
   await tap('#campTalkNext');
+  if(level===143){
+   await tap('[data-shop=weapons]');
+   const item=page.locator('#shopGoods .goods-card').filter({hasText:'黃蓋・兵器整備'});
+   await expect(item).toContainText('已強化 2 / 3');
+   await item.getByRole('button',{name:'購買 · 180 軍資'}).tap();
+   await expect(item).toContainText('已強化 3 / 3');
+   await expect(page.locator('#campCoins')).toHaveText('50');
+   await tap('#campShopBack');
+  }
   if(level===148){
    await tap('[data-shop=items]');
    await page.evaluate(()=>window.blockSave=true);
    await tap('[data-buy=herb]');
    await expect(page.locator('#campMessage')).toContainText('無法保存');
-   await expect(page.locator('#campCoins')).toHaveText('630');
+   await expect(page.locator('#campCoins')).toHaveText('450');
    expect((await readSave()).inventory.herb).toBe(0);
    await page.evaluate(()=>window.blockSave=false);
    await tap('[data-buy=herb]');
-   await expect(page.locator('#campCoins')).toHaveText('605');
+   await expect(page.locator('#campCoins')).toHaveText('425');
    await tap('#campShopBack');
    await expect(page.locator('#campContinue')).toContainText('第二十五章尾聲');
   }
@@ -337,7 +365,7 @@ test('stage 142 continues through the early Rebellion of the Eight Princes and k
 
  await page.reload();
  await expect(page.locator('#homeProgress')).toContainText('第二十五章完成');
- const cleared={completed:148,coins:605,weapons:{liubei:0,guanyu:2,zhangfei:0},armyWeapons:{cao:{liubei:0,guanyu:1,zhangfei:0},sun:{zhangfei:2}},inventory:{grain:2,herb:1}};
+ const cleared={completed:148,coins:425,weapons:{liubei:0,guanyu:2,zhangfei:0},armyWeapons:{cao:{liubei:0,guanyu:1,zhangfei:0},sun:{zhangfei:3}},inventory:{grain:2,herb:1}};
  expect(await readSave()).toMatchObject(cleared);
  await choose(25,148);
  await controlledBattle(stages[5]);
@@ -346,6 +374,12 @@ test('stage 142 continues through the early Rebellion of the Eight Princes and k
  await tap('#missionQuickAction');
  await advance(500);
  await expect(page.locator('#resultEarned')).toHaveText('+0');
+ expect(await readSave()).toMatchObject(cleared);
+
+ await camp();
+ await tap('#camp [data-home]');
+ await choose(25,143);
+ await controlledBattle({...stages[0],wuRank:3});
  expect(await readSave()).toMatchObject(cleared);
 
  await page.goto('/hero/people.html',{waitUntil:'domcontentloaded'});

@@ -20,6 +20,11 @@ npm run test:hero:engine
 npx playwright test --config=playwright.hero-input.config.js
 ```
 
+## 2026-11-25 第二十五章完整流程複查
+
+- 修正歷史運糧、接應使者的暫停提示。任務欄和任務面板會顯示「已暫停，保留進度」，並保留已送糧批次、備車百分比、使者路線及進度。運糧備妥時，暫停也會保留原按鈕文字。 [第二十五章規格](hero-history-chapter-twenty-five.md)
+- 本機 408 項引擎測試、320px 與 390px 手機 Chromium、820px 平板 WebKit 整章觸控 3 項，前章與圖鑑回歸 8 項。涵蓋第 142 關結算接第 143 關、三批糧車、兩關整備中途暫停、即位使者換路、楊駿之變守備達標後仍須清退敵軍、洛陽撤離、末關儲存重試與重玩。第 143 關營地實際強化黃蓋，切到晉軍後各軍升級獨立，重整後回玩第 143 關仍裝備新兵器。整章採模擬裝置、隔離存檔與受控敵波，第 146、148 關另用正常敵波通關。快取版 `chapter-twenty-five-2`，整章設定 `playwright.hero-twenty-five.config.js`。
+
 ## 2026-11-25 第二十五章「太康之後」
 
 - 已發布 `f529363`。正式站手機 Chromium、平板 WebKit 各走完第 142～148 關和末關重玩。兩種裝置另以正常敵波完成第 146、148 關，並從第 142、147 關的存檔直接續玩，各解碼圖鑑 130 張頭像。四種畫面尺寸檢查六關路線，共比對 53 份發布資源。 [正式遊戲](https://gm0621.github.io/pvz-web-prototype/hero/?v=f529363) · [人物圖鑑](https://gm0621.github.io/pvz-web-prototype/hero/people.html?v=f529363) · [發布紀錄](https://github.com/gm0621/pvz-web-prototype/actions/runs/45552988365)

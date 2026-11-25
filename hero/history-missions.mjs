@@ -1,5 +1,5 @@
-import {HISTORICAL_STAGES} from './history-stages.mjs?v=chapter-twenty-five-1';
-import {FACTIONS,factionFor} from './factions.mjs?v=chapter-twenty-five-1';
+import {HISTORICAL_STAGES} from './history-stages.mjs?v=chapter-twenty-five-2';
+import {FACTIONS,factionFor} from './factions.mjs?v=chapter-twenty-five-2';
 import {PEACH_HEROES} from './hero-base.mjs?v=passive-feedback-1';
 const defaultRetreatSlots=['liubei','zhangfei'];
 const retreatSlots=battle=>HISTORICAL_STAGES[battle.level-17]?.retreatKeys||defaultRetreatSlots;
@@ -63,15 +63,19 @@ export function historyMissionText(b){const fronts=['','','','三','四','五'][
   return `${title} · 任務已完成`+(b.won||stage.enemyCount===0?'':b.bossSpawned?'，清退剩餘敵軍後過關':'，守住防線並清退後續敵軍');
  }
  if(m.kind==='dispatch'){
+  const progress=`接應 ${m.rescued}／3 隊使者 · ${routeName(b,m.lane)}路 ${Math.floor(m.travel*100)}%`;
+  if(b.paused)return progress+' · 已暫停，保留進度';
   const guarded=b.allies.some(u=>u.hp>0&&u.lane===m.lane),blocked=b.enemies.some(e=>e.hp>0&&e.lane===m.lane&&e.x<.48);
   const next=!guarded?`請派一名友軍到${routeName(b,m.lane)}路，或按下方按鈕改走有友軍的路線`:blocked?'敵軍逼近，使者暫停；清退後會繼續前進':'友軍正在接應，請等使者回營';
-  return `${stage.enemyCount!==0&&b.bossSpawned&&!b.enemies.some(e=>e.hp>0)?'敵軍已清退 · ':''}接應 ${m.rescued}／3 隊使者 · ${routeName(b,m.lane)}路 ${Math.floor(m.travel*100)}% · ${next}`;
+  return `${stage.enemyCount!==0&&b.bossSpawned&&!b.enemies.some(e=>e.hp>0)?'敵軍已清退 · ':''}${progress} · ${next}`;
  }
  if(m.kind==='supply'){
+  const progress=`軍糧 ${m.delivered}／3 批 · 備車 ${Math.floor(m.charge/10*100)}%`;
+  if(b.paused)return progress+' · 已暫停，保留進度';
   const missing=laneList(b).filter(l=>!b.allies.some(u=>u.hp>0&&u.lane===l)).map(l=>((b.laneTotal||3)>3?`第 ${l+1}`:laneNames[l])+'路');
   const blocked=laneList(b).filter(l=>b.enemies.some(e=>e.hp>0&&e.lane===l&&e.x<.48)).map(l=>((b.laneTotal||3)>3?`第 ${l+1}`:laneNames[l])+'路');
   const next=missing.length?`請派友軍駐守${missing.join('、')}，每路都有人才會備車`:blocked.length?`${blocked.join('、')}敵軍逼近，清退後繼續運糧`:m.charge>=10?'備車完成！請按「發送糧車」':'各路接應就位，正在備車；完成後按「發送糧車」';
-  return `${stage.enemyCount!==0&&b.bossSpawned&&!b.enemies.some(e=>e.hp>0)?'敵軍已清退，還要完成運糧！ · ':''}軍糧 ${m.delivered}／3 批 · 備車 ${Math.floor(m.charge/10*100)}% · ${next}`;
+  return `${stage.enemyCount!==0&&b.bossSpawned&&!b.enemies.some(e=>e.hp>0)?'敵軍已清退，還要完成運糧！ · ':''}${progress} · ${next}`;
  }
  if(['withdraw','decoy'].includes(m.kind)&&m.ordered){
   const missing=retreatPartyNames(b,{missingOnly:true});
