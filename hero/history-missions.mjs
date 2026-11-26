@@ -1,6 +1,6 @@
-import {HISTORICAL_STAGES} from './history-stages.mjs?v=qishan-escort-2';
-import {FACTIONS,factionFor} from './factions.mjs?v=qishan-escort-2';
-import {OUTPOSTS,RAID_POINTS,OUTPOST_SECONDS,outpostLane,pointCompleted,nextOutpost,canIgniteRaid,igniteRaid,stepOutposts,selectOutpost,passWave,passLane,thirdWaveStarted,hasFireRoutes,canClearFire,clearFireLane,GATE_MAX,hasGate,hasOutposts,channelHazard,channelName,fleetChannel,fleetStatus,canRepairGate,repairGate,selectFleetChannel,siegeLane,stepFleet} from './field-missions.mjs?v=qishan-escort-2';
+import {HISTORICAL_STAGES} from './history-stages.mjs?v=tong-yin-mian-1';
+import {FACTIONS,factionFor} from './factions.mjs?v=tong-yin-mian-1';
+import {OUTPOSTS,RAID_POINTS,OUTPOST_SECONDS,outpostLane,pointCompleted,nextOutpost,canIgniteRaid,igniteRaid,stepOutposts,selectOutpost,passWave,passLane,thirdWaveStarted,hasFireRoutes,canClearFire,clearFireLane,GATE_MAX,hasGate,hasOutposts,channelHazard,channelName,fleetChannel,fleetStatus,canRepairGate,repairGate,selectFleetChannel,siegeLane,stepFleet} from './field-missions.mjs?v=tong-yin-mian-1';
 import {PEACH_HEROES} from './hero-base.mjs?v=passive-feedback-1';
 const defaultRetreatSlots=['liubei','zhangfei'];
 const retreatSlots=battle=>HISTORICAL_STAGES[battle.level-17]?.retreatKeys||defaultRetreatSlots;
@@ -37,7 +37,9 @@ export function supplyLeg(b){
  const m=b.mission;
  if(!m?.stops||m.done)return null;
  const index=m.delivered;
- return {lane:index,name:m.stops[index],progress:m.charge/supplyLegSeconds};
+ const total=b.laneTotal||3;
+ const route=[0,Math.floor(total/2),total-1];
+ return {lane:route[index],name:m.stops[index],progress:m.charge/supplyLegSeconds};
 }
 export function supplyReady(b){
  const m=b.mission;

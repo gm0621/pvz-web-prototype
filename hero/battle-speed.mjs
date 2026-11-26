@@ -1,4 +1,4 @@
-import {stepBattle} from './engine.mjs?v=qishan-escort-2';
+import {stepBattle} from './engine.mjs?v=tong-yin-mian-1';
 export const BATTLE_SPEEDS=Object.freeze([1,1.5,2]);
 export function normalizeBattleSpeed(value){const n=Number(value);return BATTLE_SPEEDS.includes(n)?n:1}
 // 1x retains the existing pacing. Split scaled time to respect the engine's

@@ -48,7 +48,7 @@ test('stage 124 continues through Chengdu and keeps campaign saves on touch scre
   // Only enemy waves and starting food are sandboxed. Mission and save paths run through UI.
   await page.evaluate(()=>{
    const battle=window.chapterBattle;
-   battle.bossSpawned=true;
+   battle.bossSpawned=battle.level!==124;
    battle.nextSpawn=Infinity;
    battle.food=300;
   });
@@ -57,15 +57,13 @@ test('stage 124 continues through Chengdu and keeps campaign saves on touch scre
    await page.locator('.lane').nth(lane).tap({position:{x:40,y:25}});
    await advance(200);
   }
- }
- async function sendCarts(){
-  for(let batch=0;batch<3;batch++){
-   await advance(7600);
-   await expect(page.locator('#missionQuickAction')).toHaveText('發送糧車');
-   await tap('#missionQuickAction');
-  }
+  await page.evaluate(()=>{
+   const battle=window.chapterBattle;
+   if(battle.level===124){battle.spawned=12;battle.bossSpawned=true}
+  });
  }
  async function withdraw(){
+  await page.evaluate(()=>window.chapterBattle.spawned=9);
   await advance(4400);
   await tap('#cards [data-hero=archer]');
   await page.locator('.lane').first().tap({position:{x:40,y:25}});
@@ -82,7 +80,7 @@ test('stage 124 continues through Chengdu and keeps campaign saves on touch scre
   await expect(page.locator('#missionQuickAction')).toHaveText('全軍撤離');
   await tap('#missionQuickAction');
   await advance(200);
-  await expect(page.locator('#missionQuick')).toContainText('1 名友軍尚未回到左側');
+  await expect(page.locator('#missionQuick')).toContainText('1 隊友軍尚未回到左側');
   await expect(page.locator('#result')).toBeHidden();
   await tap('#pauseBtn');
   const frozen=await snapshot();
@@ -186,7 +184,7 @@ test('stage 124 continues through Chengdu and keeps campaign saves on touch scre
   await expect(page.locator('.history-sources a').first()).toHaveAttribute('href',/wikisource/);
   await tap('#storyDetails header button');
   const ranks={liubei:level===126?1:0,guanyu:stage.wei?1:2,zhangfei:level>=128?1:0};
-  const briefing=stage.kind==='supply'?'各路都要有友軍接應。備車完成後按「發送糧車」，共送三批。':'關門、道路、糧冊整備';
+  const briefing=stage.kind==='supply'?'派友軍守亮起的路，再按「發送糧車」。':'關門、道路、糧冊整備';
   await controlledBattle(stage.wei,ranks,briefing);
   if([125,126,129,130].includes(level))await expect(page.locator('#waveText')).not.toContainText(/追兵|敵軍/);
 
@@ -214,33 +212,25 @@ test('stage 124 continues through Chengdu and keeps campaign saves on touch scre
 
   if(level===130)await page.evaluate(()=>window.blockSave=true);
   if(stage.kind==='supply'){
-   await advance(2500);
-   await tap('#pauseBtn');
-   const prepping=await snapshot();
-   expect(prepping.mission.charge).toBeGreaterThan(0);
-   expect(prepping.mission.charge).toBeLessThan(10);
-   await advance(650);
-   expect(await snapshot()).toEqual(prepping);
-   await expect(page.locator('#missionQuickAction')).toBeDisabled();
-   await tap('#pauseBtn');
-   await advance(5100);
-   await expect(page.locator('#missionQuickAction')).toHaveText('發送糧車');
-   const guardId=await page.evaluate(()=>String(window.chapterBattle.allies.find(u=>u.key==='zhangfei').id));
-   await page.locator('#unitSelect').selectOption(guardId);
-   await tap('#commandDrawerButton');
-   await tap('#orders [data-order="up"]');
-   await tap('#commandDrawerClose');
-   await expect(page.locator('#missionQuick')).toContainText('下路缺接應');
-   await tap('#missionQuickAction');
-   await expect(page.locator('#missionChoices [data-action=supply]')).toBeDisabled();
-   expect((await snapshot()).mission).toMatchObject({charge:10,delivered:0});
-   await tap('#missionDrawerClose');
-   await tap('#cards [data-hero=archer]');
-   await page.locator('.lane').nth(2).tap({position:{x:40,y:25}});
-   await advance(100);
-   await expect(page.locator('#missionQuickAction')).toHaveText('發送糧車');
-   await sendCarts();
-   await expect(page.locator('#missionQuick')).toContainText('軍糧 3／3');
+   for(const [lane,name] of ['山口','木橋','谷道'].entries()){
+    await expect(page.locator('.lane[data-supply-route=true]')).toHaveAttribute('data-lane',String(lane));
+    await expect(page.locator('#missionQuick')).toContainText(name);
+    await tap('#missionQuickAction');
+    await expect(page.locator('#supplyCart')).toContainText(`糧車 ${lane+1}／3`);
+    if(lane===0){
+     await advance(1800);
+     await tap('#pauseBtn');
+     const travelling=await snapshot();
+     expect(travelling.mission.charge).toBeGreaterThan(0);
+     expect(travelling.mission.delivered).toBe(0);
+     await advance(650);
+     expect(await snapshot()).toEqual(travelling);
+     await expect(page.locator('#missionQuickAction')).toBeDisabled();
+     await tap('#pauseBtn');
+    }
+    await advance(6200);
+    expect((await snapshot()).mission.delivered).toBe(lane+1);
+   }
   }
   else if(stage.kind==='restoration'){
    await tap('#missionDrawerButton');

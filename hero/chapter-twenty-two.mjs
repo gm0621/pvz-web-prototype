@@ -7,9 +7,9 @@ const stages=[
  {
   name:'陰平越險',year:263,origin:'yinping',place:'jinggu',wei:true,shift:true,
   leader:'鄧艾',guest:'鄧艾',historyCast:['鄧艾','鍾會'],
-  mission:'supply',scene:'mountain-front',enemyArmy:'山路接應',successTitle:'山路補給送達',
+  mission:'supply',supplyStops:['山口','木橋','谷道'],scene:'mountain-front',enemyArmy:'山路接應',successTitle:'山路補給送達',
   history:'鍾會的軍隊在劍閣受阻。鄧艾另走陰平山路，魏軍開路架橋。山高谷深，糧食一度快用完，才走到蜀地深處。',
-  briefing:'派人照應各路，等備車完成後送出糧車，共送三批。',
+  briefing:'派友軍守亮起的路，再按「發送糧車」。三批依序通過山口、木橋、谷道，送完就過關。',
   ending:'魏軍越過陰平險道，前隊向江由前進。鍾會仍在劍閣方向。',
   camp:'窄路一次只過得去幾個人。先點清補給和人數，再讓後隊跟上。',
   question:'鍾會在劍閣受阻時，誰另走陰平山路？',choices:['鄧艾','蜀軍守將','吳國使者'],refs:[dengAi,zhongHui]
@@ -39,9 +39,9 @@ const stages=[
   name:'綿竹撤兵',year:263,origin:'fu',place:'mianzhu',
   leader:'諸葛瞻',guest:'劉禪',opponent:'鄧艾',historyCast:['諸葛瞻','諸葛尚','黃崇','鄧艾','劉禪'],
   matchupLabel:'魏軍主將・鄧艾在綿竹擊敗蜀軍',
-  mission:'withdraw',scene:'mountain-front',enemyArmy:'魏軍追兵',enemyCount:12,successTitle:'撤回倖存隊伍',
+  mission:'withdraw',coverWaves:true,scene:'mountain-front',enemyArmy:'魏軍追兵',enemyCount:12,successTitle:'撤回倖存隊伍',
   history:'諸葛瞻和蜀軍在綿竹迎戰。魏軍第一波進攻受挫，隨後再攻並擊敗守軍。諸葛瞻與長子諸葛尚、黃崇都在這一戰中殉難。',
-  briefing:'接應完成後按「全軍撤離」。至少保住一隊，讓所有存活的武將和士兵回到左側。',
+  briefing:'照預警派兵掩護。第三波追兵一到就按「全軍撤離」，讓所有存活友軍回到左側，至少保住一隊。',
   ending:'綿竹失守。諸葛瞻、諸葛尚與黃崇殉難。剩下的隊伍分散，魏軍繼續向成都前進。',
   camp:'從綿竹回來的隊伍先去歇息。請把人員和急報都送到朝廷，我們得商量下一步。',
   question:'綿竹之戰的史實結果是什麼？',choices:['蜀軍戰敗，諸葛瞻父子殉難','蜀軍擊退鄧艾','兩軍議和並各自回營'],refs:[zhugeZhan,huangQuan,dengAi,ruler]
@@ -74,6 +74,8 @@ export const TWENTY_SECOND_CHAPTER=stages.map((stage,index)=>({
  mapPlace:stage.place,originPlace:stage.origin,detailedRoute:true,viaPlaces:[],viewpointShift:!!stage.shift,historyCast:stage.historyCast,
  leaderName:stage.leader,opponentName:stage.opponent,mapOpponent:stage.mapOpponent??!!stage.opponent,matchupLabel:stage.matchupLabel,mapOpponentRole:stage.mapOpponentRole,
  scene:`./assets/scenes/${stage.scene}.jpg`,mission:stage.mission,missionTitle:stage.missionTitle,missionSites:stage.missionSites,
+ ...(stage.supplyStops?{supplyStops:stage.supplyStops}:{}),
+ ...(stage.coverWaves?{coverWaves:true}:{}),
  successTitle:stage.successTitle,successRibbon:'戰 事 記 錄 ・ 回 營 整 備',
  ...(stage.mission==='withdraw'?{retreatKeys:[]}:{}),
  noBoss:true,bossName:stage.enemyArmy,bossHp:0,enemyArmy:stage.enemyArmy,enemyCount:stage.enemyCount??0,interval:3.8,

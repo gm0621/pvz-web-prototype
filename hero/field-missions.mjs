@@ -140,9 +140,11 @@ export function selectOutpost(b,index){
 export const PASS_WAVE_SIZE=4;
 export const hasDirectedWaves=m=>m?.kind==='pass-defense'||m?.coverWaves===true;
 export const thirdWaveStarted=b=>b.spawned>2*PASS_WAVE_SIZE;
-const passLanes=[0,2,1];
 export const passWave=b=>Math.floor(b.spawned/PASS_WAVE_SIZE)+1;
-export const passLane=b=>passLanes[passWave(b)-1];
+export function passLane(b){
+ const total=b.laneTotal||3;
+ return [0,total-1,Math.floor(total/2)][passWave(b)-1];
+}
 
 export const hasFireRoutes=m=>m?.clearings!==undefined;
 

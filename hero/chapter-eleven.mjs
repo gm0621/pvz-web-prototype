@@ -322,8 +322,8 @@ export const ELEVENTH_CHAPTER=[
   "mapPlace": "tongguan",
   "originPlace": "ye",
   "viaPlaces": [],
-  "mission": "holdout",
-  "enemyCount": 14,
+  "mission": "pass-defense",
+  "enemyCount": 12,
   "interval": 3.8,
   "noBoss": true,
   "bossName": "沿途游兵",
@@ -345,13 +345,13 @@ export const ELEVENTH_CHAPTER=[
    ],
    [
     "曹操",
-    "三路都有人接應，累計守穩 24 秒並清退外圍游兵。"
+    "游兵會分三波來。看到哪一路亮起，就派友軍去守。擋住三波、清退餘兵，並至少保住一道防線。"
    ]
   ],
   "opening": [
    [
     "曹操",
-    "三路都有人接應，累計守穩 24 秒並清退外圍游兵。"
+    "游兵會分三波來。看到哪一路亮起，就派友軍去守。擋住三波、清退餘兵，並至少保住一道防線。"
    ],
    [
     "馬超",
@@ -378,8 +378,8 @@ export const ELEVENTH_CHAPTER=[
   ],
   "campLine": "地圖向西移！211 年馬超、韓遂等關中將領聯合，曹操西征，在潼關與他們相持。",
   "victory": "曹操遣軍準備進攻漢中，關中諸將懷疑軍隊要攻打自己。馬超與韓遂等起兵，曹操西征。此時馬超還不是劉備的部下。",
-  "bossIntro": "三路都有人接應，累計守穩 24 秒並清退外圍游兵。",
-  "bossTip": "三路都有人接應，累計守穩 24 秒並清退外圍游兵。",
+  "bossIntro": "游兵會分三波來。看到哪一路亮起，就派友軍去守。擋住三波、清退餘兵，並至少保住一道防線。",
+  "bossTip": "游兵會分三波來。看到哪一路亮起，就派友軍去守。擋住三波、清退餘兵，並至少保住一道防線。",
   "quiz": {
    "kind": "史書小偵探",
    "hero": "liubei",
@@ -397,7 +397,7 @@ export const ELEVENTH_CHAPTER=[
   },
   "campTalk": {
    "guanyu": [
-    "夏侯惇：三路都有人接應，累計守穩 24 秒並清退外圍游兵。",
+    "夏侯惇：游兵會分三波來。看到哪一路亮起，就派友軍去守。擋住三波、清退餘兵，並至少保住一道防線。",
     "馬超：我是馬超，字孟起。此時我與韓遂等人在關中迎戰曹操，還沒有加入劉備軍。"
    ],
    "zhangfei": [
@@ -412,7 +412,7 @@ export const ELEVENTH_CHAPTER=[
    }
   ],
   "opponentName": "馬超",
-  "missionTitle": "潼關接應"
+  "missionTitle": "潼關守備"
  },
  {
   "name": "渡河接應",

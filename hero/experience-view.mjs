@@ -1,7 +1,7 @@
-import {ALL_GENERALS,growthHint} from './roster.mjs?v=qishan-escort-2';
-import {paintPortrait} from './factions.mjs?v=qishan-escort-2';
-import {hitSound} from './audio.mjs?v=qishan-escort-2';
-import {EXPERIENCE_DURATION,experienceFrame} from './experience-progress.mjs?v=qishan-escort-2';
+import {ALL_GENERALS,growthHint} from './roster.mjs?v=tong-yin-mian-1';
+import {paintPortrait} from './factions.mjs?v=tong-yin-mian-1';
+import {hitSound} from './audio.mjs?v=tong-yin-mian-1';
+import {EXPERIENCE_DURATION,experienceFrame} from './experience-progress.mjs?v=tong-yin-mian-1';
 export function mountExperienceView(){
  const root=document.createElement('section');root.id='resultExperience';root.setAttribute('aria-label','武將成長');document.getElementById('resultText').after(root);
  let frame=0,active=false,elapsed=0,last=0,levelSound=false,callback,rows=[],pageAway=false;

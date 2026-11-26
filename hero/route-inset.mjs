@@ -1,4 +1,4 @@
-import {mapPersonSvg} from './characters.mjs?v=qishan-escort-2';
+import {mapPersonSvg} from './characters.mjs?v=tong-yin-mian-1';
 
 const standardHeight=304,dualHeight=374;
 
