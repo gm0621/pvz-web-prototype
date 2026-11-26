@@ -8,7 +8,7 @@
 
 ## Obsidian 尚未同步時，從這裡接手
 
-1. **確認版本。** 在剛拉下來的 `main` 執行 `git status --short --branch`、`git log -1 --oneline`。`git log` 顯示目前 checkout 的提交。正式遊戲版本另看下方最新一筆含「已發布」及 Pages 工作的功能紀錄。截至 2026-11-26，最新已驗證的正式遊戲版本為 `4b008fe`（主篇 142 關，《西晉後日談》18 關，《洛陽風雲》6 關，《長安西行》6 關）。 [正式遊戲](https://gm0621.github.io/pvz-web-prototype/hero/?v=4b008fe) · [人物圖鑑](https://gm0621.github.io/pvz-web-prototype/hero/people.html?v=4b008fe) · [發布紀錄](https://github.com/gm0621/pvz-web-prototype/actions/runs/45763809348)
+1. **確認版本。** 在剛拉下來的 `main` 執行 `git status --short --branch`、`git log -1 --oneline`。`git log` 顯示目前 checkout 的提交。正式遊戲版本另看下方最新一筆含「已發布」及 Pages 工作的功能紀錄。截至 2026-11-26，最新已驗證的正式遊戲版本為 `7b7f2c3`（主篇 142 關，《西晉後日談》18 關，《洛陽風雲》6 關，《長安西行》6 關）。 [正式遊戲](https://gm0621.github.io/pvz-web-prototype/hero/?v=7b7f2c3) · [人物圖鑑](https://gm0621.github.io/pvz-web-prototype/hero/people.html?v=7b7f2c3) · [發布紀錄](https://github.com/gm0621/pvz-web-prototype/actions/runs/45765307712)
 2. **安裝並做基本驗證。** 在專案根目錄用 Node.js 20 以上與 npm。執行下列指令可驗證引擎、桌面滑鼠／鍵盤及手機平板觸控。更多測試和本機預覽見 [開發指南](DEVELOPMENT.md)。Playwright 會啟動 4174 埠的測試服務，先關閉佔用該埠的手動預覽。
 3. **開工前看目前進度。** 先讀 [AGENTS.md](../AGENTS.md) 的「重要約束」及下方與任務相關的紀錄。英雄演義是獨立的 `/hero/` 遊戲，關卡上限見 `hero/campaign-config.mjs`。正式存檔 `heroLegendProgress_v1` 與本機、線上跳關測試的存檔分開。跨電腦時瀏覽器存檔和未提交的檔案需另外移轉。保留滑鼠、鍵盤與觸控操作，也要保留首勝軍資、重玩及暫停的既有規則。 [跳關工具和存檔說明](hero-local-testing.md)
 4. **繼續當次工作。** 依使用者的新需求從最新 `main` 開分支，保留原工作區修改。完成後把變更、實際測試結果、版本與注意事項記在本檔。Obsidian 未同步時註明待補，能讀取後再更新。正式發布依當次授權。
@@ -19,6 +19,14 @@ npx playwright install chromium webkit
 npm run test:hero:engine
 npx playwright test --config=playwright.hero-input.config.js
 ```
+
+## 2026-11-26 陽平關攻關、漢水運糧、街亭分波撤離
+
+- 已發布 `7b7f2c3`。手機 Chromium（320px、390px）與平板 WebKit（820px）各以正式站正常敵波完成第 69、79、97 關，9 項觸控測試通過。另核對 53 份發布資源。 [正式遊戲](https://gm0621.github.io/pvz-web-prototype/hero/?v=7b7f2c3) · [人物圖鑑](https://gm0621.github.io/pvz-web-prototype/hero/people.html?v=7b7f2c3) · [發布紀錄](https://github.com/gm0621/pvz-web-prototype/actions/runs/45765307712)
+- 第 69 關「陽平關夜進」選一處先攻，守住對應路線拿下關前哨點和側路關卡，再擊退守將與餘兵。劇情保留張魯先退巴中，下一關才迎使。
+- 第 79 關「漢水暴漲」護送三批糧船到安全渡口，換航道保留本批進度，已送達的批次也會保留。三批都抵達並清退餘船後結算。大雨、于禁投降、龐德結局及曹仁守樊城照原劇情。
+- 第 97 關「街亭撤離」前兩波依預警守上、下路，第三波開始從中路出兵時可下令全軍撤回左側，至少保住一隊。保留王平收攏散兵及魏軍取勝的劇情。
+- 本機 431 項引擎測試、9 項正常敵波觸控通關及第十二、十四、十七章共 6 項手機／平板整章回歸通過。核對舊存檔的進度、軍資、兵器、道具與個人最佳，營地、下一關和重整均正常。快取版 `pass-river-1`，觸控指令 `npx playwright test --config=playwright.hero-pass-river.config.js`。
 
 ## 2026-11-26 烏巢、濡須、樊城流程與重玩複查
 
