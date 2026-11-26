@@ -77,8 +77,8 @@ for(const stage of stages)test(`stage ${stage.level} clears and replays from an 
   await expect(page.locator('#field')).toHaveAttribute('data-terrain',terrain);
   await expect(lanes).toHaveCount(total);
   await page.locator('#battleSpeed').selectOption('2');
-  let sent=0,retreated=false,forward=false,paused=false,sawFinalDefense=false;
-  const warnings=new Set(),sites=['山口','木橋','谷道'];
+  let sent=0,escorted=0,retreated=false,forward=false,paused=false,sawFinalDefense=false;
+  const warnings=new Set(),litRoutes=new Set(),sites=['山口','木橋','谷道'];
   const cargoLanes=[0,Math.floor(total/2),total-1];
   const positions=total===3?['上','下','中']:['第 1','第 5','第 3'];
   const cart=page.locator('#supplyCart');
@@ -99,27 +99,32 @@ for(const stage of stages)test(`stage ${stage.level} clears and replays from an 
     await expect(cart).toContainText(`糧車 ${sent}／3`);
     await expect(quick).toHaveText('查看任務');
    }
-   if(level===125&&!paused&&sent===1&&text.includes('%')){
+   if(level===125&&sent>escorted&&text.includes('糧車前進中')){
     await pause();
     const position=()=>cart.evaluate(node=>parseFloat(node.style.left));
     const frozen=await position();
     await advance(1800);
     expect(await position()).toBe(frozen);
     await resume();
-    const escort=page.locator('#units .ally[data-lane="0"]');
+    const origin=cargoLanes[sent-1];
+    const leave=origin===total-1?'up':'down';
+    const returnOrder=leave==='up'?'down':'up';
+    const escort=page.locator(`#units .ally[data-lane="${origin}"]`);
     await expect(escort).toHaveCount(1);
     const id=await escort.getAttribute('data-id');
     const unit=page.locator(`#units .ally[data-id="${id}"]`);
-    await command(unit,'down');
+    await command(unit,leave);
     const waiting=await position();
     await expect(objective).toContainText('糧車停下，派友軍回這一路護送');
     await advance(2100);
     expect(await position()).toBe(waiting);
-    await command(unit,'up');
+    await expect(objective).toContainText(`軍糧 ${sent-1}／3 批`);
+    await command(unit,returnOrder);
     await expect(objective).toContainText('糧車前進中');
     expect(await position()).toBe(waiting);
     await advance(500);
     expect(await position()).toBeGreaterThan(waiting);
+    escorted++;
     paused=true;
    }
    if(level!==125){
@@ -127,6 +132,15 @@ for(const stage of stages)test(`stage ${stage.level} clears and replays from an 
     if(wave&&!warnings.has(wave[1]+wave[2])){
      if(level===128)await expect(buttons('retreat')).toBeDisabled();
      warnings.add(wave[1]+wave[2]);
+    }
+    if(level===62&&wave){
+     const highlighted=page.locator('.lane[data-threat=true]');
+     if(await highlighted.count()){
+      const expected=[0,total-1,Math.floor(total/2)][Number(wave[1])-1];
+      await expect(highlighted).toHaveAttribute('data-lane',String(expected));
+      await expect(highlighted).toContainText('來敵');
+      litRoutes.add(Number(wave[1]));
+     }
     }
     if(!paused&&warnings.has('2'+positions[1])){
      await pause();
@@ -139,6 +153,8 @@ for(const stage of stages)test(`stage ${stage.level} clears and replays from an 
    }
    if(level===62&&text.includes('三波已出場')){
     await expect(result).toBeHidden();
+    await expect(objective).toContainText(/清退剩下的 [1-9]\d* 名敵兵/);
+    expect(await page.locator('#units .enemy').count()).toBeGreaterThan(0);
     sawFinalDefense=true;
    }
    if(level===128&&!forward&&i>=7){
@@ -151,9 +167,15 @@ for(const stage of stages)test(`stage ${stage.level} clears and replays from an 
     await quick.tap();
     await expect(result).toBeHidden();
     await expect(objective).toContainText('隊友軍尚未回到左側');
+    const allyPositions=()=>page.locator('#units .ally').evaluateAll(units=>units.map(unit=>unit.style.left));
+    await pause();
+    const held=await allyPositions();
+    await advance(1600);
+    expect(await allyPositions()).toEqual(held);
+    await resume();
     retreated=true;
    }
-   if(!retreated)await reinforce(total,level===125&&!paused);
+   if(!retreated)await reinforce(total,level===125);
    await advance(1000);
   }
   await expect(result).toBeVisible();
@@ -163,10 +185,13 @@ for(const stage of stages)test(`stage ${stage.level} clears and replays from an 
   expect(paused).toBe(true);
   if(level===125){
    expect(sent).toBe(3);
+   expect(escorted).toBe(3);
    await expect(page.locator('#missionObjective')).toContainText('軍糧 3／3 批');
   }else expect([...warnings]).toEqual(positions.map((name,i)=>i+1+name));
   if(level===62){
    expect(sawFinalDefense).toBe(true);
+   expect([...litRoutes]).toEqual([1,2,3]);
+   await expect(page.locator('#missionObjective')).toHaveText('三波已守住 · 敵軍已清退');
    await expect(page.locator('#waveText')).toContainText('已全數出現');
   }
   if(level===128)expect(retreated).toBe(true);

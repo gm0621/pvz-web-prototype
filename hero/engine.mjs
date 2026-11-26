@@ -1,14 +1,14 @@
 import {stepDoctrine,duelDoctrine,signature} from './army-doctrine.mjs?v=army-1';
 import {passiveCue,passiveLabel,learnedPassives,passiveName,tickPassives,passiveSnapshot,castPassiveFeedback} from './passive-feedback.mjs?v=passive-feedback-1';
-import {OUTPOST_SECONDS,outpostLane,PASS_WAVE_SIZE,hasDirectedWaves,hasGate,passLane,channelName,hitGate,siegeLane} from './field-missions.mjs?v=tong-yin-mian-1';
-import {extracted} from './history-missions.mjs?v=tong-yin-mian-1';
-import {createMission,stepMission,protectBarrier,missionReady,missionDuelReady} from './chapter-missions.mjs?v=tong-yin-mian-1';
+import {OUTPOST_SECONDS,outpostLane,PASS_WAVE_SIZE,hasDirectedWaves,hasGate,passLane,channelName,hitGate,siegeLane} from './field-missions.mjs?v=tong-yin-mian-2';
+import {extracted} from './history-missions.mjs?v=tong-yin-mian-2';
+import {createMission,stepMission,protectBarrier,missionReady,missionDuelReady} from './chapter-missions.mjs?v=tong-yin-mian-2';
 import {duelBeats} from './duel-patterns.mjs?v=passive-feedback-1';
 export {duelBeats} from './duel-patterns.mjs?v=passive-feedback-1';
 import {WEATHER_GENERALS} from './weather-generals.mjs?v=passive-feedback-1';
-import {campaignState,weaponBonus} from './campaign.mjs?v=tong-yin-mian-1';
-import {heroSkill} from './skills.mjs?v=tong-yin-mian-1';
-import {heroesForLevel,STAGES,UNLOCKS,FEATURES} from './story.mjs?v=tong-yin-mian-1';
+import {campaignState,weaponBonus} from './campaign.mjs?v=tong-yin-mian-2';
+import {heroSkill} from './skills.mjs?v=tong-yin-mian-2';
+import {heroesForLevel,STAGES,UNLOCKS,FEATURES} from './story.mjs?v=tong-yin-mian-2';
 
 export const SWING={duration:.58,impact:.24,frameTime:.08,frames:6};
 export const DUEL_DURATION=19;
@@ -126,7 +126,9 @@ function spawn(b){
  }
  if(b.level===8&&!boss)for(const general of Object.values(WEATHER_GENERALS))if(b.spawned===general.spawnAt){b.enemies.push({id:b.nextId++,lane:general.lane,x:.94,hp:general.hp,maxHp:general.hp,boss:true,support:true,name:general.name,damage:10,rate:1.8,speed:.022,lastAttack:b.time,flash:0,stunnedUntil:0});b.skillNotice={key:'enemy',text:`${general.title}・${general.name}出陣！${general.skillName}`,until:b.time+4};}
  if(boss){if(b.level>=17&&['withdraw','decoy'].includes(stage.mission))b.enemies[b.enemies.length-1].x=.5;b.bossSpawned=true;b.introPending=true;}else b.spawned++;
- b.nextSpawn=b.time+(hasDirectedWaves(b.mission)&&b.spawned%PASS_WAVE_SIZE===0?7:stage.interval);
+ if(stage.noBoss&&b.mission?.kind==='pass-defense'&&b.spawned===stage.enemyCount){
+  b.bossSpawned=true;b.nextSpawn=Infinity;
+ }else b.nextSpawn=b.time+(hasDirectedWaves(b.mission)&&b.spawned%PASS_WAVE_SIZE===0?7:stage.interval);
  if(boss){b.notice=`${stage.bossName}出陣！`;b.noticeUntil=b.time+4}
 }
 function resolveDuel(b){

@@ -1,4 +1,4 @@
-import {CAMPAIGN_LENGTH} from './campaign-config.mjs?v=tong-yin-mian-1';
+import {CAMPAIGN_LENGTH} from './campaign-config.mjs?v=tong-yin-mian-2';
 
 function recordRule(level){
  switch(level){

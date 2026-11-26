@@ -53,7 +53,8 @@ test('Tongguan, Xingshi and Jiange send four attackers per forecast lane and kee
    assert.equal(b.over,false);
   }
   assert.deepEqual(lanes,[0,total-1,Math.floor(total/2)].flatMap(lane=>Array(4).fill(lane)));
-  b.nextSpawn=b.time;
+  assert.equal(b.bossSpawned,true);
+  assert.equal(b.nextSpawn,Infinity);
   stepBattle(b,.1);
   assert.equal(b.won,true);
  }

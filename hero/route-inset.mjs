@@ -1,4 +1,4 @@
-import {mapPersonSvg} from './characters.mjs?v=tong-yin-mian-1';
+import {mapPersonSvg} from './characters.mjs?v=tong-yin-mian-2';
 
 const standardHeight=304,dualHeight=374;
 

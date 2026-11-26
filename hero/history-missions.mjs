@@ -1,6 +1,6 @@
-import {HISTORICAL_STAGES} from './history-stages.mjs?v=tong-yin-mian-1';
-import {FACTIONS,factionFor} from './factions.mjs?v=tong-yin-mian-1';
-import {OUTPOSTS,RAID_POINTS,OUTPOST_SECONDS,outpostLane,pointCompleted,nextOutpost,canIgniteRaid,igniteRaid,stepOutposts,selectOutpost,passWave,passLane,thirdWaveStarted,hasFireRoutes,canClearFire,clearFireLane,GATE_MAX,hasGate,hasOutposts,channelHazard,channelName,fleetChannel,fleetStatus,canRepairGate,repairGate,selectFleetChannel,siegeLane,stepFleet} from './field-missions.mjs?v=tong-yin-mian-1';
+import {HISTORICAL_STAGES} from './history-stages.mjs?v=tong-yin-mian-2';
+import {FACTIONS,factionFor} from './factions.mjs?v=tong-yin-mian-2';
+import {OUTPOSTS,RAID_POINTS,OUTPOST_SECONDS,outpostLane,pointCompleted,nextOutpost,canIgniteRaid,igniteRaid,stepOutposts,selectOutpost,passWave,passLane,thirdWaveStarted,hasFireRoutes,canClearFire,clearFireLane,GATE_MAX,hasGate,hasOutposts,channelHazard,channelName,fleetChannel,fleetStatus,canRepairGate,repairGate,selectFleetChannel,siegeLane,stepFleet} from './field-missions.mjs?v=tong-yin-mian-2';
 import {PEACH_HEROES} from './hero-base.mjs?v=passive-feedback-1';
 const defaultRetreatSlots=['liubei','zhangfei'];
 const retreatSlots=battle=>HISTORICAL_STAGES[battle.level-17]?.retreatKeys||defaultRetreatSlots;
@@ -129,7 +129,8 @@ export function historyMissionText(b){const fronts=['','','','三','四','五'][
   return `${prefix} · ${point.name} ${Math.floor(m.positions[target]/OUTPOST_SECONDS*100)}% · ${status}`;
  }
  if(m.kind==='pass-defense'){
-  if(b.spawned>=stage.enemyCount)return '三波已出場 · 清退餘兵，守住關口';
+  if(m.done)return '三波已守住 · 敵軍已清退';
+  if(b.spawned>=stage.enemyCount)return `三波已出場 · 清退剩下的 ${b.enemies.length} 名敵兵`;
   return `第 ${passWave(b)}／3 波 · ${routeName(b,passLane(b))}路來敵 · ${b.paused?'已暫停':'派友軍守住'}`;
  }
  if(m.kind==='naval'){
