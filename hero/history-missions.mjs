@@ -1,5 +1,5 @@
-import {HISTORICAL_STAGES} from './history-stages.mjs?v=changan-bonus-1';
-import {FACTIONS,factionFor} from './factions.mjs?v=changan-bonus-1';
+import {HISTORICAL_STAGES} from './history-stages.mjs?v=changan-bonus-2';
+import {FACTIONS,factionFor} from './factions.mjs?v=changan-bonus-2';
 import {PEACH_HEROES} from './hero-base.mjs?v=passive-feedback-1';
 const defaultRetreatSlots=['liubei','zhangfei'];
 const retreatSlots=battle=>HISTORICAL_STAGES[battle.level-17]?.retreatKeys||defaultRetreatSlots;

@@ -1,6 +1,6 @@
-import {HISTORICAL_STAGES} from './history-stages.mjs?v=changan-bonus-1';
-import {missionText} from './chapter-missions.mjs?v=changan-bonus-1';
-import {retreatPartyNames,retreatPartyLabel,supplyReady} from './history-missions.mjs?v=changan-bonus-1';
+import {HISTORICAL_STAGES} from './history-stages.mjs?v=changan-bonus-2';
+import {missionText} from './chapter-missions.mjs?v=changan-bonus-2';
+import {retreatPartyNames,retreatPartyLabel,supplyReady} from './history-missions.mjs?v=changan-bonus-2';
 const names=['上','中','下'];
 export function missionQuickState(b){
  const m=b.mission;if(!m)return null;const stage=HISTORICAL_STAGES[b.level-17];if(!['supply','withdraw','decoy'].includes(m.kind))return {text:missionText(b),button:m.done?'查看目標':'進行任務'};

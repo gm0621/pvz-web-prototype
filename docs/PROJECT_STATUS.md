@@ -20,6 +20,12 @@ npm run test:hero:engine
 npx playwright test --config=playwright.hero-input.config.js
 ```
 
+## 2026-11-26 《八王之亂外傳：長安西行》流程複查
+
+- 第 168 關「鄴城傳詔」的戰前信封、無障礙路線名稱及戰場地圖統一標示「傳詔使者／傳詔目的地」。第 155、162 關的檄文仍標示「傳檄」。補測第 170、171 關尾聲逐頁讀完後接到下一關，核對第 172 關惠帝被帶往長安及尾聲回主選單。
+- 本機通過 419 項引擎測試、320px／390px 手機 Chromium 與 820px 平板 WebKit 的整章觸控 3 項，以及主篇結局、洛陽風雲和圖鑑回歸 12 項。整章使用隔離存檔、正常敵波和起始軍糧，加快測試時鐘。另以四種尺寸核對六關的戰前及戰場地圖。
+- 第 142 關仍是主篇結局。完成第 166 關後可從主選單自選外傳，舊存檔可續玩。營地、過關存檔重試及第 172 關重玩零軍資均通過。快取版 `changan-bonus-2`，測試設定 `playwright.hero-twenty-nine.config.js`。
+
 ## 2026-11-26 《八王之亂外傳：長安西行》
 
 - 已發布 `d74052d`。正式站手機 Chromium、平板 WebKit 各用正常敵波和起始軍糧完成第 166～172 關及末關重玩；另核對第 166、171 關存檔續玩、第 141～142 關首勝與主篇回顧，四種尺寸的六關戰前、戰場行軍圖，全部 155 張圖鑑頭像及 57 份發布資源。 [正式遊戲](https://gm0621.github.io/pvz-web-prototype/hero/?v=d74052d) · [人物圖鑑](https://gm0621.github.io/pvz-web-prototype/hero/people.html?v=d74052d) · [發布紀錄](https://github.com/gm0621/pvz-web-prototype/actions/runs/45735831850)

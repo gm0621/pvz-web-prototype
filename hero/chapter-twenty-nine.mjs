@@ -1,4 +1,4 @@
-import {lateJinChapter} from './late-jin-chapter.mjs?v=changan-bonus-1';
+import {lateJinChapter} from './late-jin-chapter.mjs?v=changan-bonus-2';
 
 const source=(title,path)=>({title,url:'https://zh.wikisource.org/zh-hant/'+path});
 const hui=source('《晉書》・惠帝紀','晉書/卷004');
@@ -21,7 +21,7 @@ export const TWENTY_NINTH_CHAPTER=lateJinChapter(29,[
  },
  {
   name:'鄴城傳詔',year:304,origin:'ye',place:'luoyangPalace',shift:true,factionLabel:'洛陽接令隊',campBanner:'信',
-  leader:'司馬穎',guest:'司馬覃',opponent:'羊獻容',mapMessenger:true,mapLeaderRole:'鄴城發令',mapOpponentRole:'宮中受命',historyCast:['司馬穎','司馬覃','羊獻容'],
+  leader:'司馬穎',guest:'司馬覃',opponent:'羊獻容',mapMessenger:'傳詔',mapLeaderRole:'鄴城發令',mapOpponentRole:'宮中受命',historyCast:['司馬穎','司馬覃','羊獻容'],
   mission:'dispatch',scene:'supply-road',enemyArmy:'鄴洛傳令',successTitle:'鄴城消息送達',
   history:'司馬穎在鄴城掌權。羊獻容被廢去皇后身分，太子司馬覃也被免去太子身分。司馬穎受封為皇太弟，也就是以皇帝弟弟的身分排在繼位的第一位。',
   briefing:'讓三隊使者走有隊伍照應的路，把鄴城的消息送到洛陽。',

@@ -1,4 +1,4 @@
-import {mapPersonSvg} from './characters.mjs?v=changan-bonus-1';
+import {mapPersonSvg} from './characters.mjs?v=changan-bonus-2';
 
 const standardHeight=304,dualHeight=374;
 
@@ -23,11 +23,11 @@ function location(point,name,goal,side,role=goal?'終點':'起點'){
 }
 
 // This inset preserves bearings and emphasises the active route. Spacing is schematic.
-export function routeInsetSvg(from,to,people,showOpponent,mini,{mapOpponentRole='對陣',mapStationRole='議事地',mapLeaderRole='我軍',mapMessenger=false}={},secondary){
+export function routeInsetSvg(from,to,people,showOpponent,mini,{mapOpponentRole='對陣',mapStationRole='議事地',mapLeaderRole='我軍',mapMessenger}={},secondary){
  const showSecondary=!mini&&!!secondary,height=showSecondary?dualHeight:standardHeight;
  const {origin,destination,end,viewBox}=routeInset(from,to,showSecondary);
  const stationary=origin.x===destination.x&&origin.y===destination.y;
- const routeLabel=stationary?`${to.name}・${mapStationRole}位置示意`:`${from.name}到${to.name}的${mapMessenger?'使者路線':'行軍方位'}示意`;
+ const routeLabel=stationary?`${to.name}・${mapStationRole}位置示意`:`${from.name}到${to.name}的${mapMessenger?`${mapMessenger}使者路線`:'行軍方位'}示意`;
  const mapLabel=showSecondary?`${routeLabel}，另一路由${secondary.name}到${to.name}`:routeLabel;
  const angle=Math.atan2(destination.y-origin.y,destination.x-origin.x)*180/Math.PI;
  const split=Math.abs(destination.x-origin.x)<150?Math.sign(destination.x-origin.x)||1:0;
@@ -59,7 +59,7 @@ export function routeInsetSvg(from,to,people,showOpponent,mini,{mapOpponentRole=
  <text class="route-inset-army-name" x="${mapMessenger?84:24}" y="291">${people.leader.name}</text>
  ${showOpponent?`<text class="route-inset-opponent-role" x="283" y="266">${mapOpponentRole}</text>${mapPersonSvg(people.opponent,'map-opponent',251,271)}`:''}
  ${mapMessenger?`<g class="map-messenger" transform="translate(${end.x} ${end.y})">
-  <title>傳檄使者</title><circle r="18"/><rect x="-11" y="-8" width="22" height="16" rx="2"/>
+  <title>${mapMessenger}使者</title><circle r="18"/><rect x="-11" y="-8" width="22" height="16" rx="2"/>
   <path d="M-10-6 0 1 10-6"/>
  </g>`:mapPersonSvg(people.leader,'map-leader',end.x,end.y)}`}
  ${showSecondary?`<g class="route-inset-secondary">

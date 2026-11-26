@@ -3,7 +3,7 @@ const {test,expect}=require('@playwright/test');
 const saveKey='heroLegendProgress_v1';
 const stages=[
  {name:'洛陽清點',route:'洛陽宮城',leader:'司馬穎',opponent:'司馬衷',guest:'司馬穎',sites:['傷員名冊','糧冊','公文'],end:'回到自己原先駐守的鄴城'},
- {name:'鄴城傳詔',route:'鄴城 → 洛陽宮城',leader:'司馬穎',opponent:'羊獻容',guest:'司馬覃',messenger:true,end:'準備奉惠帝北上'},
+ {name:'鄴城傳詔',route:'鄴城 → 洛陽宮城',leader:'司馬穎',opponent:'羊獻容',guest:'司馬覃',messenger:'傳詔',end:'準備奉惠帝北上'},
  {name:'河橋護駕',route:'洛陽宮城 → 河橋',leader:'司馬衷',opponent:'司馬越',guest:'嵇紹',supply:true,end:'兩軍將在蕩陰相遇'},
  {name:'蕩陰撤離',route:'河橋 → 蕩陰',leader:'司馬衷',opponent:'石超',guest:'司馬越',withdraw:true,end:'嵇紹護駕遇害，惠帝後來被帶往鄴城'},
  {name:'鄴城返洛',route:'鄴城 → 洛陽',leader:'司馬衷',opponent:'王浚',guest:'司馬穎',end:'張方掌控朝政'},
@@ -161,7 +161,11 @@ test('166 returns home and Changan plays through on touch with original enemies 
   const departure=await traveler.getAttribute('transform');
   await advance(4400);
   await expect(page.locator('#journeyIntro')).toHaveAttribute('data-arrived','true');
-  if(stage.messenger)await expect(traveler).not.toHaveAttribute('transform',departure);
+  if(stage.messenger){
+   await expect(traveler).not.toHaveAttribute('transform',departure);
+   await expect(traveler.locator('title')).toHaveText(`${stage.messenger}使者`);
+   await expect(page.locator('#journeyIntro .route-inset')).toHaveAttribute('aria-label',new RegExp(`${stage.messenger}使者`));
+  }
   await tap('#storyMore');
   await tap('.history-toggle');
   await expect(page.locator('#historyLesson [aria-current=step]')).toHaveText(`304 · ${stage.name}`);
@@ -176,7 +180,14 @@ test('166 returns home and Changan plays through on touch with original enemies 
   const mapLeader=map.locator(stage.messenger?'.map-sender':'.map-leader');
   await expect(mapLeader).toHaveAttribute('data-person',stage.leader);
   await expect(mapLeader.locator('image')).toHaveAttribute('href',expressionPortrait(stage.leader));
-  await expect(map.locator('.map-opponent')).toHaveAttribute('data-person',stage.opponent);
+  const opponent=map.locator('.map-opponent');
+  await expect(opponent).toHaveAttribute('data-person',stage.opponent);
+  await expect(opponent.locator('image')).toHaveAttribute('href',expressionPortrait(stage.opponent));
+  if(stage.messenger){
+   await expect(map.locator('.map-messenger title')).toHaveText(`${stage.messenger}使者`);
+   await expect(page.locator('#campaignMapLocation')).toHaveText('傳詔目的地：洛陽宮城');
+   await expect(page.locator('#campaignMapDetail')).toContainText('信封表示傳詔使者。');
+  }
   await expect(page.locator('#pauseBtn')).toHaveAttribute('aria-pressed','true');
   await tap('#campaignMapClose');
   if(await page.locator('#battleMenu').isVisible())await tap('#battleMenuClose');
@@ -209,7 +220,8 @@ test('166 returns home and Changan plays through on touch with original enemies 
    await tap('#campShopBack');
   }
   await tap('#campContinue');
-  if(index===5)await epilogue('回主選單 →',stage.end);
+  if(level===172)await epilogue('回主選單 →',stage.end);
+  else if(level===170||level===171)await epilogue('下一段故事 →',stage.end);
   else await tap('#storySkip');
  }
 

@@ -9,7 +9,7 @@ const adaptation='行軍圖標示史書地名和遊戲示意路線。傳檄、�
 const stages=[
  {
   name:'許昌傳檄',year:301,origin:'jinXuchang',place:'ye',shift:true,factionLabel:'齊王傳令隊',campBanner:'齊',
-  leader:'司馬冏',guest:'司馬穎',opponent:'司馬穎',mapLeaderRole:'發出檄文',mapMessenger:true,mapOpponentRole:'起兵響應',historyCast:['司馬冏','司馬穎','盧志','司馬顒','司馬倫'],
+  leader:'司馬冏',guest:'司馬穎',opponent:'司馬穎',mapLeaderRole:'發出檄文',mapMessenger:'傳檄',mapOpponentRole:'起兵響應',historyCast:['司馬冏','司馬穎','盧志','司馬顒','司馬倫'],
   mission:'dispatch',scene:'supply-road',enemyArmy:'許昌傳令',successTitle:'討趙消息送達',
   history:'趙王司馬倫奪取皇位後，鎮守許昌的齊王司馬冏起兵討伐他。司馬冏派人傳送檄文，也就是號召各地出兵的公開文書。成都王司馬穎當時駐在鄴城，聽了盧志的建議也起兵響應。',
   briefing:'接應三隊使者，把齊王發出的消息送出去。可改走有友軍照應的路線。',

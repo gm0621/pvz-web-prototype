@@ -1,4 +1,4 @@
-import {lateJinChapter} from './late-jin-chapter.mjs?v=changan-bonus-1';
+import {lateJinChapter} from './late-jin-chapter.mjs?v=changan-bonus-2';
 
 const source=(title,path)=>({title,url:`https://zh.wikisource.org/zh-hant/${path}`});
 const hui=source('《晉書》・惠帝紀','晉書/卷004');
@@ -21,7 +21,7 @@ const stages=[
  },
  {
   name:'河間傳檄',year:302,origin:'jinChangan',place:'luoyang',shift:true,factionLabel:'長安傳檄隊',campBanner:'河',
-  leader:'司馬顒',guest:'李含',opponent:'司馬乂',mapLeaderRole:'自長安發檄',mapOpponentRole:'檄文點名',mapMessenger:true,historyCast:['司馬顒','李含','司馬冏','司馬乂'],
+  leader:'司馬顒',guest:'李含',opponent:'司馬乂',mapLeaderRole:'自長安發檄',mapOpponentRole:'檄文點名',mapMessenger:'傳檄',historyCast:['司馬顒','李含','司馬冏','司馬乂'],
   mission:'dispatch',scene:'supply-road',enemyArmy:'關中傳令',successTitle:'河間檄文送達',
   history:'李含從洛陽到長安，向河間王司馬顒建議討伐齊王。司馬顒發出檄文，邀其他宗王出兵，還點名長沙王司馬乂在洛陽響應。',
   briefing:'讓三隊使者沿有友軍照應的路線送信，傳達河間王的消息。',
