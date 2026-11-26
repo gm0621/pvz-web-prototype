@@ -103,7 +103,7 @@ for(const stage of stages)test(`stage ${stage.level} clears and replays from an 
      await tap('#missionDrawerClose');
     }
     await expect(page.locator('#lives')).toHaveText('城門 100／100');
-    await expect(objective).toContainText('修補剩 1 次');
+    await expect(page.locator('#missionMessage')).toContainText('還可修 1 次');
     repaired=true;
    }
    if(level===99&&!second&&await secured.count()===1){
