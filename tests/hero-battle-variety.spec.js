@@ -82,9 +82,13 @@ for(const {level,title,terrain,record,first=0} of levels)test(`${level} ${level=
    const objective=await page.locator('#missionQuick p').textContent();
    if(level===45&&!choseSecond&&objective.includes('城外據點 1／2')){
     await expect(page.locator('.outpost-marker[data-captured=true]')).toHaveText(first===0?'箭樓 ✓':'補給點 ✓');
-    if(delaySecond)await advance(26000);
-    await chooseOutpost(1-first);
-    choseSecond=true;
+    // Delay after combat so clearing the same enemy waves cannot hide the time difference.
+    const wavesCleared=/已全數出現|敵將已出陣/.test(await page.locator('#waveText').textContent())&&await page.locator('#units .enemy').count()===0;
+    if(!delaySecond||wavesCleared){
+     if(delaySecond)await advance(12000);
+     await chooseOutpost(1-first);
+     choseSecond=true;
+    }
    }
    if(level===124){
     const wave=objective.match(/第 (\d)／3 波 · (.)路來敵/);
@@ -163,6 +167,8 @@ for(const {level,title,terrain,record,first=0} of levels)test(`${level} ${level=
   await replayLevel();
   await play(true);
   await expect(page.locator('#resultRecordBest')).toHaveText(`個人最佳 · ${improved} 秒`);
+  const slower=Number((await page.locator('#resultRecordCurrent').textContent()).match(/\d+/)[0]);
+  expect(slower).toBeGreaterThan(improved);
   await expect(page.locator('#resultEarned')).toHaveText('+0');
   progress=await save();
   expect(progress).toMatchObject({completed:level,coins:230,weapons:{guanyu:2},inventory:{grain:2},battleRecords:{[level]:improved}});

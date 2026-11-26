@@ -8,7 +8,7 @@
 
 ## Obsidian 尚未同步時，從這裡接手
 
-1. **確認版本。** 在剛拉下來的 `main` 執行 `git status --short --branch`、`git log -1 --oneline`。`git log` 顯示目前 checkout 的提交。正式遊戲版本另看下方最新一筆含「已發布」及 Pages 工作的功能紀錄。截至 2026-11-26，最新已驗證的正式遊戲版本為 `1853d4d`（主篇 142 關，《西晉後日談》18 關，《洛陽風雲》6 關，《長安西行》6 關）。 [正式遊戲](https://gm0621.github.io/pvz-web-prototype/hero/?v=1853d4d) · [人物圖鑑](https://gm0621.github.io/pvz-web-prototype/hero/people.html?v=1853d4d) · [發布紀錄](https://github.com/gm0621/pvz-web-prototype/actions/runs/45743796760)
+1. **確認版本。** 在剛拉下來的 `main` 執行 `git status --short --branch`、`git log -1 --oneline`。`git log` 顯示目前 checkout 的提交。正式遊戲版本另看下方最新一筆含「已發布」及 Pages 工作的功能紀錄。截至 2026-11-26，最新已驗證的正式遊戲版本為 `ae0507b`（主篇 142 關，《西晉後日談》18 關，《洛陽風雲》6 關，《長安西行》6 關）。 [正式遊戲](https://gm0621.github.io/pvz-web-prototype/hero/?v=ae0507b) · [人物圖鑑](https://gm0621.github.io/pvz-web-prototype/hero/people.html?v=ae0507b) · [發布紀錄](https://github.com/gm0621/pvz-web-prototype/actions/runs/45748836076)
 2. **安裝並做基本驗證。** 在專案根目錄用 Node.js 20 以上與 npm。執行下列指令可驗證引擎、桌面滑鼠／鍵盤及手機平板觸控。更多測試和本機預覽見 [開發指南](DEVELOPMENT.md)。Playwright 會啟動 4174 埠的測試服務，先關閉佔用該埠的手動預覽。
 3. **開工前看目前進度。** 先讀 [AGENTS.md](../AGENTS.md) 的「重要約束」及下方與任務相關的紀錄。英雄演義是獨立的 `/hero/` 遊戲，關卡上限見 `hero/campaign-config.mjs`。正式存檔 `heroLegendProgress_v1` 與本機、線上跳關測試的存檔分開。跨電腦時瀏覽器存檔和未提交的檔案需另外移轉。保留滑鼠、鍵盤與觸控操作，也要保留首勝軍資、重玩及暫停的既有規則。 [跳關工具和存檔說明](hero-local-testing.md)
 4. **繼續當次工作。** 依使用者的新需求從最新 `main` 開分支，保留原工作區修改。完成後把變更、實際測試結果、版本與注意事項記在本檔。Obsidian 未同步時註明待補，能讀取後再更新。正式發布依當次授權。
@@ -19,6 +19,12 @@ npx playwright install chromium webkit
 npm run test:hero:engine
 npx playwright test --config=playwright.hero-input.config.js
 ```
+
+## 2026-11-26 四項戰鬥玩法與個人成績複查
+
+- 已發布 `ae0507b`。在正式站的 320px、390px 手機 Chromium 和 820px 平板 WebKit，各用正常敵波通過第 45 關兩種據點順序、第 87 關預警到燃燒、開路一次與撤離、第 124 關上／下／中三波及暫停恢復。共 12 項觸控測試通過，並核對舊存檔的關卡、軍資、兵器、道具，以及重整後個人最佳。 [正式遊戲](https://gm0621.github.io/pvz-web-prototype/hero/?v=ae0507b) · [人物圖鑑](https://gm0621.github.io/pvz-web-prototype/hero/people.html?v=ae0507b) · [發布紀錄](https://github.com/gm0621/pvz-web-prototype/actions/runs/45748836076)
+- 第 45 關把城外據點標籤移到各路上方，避免窄螢幕任務卡遮住補給點。重玩測試依序建立紀錄、以較快成績更新、以較慢成績保留最佳，重玩仍為零軍資。
+- 本機 425 項引擎測試及 12 項觸控測試通過，另核對平手、不改善和較高剩餘防線。正式站兩份遊戲資源與提交內容一致。樣式版本 `battle-variety-2`，複查指令 `npx playwright test --config=playwright.hero-battle-variety.config.js`。
 
 ## 2026-11-26 攻城、火路撤離、分波守關與個人成績
 
