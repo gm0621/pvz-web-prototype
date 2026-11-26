@@ -1,7 +1,7 @@
-import {HISTORICAL_STAGES} from './history-stages.mjs?v=historical-battles-1';
-import {missionText} from './chapter-missions.mjs?v=historical-battles-1';
-import {retreatPartyNames,retreatPartyLabel,supplyReady} from './history-missions.mjs?v=historical-battles-1';
-import {hasFireRoutes} from './field-missions.mjs?v=historical-battles-1';
+import {HISTORICAL_STAGES} from './history-stages.mjs?v=historical-battles-2';
+import {missionText} from './chapter-missions.mjs?v=historical-battles-2';
+import {retreatPartyNames,retreatPartyLabel,supplyReady} from './history-missions.mjs?v=historical-battles-2';
+import {hasFireRoutes} from './field-missions.mjs?v=historical-battles-2';
 const names=['上','中','下'];
 export function missionQuickState(b){
  const m=b.mission;if(!m)return null;

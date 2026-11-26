@@ -1,4 +1,4 @@
-import {CAMPAIGN_LENGTH} from './campaign-config.mjs?v=historical-battles-1';
+import {CAMPAIGN_LENGTH} from './campaign-config.mjs?v=historical-battles-2';
 
 function recordRule(level){
  switch(level){

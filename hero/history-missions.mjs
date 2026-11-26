@@ -1,6 +1,6 @@
-import {HISTORICAL_STAGES} from './history-stages.mjs?v=historical-battles-1';
-import {FACTIONS,factionFor} from './factions.mjs?v=historical-battles-1';
-import {OUTPOSTS,OUTPOST_SECONDS,outpostLane,nextOutpost,stepOutposts,selectOutpost,passWave,passLane,hasFireRoutes,canClearFire,clearFireLane,GATE_MAX,channelHazard,channelName,fleetChannel,fleetStatus,canRepairGate,repairGate,selectFleetChannel,siegeLane,stepFleet} from './field-missions.mjs?v=historical-battles-1';
+import {HISTORICAL_STAGES} from './history-stages.mjs?v=historical-battles-2';
+import {FACTIONS,factionFor} from './factions.mjs?v=historical-battles-2';
+import {OUTPOSTS,OUTPOST_SECONDS,outpostLane,nextOutpost,stepOutposts,selectOutpost,passWave,passLane,hasFireRoutes,canClearFire,clearFireLane,GATE_MAX,channelHazard,channelName,fleetChannel,fleetStatus,canRepairGate,repairGate,selectFleetChannel,siegeLane,stepFleet} from './field-missions.mjs?v=historical-battles-2';
 import {PEACH_HEROES} from './hero-base.mjs?v=passive-feedback-1';
 const defaultRetreatSlots=['liubei','zhangfei'];
 const retreatSlots=battle=>HISTORICAL_STAGES[battle.level-17]?.retreatKeys||defaultRetreatSlots;

@@ -1,4 +1,4 @@
-import {mapPersonSvg} from './characters.mjs?v=historical-battles-1';
+import {mapPersonSvg} from './characters.mjs?v=historical-battles-2';
 
 const standardHeight=304,dualHeight=374;
 
