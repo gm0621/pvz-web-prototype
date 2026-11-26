@@ -1,3 +1,5 @@
+import {lateJinChapter} from './late-jin-chapter.mjs?v=changan-bonus-1';
+
 const source=(title,path)=>({title,url:`https://zh.wikisource.org/zh-hant/${path}`});
 const hui=source('《晉書》・惠帝紀','晉書/卷004');
 const qi=source('《晉書》・齊王冏傳','晉書/卷059#齊武閔王冏');
@@ -5,7 +7,6 @@ const changsha=source('《晉書》・長沙王乂傳','晉書/卷059#長沙厲�
 const hejian=source('《晉書》・河間王顒傳','晉書/卷059#河間王顒');
 const zhang=source('《晉書》・張方傳','晉書/卷060#張方');
 const lu=source('《晉書》・陸機傳','晉書/卷054#陸機');
-const adaptation='行軍圖標示史書地點和遊戲示意路線。傳令、守備、整備、撤離及營地對話為遊戲改編。';
 
 const stages=[
  {
@@ -70,31 +71,4 @@ const stages=[
  }
 ];
 
-export const TWENTY_EIGHTH_CHAPTER=stages.map((stage,index)=>({
- name:stage.name,year:stage.year,chapter:28,number:index+1,faction:'cao',factionLabel:stage.factionLabel||'西晉軍',place:stage.name,campBanner:stage.campBanner||'晉',
- mapPlace:stage.place,originPlace:stage.origin,detailedRoute:true,viaPlaces:[],viewpointShift:!!stage.shift,historyCast:stage.historyCast,
- leaderName:stage.leader,opponentName:stage.opponent,mapOpponent:stage.mapOpponent??!!stage.opponent,matchupLabel:stage.matchupLabel,mapOpponentRole:stage.mapOpponentRole,mapStationRole:stage.mapStationRole,mapLeaderRole:stage.mapLeaderRole,mapMessenger:stage.mapMessenger,mapSecondaryOrigin:stage.mapSecondaryOrigin,
- scene:`./assets/scenes/${stage.scene}.jpg`,mission:stage.mission,missionTitle:stage.missionTitle,missionSites:stage.missionSites,
- successTitle:stage.successTitle,successRibbon:'戰 事 記 錄 ・ 回 營 整 備',
- ...(stage.mission==='withdraw'?{retreatKeys:[]}:{}),
- noBoss:true,bossName:stage.enemyArmy,bossHp:0,enemyArmy:stage.enemyArmy,enemyCount:stage.enemyCount??0,interval:3.8,
- lead:stage.history,history:stage.history,adaptation,note:adaptation,bossTip:stage.briefing,
- novel:[['說書人',stage.history],[stage.guide||stage.leader,stage.briefing]],
- opening:[['說書人',stage.history],[stage.guide||stage.leader,stage.briefing],['說書人',adaptation]],
- ending:[['說書人',stage.ending],[stage.guest,stage.camp]],campLine:stage.ending,victory:stage.ending,
- quiz:{kind:'史書小偵探',speaker:stage.guest,title:stage.question,scene:stage.history,question:stage.question,choices:stage.choices,answer:0,hint:stage.history,reply:stage.history},
- campTalkPrompts:{
-  guanyu:{speaker:stage.guest,title:stage.guest,hint:'聊聊這一關'},
-  zhangfei:{speaker:stage.guest,title:'後續消息',hint:'看看後來怎麼了'}
- },
- campTalk:{guanyu:[`${stage.guest}：${stage.camp}`],zhangfei:[`${stage.guest}：${stage.ending}`]},
- campRetryPrompts:{
-  guanyu:{speaker:stage.guest,title:stage.guest,hint:'先照應傷兵'},
-  zhangfei:{speaker:stage.guest,title:'再試一次',hint:'看看任務要點'}
- },
- campRetryTalk:{
-  guanyu:[`${stage.guest}：先清點隊伍，再整備出發。`],
-  zhangfei:[`${stage.guest}：${stage.briefing}`]
- },
- references:stage.refs
-}));
+export const TWENTY_EIGHTH_CHAPTER=lateJinChapter(28,stages);

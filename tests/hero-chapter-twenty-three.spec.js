@@ -145,7 +145,7 @@ test('stage 130 continues through the end of Wei and keeps campaign saves on tou
  await page.clock.pauseAt(await page.evaluate(()=>Date.now()+700));
  await expect(page.locator('#homeProgress')).toContainText('130 / 142');
  await expect(page.locator('#homeChapterCount')).toHaveText('主篇 142 關');
- await expect(page.locator('#homeStageCount')).toHaveText('番外 24 關');
+ await expect(page.locator('#homeStageCount')).toHaveText('番外 30 關');
  await expect(page.locator('#chapterDots [data-level="132"]')).toBeDisabled();
  await choose(22,130);
  await expect(page.locator('#storyTitle')).toHaveText('成都受降');

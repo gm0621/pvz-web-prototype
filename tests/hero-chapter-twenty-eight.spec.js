@@ -365,7 +365,7 @@ test('stage 160 unlocks the optional Luoyang campaign and keeps campaign saves o
  expect(await readSave()).toMatchObject(cleared);
 
  await page.goto('/hero/people.html',{waitUntil:'domcontentloaded'});
- for(const [query,name,levels] of [['士度','司馬乂',[162,163,164,165,166]],['子回','鄭方',[161]],['李含','李含',[162,164]],['士衡','陸機',[165]],['張方','張方',[165,166]],['元超','司馬越',[166]],['董艾','董艾',[162,163]]]){
+ for(const [query,name,levels] of [['士度','司馬乂',[162,163,164,165,166,167]],['子回','鄭方',[161]],['李含','李含',[162,164]],['士衡','陸機',[165]],['張方','張方',[165,166,171,172]],['元超','司馬越',[166,168,169,170]],['董艾','董艾',[162,163]]]){
   await page.locator('#peopleSearch').fill(query);
   const card=page.locator(`[data-person="${name}"]`);
   await expect(card.locator('.stage-pills span')).toHaveText(levels.map(level=>new RegExp(`第 ${level} 關`)));

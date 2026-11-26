@@ -35,7 +35,7 @@ test('the princes campaign extends stage 154 saves and preserves the historical 
  assert.equal(progress.armyWeapons.cao.guanyu,1);
  assert.equal(progress.armyWeapons.sun.zhangfei,2);
  assert.equal(progress.inventory.grain,2);
- assert.equal(rewardVictory(progress,167),0);
+ assert.equal(rewardVictory(progress,173),0);
  assert.match(chapter[2].victory,/前鋒吃了敗仗/);
  assert.match(chapter[3].victory,/湨水得勝並渡河/);
  assert.match(chapter[4].victory,/復位.*司馬倫被賜死/);
@@ -43,8 +43,8 @@ test('the princes campaign extends stage 154 saves and preserves the historical 
  assert.match(campaignMapSvg(159),/route-inset-side[^>]*>回宮復位<\/text>/);
  const portraits=new Set();
  for(const [alias,name,levels] of [
-  ['景治','司馬冏',[155,156,160,161,162,163]],['成都王','司馬穎',[155,157,158,160,164,165]],['子道','盧志',[155,157,158,160]],
-  ['左衛將軍','王輿',[159]],['征虜將軍','張泓',[156]],['孫秀之子','孫會',[157,158]],['河間王','司馬顒',[155,162,164,165]]
+  ['景治','司馬冏',[155,156,160,161,162,163]],['成都王','司馬穎',[155,157,158,160,164,165,167,168,169,170,171,172]],['子道','盧志',[155,157,158,160]],
+  ['左衛將軍','王輿',[159]],['征虜將軍','張泓',[156]],['孫秀之子','孫會',[157,158]],['河間王','司馬顒',[155,162,164,165,172]]
  ]){
   const entry=searchPeople(alias).find(person=>person.name===name);
   assert.ok(entry,name);

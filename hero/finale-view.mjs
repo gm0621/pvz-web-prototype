@@ -1,5 +1,5 @@
-import {STORY_PEOPLE} from './characters.mjs?v=luoyang-bonus-1';
-import {paintPortrait} from './factions.mjs?v=luoyang-bonus-1';
+import {STORY_PEOPLE} from './characters.mjs?v=changan-bonus-1';
+import {paintPortrait} from './factions.mjs?v=changan-bonus-1';
 
 const recap=[
  {title:'桃園與黃巾',people:['劉備','關羽','張飛'],text:'故事從桃園的約定開始。劉備、關羽和張飛結伴踏上征途，在黃巾戰亂中互相照應。'},

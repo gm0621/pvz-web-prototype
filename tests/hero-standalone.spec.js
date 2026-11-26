@@ -7,7 +7,7 @@ test('hero game has its own small home and loads no zombie, account or shop syst
  await open(page);await expect(page).toHaveTitle('英雄演義｜桃園同心');
  await expect(page.locator('#home')).toContainText('桃園結義');
  await expect(page.locator('#chapterPicker')).not.toHaveAttribute('open','');await expect(page.locator('#visitCamp')).toHaveCount(0);
- await expect(page.locator('#chapterDots button')).toHaveCount(166);
+ await expect(page.locator('#chapterDots button')).toHaveCount(172);
  expect(requests.some(url=>/supabase|js\/app.js|js\/cloud.js|js\/shop.js|js\/romance-game.js/.test(url))).toBe(false);
  expect(await page.evaluate(()=>typeof currentUser)).toBe('undefined');
  expect(errors).toEqual([]);

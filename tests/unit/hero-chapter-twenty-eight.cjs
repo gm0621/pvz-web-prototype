@@ -35,7 +35,7 @@ test('the optional Luoyang campaign extends stage 160 saves and preserves the hi
  assert.equal(progress.armyWeapons.cao.guanyu,1);
  assert.equal(progress.armyWeapons.sun.zhangfei,2);
  assert.equal(progress.inventory.grain,2);
- assert.equal(rewardVictory(progress,167),0);
+ assert.equal(rewardVictory(progress,173),0);
  assert.match(chapter[2].victory,/司馬冏戰敗遇害/);
  assert.match(chapter[3].victory,/司馬乂仍在洛陽輔政/);
  assert.match(chapter[4].victory,/圍城卻仍未解除/);
@@ -44,8 +44,8 @@ test('the optional Luoyang campaign extends stage 160 saves and preserves the hi
  assert.match(campaignMapSvg(165),/route-inset-secondary[\s\S]*>長安<\/text>[\s\S]*>洛陽<\/text>/);
  const portraits=new Set();
  for(const [alias,name,levels] of [
-  ['士度','司馬乂',[162,163,164,165,166]],['子回','鄭方',[161]],['李含','李含',[162,164]],
-  ['士衡','陸機',[165]],['張方','張方',[165,166]],['元超','司馬越',[166]],['董艾','董艾',[162,163]]
+  ['士度','司馬乂',[162,163,164,165,166,167]],['子回','鄭方',[161]],['李含','李含',[162,164]],
+  ['士衡','陸機',[165]],['張方','張方',[165,166,171,172]],['元超','司馬越',[166,168,169,170]],['董艾','董艾',[162,163]]
  ]){
   const entry=searchPeople(alias).find(person=>person.name===name);
   assert.ok(entry,name);

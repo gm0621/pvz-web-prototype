@@ -1,7 +1,7 @@
 #finale{max-width:750px;margin-inline:auto;padding-block:18px 32px;color:#243e32}
 #finale .finale-frame{padding:clamp(16px,4vw,32px);border:1px solid #b4a075;border-radius:18px;background:#f9f1db;box-shadow:0 14px 36px #3d372218;text-align:center}
 #finale header{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:14px}
-#finale button,#finale .quiet-button,#finale .people-link,#homeExtra,#homeFinale,#homeLuoyang{min-height:44px}
+#finale button,#finale .quiet-button,#finale .people-link,#homeExtra,#homeFinale,#homeLuoyang,#homeChangan{min-height:44px}
 #finale h2{font-family:"Kaiti TC","STKaiti",serif;font-size:clamp(28px,5vw,44px);margin:8px 0 14px;text-wrap:balance}
 #finale small{color:#635538}
 .finale-portraits{display:flex;justify-content:center;align-items:start;gap:clamp(5px,2vw,20px)}
@@ -14,8 +14,8 @@
 #finaleComplete .finale-frame{background:linear-gradient(168deg,#254a3d,#142e26);color:#fff1cd;border-color:#a78d53}
 #finaleComplete .finale-frame p{color:#f6e8c7}
 #finaleComplete .finale-actions{margin-top:16px}
-#homeExtra,#homeFinale,#homeLuoyang{margin-top:8px}
-#homeExtraProgress,#homeLuoyangProgress{margin:10px 0 0;font-size:13px}
+#homeExtra,#homeFinale,#homeLuoyang,#homeChangan{margin-top:8px}
+#homeExtraProgress,#homeLuoyangProgress,#homeChanganProgress{margin:10px 0 0;font-size:13px}
 #chapterTabs{display:grid;gap:10px}
 .chapter-tab-group>div{display:flex;gap:8px;overflow:auto;padding:4px}
 .chapter-tab-group>strong{display:block;margin:4px 6px;color:#536553;font-size:13px}

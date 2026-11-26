@@ -1,7 +1,7 @@
-import {routeInset,routeInsetSvg} from './route-inset.mjs?v=luoyang-bonus-1';
-import {stagePeople,mapPersonSvg,renderMatchup} from './characters.mjs?v=luoyang-bonus-1';
-import {stageFactionTitle} from './factions.mjs?v=luoyang-bonus-1';
-import {HISTORICAL_STAGES} from './history-stages.mjs?v=luoyang-bonus-1';
+import {routeInset,routeInsetSvg} from './route-inset.mjs?v=changan-bonus-1';
+import {stagePeople,mapPersonSvg,renderMatchup} from './characters.mjs?v=changan-bonus-1';
+import {stageFactionTitle} from './factions.mjs?v=changan-bonus-1';
+import {HISTORICAL_STAGES} from './history-stages.mjs?v=changan-bonus-1';
 // Approximate regional placement, not historical borders or a surveyed route.
 export const MAP_PLACES={
  zhuo:{name:'涿郡',modern:'今河北涿州一帶',x:402,y:78},
@@ -138,6 +138,10 @@ Object.assign(westernPlaces,{
 Object.assign(westernPlaces,{
  jinQiCourt:{name:'齊王府',modern:'今河南洛陽一帶・司馬冏府邸區域示意',x:227,y:323},
  jinChangan:{name:'長安',modern:'今陝西西安一帶・西晉關中駐軍區域示意',x:18,y:340}
+});
+Object.assign(westernPlaces,{
+ jinRiverBridge:{name:'河橋',modern:'今河南孟津、孟州間・黃河渡路示意',x:234,y:279},
+ jinTangyin:{name:'蕩陰',modern:'今河南湯陰一帶・蕩陰戰區示意',x:351,y:244}
 });
 Object.assign(MAP_PLACES,westernPlaces);
 STAGE_LOCATIONS.push(...HISTORICAL_STAGES.map(s=>({place:s.mapPlace,detail:`${s.year} 年・${stageFactionTitle(s)}視角。${s.viewpointShift?'此處切換敘事視角，不是上一支軍隊的連續行程。':''}地點為歷史區域示意，並非精確軍事路線。`})));

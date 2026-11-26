@@ -1,8 +1,8 @@
-import {portraitForDisplay} from './portrait-expressions.mjs?v=luoyang-bonus-1';
-import {GENERALS} from './roster.mjs?v=luoyang-bonus-1';
+import {portraitForDisplay} from './portrait-expressions.mjs?v=changan-bonus-1';
+import {GENERALS} from './roster.mjs?v=changan-bonus-1';
 import {WEATHER_GENERALS} from './weather-generals.mjs?v=passive-feedback-1';
-import {HEROES,STAGES,ENEMY_ART,enemyArt} from './story.mjs?v=luoyang-bonus-1';
-import {BLANK_PORTRAIT,FACTIONS,factionFor,enemyPortrait,paintPortrait} from './factions.mjs?v=luoyang-bonus-1';
+import {HEROES,STAGES,ENEMY_ART,enemyArt} from './story.mjs?v=changan-bonus-1';
+import {BLANK_PORTRAIT,FACTIONS,factionFor,enemyPortrait,paintPortrait} from './factions.mjs?v=changan-bonus-1';
 const fifthPortraits=['董卓','王允','荀彧','程昱','陳宮','鮑信'].map((name,i)=>({name,aliases:[name],asset:BLANK_PORTRAIT,atlas:'./assets/portraits/chapter-five.png',atlasRows:2,row:Math.floor(i/3),col:i%3,role:['掌權於洛陽、長安的軍閥','參與誅董卓的朝臣','守住鄄城的曹操軍謀士','協助保全兗州據點的謀士','迎呂布入兗州的謀士','迎曹操領兗州、戰死壽張的盟友'][i]}));
 const sixthPortraits=['漢獻帝','袁術','典韋','曹昂','曹安民','賈詡','郭嘉','荀攸','棗祗'].map((name,i)=>({name,aliases:name==='漢獻帝'?['漢獻帝','劉協']:[name],asset:BLANK_PORTRAIT,atlas:'./assets/portraits/chapter-six.png',row:Math.floor(i/3),col:i%3,role:['東漢皇帝・輾轉遷到許縣','淮南軍閥・197 年稱帝','曹操護衛・宛城遇害','曹操長子・宛城遇害','曹操的侄子・宛城遇害','張繡的謀士・後歸曹操','曹操軍謀士・參與下邳之計','曹操軍謀士・參與下邳之計','推動屯田的官員'][i]}));
 const seventhPortraits=['袁紹','顏良','文醜','許攸','張遼','淳于瓊'].map((name,i)=>({name,aliases:[name],asset:BLANK_PORTRAIT,atlas:'./assets/portraits/chapter-seven.png',atlasRows:2,row:Math.floor(i/3),col:i%3,role:['河北軍閥・官渡敗退','袁紹部將・白馬戰死','袁紹部將・延津戰死','由袁紹轉投曹操的謀士','白馬先鋒・與關羽同戰','袁軍糧屯守將・烏巢戰敗'][i]}));
@@ -11,6 +11,11 @@ const ninthPortraits=["高幹", "袁熙", "田疇", "蹋頓", "公孫康"].map((
 const tenthPortraits=["劉琮", "趙雲", "諸葛亮", "孫權", "周瑜", "魯肅"].map((name,i)=>({name,aliases:[name,...({趙雲:['子龍'],諸葛亮:['孔明'],孫權:['仲謀'],周瑜:['公瑾'],魯肅:['子敬']}[name]||[])],asset:BLANK_PORTRAIT,atlas:'./assets/portraits/chapter-ten.png',atlasRows:2,row:Math.floor(i/3),col:i%3,role:["劉表之子・荊州歸降", "劉備部將・長坂護人", "劉備的謀士・出使孫權", "江東領袖・決定抗曹", "孫權軍統帥・赤壁抗曹", "孫權的謀士・聯絡劉備"][i]}));
 const eleventhPortraits=['馬超','韓遂','許褚','徐晃','曹丕'].map((name,i)=>({name,aliases:[name,...({馬超:['孟起'],韓遂:['文約'],許褚:['仲康'],徐晃:['公明'],曹丕:['子桓']}[name]||[])],asset:BLANK_PORTRAIT,atlas:'./assets/portraits/chapter-eleven.png',atlasRows:2,row:Math.floor(i/3),col:i%3,role:['關中將領・潼關迎戰曹操','關中將領・與馬超聯合','曹操護衛・危急渡河護主','曹操部將・渡河設營','曹操之子・留守鄴城'][i]}));
 export const STORY_PEOPLE=[
+ {name:'羊獻容',aliases:['羊獻容','羊皇后','惠羊后'],asset:'./assets/portraits/yang-xianrong.webp',role:'晉惠帝皇后・在宮廷角力中被廢'},
+ {name:'司馬覃',aliases:['司馬覃','清河王'],asset:'./assets/portraits/sima-qin-jin.webp',role:'西晉清河王・幼年曾任太子'},
+ {name:'嵇紹',aliases:['嵇紹','延祖','嵇侍中'],asset:'./assets/portraits/ji-shao-jin.webp',role:'西晉侍中・蕩陰護駕'},
+ {name:'石超',aliases:['石超'],asset:'./assets/portraits/shi-chao-jin.webp',role:'成都王部將・奉命在蕩陰迎戰'},
+ {name:'王浚',aliases:['王浚','彭祖','幽州王浚'],asset:'./assets/portraits/wang-jun-youzhou.webp',role:'幽州刺史・合兵進逼鄴城'},
  {name:'司馬乂',aliases:['司馬乂','士度','長沙王'],asset:'./assets/portraits/sima-yi-changsha.webp',role:'西晉長沙王・保衛晉惠帝'},
  {name:'鄭方',aliases:['鄭方','子回'],asset:'./assets/portraits/zheng-fang-jin.webp',role:'西晉讀書人・到洛陽勸諫齊王'},
  {name:'李含',aliases:['李含'],asset:'./assets/portraits/li-han-jin.webp',role:'西晉官員・說服河間王討伐齊王'},
@@ -40,7 +45,7 @@ export const STORY_PEOPLE=[
  {name:'陸抗',aliases:['陸抗','幼節'],asset:'./assets/portraits/lu-kang.webp',role:'東吳將領・陸遜之子、守住西陵'},
  {name:'步闡',aliases:['步闡'],asset:'./assets/portraits/bu-chan.webp',role:'東吳西陵守將・反叛並向西晉求援'},
  {name:'杜預',aliases:['杜預','元凱'],asset:'./assets/portraits/du-yu.webp',role:'西晉將領・接掌荊州、進軍江陵'},
- {name:'王濬',aliases:['王濬','王浚','士治'],asset:'./assets/portraits/wang-jun.webp',role:'西晉水軍統帥・率船隊順長江伐吳'},
+ {name:'王濬',aliases:['王濬','王浚','士治'],mentionPattern:/王濬|士治/u,asset:'./assets/portraits/wang-jun.webp',role:'西晉水軍統帥・率船隊順長江伐吳'},
  {name:'孫皓',aliases:['孫皓','元宗','吳末帝'],asset:'./assets/portraits/sun-hao.webp',role:'東吳末代皇帝・在石頭城向王濬投降'},
  {name:'衛瓘',aliases:['衛瓘','伯玉','衞瓘'],asset:'./assets/portraits/wei-guan.webp',role:'魏朝官員・奉命處理鄧艾收押'},
  {name:'胡烈',aliases:['胡烈'],asset:'./assets/portraits/hu-lie.webp',role:'魏將・在成都被鍾會扣住'},

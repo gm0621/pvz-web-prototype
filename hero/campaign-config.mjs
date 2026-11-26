@@ -1,7 +1,9 @@
-export const CAMPAIGN_LENGTH=166;
+export const CAMPAIGN_LENGTH=172;
 export const MAIN_STORY_END=142;
 export const MAIN_STORY_CLEAR='英雄演義・全篇通關';
 export const BONUS_TITLE='西晉後日談';
 export const WESTERN_JIN_END=160;
+export const LUOYANG_END=166;
+export const CHANGAN_BONUS_TITLE='八王之亂外傳：長安西行';
 export const LUOYANG_BONUS_TITLE='八王之亂外傳：洛陽風雲';
-export const CHAPTER_NUMERALS=['','一','二','三','四','五','六','七','八','九','十','十一','十二','十三','十四','十五','十六','十七','十八','十九','二十','二十一','二十二','二十三','二十四','二十五','二十六','二十七','二十八'];
+export const CHAPTER_NUMERALS=['','一','二','三','四','五','六','七','八','九','十','十一','十二','十三','十四','十五','十六','十七','十八','十九','二十','二十一','二十二','二十三','二十四','二十五','二十六','二十七','二十八','二十九'];

@@ -34,7 +34,7 @@ test('Jiange extends a finished Di Dao save with six historical routes and disti
  assert.equal(progress.weapons.guanyu,2);
  assert.equal(progress.inventory.grain,2);
  assert.equal(progress.heroGrowth.caoren.weapon,2);
- assert.equal(rewardVictory(progress,167),0);
+ assert.equal(rewardVictory(progress,173),0);
  assert.match(chapter[0].victory,/段谷戰敗/);
  assert.match(chapter[2].victory,/侯和失利.*留駐沓中/);
  assert.match(chapter[5].victory,/劍閣擋住了鍾會.*鄧艾走陰平/);

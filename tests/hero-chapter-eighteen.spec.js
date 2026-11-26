@@ -83,7 +83,7 @@ test('completed chapter seventeen saves continue through Wuzhang Plains on touch
  await page.clock.pauseAt(await page.evaluate(()=>Date.now()+700));
  await expect(page.locator('#homeProgress')).toContainText('100 / 142');
  await expect(page.locator('#homeChapterCount')).toHaveText('主篇 142 關');
- await expect(page.locator('#homeStageCount')).toHaveText('番外 24 關');
+ await expect(page.locator('#homeStageCount')).toHaveText('番外 30 關');
  await choose(17,100);
  await expect(page.locator('#storyTitle')).toHaveText('武都陰平');
  await controlledBattle();

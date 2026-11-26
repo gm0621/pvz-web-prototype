@@ -1,7 +1,7 @@
 import {skillPresentation,skillArtwork} from './skill-presentation.mjs?v=passive-feedback-1';
-import {ALL_GENERALS} from './roster.mjs?v=luoyang-bonus-1';
-import {paintPortrait} from './factions.mjs?v=luoyang-bonus-1';
-import {hitSound} from './audio.mjs?v=luoyang-bonus-1';
+import {ALL_GENERALS} from './roster.mjs?v=changan-bonus-1';
+import {paintPortrait} from './factions.mjs?v=changan-bonus-1';
+import {hitSound} from './audio.mjs?v=changan-bonus-1';
 const seen=new WeakMap();
 export function renderSkillCutin(b){
  let root=document.getElementById('skillCutin'),fx=document.getElementById('skillBurst');

@@ -84,7 +84,7 @@ test('stage 106 continues through Xingshi and keeps campaign saves on touch scre
  await page.clock.pauseAt(await page.evaluate(()=>Date.now()+700));
  await expect(page.locator('#homeProgress')).toContainText('106 / 142');
  await expect(page.locator('#homeChapterCount')).toHaveText('主篇 142 關');
- await expect(page.locator('#homeStageCount')).toHaveText('番外 24 關');
+ await expect(page.locator('#homeStageCount')).toHaveText('番外 30 關');
  await choose(18,106);
  await expect(page.locator('#storyTitle')).toHaveText('五丈原歸途');
  await controlledBattle();

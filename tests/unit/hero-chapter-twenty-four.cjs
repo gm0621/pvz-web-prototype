@@ -34,7 +34,7 @@ test('the Jin-Wu chapter extends the previous save and preserves both battles at
  assert.equal(progress.armyWeapons.cao.guanyu,1);
  assert.equal(progress.armyWeapons.sun.zhangfei,2);
  assert.equal(progress.inventory.grain,2);
- assert.equal(rewardVictory(progress,167),0);
+ assert.equal(rewardVictory(progress,173),0);
  assert.match(chapter[1].victory,/陸抗拿回西陵，晉軍撤退/);
  assert.match(chapter[4].victory,/西陵落入晉軍手中/);
  assert.match(chapter[5].victory,/孫皓在石頭城向王濬投降/);
@@ -42,7 +42,7 @@ test('the Jin-Wu chapter extends the previous save and preserves both battles at
  const portraits=new Set();
  for(const [alias,name,levels] of [
   ['叔子','羊祜',[137,138,139]],['幼節','陸抗',[137,138,139]],['步闡','步闡',[138]],
-  ['元凱','杜預',[139,141]],['王浚','王濬',[140,141,142]],['吳末帝','孫皓',[142,143]]
+  ['元凱','杜預',[139,141]],['士治','王濬',[140,141,142]],['吳末帝','孫皓',[142,143]]
  ]){
   const [entry]=searchPeople(alias);
   assert.equal(entry.name,name);

@@ -32,7 +32,7 @@ test('the six post-surrender stages preserve the previous chapter save and histo
  assert.equal(progress.weapons.guanyu,2);
  assert.equal(progress.armyWeapons.cao.guanyu,1);
  assert.equal(progress.inventory.grain,2);
- assert.equal(rewardVictory(progress,167),0);
+ assert.equal(rewardVictory(progress,173),0);
  assert.match(chapter[0].history,/到涪城向鍾會投降/);
  assert.match(chapter[3].victory,/鍾會和姜維在成都兵變中身亡/);
  assert.match(chapter[5].victory,/東吳仍然存在/);

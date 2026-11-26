@@ -134,7 +134,7 @@ test('stage 118 continues through Jiange and keeps campaign saves on touch scree
  await page.clock.pauseAt(await page.evaluate(()=>Date.now()+700));
  await expect(page.locator('#homeProgress')).toContainText('118 / 142');
  await expect(page.locator('#homeChapterCount')).toHaveText('主篇 142 關');
- await expect(page.locator('#homeStageCount')).toHaveText('番外 24 關');
+ await expect(page.locator('#homeStageCount')).toHaveText('番外 30 關');
  await expect(page.locator('#chapterDots [data-level="120"]')).toBeDisabled();
  await choose(20,118);
  await expect(page.locator('#storyTitle')).toHaveText('洮西收兵');
