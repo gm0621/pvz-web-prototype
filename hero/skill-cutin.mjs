@@ -1,7 +1,7 @@
 import {skillPresentation,skillArtwork} from './skill-presentation.mjs?v=passive-feedback-1';
-import {ALL_GENERALS} from './roster.mjs?v=gate-siege-cargo-2';
-import {paintPortrait} from './factions.mjs?v=gate-siege-cargo-2';
-import {hitSound} from './audio.mjs?v=gate-siege-cargo-2';
+import {ALL_GENERALS} from './roster.mjs?v=qishan-escort-1';
+import {paintPortrait} from './factions.mjs?v=qishan-escort-1';
+import {hitSound} from './audio.mjs?v=qishan-escort-1';
 const seen=new WeakMap();
 export function renderSkillCutin(b){
  let root=document.getElementById('skillCutin'),fx=document.getElementById('skillBurst');

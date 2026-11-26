@@ -1,7 +1,7 @@
-import {HISTORICAL_STAGES} from './history-stages.mjs?v=gate-siege-cargo-2';
-import {missionText} from './chapter-missions.mjs?v=gate-siege-cargo-2';
-import {retreatPartyNames,retreatPartyLabel,supplyReady,coverWaveText} from './history-missions.mjs?v=gate-siege-cargo-2';
-import {hasFireRoutes,hasGate,hasOutposts,canRepairGate} from './field-missions.mjs?v=gate-siege-cargo-2';
+import {HISTORICAL_STAGES} from './history-stages.mjs?v=qishan-escort-1';
+import {missionText} from './chapter-missions.mjs?v=qishan-escort-1';
+import {retreatPartyNames,retreatPartyLabel,supplyReady,coverWaveText} from './history-missions.mjs?v=qishan-escort-1';
+import {hasFireRoutes,hasGate,hasOutposts,canRepairGate} from './field-missions.mjs?v=qishan-escort-1';
 const names=['上','中','下'];
 export function missionQuickState(b){
  const m=b.mission;if(!m)return null;
@@ -15,6 +15,11 @@ export function missionQuickState(b){
  if(m.kind==='naval')return {heading:m.cargoRuns?'水路運糧 · 護送三批':'水戰 · 護送主船',doneHeading:m.cargoRuns?(stage.enemyCount?'三批軍糧已送到 · 清退餘船':'三批軍糧已送達'):'主船已靠岸 · 清退餘船',text:missionText(b),button:m.done?'查看任務':'改走航道'};
  if(m.kind==='siege')return {heading:'守城戰 · 守住城門',text:missionText(b),button:'修補城門',action:'repair'};
  if(!['supply','withdraw','decoy'].includes(m.kind))return {text:missionText(b),button:m.done?'查看目標':'進行任務'};
+ if(m.stops){
+  const ready=supplyReady(b);
+  return {heading:'分段運糧 · 護送三批',doneHeading:'三批軍糧送達 · 清退餘兵',
+   text:missionText(b),button:ready?'發送糧車':'查看任務',action:ready?'supply':undefined};
+ }
  if(m.kind==='supply'){
   const cleared=stage?.enemyCount!==0&&b.bossSpawned&&!b.enemies.some(e=>e.hp>0),prefix=`軍糧 ${m.delivered}／3`;
   if(m.done)return {text:`${prefix} · 運糧完成${stage?.enemyCount===0?'':'，清退餘兵'}`,button:'查看任務'};

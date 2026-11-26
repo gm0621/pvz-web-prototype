@@ -1,4 +1,4 @@
-import {lateJinChapter} from './late-jin-chapter.mjs?v=gate-siege-cargo-2';
+import {lateJinChapter} from './late-jin-chapter.mjs?v=qishan-escort-1';
 
 const source=(title,path)=>({title,url:`https://zh.wikisource.org/zh-hant/${path}`});
 const hui=source('《晉書》・惠帝紀','晉書/卷004');
@@ -62,9 +62,9 @@ const stages=[
  {
   name:'洛陽圍城',year:304,origin:'luoyangPalace',place:'jinJinyong',shift:true,factionLabel:'洛陽撤離隊',campBanner:'護',
   leader:'司馬乂',guide:'說書人',guest:'司馬衷',opponent:'司馬越',mapLeaderRole:'後被拘押',mapOpponentRole:'在宮中拘押',historyCast:['司馬乂','司馬越','司馬衷','張方'],
-  mission:'withdraw',scene:'enemy-camp',enemyArmy:'圍城敵軍',enemyCount:12,successTitle:'城內接應隊撤回',
+  mission:'withdraw',gateHold:40,scene:'enemy-camp',enemyArmy:'圍城敵軍',enemyCount:12,successTitle:'城內接應隊撤回',
   history:'洛陽守了很久，城裡糧食不足。東海王司馬越等人在宮中拘押司馬乂，把他送到金墉城。隨後，張方派人從金墉城帶走司馬乂，司馬乂最終遇害。',
-  briefing:'派友軍照應撤離。等「全軍撤離」亮起後，保住至少一隊，讓所有存活友軍撤回左側。',
+  briefing:'守住城門 40 秒，城門受損可修補兩次。倒數結束就按「全軍撤離」，讓所有存活友軍回到左側，至少保住一隊。',
   ending:'撤離隊護住了撤回的人。史書記載，長沙王司馬乂被關在金墉城，後來遭張方部下帶走並遇害。這段洛陽故事到此告一段落。',
   camp:'平安回來的人先歇一會兒。把已找到的人記下來，讓家人知道該到哪裡等消息。',
   question:'東海王等人拘押司馬乂後，先把他送到哪裡？',choices:['金墉城','鄴城','長安'],refs:[hui,changsha,zhang]

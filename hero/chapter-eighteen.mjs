@@ -17,9 +17,9 @@ const stages=[
  {
   name:'祁山運糧',year:231,origin:'mianyang',place:'qishan',leader:'諸葛亮',guest:'李嚴',opponent:'司馬懿',
   historyCast:['諸葛亮','李嚴','司馬懿'],matchupLabel:'魏軍主帥・接掌祁山戰線',
-  mission:'supply',scene:'supply-road',enemyArmy:'沿路魏軍',
+  mission:'supply',supplyStops:['山口','棧道','前營'],scene:'supply-road',enemyArmy:'沿路魏軍',
   history:'231 年，諸葛亮再出祁山，用木牛運送軍糧。後方的李嚴負責督運。碰上久雨，補給沒能接上，李嚴傳信請前線退兵。',
-  briefing:'護住三路，按「發送糧車」送出三批營內存糧，再清退餘兵。',
+  briefing:'依序護送三批糧車走上、中、下路。派友軍守住亮起的那一路，再按「發送糧車」。送完三批後清退餘兵。',
   ending:'三批軍糧接到前營。史書記載，後方的糧運仍接不上，諸葛亮最後撤兵。李嚴後來也因軍糧事件被免官。',
   camp:'木牛可以幫忙搬糧。路還是得通，糧食才送得出去。',
   question:'這次北伐用什麼運送軍糧？',choices:['木牛','渡江戰船','騎兵的盔甲'],refs:[zhuge,li,zhang]
@@ -57,9 +57,9 @@ const stages=[
  {
   name:'五丈原歸途',year:234,origin:'wuzhang',via:['xiegu'],place:'mianyang',leader:'楊儀',guest:'楊儀',opponent:'司馬懿',
   historyCast:['楊儀','諸葛亮','司馬懿','姜維'],mapOpponent:false,matchupLabel:'魏軍主帥・在渭南對峙',shift:true,
-  mission:'withdraw',scene:'mountain-front',enemyArmy:'魏軍追兵',
+  mission:'withdraw',coverWaves:true,scene:'mountain-front',enemyArmy:'魏軍追兵',
   history:'234 年秋，諸葛亮在五丈原軍中病逝。楊儀安排各營撤回，姜維也在退兵隊伍中。這場北伐就此結束。',
-  briefing:'接應完成後按「全軍撤離」。至少保住一隊友軍，讓所有在場友軍撤回左側。',
+  briefing:'追兵會分三波從上、下、中路來。第三波一到，就按「全軍撤離」。至少保住一隊，讓所有在場友軍回到左側。',
   ending:'楊儀收束隊伍，蜀軍撤回漢中。諸葛亮病逝於五丈原，未能完成北伐的心願。',
   camp:'把各營的人點清楚，沿山路一起回去。丞相交代的事，我們會記在心裡。',
   question:'諸葛亮在五丈原病逝後，誰安排各營撤回？',choices:['楊儀','曹真','李嚴'],refs:[zhuge,yang,ruler]
@@ -71,6 +71,8 @@ export const EIGHTEENTH_CHAPTER=stages.map((stage,index)=>({
  mapPlace:stage.place,originPlace:stage.origin,viaPlaces:stage.via||[],viewpointShift:!!stage.shift,historyCast:stage.historyCast,
  leaderName:stage.leader,opponentName:stage.opponent,mapOpponent:stage.mapOpponent??true,matchupLabel:stage.matchupLabel,
  scene:`./assets/scenes/${stage.scene}.jpg`,mission:stage.mission,missionTitle:stage.missionTitle,missionSites:stage.missionSites,
+ ...(stage.supplyStops?{supplyStops:stage.supplyStops}:{}),
+ ...(stage.coverWaves?{coverWaves:true}:{}),
  ...(stage.mission==='withdraw'?{retreatKeys:[],successTitle:'全軍撤回'}:{}),
  noBoss:true,bossName:stage.enemyArmy,bossHp:0,enemyArmy:stage.enemyArmy,enemyCount:12,interval:3.8,
  lead:stage.history,history:stage.history,adaptation,note:adaptation,bossTip:stage.briefing,

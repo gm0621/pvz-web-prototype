@@ -59,8 +59,12 @@ test('completed chapter seventeen saves continue through Wuzhang Plains on touch
    await tap('#missionQuickAction');
   }
  }
- async function withdraw(){
-  await page.evaluate(()=>window.chapterBattle.allies[0].x=.43);
+ async function withdraw(coverWaves=false){
+  await page.evaluate(coverWaves=>{
+   const battle=window.chapterBattle;
+   battle.allies[0].x=.43;
+   if(coverWaves)battle.spawned=9;
+  },coverWaves);
   await advance(14000);
   await expect(page.locator('#missionQuickAction')).toHaveText('全軍撤離');
   await tap('#missionQuickAction');
@@ -130,25 +134,16 @@ test('completed chapter seventeen saves continue through Wuzhang Plains on touch
   expect((await snapshot()).time).toBeGreaterThan(paused.time);
 
   if(level===106)await page.evaluate(()=>window.blockSave=true);
-  if(stage.kind==='withdraw')await withdraw();
+  if(stage.kind==='withdraw')await withdraw(level===106);
   else if(stage.kind==='supply'){
-   await advance(7600);
-   await expect(page.locator('#missionQuickAction')).toHaveText('發送糧車');
-   const guardId=await page.evaluate(()=>String(window.chapterBattle.allies.find(u=>u.key==='zhangfei').id));
-   await page.locator('#unitSelect').selectOption(guardId);
-   await tap('#commandDrawerButton');
-   await tap('#orders [data-order="up"]');
-   await tap('#commandDrawerClose');
-   await expect(page.locator('#missionQuick')).toContainText('下路缺接應');
-   await tap('#missionQuickAction');
-   await expect(page.locator('#missionChoices [data-action=supply]')).toBeDisabled();
-   expect((await snapshot()).mission).toMatchObject({charge:10,delivered:0});
-   await tap('#missionDrawerClose');
-   await tap('#cards [data-hero=archer]');
-   await page.locator('.lane').nth(2).tap({position:{x:40,y:25}});
-   await advance(100);
-   await expect(page.locator('#missionQuickAction')).toHaveText('發送糧車');
-   await sendCarts();
+   for(const [lane,name] of ['山口','棧道','前營'].entries()){
+    await expect(page.locator('.lane[data-supply-route=true]')).toHaveAttribute('data-lane',String(lane));
+    await expect(page.locator('#missionQuick')).toContainText(name);
+    await tap('#missionQuickAction');
+    await expect(page.locator('#supplyCart')).toContainText(`糧車 ${lane+1}／3`);
+    await advance(6200);
+    expect((await snapshot()).mission.delivered).toBe(lane+1);
+   }
   }
   else if(stage.kind==='restoration'){
    await tap('#missionDrawerButton');
@@ -215,7 +210,7 @@ test('completed chapter seventeen saves continue through Wuzhang Plains on touch
  expect(await readSave()).toMatchObject(cleared);
  await choose(18,106);
  await controlledBattle();
- await withdraw();
+ await withdraw(true);
  await expect(page.locator('#resultEarned')).toHaveText('+0');
  expect(await readSave()).toMatchObject(cleared);
 

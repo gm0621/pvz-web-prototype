@@ -54,6 +54,7 @@ body.battle-focus #lives[data-gate]{font-size:12px;min-width:auto}
 #field[data-terrain=fire] .lane[data-fire=warning]{box-shadow:inset 0 0 0 3px #ffc967}
 #field[data-terrain=fire] .lane[data-fire=warning] .lane-label{color:#321a0f;background:#ffd18b}
 #field[data-terrain=fire] .lane[data-fire=burning] .lane-label{color:#fff5df;background:#8f3023}
-#field[data-terrain=pass-defense] .lane[data-threat=true]{box-shadow:inset 0 0 0 3px #edab4f}
+#field[data-terrain=pass-defense] .lane[data-threat=true],
+#field .lane[data-supply-route=true]{box-shadow:inset 0 0 0 3px #edab4f}
 .result-record{display:flex;flex-wrap:wrap;justify-content:center;gap:6px 14px;margin:10px 0;padding:8px 10px;border-radius:8px;background:#eef0df;color:#203d32}
 .result-record[hidden]{display:none}

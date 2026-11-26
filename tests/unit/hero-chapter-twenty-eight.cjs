@@ -79,8 +79,10 @@ test('the Luoyang campaign can finish all six objectives with normal waves and o
     stepBattle(battle,.1);
    }
    assert.equal(battle.won,true,JSON.stringify({level,seed,mission:battle.mission}));
-   assert.equal(battle.spawned,enemyCount);
-   if(level===166)assert.equal(battle.mission.ordered,true);
+   if(level===166){
+    assert.ok(battle.spawned>0&&battle.spawned<=enemyCount);
+    assert.ok(battle.mission.ordered&&battle.mission.gate>0&&battle.time>=40);
+   }else assert.equal(battle.spawned,enemyCount);
   }
  }
 });

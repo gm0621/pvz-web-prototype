@@ -79,6 +79,7 @@ test('stage 160 unlocks the optional Luoyang campaign and keeps campaign saves o
   }
  }
  async function withdraw(){
+  await expect(page.locator('#lives')).toHaveText('城門 100／100');
   await advance(4400);
   await tap('#cards [data-hero=archer]');
   await page.locator('.lane').first().tap({position:{x:40,y:25}});
@@ -91,11 +92,11 @@ test('stage 160 unlocks the optional Luoyang campaign and keeps campaign saves o
    await advance(3300);
   }
   await tap('#commandDrawerClose');
-  await advance(4100);
+  await advance(22000);
   await expect(page.locator('#missionQuickAction')).toHaveText('全軍撤離');
   await tap('#missionQuickAction');
   await advance(200);
-  await expect(page.locator('#missionQuick')).toContainText('1 名友軍尚未回到左側');
+  await expect(page.locator('#missionQuick')).toContainText('1 隊友軍尚未回到左側');
   await expect(page.locator('#result')).toBeHidden();
   await tap('#pauseBtn');
   const frozen=await snapshot();
@@ -104,7 +105,7 @@ test('stage 160 unlocks the optional Luoyang campaign and keeps campaign saves o
   await advance(550);
   expect(await snapshot()).toEqual(frozen);
   expect(await position()).toBe(before);
-  await expect(page.locator('#missionQuick p')).toHaveText('已暫停，保留進度 · 1 名友軍尚未回到左側');
+  await expect(page.locator('#missionQuick p')).toHaveText('已暫停，保留進度 · 1 隊友軍尚未回到左側');
   await expect(page.locator('#missionObjective')).toContainText('已暫停，保留進度');
   await expect(page.locator('#missionQuickAction')).toBeDisabled();
   await tap('#pauseBtn');
