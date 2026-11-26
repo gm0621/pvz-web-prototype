@@ -123,8 +123,14 @@ test('chapter seventeen preserves the southern campaign save and completes all s
   if(index!==2)await deployTeam();
   if(index===5)await page.evaluate(()=>window.blockSave=true);
   if(stage.kind==='withdraw'){
-   if(index===4)await page.evaluate(()=>window.chapterBattle.allies[0].x=.43);
-   await advance(14000);
+   if(index===2){
+    await expect(page.locator('#missionQuick')).toContainText('第 1／3 波');
+    await page.evaluate(()=>window.chapterBattle.spawned=9);
+    await advance(100);
+   }else{
+    await page.evaluate(()=>window.chapterBattle.allies[0].x=.43);
+    await advance(14000);
+   }
    await expect(page.locator('#missionQuickAction')).toHaveText('全軍撤離');
    await tap('#missionQuickAction');
    await advance(200);

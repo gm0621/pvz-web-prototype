@@ -1,7 +1,7 @@
-import {paintPortrait} from './factions.mjs?v=three-battles-2';
-import {bossProfile,laneLabel} from './engine.mjs?v=three-battles-2';
-import {battleBossPortrait} from './characters.mjs?v=three-battles-2';
-import {hitSound} from './audio.mjs?v=three-battles-2';
+import {paintPortrait} from './factions.mjs?v=pass-river-1';
+import {bossProfile,laneLabel} from './engine.mjs?v=pass-river-1';
+import {battleBossPortrait} from './characters.mjs?v=pass-river-1';
+import {hitSound} from './audio.mjs?v=pass-river-1';
 const seen=new WeakMap();
 const label=(root,selector,text)=>{const node=root.querySelector(selector);if(node.textContent!==text)node.textContent=text};
 const clamp=n=>Math.max(0,Math.min(1,n));

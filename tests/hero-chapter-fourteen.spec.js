@@ -3,7 +3,7 @@ const KEY='heroLegendProgress_v1';
 const chapters=[
  {name:'沔陽傳令',route:'沔陽',guest:'劉備',opponent:'關羽',offMapOpponent:true,goal:'dispatch'},
  {name:'襄樊圍城',route:'江陵 → 襄陽 → 樊城',guest:'關平',opponent:'曹仁',goal:'holdout'},
- {name:'漢水暴漲',route:'樊城 → 漢水北岸',guest:'關平',opponent:'于禁',goal:'supply'},
+ {name:'漢水暴漲',route:'樊城 → 漢水北岸',guest:'關平',opponent:'于禁',goal:'naval'},
  {name:'樊城解圍',route:'偃城 → 樊城',guest:'徐晃',opponent:'關羽',goal:'commander'},
  {name:'江陵失守',route:'江陵',guest:'關平',opponent:'呂蒙',offMapLeader:true,goal:'dispatch'},
  {name:'麥城出走',route:'麥城 → 章鄉一帶',guest:'劉備',opponent:'孫權',offMapOpponent:true,goal:'withdraw'}
@@ -52,6 +52,7 @@ test('chapter fourteen continues a completed Hanzhong save through Xiangfan',asy
   while(await page.locator('#skillIntro[open]').isVisible())await tap('#skillIntroContinue');
   await tap('#resultNext');
  };
+
  const supply=async()=>{
   for(let cart=0;cart<3;cart++){
    await advance(7600);
@@ -152,7 +153,13 @@ test('chapter fourteen continues a completed Hanzhong save through Xiangfan',asy
    await suppressWaves();
    if(stage.goal==='withdraw')await deploy('archer',0);
    else for(const [lane,key] of ['liubei','guanyu','zhangfei'].entries())await deploy(key,lane);
-   if(stage.goal==='supply')await supply();
+   if(stage.goal==='naval'){
+    await tap('#missionQuickAction');
+    await tap('#missionChoices [data-action=channel]:first-child');
+    await tap('#missionDrawerClose');
+    await advance(53000);
+    await expect(page.locator('#missionObjective')).toContainText('軍糧 3／3 批');
+   }
    else if(stage.goal==='withdraw'){
     await expect(page.locator('#missionQuick p')).toContainText('帶關羽與友軍撤回左側');
     await page.evaluate(()=>{

@@ -25,10 +25,10 @@ const stages=[
  },
  {
   name:'街亭撤離',year:228,place:'jieting',origin:'qishan',leader:'馬謖',guest:'王平',opponent:'張郃',
-  historyCast:['馬謖','王平','張郃','諸葛亮'],mission:'withdraw',scene:'mountain-front',enemyArmy:'魏軍追兵',
+  historyCast:['馬謖','王平','張郃','諸葛亮'],mission:'withdraw',coverWaves:true,scene:'mountain-front',enemyArmy:'魏軍追兵',
   matchupLabel:'魏軍援將・街亭取勝',
   history:'馬謖帶前軍到街亭，沒有照諸葛亮的部署行事，敗給張郃。王平事前勸過馬謖，戰敗時仍穩住部隊，收攏各路散兵。',
-  briefing:'先等待接應，保住至少一隊友軍。接應完成後按「全軍撤離」，讓所有在場友軍退回左側。',
+  briefing:'照預警守住前兩波。第三波來時按「全軍撤離」，讓所有在場友軍退回左側。至少要有一隊平安撤回。',
   ending:'王平收攏散兵。街亭仍由魏軍取勝，諸葛亮撤回漢中。馬謖事後被處置，諸葛亮也請求降職。',
   camp:'散開的人先回來點名。街亭已經失守，我們還能把能帶回來的人帶回去。',
   question:'街亭失守後，誰穩住隊伍並收攏散兵？',choices:['王平','打下街亭的魏將','留守成都的官員'],refs:[zhuge,zhang,wang,ma]
@@ -70,6 +70,7 @@ export const SEVENTEENTH_CHAPTER=stages.map((stage,index)=>({
  mapPlace:stage.place,originPlace:stage.origin,viaPlaces:[],viewpointShift:!!stage.shift,historyCast:stage.historyCast,
  leaderName:stage.leader,opponentName:stage.opponent,mapOpponent:stage.mapOpponent??!!stage.opponent,matchupLabel:stage.matchupLabel,
  scene:`./assets/scenes/${stage.scene}.jpg`,mission:stage.mission,missionTitle:stage.missionTitle,
+ ...(stage.coverWaves?{coverWaves:true}:{}),
  ...(stage.mission==='withdraw'?{retreatKeys:[],successTitle:'全軍撤回'}:{}),
  noBoss:true,bossName:stage.enemyArmy,bossHp:0,enemyArmy:stage.enemyArmy,enemyCount:12,interval:3.8,
  lead:stage.history,history:stage.history,adaptation,note:adaptation,bossTip:stage.briefing,

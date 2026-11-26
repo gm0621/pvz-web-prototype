@@ -28,11 +28,11 @@ const hasEscort=(b,lane)=>b.allies.some(unit=>unit.lane===lane&&unit.hp>0);
 const enemyNearShip=(b,lane)=>b.enemies.some(enemy=>enemy.lane===lane&&enemy.hp>0&&enemy.x<fleetPosition(b.mission)+.20);
 
 export function fleetStatus(b){
- const lane=fleetChannel(b);
- if(channelHazard(b,lane)==='blocked')return '主航道封住了，請換航道';
- if(!hasEscort(b,lane))return '派友軍到這條航道護航';
- if(enemyNearShip(b,lane))return '前方有敵船，清退或換航道';
- if(channelHazard(b,lane)==='warning')return '主航道即將封閉，可改走岸邊';
+ const lane=fleetChannel(b),cargo=!!b.mission.cargoRuns;
+ if(channelHazard(b,lane)==='blocked')return cargo?'封航，請換路':'主航道封住了，請換航道';
+ if(!hasEscort(b,lane))return cargo?'請派友軍護航':'派友軍到這條航道護航';
+ if(enemyNearShip(b,lane))return cargo?'敵船擋路，可換路':'前方有敵船，清退或換航道';
+ if(channelHazard(b,lane)==='warning')return cargo?'快封航，可換路':'主航道即將封閉，可改走岸邊';
  return lane===mainChannel(b)?'順流快行':'沿岸前進';
 }
 
@@ -42,9 +42,16 @@ export function stepFleet(b,dt){
  if(!hasEscort(b,lane)||enemyNearShip(b,lane))return;
  m.travel=Math.min(1,m.travel+dt/(lane===mainChannel(b)?14:22));
  if(m.travel>=1-1e-8){
-  m.travel=1;
-  m.done=true;
-  m.message=`主船抵達${m.destination}！`;
+  if(m.cargoRuns){
+   m.delivered++;
+   m.done=m.delivered===m.cargoRuns;
+   m.travel=m.done?1:0;
+   m.message=`第 ${m.delivered} 批軍糧抵達${m.destination}！`;
+  }else{
+   m.travel=1;
+   m.done=true;
+   m.message=`主船抵達${m.destination}！`;
+  }
  }
 }
 
@@ -128,6 +135,8 @@ export function selectOutpost(b,index){
 }
 
 export const PASS_WAVE_SIZE=4;
+export const hasDirectedWaves=m=>m?.kind==='pass-defense'||m?.coverWaves===true;
+export const thirdWaveStarted=b=>b.spawned>2*PASS_WAVE_SIZE;
 const passLanes=[0,2,1];
 export const passWave=b=>Math.floor(b.spawned/PASS_WAVE_SIZE)+1;
 export const passLane=b=>passLanes[passWave(b)-1];

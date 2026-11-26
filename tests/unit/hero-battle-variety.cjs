@@ -205,3 +205,52 @@ test('Ruxu shows the next objective after landing while an enemy ship remains',a
  stepBattle(b,.1);
  assert.equal(b.won,true);
 });
+
+test('Han River carries three cargo batches across the chosen lane without resetting a switch',async()=>{
+ const {createBattle,deploy,stepBattle}=await import('../../hero/engine.mjs');
+ const {historyAction}=await import('../../hero/history-missions.mjs');
+ const b=createBattle(79,42);
+ b.nextSpawn=Infinity;
+ b.bossSpawned=true;
+ stepBattle(b,.1);
+ assert.equal(b.mission.travel,0);
+ assert.equal(deploy(b,'liubei',1),true);
+ assert.equal(deploy(b,'guanyu',0),true);
+ for(let i=0;i<50;i++)stepBattle(b,.1);
+ const travel=b.mission.travel;
+ assert.ok(travel>0);
+ assert.equal(historyAction(b,'channel',0),true);
+ assert.equal(b.mission.travel,travel);
+ b.paused=true;
+ stepBattle(b,.1);
+ assert.equal(b.mission.travel,travel);
+ b.paused=false;
+ const batches=new Set();
+ for(let i=0;i<800&&!b.over;i++){
+  stepBattle(b,.1);
+  batches.add(b.mission.delivered);
+  if(b.mission.delivered<3)assert.equal(b.won,false);
+ }
+ assert.deepEqual([...batches],[0,1,2,3]);
+ assert.equal(b.mission.delivered,3);
+ assert.equal(b.won,true);
+});
+
+test('Jieting opens withdrawal when the third directed wave starts',async()=>{
+ const {createBattle,deploy,stepBattle}=await import('../../hero/engine.mjs');
+ const {historyAction}=await import('../../hero/history-missions.mjs');
+ const b=createBattle(97,42);
+ assert.equal(deploy(b,'archer',1),true);
+ const lanes=[];
+ for(let i=0;i<9;i++){
+  b.nextSpawn=b.time;
+  stepBattle(b,.1);
+  lanes.push(b.enemies.at(-1).lane);
+  if(i<8)assert.equal(historyAction(b,'retreat'),false);
+ }
+ assert.deepEqual(lanes,[0,0,0,0,2,2,2,2,1]);
+ assert.equal(historyAction(b,'retreat'),true);
+ stepBattle(b,.1);
+ assert.equal(b.won,true);
+ assert.ok(b.enemies.length>0);
+});

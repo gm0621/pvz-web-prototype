@@ -36,10 +36,11 @@ const chapters=[
   question:'曹操從陳倉經哪座關口西進？',choices:['散關','虎牢關','盧龍塞'],references:[emperor]
  },
  {
-  name:'陽平關夜進',year:215,place:'yangping',originPlace:'sanguan',viaPlaces:['wudu'],mission:'formation',
+  name:'陽平關夜進',year:215,place:'yangping',originPlace:'sanguan',viaPlaces:['wudu'],mission:'outposts',missionTitle:'攻關據點',
+  outpostSites:[{name:'關前哨點'},{name:'側路關卡'}],
   leader:'曹操',opponentName:'張魯',scene:'ambush-valley',enemyArmy:'陽平守軍',commander:true,
   history:'張魯的弟弟張衛等守陽平。曹操初攻不克，後來守備鬆動，曹軍在夜間得以突破。張魯退往巴中。',
-  briefing:'正面一時過不去，先穩住各路。留意守軍的蓄力預警，換路躲開，再擊退守軍。',
+  briefing:'先選一處據點，再派友軍守住那一路。拿下關前哨點和側路關卡，並擊退守將和餘兵。',
   ending:'陽平關失守，曹軍進入南鄭。張魯此時退往巴中，歸降還要等到後來。',
   question:'陽平關失守後，張魯先去了哪裡？',choices:['巴中','許縣','譙縣'],references:[emperor,zhangLu]
  },
@@ -60,6 +61,7 @@ export const TWELFTH_CHAPTER=chapters.map((s,index)=>{
   name,year,chapter:12,number:index+1,faction:'cao',place:name,mapPlace:place,originPlace,viaPlaces,viewpointShift,mission,missionTitle,
   scene:`./assets/scenes/${scene}.jpg`,enemyCount:commander?14:12,interval:3.8,enemyArmy,
   noBoss:!commander,bossName:commander?'陽平守軍主將':enemyArmy,bossHp:commander?680:0,
+  ...(s.outpostSites?{outpostSites:s.outpostSites,outpostHeading:'攻關戰 · 拿下兩處據點'}:{}),
   ...(commander?{skillType:'charge',skillName:'關口重擊',bossTitle:'關口守將',duelOutcome:'retreat'}:{}),
   leaderName:leader,opponentName,matchupLabel:final?'來使與歸降・劇情人物':undefined,
   lead:history,history,adaptation,note:commander?`${adaptation} 陽平關失守的細節在裴注引書中有不同說法，關卡不指定單一夜襲經過。`:adaptation,

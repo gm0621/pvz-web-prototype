@@ -1,19 +1,20 @@
-import {HISTORICAL_STAGES} from './history-stages.mjs?v=three-battles-2';
-import {missionText} from './chapter-missions.mjs?v=three-battles-2';
-import {retreatPartyNames,retreatPartyLabel,supplyReady} from './history-missions.mjs?v=three-battles-2';
-import {hasFireRoutes} from './field-missions.mjs?v=three-battles-2';
+import {HISTORICAL_STAGES} from './history-stages.mjs?v=pass-river-1';
+import {missionText} from './chapter-missions.mjs?v=pass-river-1';
+import {retreatPartyNames,retreatPartyLabel,supplyReady,coverWaveText} from './history-missions.mjs?v=pass-river-1';
+import {hasFireRoutes} from './field-missions.mjs?v=pass-river-1';
 const names=['上','中','下'];
 export function missionQuickState(b){
  const m=b.mission;if(!m)return null;
+ const stage=HISTORICAL_STAGES[b.level-17];
  if(m.kind==='fire-raid')return {heading:'火攻 · 點燃兩處糧屯',doneHeading:'兩處已點火 · 繼續作戰',text:missionText(b),button:m.done?'查看任務':'選火攻點'};
  if(m.kind==='outposts'){
-  const relief=HISTORICAL_STAGES[b.level-17]?.outpostSites;
-  return {heading:relief?'解圍戰 · 拿下兩處據點':'攻城戰 · 拿下城外據點',doneHeading:relief?'兩處已拿下 · 繼續作戰':undefined,text:missionText(b),button:m.done?'查看任務':'選擇據點'};
+  const relief=stage?.outpostSites;
+  return {heading:stage?.outpostHeading||(relief?'解圍戰 · 拿下兩處據點':'攻城戰 · 拿下城外據點'),doneHeading:relief?'兩處已拿下 · 繼續作戰':undefined,text:missionText(b),button:m.done?'查看任務':'選擇據點'};
  }
  if(m.kind==='pass-defense')return {heading:'守關戰 · 擋住三波',text:missionText(b),button:'查看任務'};
- if(m.kind==='naval')return {heading:'水戰 · 護送主船',doneHeading:'主船已靠岸 · 清退餘船',text:missionText(b),button:m.done?'查看任務':'改走航道'};
+ if(m.kind==='naval')return {heading:m.cargoRuns?'水路運糧 · 護送三批':'水戰 · 護送主船',doneHeading:m.cargoRuns?'三批軍糧已送到 · 清退餘船':'主船已靠岸 · 清退餘船',text:missionText(b),button:m.done?'查看任務':'改走航道'};
  if(m.kind==='siege')return {heading:'守城戰 · 守住城門',text:missionText(b),button:'修補城門',action:'repair'};
- const stage=HISTORICAL_STAGES[b.level-17];if(!['supply','withdraw','decoy'].includes(m.kind))return {text:missionText(b),button:m.done?'查看目標':'進行任務'};
+ if(!['supply','withdraw','decoy'].includes(m.kind))return {text:missionText(b),button:m.done?'查看目標':'進行任務'};
  if(m.kind==='supply'){
   const cleared=stage?.enemyCount!==0&&b.bossSpawned&&!b.enemies.some(e=>e.hp>0),prefix=`軍糧 ${m.delivered}／3`;
   if(m.done)return {text:`${prefix} · 運糧完成${stage?.enemyCount===0?'':'，清退餘兵'}`,button:'查看任務'};
@@ -29,16 +30,18 @@ export function missionQuickState(b){
  const noBoss=stage?.noBoss;
  const fire=hasFireRoutes(m),clearing=fire?` · 開路剩 ${m.clearings} 次`:'';
  const fireButton=fire&&m.clearings?'開路選項':'查看任務';
- const wait=m.withdrawAt===null?(noBoss?'守線等待接應':'等待敵將出場'):ready?'接應完成':`接應尚需 ${Math.ceil(m.withdrawAt-b.time)} 秒`;
+ const heading=m.coverWaves?'分波掩護撤離':undefined;
+ const wait=m.coverWaves?coverWaveText(b):m.withdrawAt===null?(noBoss?'守線等待接應':'等待敵將出場'):ready?'接應完成':`接應尚需 ${Math.ceil(m.withdrawAt-b.time)} 秒`;
  if(m.ordered){
   const missing=retreatPartyNames(b,{missingOnly:true});
   const living=b.allies.filter(u=>u.hp>0);
   const remaining=living.filter(u=>u.x>.18).length;
   const status=missing.length?`請召回${missing.join('、')}，才能撤離`:!living.length?'請先召回至少一隊友軍':`${b.paused?'':'撤離中 · '}${remaining} ${fire?'隊':'名'}友軍尚未回到左側`;
-  return {text:paused+status+clearing,button:'重新撤離',action:'retreat'};
+  return {heading,text:paused+status+clearing,button:'重新撤離',action:'retreat'};
  }
+ if(m.coverWaves)return {heading,text:`${paused}${wait} · ${ready?'帶友軍撤回左側':'派友軍守線'}`,button:ready?'全軍撤離':'查看任務',action:ready?'retreat':undefined};
  if(m.kind==='decoy'&&!m.decoyUsed)return {text:`${paused}${wait} · 先放赤幘誘餌`,button:'放置誘餌'};
- return {text:`${paused}${wait}${clearing} · ${noBoss||stage?.retreatKeys?`帶${retreatPartyLabel(b,'友軍')}撤回左側`:'不必擊倒敵將'}`,button:ready?'全軍撤離':fireButton,action:ready?'retreat':undefined};
+ return {heading,text:`${paused}${wait}${clearing} · ${noBoss||stage?.retreatKeys?`帶${retreatPartyLabel(b,'友軍')}撤回左側`:'不必擊倒敵將'}`,button:ready?'全軍撤離':fireButton,action:ready?'retreat':undefined};
 }
 export function mountMissionQuick(field,openMission){
  const root=document.createElement('aside');root.id='missionQuick';root.hidden=true;root.setAttribute('aria-label','過關任務');const text=document.createElement('p'),button=document.createElement('button');button.id='missionQuickAction';button.className='gold-button';const heading=document.createElement('strong');heading.textContent='⚑ 過關任務';heading.className='mission-quick-heading';const copy=document.createElement('div');copy.append(heading,text);root.append(copy,button);field.append(root);

@@ -83,7 +83,18 @@ test('chapter twelve continues from the prior chapter camp through all six stage
    await page.clock.runFor(100);
    await expect(page.locator('#bossIntroTitle')).toContainText('陽平守軍主將');
    await tap('#bossIntroContinue');
-   await page.evaluate(()=>window.chapterBattle.enemies[0].hp=0);
+   await page.evaluate(()=>{window.chapterBattle.enemies[0].hp=0;window.chapterBattle.food=300});
+   for(const [slot,lane] of [['liubei',0],['guanyu',lanes-1]]){
+    await tap(`#cards [data-hero=${slot}]`);
+    await page.locator('.lane').nth(lane).tap({position:{x:40,y:25}});
+   }
+   for(const point of [0,1]){
+    await tap('#missionQuickAction');
+    await page.locator('#missionChoices [data-action=outpost]').nth(point).tap();
+    await tap('#missionDrawerClose');
+    await page.clock.runFor(8000);
+    await expect(page.locator('.outpost-marker[data-captured=true]')).toHaveCount(point+1);
+   }
   }else{
    await page.evaluate(()=>{window.chapterBattle.bossSpawned=true;window.chapterBattle.nextSpawn=Infinity});
    for(let lane=0;lane<lanes;lane++){

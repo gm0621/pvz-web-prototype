@@ -1,14 +1,14 @@
 import {stepDoctrine,duelDoctrine,signature} from './army-doctrine.mjs?v=army-1';
 import {passiveCue,passiveLabel,learnedPassives,passiveName,tickPassives,passiveSnapshot,castPassiveFeedback} from './passive-feedback.mjs?v=passive-feedback-1';
-import {OUTPOST_SECONDS,outpostLane,PASS_WAVE_SIZE,passLane,hitGate,siegeLane} from './field-missions.mjs?v=three-battles-2';
-import {extracted} from './history-missions.mjs?v=three-battles-2';
-import {createMission,stepMission,protectBarrier,missionReady,missionDuelReady} from './chapter-missions.mjs?v=three-battles-2';
+import {OUTPOST_SECONDS,outpostLane,PASS_WAVE_SIZE,hasDirectedWaves,passLane,channelName,hitGate,siegeLane} from './field-missions.mjs?v=pass-river-1';
+import {extracted} from './history-missions.mjs?v=pass-river-1';
+import {createMission,stepMission,protectBarrier,missionReady,missionDuelReady} from './chapter-missions.mjs?v=pass-river-1';
 import {duelBeats} from './duel-patterns.mjs?v=passive-feedback-1';
 export {duelBeats} from './duel-patterns.mjs?v=passive-feedback-1';
 import {WEATHER_GENERALS} from './weather-generals.mjs?v=passive-feedback-1';
-import {campaignState,weaponBonus} from './campaign.mjs?v=three-battles-2';
-import {heroSkill} from './skills.mjs?v=three-battles-2';
-import {heroesForLevel,STAGES,UNLOCKS,FEATURES} from './story.mjs?v=three-battles-2';
+import {campaignState,weaponBonus} from './campaign.mjs?v=pass-river-1';
+import {heroSkill} from './skills.mjs?v=pass-river-1';
+import {heroesForLevel,STAGES,UNLOCKS,FEATURES} from './story.mjs?v=pass-river-1';
 
 export const SWING={duration:.58,impact:.24,frameTime:.08,frames:6};
 export const DUEL_DURATION=19;
@@ -106,7 +106,7 @@ function igniteLane(b,lane){
 function spawn(b){
  const stage=STAGES[b.level-1],boss=b.spawned>=stage.enemyCount;
  if(boss&&stage.noBoss){b.bossSpawned=true;b.nextSpawn=Infinity;return}
- const lane=boss?Math.floor(lanesFor(b)/2):b.mission?.kind==='siege'?siegeLane(b):b.mission?.kind==='pass-defense'?passLane(b):lanesFor(b)===3?([1,0,2][b.spawned%3]):(b.spawned+Math.floor(b.spawned/lanesFor(b))*(lanesFor(b)===4?1:2))%lanesFor(b);
+ const lane=boss?Math.floor(lanesFor(b)/2):b.mission?.kind==='siege'?siegeLane(b):hasDirectedWaves(b.mission)?passLane(b):lanesFor(b)===3?([1,0,2][b.spawned%3]):(b.spawned+Math.floor(b.spawned/lanesFor(b))*(lanesFor(b)===4?1:2))%lanesFor(b);
  const naval=b.mission?.kind==='naval';
  const heavy=!boss&&b.level>=UNLOCKS.shields&&b.spawned%4===3;
  const ranged=b.level<17&&!boss&&!heavy&&b.level>=4&&b.spawned%6===4;
@@ -114,18 +114,19 @@ function spawn(b){
  b.enemies.push({id:b.nextId++,lane,x:.94,hp,maxHp:hp,boss,ranged,name:boss?stage.bossName:naval?((stage.navalEnemy||'吳軍')+(heavy?'重船':'巡船')):b.level>=17?(stage.enemyArmy?(stage.enemyArmy+(heavy?'盾兵':'步兵')):(heavy?'董軍盾兵':'董軍刀兵')):ranged?'黃巾弓手':heavy?'黃巾盾賊':'黃巾刀賊',shielded:heavy||(boss&&b.level===5),stunnedUntil:0,damage:ranged?8:boss?17+Math.min(6,b.level):7+Math.min(6,b.level),rate:ranged?2.6:boss?1.6:1.5,speed:boss?.019:.027+random(b)*.004,lastAttack:b.time,flash:0,action:'marching'});
  if(b.level===14&&!boss&&[0,6,12].includes(b.spawned)){for(const side of [0,2])b.enemies.push({id:b.nextId++,lane:side,x:.97,hp:52,maxHp:52,name:'黃旗衝鋒兵',elite:true,boss:false,damage:9,rate:1.5,speed:.04,lastAttack:b.time,flash:0});b.skillNotice={key:'enemy',text:`第 ${Math.floor(b.spawned/6)+1} 波・黃旗衝鋒`,until:b.time+3};}
  if(ranged){b.notice='黃巾弓手出現！會在遠處蓄力射箭，換路避箭或派武將逼近。';b.noticeUntil=b.time+5;}
- if(!boss&&b.level>=3&&!['siege','pass-defense'].includes(b.mission?.kind)){
+ if(!boss&&b.level>=3&&b.mission?.kind!=='siege'&&!hasDirectedWaves(b.mission)){
   const number=b.spawned+1,ambushes=[Math.max(3,Math.ceil(stage.enemyCount*.35)),Math.max(6,Math.ceil(stage.enemyCount*.7))];
   if(ambushes.includes(number)){
    const raidLane=(lane+(lanesFor(b)===3?(number%2?1:2):1+(b.level+number)%(lanesFor(b)-1)))%lanesFor(b),raidHp=Math.round(35+Math.min(10,b.level)*3);
-   b.enemies.push({id:b.nextId++,lane:raidLane,x:.97,hp:raidHp,maxHp:raidHp,boss:false,elite:true,name:naval?'吳軍快船':(stage.enemyArmy||(b.level>=17?'董軍':'黃巾'))+'疾行兵',shielded:false,stunnedUntil:0,damage:8+Math.min(6,b.level),rate:1.25,speed:.042+random(b)*.003,lastAttack:b.time,flash:0,action:'marching'});
-   b.notice=`${stage.enemyArmy||(b.level>=17?'董軍':'黃巾')}突襲！疾行兵從${laneLabel(b,raidLane)}路逼近，快換路補位！`;b.noticeUntil=b.time+4;
-   b.skillNotice={key:'enemy',text:`${stage.enemyArmy||(b.level>=17?'董軍':'黃巾')}突襲・${laneLabel(b,raidLane)}路疾行兵！`,until:b.time+2.5};
+   b.enemies.push({id:b.nextId++,lane:raidLane,x:.97,hp:raidHp,maxHp:raidHp,boss:false,elite:true,name:naval?(stage.navalEnemy||'吳軍')+'快船':(stage.enemyArmy||(b.level>=17?'董軍':'黃巾'))+'疾行兵',shielded:false,stunnedUntil:0,damage:8+Math.min(6,b.level),rate:1.25,speed:.042+random(b)*.003,lastAttack:b.time,flash:0,action:'marching'});
+   const army=stage.enemyArmy||(b.level>=17?'董軍':'黃巾'),raider=naval?'快船':'疾行兵',approach=naval?channelName(b,raidLane):laneLabel(b,raidLane)+'路';
+   b.notice=`${army}突襲！${raider}從${approach}逼近，快換路補位！`;b.noticeUntil=b.time+4;
+   b.skillNotice={key:'enemy',text:`${army}突襲・${approach}${raider}！`,until:b.time+2.5};
   }
  }
  if(b.level===8&&!boss)for(const general of Object.values(WEATHER_GENERALS))if(b.spawned===general.spawnAt){b.enemies.push({id:b.nextId++,lane:general.lane,x:.94,hp:general.hp,maxHp:general.hp,boss:true,support:true,name:general.name,damage:10,rate:1.8,speed:.022,lastAttack:b.time,flash:0,stunnedUntil:0});b.skillNotice={key:'enemy',text:`${general.title}・${general.name}出陣！${general.skillName}`,until:b.time+4};}
  if(boss){if(b.level>=17&&['withdraw','decoy'].includes(stage.mission))b.enemies[b.enemies.length-1].x=.5;b.bossSpawned=true;b.introPending=true;}else b.spawned++;
- b.nextSpawn=b.time+(b.mission?.kind==='pass-defense'&&b.spawned%PASS_WAVE_SIZE===0?7:stage.interval);
+ b.nextSpawn=b.time+(hasDirectedWaves(b.mission)&&b.spawned%PASS_WAVE_SIZE===0?7:stage.interval);
  if(boss){b.notice=`${stage.bossName}出陣！`;b.noticeUntil=b.time+4}
 }
 function resolveDuel(b){

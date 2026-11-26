@@ -24,10 +24,10 @@ const stages=[
  },
  {
   name:'漢水暴漲',place:'hanwater',origin:'fancheng',leader:'關羽',opponent:'于禁',
-  mission:'supply',scene:'supply-road',enemyArmy:'曹軍援隊',
+  mission:'naval',cargoRuns:3,fleetDestination:'安全渡口',navalEnemy:'曹軍',scene:'supply-road',enemyArmy:'曹軍船隊',
   history:'秋天連日大雨，漢水暴漲，于禁的援軍受困。于禁向關羽投降。龐德抵抗到最後，被俘後遇害。',
-  briefing:'水勢漲得快。各路都派人接應，把糧車分三批送到安全的地方。',
-  ending:'糧車已送到安全處。雨水使戰局翻轉，于禁歸降，龐德被俘後遇害。曹仁仍守著樊城。',
+  briefing:'派友軍護送三批糧船到安全渡口。主航道快封航時可換路，航程會保留。三批送到，再清退餘船。',
+  ending:'三批軍糧已送到安全渡口。雨水使戰局翻轉，于禁歸降，龐德被俘後遇害。曹仁仍守著樊城。',
   guest:'關平',camp:'連日大雨沖斷道路，光有糧食還不夠，也得想辦法把糧送到。',
   question:'史書記載漢水為什麼突然暴漲？',choices:['連日大雨','關羽挖開堤壩','風吹起浪'],refs:[guan,yuXu,source('18','龐德傳')]
  },
@@ -72,6 +72,7 @@ export const FOURTEENTH_CHAPTER=stages.map((stage,index)=>{
   name,year:219,chapter:14,number:index+1,faction,place:name,mapPlace:place,originPlace:origin,viaPlaces,viewpointShift:shift,
   scene:`./assets/scenes/${scene}.jpg`,mission,missionTitle,enemyArmy,enemyCount:commander?14:12,interval:3.8,
   noBoss:!commander,bossName:commander||enemyArmy,bossHp:commander?640:0,
+  ...(stage.cargoRuns?{cargoRuns:stage.cargoRuns,fleetDestination:stage.fleetDestination,navalEnemy:stage.navalEnemy,successTitle:'三批軍糧平安送達',successRibbon:'軍 糧 靠 岸 ・ 回 營 整 備'}:{}),
   ...(stage.outpostSites?{outpostSites:stage.outpostSites,successTitle:'樊城解圍',successRibbon:'圍 陣 已 破 ・ 回 營 整 備'}:{}),
   ...(commander?{skillType:'charge',skillName:'圍陣重擊',bossTitle:'圍陣軍官・遊戲改編',duelOutcome:'retreat'}:{}),
   ...(retreatKeys?{retreatKeys,successTitle:'離開麥城',successRibbon:'戰 事 記 錄 ・ 聽 聽 後 記'}:{}),
