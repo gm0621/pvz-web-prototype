@@ -1,13 +1,14 @@
 import {stepDoctrine,duelDoctrine,signature} from './army-doctrine.mjs?v=army-1';
 import {passiveCue,passiveLabel,learnedPassives,passiveName,tickPassives,passiveSnapshot,castPassiveFeedback} from './passive-feedback.mjs?v=passive-feedback-1';
-import {extracted} from './history-missions.mjs?v=changan-bonus-2';
-import {createMission,stepMission,protectBarrier,missionReady,missionDuelReady} from './chapter-missions.mjs?v=changan-bonus-2';
+import {hitGate,siegeLane} from './field-missions.mjs?v=river-gate-1';
+import {extracted} from './history-missions.mjs?v=river-gate-1';
+import {createMission,stepMission,protectBarrier,missionReady,missionDuelReady} from './chapter-missions.mjs?v=river-gate-1';
 import {duelBeats} from './duel-patterns.mjs?v=passive-feedback-1';
 export {duelBeats} from './duel-patterns.mjs?v=passive-feedback-1';
 import {WEATHER_GENERALS} from './weather-generals.mjs?v=passive-feedback-1';
-import {campaignState,weaponBonus} from './campaign.mjs?v=changan-bonus-2';
-import {heroSkill} from './skills.mjs?v=changan-bonus-2';
-import {heroesForLevel,STAGES,UNLOCKS,FEATURES} from './story.mjs?v=changan-bonus-2';
+import {campaignState,weaponBonus} from './campaign.mjs?v=river-gate-1';
+import {heroSkill} from './skills.mjs?v=river-gate-1';
+import {heroesForLevel,STAGES,UNLOCKS,FEATURES} from './story.mjs?v=river-gate-1';
 
 export const SWING={duration:.58,impact:.24,frameTime:.08,frames:6};
 export const DUEL_DURATION=19;
@@ -100,18 +101,19 @@ function effect(b,type,lane,from,to=from,details={}){const duration=['roar','cle
 function spawn(b){
  const stage=STAGES[b.level-1],boss=b.spawned>=stage.enemyCount;
  if(boss&&stage.noBoss){b.bossSpawned=true;b.nextSpawn=Infinity;return}
- const lane=boss?Math.floor(lanesFor(b)/2):lanesFor(b)===3?([1,0,2][b.spawned%3]):(b.spawned+Math.floor(b.spawned/lanesFor(b))*(lanesFor(b)===4?1:2))%lanesFor(b);
+ const lane=boss?Math.floor(lanesFor(b)/2):b.mission?.kind==='siege'?siegeLane(b):lanesFor(b)===3?([1,0,2][b.spawned%3]):(b.spawned+Math.floor(b.spawned/lanesFor(b))*(lanesFor(b)===4?1:2))%lanesFor(b);
+ const naval=b.mission?.kind==='naval';
  const heavy=!boss&&b.level>=UNLOCKS.shields&&b.spawned%4===3;
  const ranged=b.level<17&&!boss&&!heavy&&b.level>=4&&b.spawned%6===4;
  const hp=ranged?46+Math.min(6,b.level)*3:boss?stage.bossHp:Math.round(48+Math.min(6,b.level)*6+(heavy?35:0));
- b.enemies.push({id:b.nextId++,lane,x:.94,hp,maxHp:hp,boss,ranged,name:boss?stage.bossName:b.level>=17?(stage.enemyArmy?(stage.enemyArmy+(heavy?'盾兵':'步兵')):(heavy?'董軍盾兵':'董軍刀兵')):ranged?'黃巾弓手':heavy?'黃巾盾賊':'黃巾刀賊',shielded:heavy||(boss&&b.level===5),stunnedUntil:0,damage:ranged?8:boss?17+Math.min(6,b.level):7+Math.min(6,b.level),rate:ranged?2.6:boss?1.6:1.5,speed:boss?.019:.027+random(b)*.004,lastAttack:b.time,flash:0,action:'marching'});
+ b.enemies.push({id:b.nextId++,lane,x:.94,hp,maxHp:hp,boss,ranged,name:boss?stage.bossName:naval?(heavy?'吳軍重船':'吳軍巡船'):b.level>=17?(stage.enemyArmy?(stage.enemyArmy+(heavy?'盾兵':'步兵')):(heavy?'董軍盾兵':'董軍刀兵')):ranged?'黃巾弓手':heavy?'黃巾盾賊':'黃巾刀賊',shielded:heavy||(boss&&b.level===5),stunnedUntil:0,damage:ranged?8:boss?17+Math.min(6,b.level):7+Math.min(6,b.level),rate:ranged?2.6:boss?1.6:1.5,speed:boss?.019:.027+random(b)*.004,lastAttack:b.time,flash:0,action:'marching'});
  if(b.level===14&&!boss&&[0,6,12].includes(b.spawned)){for(const side of [0,2])b.enemies.push({id:b.nextId++,lane:side,x:.97,hp:52,maxHp:52,name:'黃旗衝鋒兵',elite:true,boss:false,damage:9,rate:1.5,speed:.04,lastAttack:b.time,flash:0});b.skillNotice={key:'enemy',text:`第 ${Math.floor(b.spawned/6)+1} 波・黃旗衝鋒`,until:b.time+3};}
  if(ranged){b.notice='黃巾弓手出現！會在遠處蓄力射箭，換路避箭或派武將逼近。';b.noticeUntil=b.time+5;}
- if(!boss&&b.level>=3){
+ if(!boss&&b.level>=3&&b.mission?.kind!=='siege'){
   const number=b.spawned+1,ambushes=[Math.max(3,Math.ceil(stage.enemyCount*.35)),Math.max(6,Math.ceil(stage.enemyCount*.7))];
   if(ambushes.includes(number)){
    const raidLane=(lane+(lanesFor(b)===3?(number%2?1:2):1+(b.level+number)%(lanesFor(b)-1)))%lanesFor(b),raidHp=Math.round(35+Math.min(10,b.level)*3);
-   b.enemies.push({id:b.nextId++,lane:raidLane,x:.97,hp:raidHp,maxHp:raidHp,boss:false,elite:true,name:(stage.enemyArmy||(b.level>=17?'董軍':'黃巾'))+'疾行兵',shielded:false,stunnedUntil:0,damage:8+Math.min(6,b.level),rate:1.25,speed:.042+random(b)*.003,lastAttack:b.time,flash:0,action:'marching'});
+   b.enemies.push({id:b.nextId++,lane:raidLane,x:.97,hp:raidHp,maxHp:raidHp,boss:false,elite:true,name:naval?'吳軍快船':(stage.enemyArmy||(b.level>=17?'董軍':'黃巾'))+'疾行兵',shielded:false,stunnedUntil:0,damage:8+Math.min(6,b.level),rate:1.25,speed:.042+random(b)*.003,lastAttack:b.time,flash:0,action:'marching'});
    b.notice=`${stage.enemyArmy||(b.level>=17?'董軍':'黃巾')}突襲！疾行兵從${laneLabel(b,raidLane)}路逼近，快換路補位！`;b.noticeUntil=b.time+4;
    b.skillNotice={key:'enemy',text:`${stage.enemyArmy||(b.level>=17?'董軍':'黃巾')}突襲・${laneLabel(b,raidLane)}路疾行兵！`,until:b.time+2.5};
   }
@@ -271,7 +273,8 @@ export function stepBattle(b,seconds){
   if(!e.boss&&b.time-(e.swingStartedAt??-100)<ENEMY_SWING.duration){e.action='striking';continue}
   if(target&&e.x-target.x<=.075){if(b.time-e.lastAttack>=e.rate){e.lastAttack=b.time;const damage=e.damage*(b.time<(e.tacticWeakenUntil||0)?.7:1)*(b.time<(e.rallyUntil||0)?1.3:1);if(e.boss){e.flash=.32;effect(b,'enemy-slash',e.lane,e.x,target.x);damageAlly(b,target,damage);target.flash=.2}else{e.swingStartedAt=b.time;e.pendingStrike={targetId:target.id,impactAt:b.time+ENEMY_SWING.impact,damage};e.action='striking'}}}
   else {e.action='marching';e.x-=e.speed*dt*(b.time<(e.rallyUntil||0)?1.35:1);}
-  if(e.x<.025){e.hp=0;e.escaped=true;if(e.boss&&!e.support)b.lossReason='commander-breach';effect(b,'breach',e.lane,.025,-.12,{enemy:true,boss:e.boss,shielded:e.shielded,ranged:e.ranged});b.lives--;b.notice='敵軍突破！留意其他路線。';b.noticeUntil=b.time+3}
+  if(e.x<.025){e.hp=0;e.escaped=true;if(e.boss&&!e.support)b.lossReason='commander-breach';effect(b,'breach',e.lane,.025,-.12,{enemy:true,boss:e.boss,shielded:e.shielded,ranged:e.ranged});if(b.mission?.kind==='siege'){hitGate(b,e);b.notice=b.mission.message}
+   else{b.lives--;b.notice='敵軍突破！留意其他路線。'}b.noticeUntil=b.time+3}
  }
  if(b.level>=UNLOCKS.oath&&!b.oathUsed&&['liubei','guanyu','zhangfei'].every(key=>b.allies.some(u=>u.key===key&&u.hp>0))){b.oathUsed=true;b.oathBuffUntil=b.time+5;for(const ally of b.allies)if(ally.hp>0){ally.hp=Math.min(ally.maxHp,ally.hp+55);effect(b,'oath',ally.lane,ally.x)}const name=stage.faction&&stage.faction!=='shu'?'同袍合陣':'桃園同心';b.skillNotice={key:'liubei',text:`合擊・${name}`,until:b.time+2.2};b.notice=name+'！全軍回復，五秒內攻擊提升。';b.noticeUntil=b.time+5}
  for(const unit of [...b.allies,...b.enemies])if(unit.hp<=0&&!unit.escaped){const captured=unit.boss&&!unit.support&&stage.duelOutcome==='capture',retreat=unit.boss&&(stage.duelOutcome==='retreat'||unit.support);effect(b,captured?'capture':retreat?'retreat':'defeat',unit.lane,unit.x,retreat?1.1:unit.x,{key:unit.key||null,enemy:!unit.key,boss:!!unit.boss,shielded:!!unit.shielded,ranged:!!unit.ranged,bossName:unit.name});if(captured){b.bossCaptured=true;b.notice=unit.name+'已被俘，繼續清退餘兵。';b.noticeUntil=b.time+4}if(retreat)b.bossRetreated=true;if(unit.key&&!troop(b,unit.key))b.cooldowns[unit.key]=b.time+12}
@@ -279,8 +282,10 @@ export function stepBattle(b,seconds){
  b.allies=b.allies.filter(u=>u.hp>0);b.enemies=b.enemies.filter(u=>u.hp>0);
  // Recheck evacuation after this tick's damage and movement, without advancing mission time.
  if(['withdraw','decoy'].includes(b.mission?.kind))stepMission(b,0);
- if(b.lives<=0||b.lossReason==='commander-breach'){b.over=true;b.won=false}
- else if(extracted(b)||b.bossSpawned&&!b.enemies.length&&missionReady(b)){b.over=true;b.won=true}
+ const cleared=b.bossSpawned&&!b.enemies.length;
+ if(b.mission?.kind==='siege')b.mission.done=cleared&&b.mission.gate>0;
+ if(b.lives<=0||b.lossReason==='commander-breach'||b.lossReason==='gate-broken'){b.over=true;b.won=false}
+ else if(extracted(b)||cleared&&missionReady(b)){b.over=true;b.won=true}
 }
 
 export function damageAlly(b,u,amount){const incoming=amount;amount=amount>0?Math.max(1,amount-(u.damageReduction||0)):0;if(incoming>amount&&u.heroId){const d=battleHeroes(b)[u.key];passiveCue(b,u,`${passiveLabel(d,'damageReduction','護身')} · 減傷 ${Number((incoming-amount).toFixed(1))}`,'guard')}const blocked=Math.min(u.shield||0,amount);u.shield=Math.max(0,(u.shield||0)-blocked);u.hp-=amount-blocked}

@@ -5,7 +5,7 @@ const stages=[
  {name:'西陵守圍',year:272,route:'樂鄉 → 西陵',leader:'陸抗',guest:'陸抗',opponent:'羊祜',role:'江陵另路',matchup:'晉援軍・羊祜另一路往江陵',wu:true,enemyArmy:'晉軍援兵',kind:'holdout',outcome:'陸抗拿回西陵，晉軍撤退'},
  {name:'襄陽交印',year:278,route:'襄陽',leader:'杜預',guest:'杜預',opponent:'羊祜',role:'舉薦',station:'接任地',kind:'dispatch',outcome:'羊祜舉薦的杜預接掌荊州'},
  {name:'益州備舟',year:279,route:'益州',leader:'王濬',guest:'王濬',station:'備舟地',kind:'supply',outcome:'王濬的船隊從長江上游出發'},
- {name:'西陵順流',year:280,route:'永安 → 西陵',leader:'王濬',guest:'王濬',enemyArmy:'吳軍沿江守兵',kind:'dispatch',outcome:'這次西陵落入晉軍手中'},
+ {name:'西陵順流',year:280,route:'永安 → 西陵',leader:'王濬',guest:'王濬',enemyArmy:'吳軍巡江船隊',kind:'naval',outcome:'這次西陵落入晉軍手中'},
  {name:'孫皓受降',year:280,route:'武昌 → 石頭城',leader:'王濬',guest:'孫皓',opponent:'孫皓',role:'請降',kind:'restoration',sites:['降書','印綬','城門'],outcome:'孫皓在石頭城向王濬投降'}
 ];
 
@@ -266,6 +266,22 @@ test('stage 136 continues through the surrender of Wu and keeps campaign saves o
    await tap('#cards [data-hero=archer]');
    await page.locator('.lane').nth(2).tap({position:{x:40,y:25}});
    await advance(18500);
+  }else if(stage.kind==='naval'){
+   await expect(page.locator('#fleetMarker')).toBeVisible();
+   await expect(page.locator('.lane-label')).toHaveText(['北岸','主航道','南岸']);
+   const main=page.locator('.lane').nth(1);
+   for(let step=0;step<18&&await main.getAttribute('data-hazard')!=='blocked';step++)await advance(500);
+   await expect(main).toHaveAttribute('data-hazard','blocked');
+   const before=await snapshot();
+   await advance(250);
+   expect((await snapshot()).mission.travel).toBe(before.mission.travel);
+   await tap('#missionQuickAction');
+   await expect(page.locator('#missionChoices button').nth(1)).toBeDisabled();
+   await tap('#missionChoices button:first-child');
+   expect((await snapshot()).mission).toMatchObject({lane:0,travel:before.mission.travel});
+   await tap('#missionDrawerClose');
+   await advance(13500);
+   expect((await snapshot()).mission).toMatchObject({done:true,travel:1});
   }else if(stage.kind==='dispatch'){
    await tap('#missionDrawerButton');
    await tap('#missionChoices [data-action=route]:first-child');

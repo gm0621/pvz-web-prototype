@@ -1,0 +1,42 @@
+#field[data-terrain=naval] .lane{
+ background:
+  repeating-linear-gradient(166deg,#d9f6f337 0 2px,transparent 3px 19px),
+  linear-gradient(90deg,#245c67dc,#357d8ddd 46%,#296674dc);
+ border-bottom-color:#afdfdd;
+}
+#field[data-terrain=naval] .lane[data-hazard=warning]{
+ box-shadow:inset 0 0 0 3px #ffc967;
+}
+#field[data-terrain=naval] .lane[data-hazard=blocked]{
+ background:repeating-linear-gradient(135deg,#51413bdc 0 12px,#975737df 12px 23px);
+}
+#field[data-terrain=naval] .lane-label{background:#123e4b;color:#fff5d2}
+#field[data-terrain=naval] .lane[data-hazard]:not([data-hazard=""]) .lane-label{background:#75341e;color:#fff3bd}
+#field[data-terrain=naval] .unit-shadow{
+ width:45px;height:9px;background:#403026;opacity:1;
+ border-bottom:3px solid #be915f;border-radius:0 0 42% 42%;
+}
+#fleetMarker{
+ position:absolute;z-index:4;transform:translate(-50%,-50%);
+ display:grid;justify-items:center;pointer-events:none;
+}
+#fleetMarker[hidden]{display:none}
+#fleetMarker i{
+ width:32px;height:20px;background:#eed8a1;
+ clip-path:polygon(55% 2%,61% 2%,61% 18%,90% 76%,61% 76%,61% 85%,100% 85%,86% 100%,12% 100%,0 85%,55% 85%,55% 76%,20% 76%,55% 17%);
+}
+#fleetMarker span{
+ padding:1px 6px;border-radius:6px;background:#173e4d;color:#fff2cf;
+ font-size:12px;font-weight:800;white-space:nowrap;border:1px solid #eed8a1;
+}
+#siegeWall{position:absolute;inset:0 auto 0 0;width:9px;pointer-events:none;z-index:1;background:repeating-linear-gradient(#a1967f 0 12px,#605342 12px 14px);border-right:2px solid #4d4032}
+#siegeWall[hidden]{display:none}
+#field[data-terrain=siege] .lane[data-threat=true]{box-shadow:inset -5px 0 #edab4f,inset 0 0 0 2px #edab4f}
+#lives[data-gate]{
+ overflow:hidden;min-width:89px;padding:2px 6px 4px;border-radius:6px;
+ background:linear-gradient(to right,#dfb15c var(--gate),#bcb39e var(--gate)) left bottom/100% 3px no-repeat,#382f28;
+ color:#fff2cc;white-space:nowrap;
+}
+#field[data-terrain=naval] .lane[data-hazard]:not([data-hazard=""]) .lane-capacity{left:124px}
+body.battle-focus .battle-stats:has(#lives[data-gate])>span{white-space:nowrap}
+body.battle-focus #lives[data-gate]{font-size:12px;min-width:auto}

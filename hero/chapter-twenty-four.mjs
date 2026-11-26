@@ -53,9 +53,9 @@ const stages=[
  {
   name:'西陵順流',year:280,origin:'jinYongan',place:'xiling',
   leader:'王濬',guest:'王濬',historyCast:['王濬','杜預'],
-  mission:'dispatch',scene:'mountain-front',enemyArmy:'吳軍沿江守兵',enemyCount:12,successTitle:'沿江軍令送達',
+  mission:'naval',scene:'mountain-front',enemyArmy:'吳軍巡江船隊',enemyCount:12,successTitle:'主船抵達西陵',
   history:'280 年，王濬率船隊順長江東下，晉軍攻下西陵等據點。杜預從另一條路進軍江陵。兩路推進後，王濬繼續向長江下游前進。',
-  briefing:'接應三隊傳令使者，並清退場上的沿江守兵。若有路受阻，可改走有友軍的路。',
+  briefing:'派友軍替主船護航。主航道較快，亮出封航預警時可按「改走航道」。護送主船到西陵，再清退剩餘敵軍。',
   ending:'這次西陵落入晉軍手中。王濬繼續向東，後來經武昌直往東吳都城建業。',
   camp:'沿江的消息已經接到。把受傷的人和補給先安頓好，這一路還沒走完。',
   question:'280 年攻下西陵等據點的晉軍船隊，由誰率領？',choices:['王濬','一位吳國使者','襄陽的農兵'],refs:[wangJun,duYu,tongjian81]

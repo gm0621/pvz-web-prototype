@@ -1,9 +1,12 @@
-import {HISTORICAL_STAGES} from './history-stages.mjs?v=changan-bonus-2';
-import {missionText} from './chapter-missions.mjs?v=changan-bonus-2';
-import {retreatPartyNames,retreatPartyLabel,supplyReady} from './history-missions.mjs?v=changan-bonus-2';
+import {HISTORICAL_STAGES} from './history-stages.mjs?v=river-gate-1';
+import {missionText} from './chapter-missions.mjs?v=river-gate-1';
+import {retreatPartyNames,retreatPartyLabel,supplyReady} from './history-missions.mjs?v=river-gate-1';
 const names=['上','中','下'];
 export function missionQuickState(b){
- const m=b.mission;if(!m)return null;const stage=HISTORICAL_STAGES[b.level-17];if(!['supply','withdraw','decoy'].includes(m.kind))return {text:missionText(b),button:m.done?'查看目標':'進行任務'};
+ const m=b.mission;if(!m)return null;
+ if(m.kind==='naval')return {heading:'水戰 · 護送主船',text:missionText(b),button:m.done?'查看任務':'改走航道'};
+ if(m.kind==='siege')return {heading:'守城戰 · 守住城門',text:missionText(b),button:'修補城門',action:'repair'};
+ const stage=HISTORICAL_STAGES[b.level-17];if(!['supply','withdraw','decoy'].includes(m.kind))return {text:missionText(b),button:m.done?'查看目標':'進行任務'};
  if(m.kind==='supply'){
   const cleared=stage?.enemyCount!==0&&b.bossSpawned&&!b.enemies.some(e=>e.hp>0),prefix=`軍糧 ${m.delivered}／3`;
   if(m.done)return {text:`${prefix} · 運糧完成${stage?.enemyCount===0?'':'，清退餘兵'}`,button:'查看任務'};
@@ -30,5 +33,5 @@ export function missionQuickState(b){
 }
 export function mountMissionQuick(field,openMission){
  const root=document.createElement('aside');root.id='missionQuick';root.hidden=true;root.setAttribute('aria-label','過關任務');const text=document.createElement('p'),button=document.createElement('button');button.id='missionQuickAction';button.className='gold-button';const heading=document.createElement('strong');heading.textContent='⚑ 過關任務';heading.className='mission-quick-heading';const copy=document.createElement('div');copy.append(heading,text);root.append(copy,button);field.append(root);
- return b=>{const state=missionQuickState(b);root.hidden=!state||b.over||!!b.duel||!!b.introPending;field.classList.toggle('has-mission-quick',!root.hidden);if(!state)return;heading.textContent=b.mission.done?'✓ 任務已完成':'⚑ 過關任務 · 別忘了這一步';text.textContent=state.text;text.title=state.text;button.textContent=state.button;const source=state.action?document.querySelector(`#missionChoices [data-action="${state.action}"]`):null;button.disabled=!!b.paused||!!b.duel||!!b.introPending||b.over||!!source?.disabled;button.onclick=()=>{if(state.action&&source)source.click();else openMission()};const needsChoice=!b.mission.done&&[...document.querySelectorAll('#missionChoices button')].some(x=>!x.disabled);root.dataset.ready=String((!!state.action||needsChoice)&&!button.disabled);root.style.setProperty('--mission-glow',String(matchMedia('(prefers-reduced-motion: reduce)').matches?0:.35+.25*Math.sin(b.time*3)));const top=document.getElementById('missionDrawerButton');if(top){top.textContent=b.mission.done?'任務 ✓':needsChoice?'任務！':'任務';top.dataset.pending=String(needsChoice)}};
+ return b=>{const state=missionQuickState(b);root.hidden=!state||b.over||!!b.duel||!!b.introPending;field.classList.toggle('has-mission-quick',!root.hidden);if(!state)return;heading.textContent=b.mission.done?'✓ 任務已完成':state.heading||'⚑ 過關任務 · 別忘了這一步';text.textContent=state.text;text.title=state.text;button.textContent=state.button;const source=state.action?document.querySelector(`#missionChoices [data-action="${state.action}"]`):null;button.disabled=!!b.paused||!!b.duel||!!b.introPending||b.over||!!source?.disabled;button.onclick=()=>{if(state.action&&source)source.click();else openMission()};const needsChoice=!b.mission.done&&[...document.querySelectorAll('#missionChoices button')].some(x=>!x.disabled);root.dataset.ready=String((!!state.action||needsChoice)&&!button.disabled);root.style.setProperty('--mission-glow',String(matchMedia('(prefers-reduced-motion: reduce)').matches?0:.35+.25*Math.sin(b.time*3)));const top=document.getElementById('missionDrawerButton');if(top){top.textContent=b.mission.done?'任務 ✓':needsChoice?'任務！':'任務';top.dataset.pending=String(needsChoice)}};
 }

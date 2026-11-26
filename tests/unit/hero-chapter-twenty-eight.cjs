@@ -17,7 +17,7 @@ test('the optional Luoyang campaign extends stage 160 saves and preserves the hi
  assert.equal(rewardVictory(progress,160),0);
  assert.equal(chapter.length,6);
  assert.deepEqual(chapter.map(stage=>stage.year),[302,302,302,303,303,304]);
- assert.deepEqual(chapter.map(stage=>stage.mission),['dispatch','dispatch','holdout','restoration','holdout','withdraw']);
+ assert.deepEqual(chapter.map(stage=>stage.mission),['dispatch','dispatch','holdout','restoration','siege','withdraw']);
  for(const [index,stage] of chapter.entries()){
   const level=161+index;
   assert.deepEqual(chapterInfo(level),{chapter:28,number:index+1,count:6,title:'洛陽風雲'});

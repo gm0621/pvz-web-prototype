@@ -1,4 +1,4 @@
-import {mapPersonSvg} from './characters.mjs?v=changan-bonus-2';
+import {mapPersonSvg} from './characters.mjs?v=river-gate-1';
 
 const standardHeight=304,dualHeight=374;
 

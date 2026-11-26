@@ -1,4 +1,4 @@
-import {lateJinChapter} from './late-jin-chapter.mjs?v=changan-bonus-2';
+import {lateJinChapter} from './late-jin-chapter.mjs?v=river-gate-1';
 
 const source=(title,path)=>({title,url:'https://zh.wikisource.org/zh-hant/'+path});
 const hui=source('《晉書》・惠帝紀','晉書/卷004');

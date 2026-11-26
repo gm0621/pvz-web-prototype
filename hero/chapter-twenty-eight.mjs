@@ -1,4 +1,4 @@
-import {lateJinChapter} from './late-jin-chapter.mjs?v=changan-bonus-2';
+import {lateJinChapter} from './late-jin-chapter.mjs?v=river-gate-1';
 
 const source=(title,path)=>({title,url:`https://zh.wikisource.org/zh-hant/${path}`});
 const hui=source('《晉書》・惠帝紀','晉書/卷004');
@@ -52,9 +52,9 @@ const stages=[
  {
   name:'兩王攻洛',year:303,origin:'ye',place:'luoyang',shift:true,factionLabel:'洛陽迎戰隊',campBanner:'長',
   leader:'陸機',guide:'司馬乂',guest:'司馬乂',opponent:'張方',mapLeaderRole:'鄴路・司馬穎部',mapOpponentRole:'長安路・司馬顒部',mapSecondaryOrigin:'jinChangan',historyCast:['司馬穎','司馬顒','陸機','張方','司馬乂'],
-  mission:'holdout',missionTitle:'洛陽外圍守備',scene:'enemy-camp',enemyArmy:'攻洛聯軍',enemyCount:12,successTitle:'外圍守備完成',
+  mission:'siege',scene:'enemy-camp',enemyArmy:'攻洛聯軍',enemyCount:12,successTitle:'這一輪守住了',
   history:'成都王司馬穎以陸機統兵，從鄴城一方進逼洛陽。河間王司馬顒派張方從關中出兵。司馬乂在洛陽抵抗，戰事打了幾個月。',
-  briefing:'玩家照應洛陽守軍。各路駐守累積 24 秒，並清退全部敵軍。',
+  briefing:'看下一波從哪一路來，派友軍擋在城門前。城門受損可修兩次。撐到敵軍全數清退，就守住這一輪。',
   ending:'司馬乂率軍抵抗兩路攻勢，圍城卻仍未解除。城內糧食漸少，守軍和百姓都越來越辛苦。',
   camp:'先把糧袋交給缺糧的地方。每一隊回報還能走哪條路，好讓下一班守衛有路可走。',
   question:'兩路攻洛的軍隊，分別從哪兩地出兵？',choices:['鄴城與長安','成都與建業','許昌與江陵'],refs:[hui,changsha,lu,zhang]

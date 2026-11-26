@@ -1,38 +1,39 @@
-import {CHAPTER_NUMERALS,MAIN_STORY_END,MAIN_STORY_CLEAR,BONUS_TITLE,WESTERN_JIN_END,LUOYANG_END,LUOYANG_BONUS_TITLE,CHANGAN_BONUS_TITLE} from './campaign-config.mjs?v=changan-bonus-2';
-import {mountFinale} from './finale-view.mjs?v=changan-bonus-2';
-import {mountExperienceView} from './experience-view.mjs?v=changan-bonus-2';
+import {CHAPTER_NUMERALS,MAIN_STORY_END,MAIN_STORY_CLEAR,BONUS_TITLE,WESTERN_JIN_END,LUOYANG_END,LUOYANG_BONUS_TITLE,CHANGAN_BONUS_TITLE} from './campaign-config.mjs?v=river-gate-1';
+import {mountFinale} from './finale-view.mjs?v=river-gate-1';
+import {GATE_MAX,channelHazard,channelName,siegeLane} from './field-missions.mjs?v=river-gate-1';
+import {mountExperienceView} from './experience-view.mjs?v=river-gate-1';
 import {preloadBattleAssets,battleAssetsReady,prepareBattleAssets} from './battle-assets.mjs?v=images-1';
-import {mountBattleFocus} from './battle-focus.mjs?v=changan-bonus-2';
+import {mountBattleFocus} from './battle-focus.mjs?v=river-gate-1';
 import {advanceAutoSkills} from './auto-skills.mjs?v=battle-focus-1';
 import {renderPassiveFeedback} from './passive-view.mjs?v=passive-feedback-1';
-import {mountSkillIntro} from './skill-intro.mjs?v=changan-bonus-2';
-import {beginReading,installStoryReader} from './story-reader.mjs?v=changan-bonus-2';
+import {mountSkillIntro} from './skill-intro.mjs?v=river-gate-1';
+import {beginReading,installStoryReader} from './story-reader.mjs?v=river-gate-1';
 import {shortPages} from './story-pages.mjs?v=passive-feedback-1';
-import {configureRoster,configurePeachRoster,configureSunRoster,awardExperience,SLOTS,ALL_GENERALS as GENERALS} from './roster.mjs?v=changan-bonus-2';
-import {openDeployment,mountActiveSkills} from './roster-view.mjs?v=changan-bonus-2';
-import {castActive,lanesFor,laneLabel} from './engine.mjs?v=changan-bonus-2';
-import {mountSkillGuide} from './skill-guide.mjs?v=changan-bonus-2';
-import {battleBossPortrait,renderPeople,STORY_PEOPLE} from './characters.mjs?v=changan-bonus-2';
-import {factionFor,stageFactionTitle,enemyPortrait,paintPortrait} from './factions.mjs?v=changan-bonus-2';
-import {mountHistoryLesson} from './history-view.mjs?v=changan-bonus-2';
-import {renderSkillCutin} from './skill-cutin.mjs?v=changan-bonus-2';
-import {renderMasterCutin} from './master-cutin.mjs?v=changan-bonus-2';
-import {renderBossCutin} from './boss-cutin.mjs?v=changan-bonus-2';
+import {configureRoster,configurePeachRoster,configureSunRoster,awardExperience,SLOTS,ALL_GENERALS as GENERALS} from './roster.mjs?v=river-gate-1';
+import {openDeployment,mountActiveSkills} from './roster-view.mjs?v=river-gate-1';
+import {castActive,lanesFor,laneLabel} from './engine.mjs?v=river-gate-1';
+import {mountSkillGuide} from './skill-guide.mjs?v=river-gate-1';
+import {battleBossPortrait,renderPeople,STORY_PEOPLE} from './characters.mjs?v=river-gate-1';
+import {factionFor,stageFactionTitle,enemyPortrait,paintPortrait} from './factions.mjs?v=river-gate-1';
+import {mountHistoryLesson} from './history-view.mjs?v=river-gate-1';
+import {renderSkillCutin} from './skill-cutin.mjs?v=river-gate-1';
+import {renderMasterCutin} from './master-cutin.mjs?v=river-gate-1';
+import {renderBossCutin} from './boss-cutin.mjs?v=river-gate-1';
 import {mountBattleKeys} from './battle-keys.mjs?v=battle-focus-1';
-import {mountJourney} from './journey-view.mjs?v=changan-bonus-2';
-import {renderMission} from './chapter-mission-view.mjs?v=changan-bonus-2';
-import {mountCampaignMap} from './campaign-map.mjs?v=changan-bonus-2';
-import {advanceBattleFrame,normalizeBattleSpeed} from './battle-speed.mjs?v=changan-bonus-2';
-import {mountNovel} from './novel.mjs?v=changan-bonus-2';
-import {mountCamp} from './camp-view.mjs?v=changan-bonus-2';
-import {rewardVictory,useSupply,weaponsForLevel} from './campaign.mjs?v=changan-bonus-2';
+import {mountJourney} from './journey-view.mjs?v=river-gate-1';
+import {renderMission} from './chapter-mission-view.mjs?v=river-gate-1';
+import {mountCampaignMap} from './campaign-map.mjs?v=river-gate-1';
+import {advanceBattleFrame,normalizeBattleSpeed} from './battle-speed.mjs?v=river-gate-1';
+import {mountNovel} from './novel.mjs?v=river-gate-1';
+import {mountCamp} from './camp-view.mjs?v=river-gate-1';
+import {rewardVictory,useSupply,weaponsForLevel} from './campaign.mjs?v=river-gate-1';
 import {createFirstGuide} from './first-guide.mjs?v=passive-feedback-1';
-import {mountStoryTask} from './story-play.mjs?v=changan-bonus-2';
-import {CHAPTER_BACKGROUNDS,STAGE_LEADS} from './prologue.mjs?v=changan-bonus-2';
-import {setMusic,setMusicMode,setMusicHome,musicTheme,musicOn,setSfx,unlockAudio,hitSound} from './audio.mjs?v=changan-bonus-2';
-import {renderDuel} from './duel-view.mjs?v=changan-bonus-2';
-import {chapterInfo,enemyArt,HEROES as BASE_HEROES,heroesForLevel,STAGES,ENEMY_ART,SHIELD_ART,FEATURES,heroDescription} from './story.mjs?v=changan-bonus-2';
-import {bossProfile,LANE_CAPACITY,laneCount,ENEMY_SWING,enemyAttackFrame,skipDuelEntrance,positionHero,commandHero,moveHero,BOSS_SKILLS,SAVE_KEY,normalizeProgress,createBattle,deploy,canDeploy,attackFrame,SWING} from './engine.mjs?v=changan-bonus-2';
+import {mountStoryTask} from './story-play.mjs?v=river-gate-1';
+import {CHAPTER_BACKGROUNDS,STAGE_LEADS} from './prologue.mjs?v=river-gate-1';
+import {setMusic,setMusicMode,setMusicHome,musicTheme,musicOn,setSfx,unlockAudio,hitSound} from './audio.mjs?v=river-gate-1';
+import {renderDuel} from './duel-view.mjs?v=river-gate-1';
+import {chapterInfo,enemyArt,HEROES as BASE_HEROES,heroesForLevel,STAGES,ENEMY_ART,SHIELD_ART,FEATURES,heroDescription} from './story.mjs?v=river-gate-1';
+import {bossProfile,LANE_CAPACITY,laneCount,ENEMY_SWING,enemyAttackFrame,skipDuelEntrance,positionHero,commandHero,moveHero,BOSS_SKILLS,SAVE_KEY,normalizeProgress,createBattle,deploy,canDeploy,attackFrame,SWING} from './engine.mjs?v=river-gate-1';
 
 const $=id=>document.getElementById(id);
 let HEROES=BASE_HEROES;
@@ -197,7 +198,7 @@ function buildControls(){
 
 }
 function buildDeploymentControls(){
- const labels=Array.from({length:battle?.laneTotal||3},(_,i)=>(battle?.laneTotal>3?`第 ${i+1}`:['上','中','下'][i])+'路');$('lanes').style.gridTemplateRows=`repeat(${labels.length},1fr)`;$('field').dataset.lanes=labels.length;
+ const labels=Array.from({length:lanesFor(battle)},(_,i)=>battle.mission?.kind==='naval'?channelName(battle,i):laneLabel(battle,i)+'路');$('lanes').style.gridTemplateRows=`repeat(${labels.length},1fr)`;$('field').dataset.lanes=labels.length;
  $('lanes').replaceChildren(...labels.map((label,lane)=>{const b=document.createElement('button');b.type='button';b.className='lane';b.dataset.lane=lane;b.setAttribute('aria-label',`${label}，點擊出兵`);b.innerHTML=`<span class="lane-label">${label}</span><span class="lane-capacity"></span><span class="deploy-zone-label">出兵區</span><span class="lane-direction" aria-hidden="true">→　→　→</span><span class="enemy-zone-label" aria-hidden="true">敵軍 ←</span>`;b.onclick=event=>{
   if(!selected){battle.notice='先選下方一張兵卡，再點路線。';battle.noticeUntil=battle.time+3;renderBattle();return}
   const active=selectedUnit();
@@ -259,7 +260,12 @@ function renderBattle(){
  $('orders').hidden=!controlled;$('orderStatus').textContent=controlled?`${HEROES[selected].short} · ${{forward:'前進中',back:'後退中',hold:'駐守'}[controlled.order]||'自動前進'} · 換路${Math.max(0,Math.ceil((controlled.moveReadyAt||0)-battle.time))}秒`:'選擇已出戰武將，可調整位置';
  for(const button of $('orders').querySelectorAll('button')){const order=button.dataset.order;if(order==='up'||order==='down'){const target=controlled?controlled.lane+(order==='up'?-1:1):-1;const full=target>=0&&target<lanesFor(battle)&&laneCount(battle,target)>=LANE_CAPACITY;button.textContent=(order==='up'?'↑ ':'↓ ')+(full?'該路已滿':order==='up'?'上移':'下移');button.title=full?'先調走該路一名友軍，再移入':''}button.disabled=!controlled||battle.paused||battle.over||!!battle.duel||!!battle.introPending||((order==='up'||order==='down')&&(battle.time<(controlled.moveReadyAt||0)||(order==='up'?controlled.lane===0:controlled.lane===lanesFor(battle)-1)));}
  if(battle.introPending&&!$('bossIntro').open){const stage=STAGES[battle.level-1];paintPortrait($('bossIntroArt'),battleBossPortrait(stage.bossName,battle.level));$('bossIntroArt').alt=stage.bossName;$('bossIntroTitle').textContent=`${stage.bossTitle||'敵軍大將'}・${stage.bossName}`; $('bossIntroText').textContent=stage.bossIntro||(battle.level===3?'鄧茂：「黃巾先鋒鄧茂在此！誰敢擋我大軍？」\n張飛：「燕人張翼德在此！待俺前來會你！」':`${stage.bossName}：「想過此地，先接我一招！」\n劉備：「眾將留意，照應三路！」`); $('bossIntroTip').textContent=stage.bossTip||`${BOSS_SKILLS[battle.level-1]}：蓄力後重擊同路近處友軍。點場上武將，再點戰場位置即可調動（換路冷卻 2 秒）。`;const steps=[];if(stage.duelHero){if(stage.mission==='barrier')steps.push('先依符號提示，破掉兩面真旗');if(stage.duelPartner)steps.push(`${HEROES[stage.duelHero].short}與${HEROES[stage.duelPartner].short}都要存活在場`);if(stage.duelHpRatio)steps.push(`將${stage.bossName}生命打到 ${Math.round(stage.duelHpRatio*100)}% 以下`);steps.push(`讓${HEROES[stage.duelHero].short}與${stage.bossName}同路近身 → ${stage.duelPartner?'聯手交鋒':'自動單挑'}`);}$('bossDuelSteps').replaceChildren(...steps.map(text=>{const li=document.createElement('li');li.textContent=text;return li}));$('bossDuelSteps').hidden=!steps.length;$('bossIntro').showModal();}
- $('food').textContent=Math.floor(battle.food);$('lives').textContent='♥ '.repeat(Math.max(0,battle.lives)).trim()||'防線失守';$('lives').setAttribute('aria-label',`剩餘 ${Math.max(0,battle.lives)} 次防線`);
+ const gate=battle.mission?.gate,lives=$('lives');
+ $('food').textContent=Math.floor(battle.food);
+ lives.toggleAttribute('data-gate',gate!==undefined);
+ if(gate!==undefined)lives.style.setProperty('--gate',`${gate/GATE_MAX*100}%`);
+ lives.textContent=gate===undefined?('♥ '.repeat(Math.max(0,battle.lives)).trim()||'防線失守'):`城門 ${gate}／${GATE_MAX}`;
+ lives.setAttribute('aria-label',gate===undefined?`剩餘 ${Math.max(0,battle.lives)} 次防線`:`城門耐久 ${gate}／${GATE_MAX}`);
  const waveLabel=(stage.noBoss?stage.enemyArmy:null)||'敵軍';
  $('waveText').textContent=stage.enemyCount===0?stage.enemyArmy:battle.bossSpawned
   ?(stage.noBoss?`${waveLabel}已全數出現`:'敵將已出陣')
@@ -277,7 +283,13 @@ function renderBattle(){
   card.querySelector('.ability-description').textContent=description;card.setAttribute('aria-label',`${d.name}，${d.cost} 軍糧，${description}，${card.querySelector('.card-status').textContent}`);
   card.querySelector('.cooldown i').style.width=`${active?100:Math.max(0,100-remaining/((key==='archer'||d.troop)?d.cooldown:12)*100)}%`;
  }
- for(const lane of $('lanes').children){const index=Number(lane.dataset.lane),unit=selectedUnit(),ready=unit?unit.lane!==index&&battle.time>=(unit.moveReadyAt||0)&&laneCount(battle,index)<LANE_CAPACITY:selected&&!canDeploy(battle,selected,index);const count=laneCount(battle,index),full=count>=LANE_CAPACITY;lane.querySelector('.lane-capacity').textContent=`${full?'已滿 ':''}${count}／${LANE_CAPACITY}`;lane.classList.toggle('full',full);lane.setAttribute('aria-label',`${laneLabel(battle,index)}路，${count}／${LANE_CAPACITY} 名友軍${full?'，已滿；可調動本路單位，不能再增援或換入':''}`);lane.classList.toggle('ready',!!ready);lane.disabled=battle.paused||!!battle.duel||!!battle.introPending||battle.over}
+ for(const lane of $('lanes').children){const index=Number(lane.dataset.lane),unit=selectedUnit(),ready=unit?unit.lane!==index&&battle.time>=(unit.moveReadyAt||0)&&laneCount(battle,index)<LANE_CAPACITY:selected&&!canDeploy(battle,selected,index);const count=laneCount(battle,index),full=count>=LANE_CAPACITY;
+  const naval=battle.mission?.kind==='naval',name=naval?channelName(battle,index):laneLabel(battle,index)+'路';
+  const hazard=naval?channelHazard(battle,index):'',warning=hazard==='warning'?'・快封航':hazard==='blocked'?'・封航':'';
+  lane.dataset.hazard=hazard;
+  lane.dataset.threat=String(battle.mission?.kind==='siege'&&battle.spawned<stage.enemyCount&&battle.nextSpawn-battle.time<=3&&index===siegeLane(battle));
+  lane.querySelector('.lane-label').textContent=name+warning;
+  lane.querySelector('.lane-capacity').textContent=`${full?'已滿 ':''}${count}／${LANE_CAPACITY}`;lane.classList.toggle('full',full);lane.setAttribute('aria-label',`${name}${warning}，${count}／${LANE_CAPACITY} 名友軍${full?'，已滿；可調動本路單位，不能再增援或換入':''}`);lane.classList.toggle('ready',!!ready);lane.disabled=battle.paused||!!battle.duel||!!battle.introPending||battle.over}
  for(const button of $('supplies').children){const id=button.dataset.supply;button.textContent=`${id==='herb'?'藥包':'糧袋'} ×${progress.inventory[id]}`;button.disabled=!progress.inventory[id]||battle.paused||battle.over||!!battle.duel||!!battle.introPending}
  $('supplies').hidden=!progress.inventory.herb&&!progress.inventory.grain;
  const living=battle.allies.filter(u=>u.hp>0),picker=$('unitPicker'),select=$('unitSelect');picker.hidden=!living.length;const labels=living.map(u=>{const same=living.filter(a=>a.key===u.key);return {id:String(u.id),label:HEROES[u.key].name+(same.length>1?' '+(same.indexOf(u)+1):'')+' · '+laneLabel(battle,u.lane)+'路'}}),signature=JSON.stringify(labels);if(select.dataset.options!==signature){select.dataset.options=signature;select.replaceChildren(new Option('選友軍，再點路線或調動指令',''),...labels.map(u=>new Option(u.label,u.id)))}select.value=String(selectedUnit()?.id||'');select.disabled=battle.paused||battle.over||!!battle.duel||!!battle.introPending;
@@ -296,7 +308,7 @@ function showResult(){
  document.querySelector('.victory-ribbon').textContent=stage.successRibbon||(stage.successTitle?'保 全 隊 伍 ・ 回 營 整 備':'捷 報 傳 回 ・ 凱 旋 歸 營');
  $('resultMark').textContent=battle.won?(stage.enemyCount===0?'成':stage.successTitle?'全':'勝'):'再起';$('resultChapter').textContent=`第${CHAPTER_NUMERALS[chapterInfo(battle.level).chapter]}章 · ${chapterInfo(battle.level).number}`;
  $('resultTitle').textContent=battle.won?(stage.successTitle||((!STAGES[battle.level]||chapterInfo(battle.level+1).chapter!==chapterInfo(battle.level).chapter)?chapterInfo(battle.level).title:'此戰告捷')):'重整陣形，再來一次';
- $('resultText').textContent=battle.won?stage.victory:battle.lossReason==='commander-breach'?'敵方主將突破防線，本關未完成。調動部隊攔住主將，再挑戰一次。':(stage.noBoss&&stage.bossTip?stage.bossTip:battle.level>=17?`先讓友軍照應${['','','','三','四','五'][lanesFor(battle)]}路，閱讀本關任務；撤軍關不必擊倒主將，接應完成後帶隊退回左側。`:'先讓弓兵照應三路，再用張飛頂住前線、關羽斬擊敵軍、劉備回復友軍。軍糧會持續補給，留意空著的路線。');
+ $('resultText').textContent=battle.won?stage.victory:battle.lossReason==='gate-broken'?'城門失守。下次留意下一波從哪一路來，城門受損時可按「修補城門」。':battle.lossReason==='commander-breach'?'敵方主將突破防線，本關未完成。調動部隊攔住主將，再挑戰一次。':(stage.noBoss&&stage.bossTip?stage.bossTip:battle.level>=17?`先讓友軍照應${['','','','三','四','五'][lanesFor(battle)]}路，閱讀本關任務；撤軍關不必擊倒主將，接應完成後帶隊退回左側。`:'先讓弓兵照應三路，再用張飛頂住前線、關羽斬擊敵軍、劉備回復友軍。軍糧會持續補給，留意空著的路線。');
  $('result').dataset.outcome=battle.won?'victory':'defeat';$('result').dataset.reward=String(progress.coins>balanceBefore);if(battle.won&&!xp.some(x=>x.amount>0))void hitSound('oath');
  $('resultEarned').textContent=`+${progress.coins-balanceBefore}`;$('resultBalance').textContent=progress.coins.toLocaleString('en-US');
  $('resultRewardReason').textContent=!battle.won?'這次未能守住防線，沒有獲得軍資；已有軍資不扣除。':!earned?'本關首次通關獎勵已領取，重玩不重複發放。':progress.coins-balanceBefore<earned?'首次通關！軍資已補至持有上限 99,999。':'首次通關獎勵・80 軍資';

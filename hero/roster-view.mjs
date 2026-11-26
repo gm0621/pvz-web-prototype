@@ -1,16 +1,17 @@
-import {skillButtons} from './skill-preview.mjs?v=changan-bonus-2';
-import {campGrowthCard} from './camp-growth.mjs?v=changan-bonus-2';
+import {skillButtons} from './skill-preview.mjs?v=river-gate-1';
+import {campGrowthCard} from './camp-growth.mjs?v=river-gate-1';
 import {learnedPassives,passiveName} from './passive-feedback.mjs?v=passive-feedback-1';
-import {GENERALS,ALL_GENERALS,DEFAULT_TEAM,SLOTS,heroLevel,growthHint,growthBonuses,nextLesson,activeText,selectedTeam,maxLanes,buyHeroWeapon} from './roster.mjs?v=changan-bonus-2';
-import {paintPortrait} from './factions.mjs?v=changan-bonus-2';
-import {HISTORICAL_STAGES} from './history-stages.mjs?v=changan-bonus-2';
-import {restorationSites} from './history-missions.mjs?v=changan-bonus-2';
+import {GENERALS,ALL_GENERALS,DEFAULT_TEAM,SLOTS,heroLevel,growthHint,growthBonuses,nextLesson,activeText,selectedTeam,maxLanes,buyHeroWeapon} from './roster.mjs?v=river-gate-1';
+import {paintPortrait} from './factions.mjs?v=river-gate-1';
+import {HISTORICAL_STAGES} from './history-stages.mjs?v=river-gate-1';
+import {restorationSites} from './history-missions.mjs?v=river-gate-1';
 const el=(tag,text)=>{const e=document.createElement(tag);if(text)e.textContent=text;return e};
 export function skillSummary(g,level){const bonus=growthBonuses(g,level);return [...g.skills.map(s=>({...s,type:'active'})),...g.passives].sort((a,b)=>a.level-b.level).map(s=>`${level<s.level?'🔒 Lv.'+s.level:s.type==='active'?'主動':'被動'}｜${s.name}：${s.type==='active'?activeText(g,s,level):s.text}${s.type==='active'?`（${s.mp} MP／${Math.max(1,s.cooldown-(bonus.cooldownReduction||0))} 秒）`:''}`).join('\n')}
 
 function deploymentTip(level){
  const stage=HISTORICAL_STAGES[level-17];
  const lanes='第 35 關起可選四路，第 47 關起可選五路。';
+ if(stage?.mission==='naval'||stage?.mission==='siege')return lanes+stage.bossTip;
  if(stage?.mission==='dispatch')return lanes+'派友軍接應三隊使者。可在任務面板選擇有友軍的路線。';
  if(stage?.mission==='supply')return lanes+'各路都要有友軍接應。備車完成後按「發送糧車」，共送三批。';
  if(stage?.mission==='restoration')return lanes+`派友軍照應對應路線，完成${restorationSites(level).join('、')}整備。`;

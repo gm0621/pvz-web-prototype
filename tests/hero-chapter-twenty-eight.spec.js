@@ -5,7 +5,7 @@ const stages=[
  {name:'河間傳檄',year:302,route:'長安 → 洛陽',leader:'司馬顒',guest:'李含',opponent:'司馬乂',role:'檄文點名',leaderRole:'自長安發檄',messenger:true,faction:'長安傳檄隊',banner:'河',kind:'dispatch',outcome:'檄文傳到洛陽'},
  {name:'宮城三日',year:302,route:'洛陽街巷 → 洛陽宮城',leader:'司馬乂',guest:'司馬衷',opponent:'董艾',role:'齊王部將',leaderRole:'入宮護帝',faction:'宮門守衛隊',banner:'長',waves:true,kind:'holdout',enemy:'齊府軍',hold:'宮門守備',outcome:'齊王司馬冏戰敗遇害'},
  {name:'長沙輔政',year:303,route:'洛陽宮城',station:'整備地',leader:'司馬乂',guest:'司馬乂',opponent:'司馬衷',role:'仍為皇帝',leaderRole:'輔理朝政',faction:'洛陽整備隊',banner:'長',kind:'restoration',sites:['糧倉','城防','公文'],outcome:'司馬乂仍在洛陽輔政'},
- {name:'兩王攻洛',year:303,route:'鄴城 → 洛陽',secondary:['長安','洛陽'],leader:'陸機',guest:'司馬乂',opponent:'張方',role:'長安路・司馬顒部',leaderRole:'鄴路・司馬穎部',faction:'洛陽迎戰隊',banner:'長',waves:true,kind:'holdout',enemy:'攻洛聯軍',hold:'洛陽外圍守備',outcome:'圍城卻仍未解除'},
+ {name:'兩王攻洛',year:303,route:'鄴城 → 洛陽',secondary:['長安','洛陽'],leader:'陸機',guest:'司馬乂',opponent:'張方',role:'長安路・司馬顒部',leaderRole:'鄴路・司馬穎部',faction:'洛陽迎戰隊',banner:'長',waves:true,kind:'siege',enemy:'攻洛聯軍',outcome:'圍城卻仍未解除'},
  {name:'洛陽圍城',year:304,route:'洛陽宮城 → 金墉城',leader:'司馬乂',guest:'司馬衷',opponent:'司馬越',role:'在宮中拘押',leaderRole:'後被拘押',faction:'洛陽撤離隊',banner:'護',waves:true,kind:'withdraw',outcome:'後來遭張方部下帶走並遇害'}
 ];
 
@@ -47,7 +47,7 @@ test('stage 160 unlocks the optional Luoyang campaign and keeps campaign saves o
   // Only enemy waves and starting food are sandboxed. Mission and save paths run through UI.
   await page.evaluate(kind=>{
    const battle=window.chapterBattle;
-   battle.bossSpawned=kind!=='holdout';
+   battle.bossSpawned=!['holdout','siege'].includes(kind);
    battle.nextSpawn=Infinity;
    battle.food=300;
   },kind);
@@ -278,6 +278,43 @@ test('stage 160 unlocks the optional Luoyang campaign and keeps campaign saves o
    expect((await snapshot()).mission).toMatchObject({hold:24,done:true});
    await expect(page.locator('#result')).toBeHidden();
    await expect(page.locator('#missionQuick')).toContainText('清退後續敵軍');
+   await page.evaluate(()=>{
+    const battle=window.chapterBattle;
+    battle.spawned=11;
+    battle.nextSpawn=battle.time;
+   });
+   await advance(3300);
+   await expect(page.locator('#waveText')).toHaveText(stage.enemy+'已全數出現');
+   await expect(page.locator('#result')).toBeHidden();
+   await advance(31000);
+  }else if(stage.kind==='siege'){
+   const repair=page.locator('#missionQuickAction');
+   const fresh=await snapshot();
+   expect(fresh.mission).toMatchObject({gate:100,repairs:2,done:false});
+   await expect(repair).toHaveText('修補城門');
+   await expect(repair).toBeDisabled();
+   await expect(page.locator('#missionQuick')).toContainText('下一波：上路');
+   for(let hit=0;hit<3;hit++){
+    await page.evaluate(()=>{
+     const battle=window.chapterBattle;
+     battle.enemies.push({id:battle.nextId++,lane:0,x:.02,hp:85,maxHp:85,speed:.04,damage:13,rate:1.5,lastAttack:battle.time,flash:0,name:'攻洛步兵'});
+    });
+    await advance(200);
+    await expect(page.locator('#lives')).toHaveText('城門 75／100');
+    if(hit<2){
+     await tap('#pauseBtn');
+     await advance(100);
+     await expect(repair).toBeDisabled();
+     await tap('#pauseBtn');
+     await advance(100);
+     await repair.tap();
+     expect((await snapshot()).mission).toMatchObject({gate:100,repairs:1-hit});
+    }else{
+     await expect(repair).toBeDisabled();
+     await expect(page.locator('#missionQuick')).toContainText('修補剩 0 次');
+    }
+   }
+   await expect(page.locator('#result')).toBeHidden();
    await page.evaluate(()=>{
     const battle=window.chapterBattle;
     battle.spawned=11;

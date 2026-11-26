@@ -20,6 +20,12 @@ npm run test:hero:engine
 npx playwright test --config=playwright.hero-input.config.js
 ```
 
+## 2026-11-26 第 141 關水戰與第 165 關守城戰
+
+- 第 141 關「西陵順流」改為護送主船。必須有友軍護航，主航道較快、有封航預警，岸邊較慢但不受封航影響。換航道保留進度，主船抵達並清退剩餘敵軍後過關。第 165 關「兩王攻洛」顯示下一波來路，普通敵軍突破扣城門 25，重兵扣 35。城門從 100 起，每場可修 2 次，每次最多補 30。城門失守即敗戰，守住並清退全部敵軍即過關。
+- 本機通過 421 項引擎測試與西晉一統、洛陽風雲的 9 項觸控回歸。手機 Chromium 和平板 WebKit 另以正常敵波與軍糧通過兩關，驗證換航道、第 141→142 關至主篇回顧、城門實際受損後修補、舊存檔與第 165 關重玩零軍資。四種尺寸檢視航道、預警、修補和觸控版面。受控測試另核對封航、暫停、修補用完與城門失守。
+- 劇情、行軍圖、營地對話、關卡編號和正式存檔格式沿用。第 142 關仍是主篇結局，兩關仍可選三至五路。航程、耐久與修補次數只屬當場戰鬥。快取版 `river-gate-1`。回歸設定 `playwright.hero-twenty-four.config.js` 和 `playwright.hero-twenty-eight.config.js`。
+
 ## 2026-11-26 《八王之亂外傳：長安西行》流程複查
 
 - 已發布 `530e2c4`。正式站手機 Chromium、平板 WebKit 各完成第 166～172 關及末關重玩。另用原始引擎核對第 141～142 關首勝、五幕回顧與舊存檔回看，核對第 166、171 關舊檔、四種尺寸的六關行軍圖、155 張圖鑑頭像及 49 份變更資源。 [正式遊戲](https://gm0621.github.io/pvz-web-prototype/hero/?v=530e2c4) · [人物圖鑑](https://gm0621.github.io/pvz-web-prototype/hero/people.html?v=530e2c4) · [發布紀錄](https://github.com/gm0621/pvz-web-prototype/actions/runs/45739356018)
