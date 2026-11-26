@@ -1,7 +1,7 @@
-import {paintPortrait} from './factions.mjs?v=qishan-escort-1';
-import {bossProfile,laneLabel} from './engine.mjs?v=qishan-escort-1';
-import {battleBossPortrait} from './characters.mjs?v=qishan-escort-1';
-import {hitSound} from './audio.mjs?v=qishan-escort-1';
+import {paintPortrait} from './factions.mjs?v=qishan-escort-2';
+import {bossProfile,laneLabel} from './engine.mjs?v=qishan-escort-2';
+import {battleBossPortrait} from './characters.mjs?v=qishan-escort-2';
+import {hitSound} from './audio.mjs?v=qishan-escort-2';
 const seen=new WeakMap();
 const label=(root,selector,text)=>{const node=root.querySelector(selector);if(node.textContent!==text)node.textContent=text};
 const clamp=n=>Math.max(0,Math.min(1,n));

@@ -1,6 +1,6 @@
-import {HISTORICAL_STAGES} from './history-stages.mjs?v=qishan-escort-1';
-import {FACTIONS,factionFor} from './factions.mjs?v=qishan-escort-1';
-import {OUTPOSTS,RAID_POINTS,OUTPOST_SECONDS,outpostLane,pointCompleted,nextOutpost,canIgniteRaid,igniteRaid,stepOutposts,selectOutpost,passWave,passLane,thirdWaveStarted,hasFireRoutes,canClearFire,clearFireLane,GATE_MAX,hasGate,hasOutposts,channelHazard,channelName,fleetChannel,fleetStatus,canRepairGate,repairGate,selectFleetChannel,siegeLane,stepFleet} from './field-missions.mjs?v=qishan-escort-1';
+import {HISTORICAL_STAGES} from './history-stages.mjs?v=qishan-escort-2';
+import {FACTIONS,factionFor} from './factions.mjs?v=qishan-escort-2';
+import {OUTPOSTS,RAID_POINTS,OUTPOST_SECONDS,outpostLane,pointCompleted,nextOutpost,canIgniteRaid,igniteRaid,stepOutposts,selectOutpost,passWave,passLane,thirdWaveStarted,hasFireRoutes,canClearFire,clearFireLane,GATE_MAX,hasGate,hasOutposts,channelHazard,channelName,fleetChannel,fleetStatus,canRepairGate,repairGate,selectFleetChannel,siegeLane,stepFleet} from './field-missions.mjs?v=qishan-escort-2';
 import {PEACH_HEROES} from './hero-base.mjs?v=passive-feedback-1';
 const defaultRetreatSlots=['liubei','zhangfei'];
 const retreatSlots=battle=>HISTORICAL_STAGES[battle.level-17]?.retreatKeys||defaultRetreatSlots;
@@ -29,7 +29,9 @@ export function createHistoryMission(level){
  const outposts=kind==='withdraw'&&stage.outpostSites?{points:stage.outpostSites,positions:[0,0],target:-1}:{};
  return {level,kind,...gate,...outposts,...(stage.coverWaves?{coverWaves:true}:{}),...((level===87||stage?.fireRoutes)?{clearings:1}:{}),...(stage?.fireRoutes?{fireAttack:{lane:1,at:13}}:{}),hold:0,done:false,message:'',lane:1,travel:0,rescued:0,delivered:0,charge:0,withdrawAt:stage.gateHold??null,ordered:false,decoyUsed:false,decoyLane:null,site:-1,sites:[0,0,0]}}
 const active=b=>b?.mission&&b.level>=17&&!b.over&&!b.paused&&!b.duel&&!b.introPending;
-const safe=(b,lane)=>b.allies.some(u=>u.hp>0&&u.lane===lane)&&!b.enemies.some(e=>e.hp>0&&e.lane===lane&&e.x<.48);
+const guarded=(b,lane)=>b.allies.some(u=>u.hp>0&&u.lane===lane);
+const blocked=(b,lane)=>b.enemies.some(e=>e.hp>0&&e.lane===lane&&e.x<.48);
+const safe=(b,lane)=>guarded(b,lane)&&!blocked(b,lane);
 const supplyLegSeconds=8;
 export function supplyLeg(b){
  const m=b.mission;
@@ -154,8 +156,9 @@ export function historyMissionText(b){const fronts=['','','','三','四','五'][
   const {lane,name,progress}=supplyLeg(b);
   const header=`軍糧 ${m.delivered}／${m.stops.length} 批 · ${routeName(b,lane)}路${name}`;
   if(b.paused)return `${header} ${Math.floor(progress*100)}% · 已暫停`;
-  if(!m.inTransit)return `${header} · ${safe(b,lane)?'按「發送糧車」':'派友軍守住這一路'}`;
-  return `${header} ${Math.floor(progress*100)}% · ${safe(b,lane)?'糧車前進中':'糧車停下，快來護送'}`;
+  const instruction=!guarded(b,lane)?`派友軍${m.inTransit?'回':'到'}這一路護送`:blocked(b,lane)?'清退擋路的敵兵':'';
+  if(!m.inTransit)return `${header} · ${instruction||'按「發送糧車」'}`;
+  return `${header} ${Math.floor(progress*100)}% · ${instruction?'糧車停下，'+instruction:'糧車前進中'}`;
  }
  if(m.kind==='supply'){
   const progress=`軍糧 ${m.delivered}／3 批 · 備車 ${Math.floor(m.charge/10*100)}%`;

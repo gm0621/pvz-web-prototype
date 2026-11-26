@@ -295,7 +295,7 @@ test('Jiangling closes the retreat until the gate hold ends, and a broken gate d
 
 test('Qishan cargo waits for its own escort and keeps the delivery count across route segments',async()=>{
  const {createBattle,deploy,stepBattle,moveHero}=await import('../../hero/engine.mjs');
- const {historyAction,supplyLeg}=await import('../../hero/history-missions.mjs');
+ const {historyAction,historyMissionText,supplyLeg}=await import('../../hero/history-missions.mjs');
  const b=createBattle(102);
  b.nextSpawn=Infinity;
  b.food=300;
@@ -311,7 +311,13 @@ test('Qishan cargo waits for its own escort and keeps the delivery count across 
  assert.ok(moveHero(b,b.allies.find(u=>u.key==='guanyu').id,1));
  tick(2);
  assert.equal(supplyLeg(b).progress,progress);
+ assert.match(historyMissionText(b),/糧車停下，派友軍回這一路護送/);
  assert.ok(deploy(b,'archer',0));
+ b.enemies.push({id:100,lane:0,x:.4,hp:1000,rate:999,speed:0,lastAttack:0});
+ tick(1);
+ assert.equal(supplyLeg(b).progress,progress);
+ assert.match(historyMissionText(b),/糧車停下，清退擋路的敵兵/);
+ b.enemies=[];
  tick(7);
  assert.equal(b.mission.delivered,1);
  assert.equal(supplyLeg(b).lane,1);

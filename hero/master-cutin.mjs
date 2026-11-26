@@ -1,7 +1,7 @@
 import {MASTER_STYLES} from './master-style.mjs?v=passive-feedback-1';
-import {ALL_GENERALS} from './roster.mjs?v=qishan-escort-1';
-import {paintPortrait} from './factions.mjs?v=qishan-escort-1';
-import {hitSound} from './audio.mjs?v=qishan-escort-1';
+import {ALL_GENERALS} from './roster.mjs?v=qishan-escort-2';
+import {paintPortrait} from './factions.mjs?v=qishan-escort-2';
+import {hitSound} from './audio.mjs?v=qishan-escort-2';
 const seen=new WeakMap();
 const ring=(r)=>`<circle cx="150" cy="70" r="${r}"/>`;
 const line=(x,y,x2,y2)=>`<path d="M${x} ${y}L${x2} ${y2}"/>`;

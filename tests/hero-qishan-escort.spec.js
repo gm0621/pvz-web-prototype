@@ -38,7 +38,7 @@ for(const stage of stages)test(`stage ${stage.level} clears and replays from an 
   await tap('#resumeBtn');
   await advance(100);
  }
- async function reinforce(skipTop){
+ async function reinforce(skipTop,heroesOnly){
   const formation=[1,0,2];
   for(const [slot,key] of ['liubei','guanyu','zhangfei'].entries()){
    if(skipTop&&formation[slot]===0)continue;
@@ -48,12 +48,19 @@ for(const stage of stages)test(`stage ${stage.level} clears and replays from an 
    if(status==='可出戰'){
     await card.tap();
     await road.tap({position:{x:width*.6,y:25}});
-   }else if(status==='出戰中'&&await archer.locator('.card-status').textContent()==='可增援'&&/^[12]/.test(await road.locator('.lane-capacity').textContent())){
+   }else if(!heroesOnly&&status==='出戰中'&&await archer.locator('.card-status').textContent()==='可增援'&&/^[12]/.test(await road.locator('.lane-capacity').textContent())){
     await archer.tap();
     await road.tap({position:{x:width*.6,y:25}});
    }
    while(await skillIntro.isVisible())await tap('#skillIntroContinue');
   }
+ }
+
+ async function command(unit,order){
+  await page.locator('#unitSelect').selectOption(await unit.getAttribute('data-id'));
+  await tap('#commandDrawerButton');
+  await tap(`#orders [data-order=${order}]`);
+  await tap('#commandDrawerClose');
  }
 
  async function play({level,title,terrain,ending,resultTitle}){
@@ -63,7 +70,7 @@ for(const stage of stages)test(`stage ${stage.level} clears and replays from an 
   await expect(page.locator('#battle')).toBeVisible({timeout:30000});
   await expect(page.locator('#field')).toHaveAttribute('data-terrain',terrain);
   await page.locator('#battleSpeed').selectOption('2');
-  let sent=0,repaired=false,retreated=false,forward=false,paused=false;
+  let sent=0,repairs=0,lastGate=100,repairsSpent=false,retreated=false,forward=false,paused=false;
   const waves=new Set(),sites=['山口','棧道','前營'];
   if(level===102){
    await expect(objective).toContainText('上路山口');
@@ -74,6 +81,7 @@ for(const stage of stages)test(`stage ${stage.level} clears and replays from an 
    if(level===166){
     await expect(page.locator('#lives')).toHaveText('城門 100／100');
     await expect(buttons('repair')).toBeDisabled();
+    await expect(buttons('repair')).toContainText('剩 2 次');
    }
    await tap('#missionDrawerClose');
   }
@@ -96,11 +104,33 @@ for(const stage of stages)test(`stage ${stage.level} clears and replays from an 
     await advance(2000);
     await expect(page.locator('#supplyCart')).toHaveAttribute('style',before);
     await resume();
+    const escort=page.locator('#units .ally[data-lane="0"]');
+    await expect(escort).toHaveCount(1);
+    const escortId=await escort.getAttribute('data-id');
+    const selectedEscort=page.locator(`#units .ally[data-id="${escortId}"]`);
+    await command(selectedEscort,'down');
+    await expect(selectedEscort).toHaveAttribute('data-lane','1');
+    const cart=page.locator('#supplyCart');
+    const position=()=>cart.evaluate(node=>parseFloat(node.style.left));
+    const waiting=await position();
+    await expect(objective).toContainText('糧車停下，派友軍回這一路護送');
+    await advance(2100);
+    expect(await position()).toBe(waiting);
+    await expect(objective).toContainText('軍糧 0／3 批');
+    await command(selectedEscort,'up');
+    await expect(selectedEscort).toHaveAttribute('data-lane','0');
+    await expect(objective).toContainText('糧車前進中');
+    expect(await position()).toBe(waiting);
+    await advance(500);
+    expect(await position()).toBeGreaterThan(waiting);
     paused=true;
    }
    if(level===106){
     const wave=text.match(/第 (\d)／3 波 · (.)路來敵/);
-    if(wave)waves.add(wave[1]+wave[2]);
+    if(wave&&!waves.has(wave[1]+wave[2])){
+     await expect(buttons('retreat')).toBeDisabled();
+     waves.add(wave[1]+wave[2]);
+    }
     if(!paused&&waves.has('2下')){
      await pause();
      const before=await objective.textContent();
@@ -110,23 +140,31 @@ for(const stage of stages)test(`stage ${stage.level} clears and replays from an 
      paused=true;
     }
    }
-   if(level===166&&!repaired&&(await page.locator('#lives').textContent())==='城門 75／100'){
-    await tap('#missionDrawerButton');
-    await buttons('repair').tap();
-    await expect(buttons('repair')).toContainText('剩 1 次');
-    await expect(page.locator('#lives')).toHaveText('城門 100／100');
-    await tap('#missionDrawerClose');
-    repaired=true;
+   if(level===166&&!repairsSpent){
+    const gate=Number((await page.locator('#lives').textContent()).match(/城門 (\d+)/)?.[1]);
+    if(gate<lastGate){
+     await tap('#missionDrawerButton');
+     const repair=buttons('repair');
+     await expect(repair).toContainText(`剩 ${2-repairs} 次`);
+     if(repairs<2){
+      await repair.tap();
+      repairs++;
+      lastGate=Math.min(100,gate+30);
+      await expect(page.locator('#lives')).toHaveText(`城門 ${lastGate}／100`);
+      await expect(repair).toContainText(`剩 ${2-repairs} 次`);
+     }else{
+      await expect(repair).toBeDisabled();
+      await expect(buttons('retreat')).toBeEnabled();
+      repairsSpent=true;
+     }
+     await tap('#missionDrawerClose');
+    }
    }
    if(level!==102&&!forward&&i>=7){
-    const unit=page.locator('#units .ally[data-lane="1"]').first();
-    await page.locator('#unitSelect').selectOption(await unit.getAttribute('data-id'));
-    await tap('#commandDrawerButton');
-    await tap('#orders [data-order=forward]');
-    await tap('#commandDrawerClose');
+    await command(page.locator('#units .ally[data-lane="1"]').first(),'forward');
     forward=true;
    }
-   if((level===106||level===166&&repaired)&&!retreated&&await quick.textContent()==='全軍撤離'){
+   if((level===106||level===166&&repairsSpent)&&!retreated&&await quick.textContent()==='全軍撤離'){
     if(level===106){
      await expect(objective).toContainText('第 3 波已到');
      expect(await page.locator('#units .enemy').count()).toBeGreaterThan(0);
@@ -136,7 +174,7 @@ for(const stage of stages)test(`stage ${stage.level} clears and replays from an 
     await expect(objective).toContainText('隊友軍尚未回到左側');
     retreated=true;
    }
-   if(!retreated)await reinforce(level===166&&!repaired);
+   if(!retreated)await reinforce(level===166&&!repairsSpent,level===102&&!paused);
    await advance(1000);
   }
   await expect(result).toBeVisible();
@@ -153,7 +191,7 @@ for(const stage of stages)test(`stage ${stage.level} clears and replays from an 
    expect([...waves]).toEqual(['1上','2下','3中']);
    expect(retreated&&paused).toBe(true);
   }
-  if(level===166)expect(repaired&&retreated).toBe(true);
+  if(level===166)expect(repairs===2&&repairsSpent&&retreated).toBe(true);
  }
 
  async function finish({level,title,ending,next},reward,coins){
@@ -190,6 +228,7 @@ for(const stage of stages)test(`stage ${stage.level} clears and replays from an 
   expect(await save()).toEqual(progress);
  }
 
+ if(level===166)await expect(page.locator('#homeChangan')).toBeDisabled();
  await tap(level===166?'#homeLuoyang':'#startBtn');
  await play(stage);
  const first=await finish(stage,'+80',230);
@@ -204,5 +243,10 @@ for(const stage of stages)test(`stage ${stage.level} clears and replays from an 
  const replay=await finish(stage,'+0',230);
  expect(replay.battleRecords[level]).toBeLessThanOrEqual(first.battleRecords[level]);
  await checkReload(next,replay);
+ if(level===166){
+  await tap('#homeChangan');
+  await expect(page.locator('#storyTitle')).toHaveText('洛陽清點');
+  expect(await save()).toEqual(replay);
+ }
  expect(errors).toEqual([]);
 });

@@ -1,4 +1,4 @@
-import {CAMPAIGN_LENGTH} from './campaign-config.mjs?v=qishan-escort-1';
+import {CAMPAIGN_LENGTH} from './campaign-config.mjs?v=qishan-escort-2';
 
 function recordRule(level){
  switch(level){

@@ -1,4 +1,4 @@
-import {mapPersonSvg} from './characters.mjs?v=qishan-escort-1';
+import {mapPersonSvg} from './characters.mjs?v=qishan-escort-2';
 
 const standardHeight=304,dualHeight=374;
 
