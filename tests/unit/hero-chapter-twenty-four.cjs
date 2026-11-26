@@ -15,7 +15,7 @@ test('the Jin-Wu chapter extends the previous save and preserves both battles at
  assert.equal(chapter.length,6);
  assert.deepEqual(chapter.map(s=>s.year),[269,272,278,279,280,280]);
  assert.deepEqual(chapter.map(s=>s.faction),['cao','sun','cao','cao','cao','cao']);
- assert.deepEqual(chapter.map(s=>s.mission),['restoration','holdout','dispatch','naval','naval','restoration']);
+ assert.deepEqual(chapter.map(s=>s.mission),['restoration','pass-defense','dispatch','naval','naval','restoration']);
  for(const [index,stage] of chapter.entries()){
   const level=137+index;
   assert.deepEqual(chapterInfo(level),{chapter:24,number:index+1,count:6,title:'西晉一統'});

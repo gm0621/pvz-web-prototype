@@ -23,9 +23,9 @@ const stages=[
  {
   name:'西陵守圍',year:272,origin:'lexiangWu',place:'xiling',shift:true,wu:true,
   leader:'陸抗',guest:'陸抗',opponent:'羊祜',mapOpponentRole:'江陵另路',matchupLabel:'晉援軍・羊祜另一路往江陵',historyCast:['陸抗','羊祜','步闡'],
-  mission:'holdout',missionTitle:'西陵守備',scene:'mountain-front',enemyArmy:'晉軍援兵',enemyCount:12,successTitle:'西陵守備完成',
+  mission:'pass-defense',missionTitle:'西陵守備',scene:'mountain-front',enemyArmy:'晉軍援兵',enemyCount:12,successTitle:'西陵守備完成',
   history:'吳將步闡在西陵反叛，向西晉求援。陸抗帶吳軍到西陵，晉軍分路來援，羊祜領一路前往江陵。陸抗守住圍線，晉援軍最後撤走。',
-  briefing:'派隊伍照應每一路，累積守備 24 秒，再清退場上的援軍。',
+  briefing:'援軍分三波來。哪一路亮起，就派友軍去守。擋住三波、清退餘兵，並至少保住一道防線。',
   ending:'陸抗拿回西陵，晉軍撤退。晉、吳繼續隔著邊界相持，史書也記載羊祜和陸抗後來互通使者。',
   camp:'西陵守住了。接下來把各處的人數點清，家在附近的人也能知道消息了。',
   question:'272 年的西陵之戰，最後是哪一方保住西陵？',choices:['陸抗帶領的東吳','從江陵來的晉軍','早已滅亡的蜀漢'],refs:[luKang,yangHu,tongjian79]

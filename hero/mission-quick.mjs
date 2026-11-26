@@ -1,7 +1,7 @@
-import {HISTORICAL_STAGES} from './history-stages.mjs?v=tong-yin-mian-2';
-import {missionText} from './chapter-missions.mjs?v=tong-yin-mian-2';
-import {retreatPartyNames,retreatPartyLabel,supplyReady,coverWaveText} from './history-missions.mjs?v=tong-yin-mian-2';
-import {hasFireRoutes,hasGate,hasOutposts,canRepairGate} from './field-missions.mjs?v=tong-yin-mian-2';
+import {HISTORICAL_STAGES} from './history-stages.mjs?v=xiling-houhe-maicheng-1';
+import {missionText} from './chapter-missions.mjs?v=xiling-houhe-maicheng-1';
+import {retreatPartyNames,retreatPartyLabel,supplyReady,coverWaveText} from './history-missions.mjs?v=xiling-houhe-maicheng-1';
+import {hasFireRoutes,hasGate,hasOutposts,canRepairGate} from './field-missions.mjs?v=xiling-houhe-maicheng-1';
 const names=['上','中','下'];
 export function missionQuickState(b){
  const m=b.mission;if(!m)return null;
@@ -51,7 +51,7 @@ export function missionQuickState(b){
   return {heading,text:paused+status+clearing,button:'重新撤離',action:'retreat'};
  }
  if(gate||outposts)return {heading,text:`${paused}${wait} · ${ready?(gate?`讓${retreatPartyLabel(b,'友軍')}退回左側`:'把友軍帶回左側'):'守住兩處陣地，準備撤離'}`,button:ready?'全軍撤離':'查看任務',action:ready?'retreat':undefined};
- if(m.coverWaves)return {heading,text:`${paused}${wait} · ${ready?'帶友軍撤回左側':'派友軍守線'}`,button:ready?'全軍撤離':'查看任務',action:ready?'retreat':undefined};
+ if(m.coverWaves)return {heading,text:`${paused}${wait} · ${ready?`帶${stage.retreatKeys?.length?retreatPartyLabel(b,'友軍'):'友軍'}撤回左側`:'派友軍守線'}`,button:ready?'全軍撤離':'查看任務',action:ready?'retreat':undefined};
  if(m.kind==='decoy'&&!m.decoyUsed)return {text:`${paused}${wait} · 先放赤幘誘餌`,button:'放置誘餌'};
  return {heading,text:`${paused}${wait}${clearing} · ${noBoss||stage?.retreatKeys?`帶${retreatPartyLabel(b,'友軍')}撤回左側`:'不必擊倒敵將'}`,button:ready?'全軍撤離':fireButton,action:ready?'retreat':undefined};
 }

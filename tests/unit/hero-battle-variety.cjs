@@ -36,10 +36,10 @@ test('Ye takes either outpost first and applies separate field benefits on compl
  }
 });
 
-test('Tongguan, Xingshi and Jiange send four attackers per forecast lane and keep fighting until the last wave',async()=>{
+test('Tongguan, Xingshi, Jiange and Xiling send four attackers per forecast lane and keep fighting until the last wave',async()=>{
  const {createBattle,stepBattle}=await import('../../hero/engine.mjs');
  const {passLane}=await import('../../hero/field-missions.mjs');
- for(const [level,total] of [[62,3],[62,4],[62,5],[111,3],[124,3]]){
+ for(const [level,total] of [[62,3],[62,4],[62,5],[111,3],[124,3],[138,3]]){
   const b=createBattle(level,42),lanes=[];
   b.laneTotal=total;
   for(let wave=0;wave<12;wave++){

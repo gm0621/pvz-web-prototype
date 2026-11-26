@@ -28,11 +28,11 @@ const stages=[
  {
   name:'侯和退屯',year:262,origin:'houhe',place:'tazhong',leader:'姜維',guest:'姜維',opponent:'鄧艾',mapOpponent:false,shift:true,
   historyCast:['姜維','鄧艾'],matchupLabel:'魏將鄧艾・在侯和擊敗蜀軍',
-  mission:'supply',scene:'supply-road',enemyArmy:'沿路游兵',
+  mission:'supply',supplyStops:['山口','谷道','沓中營地'],scene:'supply-road',enemyArmy:'沿路游兵',
   history:'幾年後，姜維再到侯和一帶出兵，又被鄧艾擊敗，退駐沓中。遊戲把這次退屯改編成把糧車護送到沓中的任務。',
-  briefing:'三路都要有友軍接應。備車完成後按「發送糧車」，一共送出三批。',
+  briefing:'派友軍守住亮起的路，再按「發送糧車」。三批糧車依序走山口、谷道、沓中營地，送完後清退餘兵。',
   ending:'姜維在侯和失利後留駐沓中。隔年，魏軍分路攻蜀，沓中也受到進攻。',
-  camp:'山路長，糧車不能落單。先讓三路都有人，再請車隊出發。',
+  camp:'山路長，糧車不能落單。每一批都要派友軍一路護送。',
   question:'侯和失利後，姜維退駐何處？',choices:['沓中','洛陽','江陵'],refs:[jiangWei,dengAi,ruler]
  },
  {
@@ -72,6 +72,7 @@ export const TWENTY_FIRST_CHAPTER=stages.map((stage,index)=>({
  mapPlace:stage.place,originPlace:stage.origin,detailedRoute:true,viaPlaces:[],viewpointShift:!!stage.shift,historyCast:stage.historyCast,
  leaderName:stage.leader,opponentName:stage.opponent,mapOpponent:stage.mapOpponent??!!stage.opponent,matchupLabel:stage.matchupLabel,
  scene:`./assets/scenes/${stage.scene}.jpg`,mission:stage.mission,missionTitle:stage.missionTitle,missionSites:stage.missionSites,
+ ...(stage.supplyStops?{supplyStops:stage.supplyStops}:{}),
  ...(stage.mission==='withdraw'?{retreatKeys:[],successTitle:'全軍撤回'}:{}),
  noBoss:true,bossName:stage.enemyArmy,bossHp:0,enemyArmy:stage.enemyArmy,enemyCount:12,interval:3.8,
  lead:stage.history,history:stage.history,adaptation,note:adaptation,bossTip:stage.briefing,

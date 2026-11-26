@@ -2,7 +2,7 @@ const {test,expect}=require('@playwright/test');
 const saveKey='heroLegendProgress_v1';
 const stages=[
  {name:'襄陽屯田',year:269,route:'洛陽 → 襄陽',leader:'羊祜',guest:'羊祜',kind:'restoration',sites:['田地','水渠','糧倉'],outcome:'羊祜在襄陽屯田'},
- {name:'西陵守圍',year:272,route:'樂鄉 → 西陵',leader:'陸抗',guest:'陸抗',opponent:'羊祜',role:'江陵另路',matchup:'晉援軍・羊祜另一路往江陵',wu:true,enemyArmy:'晉軍援兵',kind:'holdout',outcome:'陸抗拿回西陵，晉軍撤退'},
+ {name:'西陵守圍',year:272,route:'樂鄉 → 西陵',leader:'陸抗',guest:'陸抗',opponent:'羊祜',role:'江陵另路',matchup:'晉援軍・羊祜另一路往江陵',wu:true,enemyArmy:'晉軍援兵',kind:'pass-defense',outcome:'陸抗拿回西陵，晉軍撤退'},
  {name:'襄陽交印',year:278,route:'襄陽',leader:'杜預',guest:'杜預',opponent:'羊祜',role:'舉薦',station:'接任地',kind:'dispatch',outcome:'羊祜舉薦的杜預接掌荊州'},
  {name:'益州備舟',year:279,route:'益州',leader:'王濬',guest:'王濬',station:'備舟地',kind:'naval',outcome:'王濬的船隊從長江上游出發'},
  {name:'西陵順流',year:280,route:'永安 → 西陵',leader:'王濬',guest:'王濬',enemyArmy:'吳軍巡江船隊',kind:'naval',outcome:'這次西陵落入晉軍手中'},
@@ -207,29 +207,13 @@ test('stage 136 continues through the surrender of Wu and keeps campaign saves o
     await advance(6700);
     await expect(option).toBeDisabled();
    }
-  }else if(stage.kind==='holdout'){
-   await advance(4500);
-   await expect(page.locator('#missionQuick')).toContainText('西陵守備');
+  }else if(stage.kind==='pass-defense'){
+   await expect(page.locator('#missionQuick')).toContainText('第 1／3 波 · 上路來敵');
    await tap('#pauseBtn');
    const frozen=await snapshot();
-   expect(frozen.mission.hold).toBeGreaterThan(0);
-   expect(frozen.mission.hold).toBeLessThan(24);
    await advance(1000);
    expect(await snapshot()).toEqual(frozen);
    await tap('#pauseBtn');
-   await advance(100);
-   const guardId=await page.evaluate(()=>String(window.chapterBattle.allies.find(u=>u.key==='zhangfei').id));
-   await page.locator('#unitSelect').selectOption(guardId);
-   await tap('#commandDrawerButton');
-   await tap('#orders [data-order="up"]');
-   await tap('#commandDrawerClose');
-   const missing=(await snapshot()).mission.hold;
-   await advance(1000);
-   expect((await snapshot()).mission.hold).toBe(missing);
-   await expect(page.locator('#missionQuick')).toContainText('下路缺接應');
-   await tap('#cards [data-hero=archer]');
-   await page.locator('.lane').nth(2).tap({position:{x:40,y:25}});
-   await advance(18500);
   }else if(stage.kind==='naval'){
    await expect(page.locator('#fleetMarker')).toBeVisible();
    await expect(page.locator('.lane-label')).toHaveText(['北岸','主航道','南岸']);
@@ -264,7 +248,7 @@ test('stage 136 continues through the surrender of Wu and keeps campaign saves o
   }else await advance(18500);
 
   if(stage.enemyArmy){
-   expect((await snapshot()).mission.done).toBe(true);
+   expect((await snapshot()).mission.done).toBe(stage.kind!=='pass-defense');
    await expect(page.locator('#result')).toBeHidden();
    await page.evaluate(()=>{
     const battle=window.chapterBattle;

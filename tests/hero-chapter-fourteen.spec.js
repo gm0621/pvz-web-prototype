@@ -161,12 +161,14 @@ test('chapter fourteen continues a completed Hanzhong save through Xiangfan',asy
     await expect(page.locator('#missionObjective')).toContainText('軍糧 3／3 批');
    }
    else if(stage.goal==='withdraw'){
-    await expect(page.locator('#missionQuick p')).toContainText('帶關羽與友軍撤回左側');
+    await expect(page.locator('#missionChoices [data-action=retreat]')).toBeDisabled();
     await page.evaluate(()=>{
+     window.chapterBattle.spawned=9;
      window.chapterBattle.allies[0].x=.35;
      window.blockSave=true;
     });
-    await advance(14000);
+    await advance(100);
+    await expect(page.locator('#missionQuick p')).toContainText('帶關羽與友軍撤回左側');
     await tap('#missionQuickAction');
     await advance(7000);
     await expect(page.locator('#result')).toBeHidden();

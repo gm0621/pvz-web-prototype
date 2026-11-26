@@ -1,4 +1,4 @@
-import {mapPersonSvg} from './characters.mjs?v=tong-yin-mian-2';
+import {mapPersonSvg} from './characters.mjs?v=xiling-houhe-maicheng-1';
 
 const standardHeight=304,dualHeight=374;
 

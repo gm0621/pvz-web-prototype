@@ -1,5 +1,5 @@
-import {HISTORICAL_STAGES} from './history-stages.mjs?v=tong-yin-mian-2';
-import {paintPortrait} from './factions.mjs?v=tong-yin-mian-2';
+import {HISTORICAL_STAGES} from './history-stages.mjs?v=xiling-houhe-maicheng-1';
+import {paintPortrait} from './factions.mjs?v=xiling-houhe-maicheng-1';
 import {THIRD_CHAPTER} from './chapter-three.mjs?v=passive-feedback-1';
 // History and novel adaptation are deliberately separated in the introduction.
 export const CHAPTER_BACKGROUNDS={

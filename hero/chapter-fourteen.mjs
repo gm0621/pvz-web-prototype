@@ -57,9 +57,9 @@ const stages=[
    guanyu:{speaker:'劉備',title:'劉備',hint:'談荊州消息'},
    zhangfei:{speaker:'劉備',title:'戰後消息',hint:'關羽與關平的結局'}
   },
-  mission:'withdraw',scene:'ambush-valley',enemyArmy:'江東追兵',
+  mission:'withdraw',coverWaves:true,scene:'ambush-valley',enemyArmy:'江東追兵',
   history:'關羽退守麥城後出走，身邊只剩少數人。孫權派朱然、潘璋截斷去路。章鄉的位置是戰區示意，史書也以臨沮交代關羽最後的結局。',
-  briefing:'等接應就緒後按「全軍撤離」，讓關羽與在場友軍退回左側。這一段只演出離開麥城的途中。',
+  briefing:'看亮起的路線，派友軍掩護。第三波追兵出現後按「全軍撤離」，把關羽和所有在場友軍帶回左側。',
   ending:'關羽、關平出走途中被潘璋部下馬忠擒獲，後來遇害。襄樊戰事告一段落。',
   guest:'劉備',camp:'荊州的消息傳來了。先安頓回來的人，也記住沒有回來的同伴。',
   question:'離開麥城後，關羽和關平遇到什麼事？',choices:['被俘後遇害','平安回到成都','攻下了樊城'],refs:[guan,sun,chronicle]
@@ -75,6 +75,7 @@ export const FOURTEENTH_CHAPTER=stages.map((stage,index)=>{
   ...(stage.cargoRuns?{cargoRuns:stage.cargoRuns,fleetDestination:stage.fleetDestination,navalEnemy:stage.navalEnemy,successTitle:'三批軍糧平安送達',successRibbon:'軍 糧 靠 岸 ・ 回 營 整 備'}:{}),
   ...(stage.outpostSites?{outpostSites:stage.outpostSites,successTitle:'樊城解圍',successRibbon:'圍 陣 已 破 ・ 回 營 整 備'}:{}),
   ...(commander?{skillType:'charge',skillName:'圍陣重擊',bossTitle:'圍陣軍官・遊戲改編',duelOutcome:'retreat'}:{}),
+  ...(stage.coverWaves?{coverWaves:true}:{}),
   ...(retreatKeys?{retreatKeys,successTitle:'離開麥城',successRibbon:'戰 事 記 錄 ・ 聽 聽 後 記'}:{}),
   leaderName:leader,opponentName:opponent,mapOpponent,mapLeader,matchupLabel,
   lead:history,history,adaptation,note:adaptation,novel:[['說書人',history],[guest,camp]],

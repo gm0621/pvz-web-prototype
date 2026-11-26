@@ -1,8 +1,8 @@
 import {LEARNING_LEVELS} from './skill-growth.mjs?v=passive-feedback-1';
-import {growthState,selectedTeam,DEFAULT_TEAM,ALL_GENERALS} from './roster.mjs?v=tong-yin-mian-2';
-import {factionFor} from './factions.mjs?v=tong-yin-mian-2';
-import {normalizeBattleRecords} from './battle-records.mjs?v=tong-yin-mian-2';
-import {CAMPAIGN_LENGTH} from './campaign-config.mjs?v=tong-yin-mian-2';
+import {growthState,selectedTeam,DEFAULT_TEAM,ALL_GENERALS} from './roster.mjs?v=xiling-houhe-maicheng-1';
+import {factionFor} from './factions.mjs?v=xiling-houhe-maicheng-1';
+import {normalizeBattleRecords} from './battle-records.mjs?v=xiling-houhe-maicheng-1';
+import {CAMPAIGN_LENGTH} from './campaign-config.mjs?v=xiling-houhe-maicheng-1';
 // Local campaign economy, independent of the original zombie game's account/store.
 export const GOODS={
  herb:{name:'行軍藥包',shop:'items',price:25,icon:'✚',description:'戰鬥中使用，所有在場友軍回復 60 生命。'},

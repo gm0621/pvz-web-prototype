@@ -47,12 +47,15 @@ test('Maicheng retreat can finish with Guan Yu and living escorts but still requ
  const {historyAction}=await import('../../hero/history-missions.mjs');
  const {missionQuickState}=await import('../../hero/mission-quick.mjs');
  const battle=createBattle(82,42);
- battle.spawned=12;
- battle.nextSpawn=0;
+ battle.spawned=8;
+ battle.nextSpawn=Infinity;
  assert.ok(deploy(battle,'archer',0));
  stepBattle(battle,.1);
+ assert.equal(historyAction(battle,'retreat'),false);
+ battle.nextSpawn=battle.time;
+ stepBattle(battle,.1);
  assert.match(missionQuickState(battle).text,/帶關羽與友軍撤回左側/);
- for(let i=0;i<181;i++)stepBattle(battle,.1);
+ assert.equal(battle.spawned,9);
  assert.equal(battle.won,false);
  assert.ok(historyAction(battle,'retreat'));
  stepBattle(battle,.1);

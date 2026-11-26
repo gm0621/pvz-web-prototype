@@ -61,13 +61,6 @@ test('stage 118 continues through Jiange and keeps campaign saves on touch scree
    await advance(200);
   }
  }
- async function sendCarts(){
-  for(let batch=0;batch<3;batch++){
-   await advance(7600);
-   await expect(page.locator('#missionQuickAction')).toHaveText('發送糧車');
-   await tap('#missionQuickAction');
-  }
- }
  async function withdraw(){
   await advance(4400);
   await tap('#cards [data-hero=archer]');
@@ -204,33 +197,14 @@ test('stage 118 continues through Jiange and keeps campaign saves on touch scree
 
   if(level===124)await page.evaluate(()=>window.blockSave=true);
   if(stage.kind==='supply'){
-   await advance(2500);
-   await tap('#pauseBtn');
-   const prepping=await snapshot();
-   expect(prepping.mission.charge).toBeGreaterThan(0);
-   expect(prepping.mission.charge).toBeLessThan(10);
-   await advance(650);
-   expect(await snapshot()).toEqual(prepping);
-   await expect(page.locator('#missionQuickAction')).toBeDisabled();
-   await tap('#pauseBtn');
-   await advance(5100);
-   await expect(page.locator('#missionQuickAction')).toHaveText('發送糧車');
-   const guardId=await page.evaluate(()=>String(window.chapterBattle.allies.find(u=>u.key==='zhangfei').id));
-   await page.locator('#unitSelect').selectOption(guardId);
-   await tap('#commandDrawerButton');
-   await tap('#orders [data-order="up"]');
-   await tap('#commandDrawerClose');
-   await expect(page.locator('#missionQuick')).toContainText('下路缺接應');
-   await tap('#missionQuickAction');
-   await expect(page.locator('#missionChoices [data-action=supply]')).toBeDisabled();
-   expect((await snapshot()).mission).toMatchObject({charge:10,delivered:0});
-   await tap('#missionDrawerClose');
-   await tap('#cards [data-hero=archer]');
-   await page.locator('.lane').nth(2).tap({position:{x:40,y:25}});
-   await advance(100);
-   await expect(page.locator('#missionQuickAction')).toHaveText('發送糧車');
-   await sendCarts();
-   await expect(page.locator('#missionQuick')).toContainText('軍糧 3／3');
+   for(const [lane,name] of ['山口','谷道','沓中營地'].entries()){
+    await expect(page.locator('.lane[data-supply-route=true]')).toHaveAttribute('data-lane',String(lane));
+    await expect(page.locator('#missionQuick')).toContainText(name);
+    await tap('#missionQuickAction');
+    await expect(page.locator('#supplyCart')).toContainText(`糧車 ${lane+1}／3`);
+    await advance(6200);
+    expect((await snapshot()).mission.delivered).toBe(lane+1);
+   }
   }
   else if(level===124){
    await expect(page.locator('#missionQuick')).toContainText('第 1／3 波 · 上路來敵');
