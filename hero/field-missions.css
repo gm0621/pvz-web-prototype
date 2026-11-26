@@ -42,10 +42,11 @@ body.battle-focus .battle-stats:has(#lives[data-gate])>span{white-space:nowrap}
 body.battle-focus #lives[data-gate]{font-size:12px;min-width:auto}
 
 #field[data-terrain=outposts] .outpost-marker{
- position:absolute;right:8px;top:32%;padding:4px 8px;border:1px solid #e7be75;
+ position:absolute;left:132px;top:7px;padding:3px 7px;border:1px solid #e7be75;
  border-radius:8px;background:#694331;color:#fff0c7;font-size:12px;font-weight:800;
  pointer-events:none;
 }
+@media(max-width:700px){#field[data-terrain=outposts] .outpost-marker{left:116px;top:5px;font-size:10px}}
 #field[data-terrain=outposts] .outpost-marker[hidden]{display:none}
 #field[data-terrain=outposts] .outpost-marker[data-captured=true]{background:#1b563f}
 #field[data-terrain=fire] .lane-capacity,#field[data-terrain=pass-defense] .lane[data-threat=true] .lane-capacity{left:124px}

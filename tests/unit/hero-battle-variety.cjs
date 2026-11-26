@@ -89,10 +89,14 @@ test('personal results keep the better run and hydrate older saves without alter
  assert.equal(recordBattleVictory(progress,{level:45,won:true,time:39}).best,39);
  assert.equal(recordBattleVictory(progress,{level:87,won:true,allyLosses:0}).best,0);
  assert.equal(recordBattleVictory(progress,{level:87,won:true,allyLosses:2}).best,0);
+ assert.equal(recordBattleVictory(progress,{level:87,won:true,allyLosses:0}).improved,false);
+ assert.equal(recordBattleVictory(progress,{level:124,won:true,lives:1}).best,1);
+ assert.equal(recordBattleVictory(progress,{level:124,won:true,lives:3}).improved,true);
+ assert.equal(recordBattleVictory(progress,{level:124,won:true,lives:2}).best,3);
  assert.equal(recordBattleVictory(progress,{level:165,won:true,mission:{gate:95}}).best,95);
  assert.equal(recordBattleVictory(progress,{level:165,won:true,mission:{gate:80}}).best,95);
  const saved=normalizeProgress(JSON.parse(JSON.stringify(progress)));
- assert.deepEqual(saved.battleRecords,{45:39,87:0,165:95});
+ assert.deepEqual(saved.battleRecords,{45:39,87:0,124:3,165:95});
  assert.equal(saved.coins,99);
  assert.equal(saved.inventory.grain,2);
 });
