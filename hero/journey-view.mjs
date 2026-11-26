@@ -1,6 +1,6 @@
-import {stageFactionTitle} from './factions.mjs?v=pass-river-1';
-import {stagePeople,mapPersonSvg,renderMatchup} from './characters.mjs?v=pass-river-1';
-import {campaignMapSvg,includeSecondaryRoute,journeyRoute,MAP_PLACES,routeThrough} from './campaign-map.mjs?v=pass-river-1';
+import {stageFactionTitle} from './factions.mjs?v=pass-river-2';
+import {stagePeople,mapPersonSvg,renderMatchup} from './characters.mjs?v=pass-river-2';
+import {campaignMapSvg,includeSecondaryRoute,journeyRoute,MAP_PLACES,routeThrough} from './campaign-map.mjs?v=pass-river-2';
 let cancelJourney=()=>{};
 export function mountJourney(level,stage){
  cancelJourney();let root=document.getElementById('journeyIntro');

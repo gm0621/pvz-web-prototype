@@ -1,7 +1,7 @@
-import {HISTORICAL_STAGES} from './history-stages.mjs?v=pass-river-1';
-import {missionText} from './chapter-missions.mjs?v=pass-river-1';
-import {retreatPartyNames,retreatPartyLabel,supplyReady,coverWaveText} from './history-missions.mjs?v=pass-river-1';
-import {hasFireRoutes} from './field-missions.mjs?v=pass-river-1';
+import {HISTORICAL_STAGES} from './history-stages.mjs?v=pass-river-2';
+import {missionText} from './chapter-missions.mjs?v=pass-river-2';
+import {retreatPartyNames,retreatPartyLabel,supplyReady,coverWaveText} from './history-missions.mjs?v=pass-river-2';
+import {hasFireRoutes} from './field-missions.mjs?v=pass-river-2';
 const names=['上','中','下'];
 export function missionQuickState(b){
  const m=b.mission;if(!m)return null;
@@ -36,7 +36,7 @@ export function missionQuickState(b){
   const missing=retreatPartyNames(b,{missingOnly:true});
   const living=b.allies.filter(u=>u.hp>0);
   const remaining=living.filter(u=>u.x>.18).length;
-  const status=missing.length?`請召回${missing.join('、')}，才能撤離`:!living.length?'請先召回至少一隊友軍':`${b.paused?'':'撤離中 · '}${remaining} ${fire?'隊':'名'}友軍尚未回到左側`;
+  const status=missing.length?`請召回${missing.join('、')}，才能撤離`:!living.length?'請先召回至少一隊友軍':`${b.paused?'':'撤離中 · '}${remaining} ${fire||m.coverWaves?'隊':'名'}友軍尚未回到左側`;
   return {heading,text:paused+status+clearing,button:'重新撤離',action:'retreat'};
  }
  if(m.coverWaves)return {heading,text:`${paused}${wait} · ${ready?'帶友軍撤回左側':'派友軍守線'}`,button:ready?'全軍撤離':'查看任務',action:ready?'retreat':undefined};

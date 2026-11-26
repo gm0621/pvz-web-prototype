@@ -1,4 +1,4 @@
-import {CAMPAIGN_LENGTH} from './campaign-config.mjs?v=pass-river-1';
+import {CAMPAIGN_LENGTH} from './campaign-config.mjs?v=pass-river-2';
 
 function recordRule(level){
  switch(level){

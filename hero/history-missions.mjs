@@ -1,6 +1,6 @@
-import {HISTORICAL_STAGES} from './history-stages.mjs?v=pass-river-1';
-import {FACTIONS,factionFor} from './factions.mjs?v=pass-river-1';
-import {OUTPOSTS,RAID_POINTS,OUTPOST_SECONDS,outpostLane,pointCompleted,nextOutpost,canIgniteRaid,igniteRaid,stepOutposts,selectOutpost,passWave,passLane,thirdWaveStarted,hasFireRoutes,canClearFire,clearFireLane,GATE_MAX,channelHazard,channelName,fleetChannel,fleetStatus,canRepairGate,repairGate,selectFleetChannel,siegeLane,stepFleet} from './field-missions.mjs?v=pass-river-1';
+import {HISTORICAL_STAGES} from './history-stages.mjs?v=pass-river-2';
+import {FACTIONS,factionFor} from './factions.mjs?v=pass-river-2';
+import {OUTPOSTS,RAID_POINTS,OUTPOST_SECONDS,outpostLane,pointCompleted,nextOutpost,canIgniteRaid,igniteRaid,stepOutposts,selectOutpost,passWave,passLane,thirdWaveStarted,hasFireRoutes,canClearFire,clearFireLane,GATE_MAX,channelHazard,channelName,fleetChannel,fleetStatus,canRepairGate,repairGate,selectFleetChannel,siegeLane,stepFleet} from './field-missions.mjs?v=pass-river-2';
 import {PEACH_HEROES} from './hero-base.mjs?v=passive-feedback-1';
 const defaultRetreatSlots=['liubei','zhangfei'];
 const retreatSlots=battle=>HISTORICAL_STAGES[battle.level-17]?.retreatKeys||defaultRetreatSlots;
@@ -134,7 +134,7 @@ export function historyMissionText(b){const fronts=['','','','三','四','五'][
   if(missing.length)return `${missing.join('、')}尚未在場，請整備後召回，再帶隊撤離${stage.noBoss?'':` · ${opponent}無須擊倒`}${paused}`;
   if(!b.allies.some(u=>u.hp>0))return '請先召回至少一隊友軍，再撤回左側'+paused;
   const remaining=b.allies.filter(u=>u.hp>0&&u.x>.18).length;
-  return (remaining?`${b.paused?'':'撤離中：'}尚有 ${remaining} ${hasFireRoutes(m)?'隊':'名'}友軍未回到左側 · 所有在場友軍都需撤回`:'隊伍已撤回左側，確認全員平安')+paused;
+  return (remaining?`${b.paused?'':'撤離中：'}尚有 ${remaining} ${hasFireRoutes(m)||m.coverWaves?'隊':'名'}友軍未回到左側 · 所有在場友軍都需撤回`:'隊伍已撤回左側，確認全員平安')+paused;
  }
  if(['withdraw','decoy'].includes(m.kind)){
   const status=m.coverWaves?coverWaveText(b):m.withdrawAt===null?(stage.noBoss?`守住${fronts}路，等待後隊接應`:`守住${fronts}路，等${opponent}出陣`):b.time<m.withdrawAt?`接應尚需 ${Math.ceil(m.withdrawAt-b.time)} 秒`:'接應完成，按全軍撤離';

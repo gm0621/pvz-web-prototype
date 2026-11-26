@@ -226,11 +226,21 @@ test('Han River carries three cargo batches across the chosen lane without reset
  assert.equal(b.mission.travel,travel);
  b.paused=false;
  const batches=new Set();
+ let switchedAfterDelivery=false;
  for(let i=0;i<800&&!b.over;i++){
   stepBattle(b,.1);
   batches.add(b.mission.delivered);
+  if(!switchedAfterDelivery&&b.mission.delivered===1&&b.mission.travel>.3){
+   assert.equal(deploy(b,'zhangfei',2),true);
+   const current=b.mission.travel;
+   assert.equal(historyAction(b,'channel',2),true);
+   assert.equal(b.mission.delivered,1);
+   assert.equal(b.mission.travel,current);
+   switchedAfterDelivery=true;
+  }
   if(b.mission.delivered<3)assert.equal(b.won,false);
  }
+ assert.equal(switchedAfterDelivery,true);
  assert.deepEqual([...batches],[0,1,2,3]);
  assert.equal(b.mission.delivered,3);
  assert.equal(b.won,true);

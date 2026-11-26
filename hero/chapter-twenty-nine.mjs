@@ -1,4 +1,4 @@
-import {lateJinChapter} from './late-jin-chapter.mjs?v=pass-river-1';
+import {lateJinChapter} from './late-jin-chapter.mjs?v=pass-river-2';
 
 const source=(title,path)=>({title,url:'https://zh.wikisource.org/zh-hant/'+path});
 const hui=source('《晉書》・惠帝紀','晉書/卷004');

@@ -1,4 +1,4 @@
-import {mapPersonSvg} from './characters.mjs?v=pass-river-1';
+import {mapPersonSvg} from './characters.mjs?v=pass-river-2';
 
 const standardHeight=304,dualHeight=374;
 
