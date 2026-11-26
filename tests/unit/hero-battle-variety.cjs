@@ -186,3 +186,22 @@ test('Fancheng relief retains partial captures and keeps the historic commander 
  assert.equal(b.bossRetreated,true);
  assert.equal(b.won,true);
 });
+
+test('Ruxu shows the next objective after landing while an enemy ship remains',async()=>{
+ const {createBattle,deploy,stepBattle}=await import('../../hero/engine.mjs');
+ const {missionQuickState}=await import('../../hero/mission-quick.mjs');
+ const b=createBattle(73,42);
+ b.bossSpawned=true;
+ b.mission.travel=.99;
+ assert.equal(deploy(b,'liubei',1),true);
+ b.enemies.push({id:99,lane:0,x:.85,hp:100,rate:999,speed:0,lastAttack:0});
+ stepBattle(b,.1);
+ stepBattle(b,.1);
+ assert.equal(b.mission.done,true);
+ assert.equal(b.over,false);
+ assert.equal(missionQuickState(b).doneHeading,'主船已靠岸 · 清退餘船');
+ assert.match(missionQuickState(b).text,/主船已抵達回營渡口/);
+ b.enemies=[];
+ stepBattle(b,.1);
+ assert.equal(b.won,true);
+});
