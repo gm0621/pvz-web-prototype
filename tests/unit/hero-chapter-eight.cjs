@@ -5,7 +5,7 @@ for(let level=41;level<=46;level++)test(`chapter eight ${level} wins with legal 
  for(const seed of [1,42,2026]){const b=createBattle(level,seed);for(let i=0;i<5000&&!b.over;i++){
  if(b.introPending)b.introPending=false;
  for(const lane of [1,0,2]){const row=b.allies.filter(u=>u.lane===lane),key={0:'liubei',1:'zhangfei',2:'guanyu'}[lane];deploy(b,!row.some(u=>u.key==='archer')?'archer':!b.allies.some(u=>u.key===key)?key:row.filter(u=>u.key==='archer').length<2?'archer':key,lane)}
- if(level===43)historyAction(b,'supply');if(level===46&&b.mission.site<0)historyAction(b,'site',b.mission.sites.findIndex(t=>t<8));stepBattle(b,.1);
+ if(level===43)historyAction(b,'supply');if(level===45&&b.mission.target<0)historyAction(b,'outpost',b.mission.positions.findIndex(t=>t<7));if(level===46&&b.mission.site<0)historyAction(b,'site',b.mission.sites.findIndex(t=>t<8));stepBattle(b,.1);
  }assert.ok(b.won,JSON.stringify({level,seed,time:b.time,lives:b.lives,mission:b.mission,enemies:b.enemies.map(e=>[e.name,e.hp,e.x])}));assert.ok(b.mission.done);assert.equal(b.duelSeen,false);}
 });
 

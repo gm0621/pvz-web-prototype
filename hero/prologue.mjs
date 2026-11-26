@@ -1,5 +1,5 @@
-import {HISTORICAL_STAGES} from './history-stages.mjs?v=river-gate-1';
-import {paintPortrait} from './factions.mjs?v=river-gate-1';
+import {HISTORICAL_STAGES} from './history-stages.mjs?v=battle-variety-1';
+import {paintPortrait} from './factions.mjs?v=battle-variety-1';
 import {THIRD_CHAPTER} from './chapter-three.mjs?v=passive-feedback-1';
 // History and novel adaptation are deliberately separated in the introduction.
 export const CHAPTER_BACKGROUNDS={

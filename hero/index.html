@@ -8,7 +8,7 @@
  <link rel="preload" as="image" href="./assets/home/peach-720.webp" media="(max-width:700px)">
  <link rel="preload" as="image" href="./assets/home/peach-1440.webp" media="(min-width:701px)">
  <link rel="stylesheet" href="game.css?v=dispatch-supply-1">
- <link rel="stylesheet" href="finale.css?v=river-gate-1">
+ <link rel="stylesheet" href="finale.css?v=battle-variety-1">
 <style>.orders{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}.orders span{flex-basis:100%;font-size:13px}.orders button{min-height:44px;min-width:64px;padding:8px 12px;border:1px solid #9aab88;border-radius:8px;background:#faf0d5;color:#244332}.orders button:disabled{opacity:.45}.unit.retreating .unit-figure{animation:unit-march .42s ease-in-out infinite}</style>
 <link rel="stylesheet" href="duel.css?v=chapter-six-1">
 <link rel="stylesheet" href="novel-camp.css?v=dispatch-supply-1">
@@ -36,7 +36,7 @@
 <link rel="stylesheet" href="./skill-cutin.css?v=passive-feedback-1">
 <link rel="stylesheet" href="./passive-feedback.css?v=passive-feedback-1">
 <link rel="stylesheet" href="battle-focus.css?v=yiling-warning-1">
-<link rel="stylesheet" href="field-missions.css?v=river-gate-1">
+<link rel="stylesheet" href="field-missions.css?v=battle-variety-1">
 <link rel="stylesheet" href="home-cover.css?v=images-1">
 <link rel="stylesheet" href="./experience.css?v=experience-1">
 <link rel="stylesheet" href="./camp-growth.css?v=camp-growth-1">
@@ -144,7 +144,7 @@
    <section id="campRoster" class="camp-roster" hidden><h3 tabindex="-1">武將成長 · 下一招，等你學會</h3><p id="campInventory"></p><div id="campHeroes"></div></section>
    <footer class="camp-departure"><div><small>下一步</small><strong>整備好了，就繼續冒險！</strong></div><button id="campContinue" class="gold-button">繼續故事 →</button></footer>
   </section>
-  <section id="result" class="screen result" aria-labelledby="resultTitle" hidden><button class="home-button" data-home>← 回主選單</button><div class="result-panel"><span id="resultMark" class="result-mark" aria-hidden="true">勝</span><span id="resultChapter" class="eyebrow"></span><h2 id="resultTitle" tabindex="-1"></h2><div class="result-company" aria-hidden="true"><img loading="lazy" decoding="async" src="assets/guanyu.webp" alt=""><img loading="lazy" decoding="async" src="assets/liubei.png" alt=""><img loading="lazy" decoding="async" src="assets/zhangfei.png" alt=""></div><p id="resultText"></p><div class="victory-ribbon" aria-hidden="true">捷 報 傳 回 ・ 凱 旋 歸 營</div><section class="reward-ledger" aria-label="本場軍資結算"><div class="reward-particles" aria-hidden="true"><i style="--i:0"></i><i style="--i:1"></i><i style="--i:2"></i><i style="--i:3"></i><i style="--i:4"></i><i style="--i:5"></i><i style="--i:6"></i><i style="--i:7"></i><i style="--i:8"></i><i style="--i:9"></i><i style="--i:10"></i><i style="--i:11"></i></div><div class="reward-coins" aria-hidden="true"><i style="--i:0"></i><i style="--i:1"></i><i style="--i:2"></i><i style="--i:3"></i><i style="--i:4"></i><i style="--i:5"></i></div><span class="reward-label">本次獲得軍資</span><strong id="resultEarned">+0</strong><p id="resultRewardReason"></p><div class="reward-balance"><span>目前持有</span><strong><span id="resultBalance">0</span> 軍資</strong></div><small id="resultSaved" aria-live="polite">軍資已存入行囊，可在營地使用</small><button id="resultRetrySave" class="quiet-button" hidden>重試保存</button></section><p class="result-next-step">戰報看完了？回營歇一歇，再聽三兄弟的故事。</p><div class="result-actions"><button id="resultNext" class="gold-button">前往戰後營地 →</button><button id="replayLevel" class="quiet-button">再玩本關</button><button class="quiet-button" data-home>回主選單</button></div></div></section>
+  <section id="result" class="screen result" aria-labelledby="resultTitle" hidden><button class="home-button" data-home>← 回主選單</button><div class="result-panel"><span id="resultMark" class="result-mark" aria-hidden="true">勝</span><span id="resultChapter" class="eyebrow"></span><h2 id="resultTitle" tabindex="-1"></h2><div class="result-company" aria-hidden="true"><img loading="lazy" decoding="async" src="assets/guanyu.webp" alt=""><img loading="lazy" decoding="async" src="assets/liubei.png" alt=""><img loading="lazy" decoding="async" src="assets/zhangfei.png" alt=""></div><p id="resultText"></p><div id="resultRecord" class="result-record" hidden><strong id="resultRecordCurrent"></strong><span id="resultRecordBest"></span></div><div class="victory-ribbon" aria-hidden="true">捷 報 傳 回 ・ 凱 旋 歸 營</div><section class="reward-ledger" aria-label="本場軍資結算"><div class="reward-particles" aria-hidden="true"><i style="--i:0"></i><i style="--i:1"></i><i style="--i:2"></i><i style="--i:3"></i><i style="--i:4"></i><i style="--i:5"></i><i style="--i:6"></i><i style="--i:7"></i><i style="--i:8"></i><i style="--i:9"></i><i style="--i:10"></i><i style="--i:11"></i></div><div class="reward-coins" aria-hidden="true"><i style="--i:0"></i><i style="--i:1"></i><i style="--i:2"></i><i style="--i:3"></i><i style="--i:4"></i><i style="--i:5"></i></div><span class="reward-label">本次獲得軍資</span><strong id="resultEarned">+0</strong><p id="resultRewardReason"></p><div class="reward-balance"><span>目前持有</span><strong><span id="resultBalance">0</span> 軍資</strong></div><small id="resultSaved" aria-live="polite">軍資已存入行囊，可在營地使用</small><button id="resultRetrySave" class="quiet-button" hidden>重試保存</button></section><p class="result-next-step">戰報看完了？回營歇一歇，再聽三兄弟的故事。</p><div class="result-actions"><button id="resultNext" class="gold-button">前往戰後營地 →</button><button id="replayLevel" class="quiet-button">再玩本關</button><button class="quiet-button" data-home>回主選單</button></div></div></section>
   <section id="finale" class="screen" aria-label="英雄演義主篇結局" hidden>
    <div id="finaleStep">
     <header><button class="home-button" data-home>← 回主選單</button><button id="finaleSkip" class="quiet-button">略過回顧</button></header>
@@ -171,7 +171,7 @@
  <button id="storageRetry" class="quiet-button" hidden>重試保存進度與軍資</button>
 
  <dialog id="campaignMapDialog" aria-labelledby="campaignMapTitle"><header><div><small id="campaignMapPeriod">戰役行程</small><h2 id="campaignMapTitle">三國行軍圖</h2></div><button id="campaignMapClose" class="quiet-button">返回戰場 ✕</button></header><div class="map-location"><h3 id="campaignMapLocation"></h3><span id="campaignMapModern"></span></div><div id="campaignMapMatchup" class="map-matchup"></div><div id="campaignMapCanvas"></div><div class="map-legend"><span>⚑ 目前位置</span><span>● 本關前的行軍地點</span><span>○ 後續地點</span></div><p id="campaignMapDetail"></p><p class="map-route-caption">劇情行軍路線：<span id="campaignMapRoute"></span></p><details><summary>查看所有關卡戰役位置</summary><ol id="campaignMapStages"></ol></details><p class="map-note" id="campaignMapNote">地名與方向為戰區示意；地形與路線間距依遊戲版面調整。</p></dialog>
- <script type="module" src="app.mjs?v=river-gate-1"></script>
+ <script type="module" src="app.mjs?v=battle-variety-1"></script>
  <script type="module" src="home-cover.mjs?v=home-cover-1"></script>
 </body>
 </html>

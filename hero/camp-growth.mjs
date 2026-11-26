@@ -1,6 +1,6 @@
-import {previewButton,skillButtons} from './skill-preview.mjs?v=river-gate-1';
-import {LEVEL_XP,heroLevel,nextLesson,activeText} from './roster.mjs?v=river-gate-1';
-import {paintPortrait} from './factions.mjs?v=river-gate-1';
+import {previewButton,skillButtons} from './skill-preview.mjs?v=battle-variety-1';
+import {LEVEL_XP,heroLevel,nextLesson,activeText} from './roster.mjs?v=battle-variety-1';
+import {paintPortrait} from './factions.mjs?v=battle-variety-1';
 const el=(tag,text)=>{const e=document.createElement(tag);if(text)e.textContent=text;return e};
 // Read-only cards: use the same thresholds and skill definitions as battle rewards.
 export function campGrowthCard(id,g,xp,weapon,summary){

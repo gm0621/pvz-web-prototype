@@ -45,7 +45,7 @@ const stages=[
   matchupLabel:'猇亭反擊・吳軍統帥',mission:'withdraw',scene:'ambush-valley',enemyArmy:'吳軍追兵',
   commander:'吳軍追兵主將',retreatKeys:['liubei'],successTitle:'撤出猇亭',
   history:'章武二年夏，陸遜以火攻反擊，劉備軍在猇亭敗退。馮習、張南等戰死。劉備離開猇亭，退回秭歸收攏散兵。',
-  briefing:'留意追兵的火勢預警。接應完成後按「全軍撤離」，讓劉備和在場友軍退至左側。',
+  briefing:'看哪一路安全。燃燒時，有友軍在該路可開路一次。接應完成後按「全軍撤離」，帶劉備和在場友軍回左側。',
   ending:'劉備退回秭歸收攏散兵。夷陵一戰由陸遜取勝，馮習、張南等沒有回來。',
   guest:'劉備',camp:'先清點回來的人。糧食和傷藥都要分好，還有一段路才能安頓。',
   question:'夷陵之戰後，劉備先在哪裡收攏散兵？',choices:['秭歸','江陵','長安'],refs:[liu,lu,chronicle]
@@ -71,7 +71,7 @@ export const FIFTEENTH_CHAPTER=stages.map((stage,index)=>{
   retreatKeys,successTitle,leaderName:leader,opponentName:opponent,mapOpponent,mapLeader,mapReportRegion,matchupLabel,
   lead:history,history,adaptation,note:adaptation,novel:[['說書人',history],[guest,camp]],
   opening:[['說書人',history],[leader,briefing],['說書人',adaptation]],
-  ending:[['說書人',ending],[guest,camp]],campLine:ending,victory:ending,bossIntro:briefing,bossTip:commander?'紅色預警標出即將起火的路線。換到安全路，等火熄滅再回去。接應後，帶劉備和友軍退回左側。':briefing,
+  ending:[['說書人',ending],[guest,camp]],campLine:ending,victory:ending,bossIntro:briefing,bossTip:commander?'標籤會顯示安全、快起火或燃燒中。可換安全路，或在有友軍的火路按「開路」一次。接應後全軍回左側。':briefing,
   quiz:{kind:'史書小偵探',hero:'liubei',title:question,scene:history,question,choices,answer:0,hint:history,reply:history},
   campTalkPrompts:{
    guanyu:{speaker:guest,title:guest,hint:'聊聊這一戰'},

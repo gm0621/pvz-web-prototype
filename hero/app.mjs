@@ -1,39 +1,40 @@
-import {CHAPTER_NUMERALS,MAIN_STORY_END,MAIN_STORY_CLEAR,BONUS_TITLE,WESTERN_JIN_END,LUOYANG_END,LUOYANG_BONUS_TITLE,CHANGAN_BONUS_TITLE} from './campaign-config.mjs?v=river-gate-1';
-import {mountFinale} from './finale-view.mjs?v=river-gate-1';
-import {GATE_MAX,channelHazard,channelName,siegeLane} from './field-missions.mjs?v=river-gate-1';
-import {mountExperienceView} from './experience-view.mjs?v=river-gate-1';
+import {CHAPTER_NUMERALS,MAIN_STORY_END,MAIN_STORY_CLEAR,BONUS_TITLE,WESTERN_JIN_END,LUOYANG_END,LUOYANG_BONUS_TITLE,CHANGAN_BONUS_TITLE} from './campaign-config.mjs?v=battle-variety-1';
+import {mountFinale} from './finale-view.mjs?v=battle-variety-1';
+import {recordBattleVictory} from './battle-records.mjs?v=battle-variety-1';
+import {GATE_MAX,channelHazard,channelName,siegeLane,fireLaneState,OUTPOSTS,OUTPOST_SECONDS,outpostLane,passLane} from './field-missions.mjs?v=battle-variety-1';
+import {mountExperienceView} from './experience-view.mjs?v=battle-variety-1';
 import {preloadBattleAssets,battleAssetsReady,prepareBattleAssets} from './battle-assets.mjs?v=images-1';
-import {mountBattleFocus} from './battle-focus.mjs?v=river-gate-1';
+import {mountBattleFocus} from './battle-focus.mjs?v=battle-variety-1';
 import {advanceAutoSkills} from './auto-skills.mjs?v=battle-focus-1';
 import {renderPassiveFeedback} from './passive-view.mjs?v=passive-feedback-1';
-import {mountSkillIntro} from './skill-intro.mjs?v=river-gate-1';
-import {beginReading,installStoryReader} from './story-reader.mjs?v=river-gate-1';
+import {mountSkillIntro} from './skill-intro.mjs?v=battle-variety-1';
+import {beginReading,installStoryReader} from './story-reader.mjs?v=battle-variety-1';
 import {shortPages} from './story-pages.mjs?v=passive-feedback-1';
-import {configureRoster,configurePeachRoster,configureSunRoster,awardExperience,SLOTS,ALL_GENERALS as GENERALS} from './roster.mjs?v=river-gate-1';
-import {openDeployment,mountActiveSkills} from './roster-view.mjs?v=river-gate-1';
-import {castActive,lanesFor,laneLabel} from './engine.mjs?v=river-gate-1';
-import {mountSkillGuide} from './skill-guide.mjs?v=river-gate-1';
-import {battleBossPortrait,renderPeople,STORY_PEOPLE} from './characters.mjs?v=river-gate-1';
-import {factionFor,stageFactionTitle,enemyPortrait,paintPortrait} from './factions.mjs?v=river-gate-1';
-import {mountHistoryLesson} from './history-view.mjs?v=river-gate-1';
-import {renderSkillCutin} from './skill-cutin.mjs?v=river-gate-1';
-import {renderMasterCutin} from './master-cutin.mjs?v=river-gate-1';
-import {renderBossCutin} from './boss-cutin.mjs?v=river-gate-1';
+import {configureRoster,configurePeachRoster,configureSunRoster,awardExperience,SLOTS,ALL_GENERALS as GENERALS} from './roster.mjs?v=battle-variety-1';
+import {openDeployment,mountActiveSkills} from './roster-view.mjs?v=battle-variety-1';
+import {castActive,lanesFor,laneLabel} from './engine.mjs?v=battle-variety-1';
+import {mountSkillGuide} from './skill-guide.mjs?v=battle-variety-1';
+import {battleBossPortrait,renderPeople,STORY_PEOPLE} from './characters.mjs?v=battle-variety-1';
+import {factionFor,stageFactionTitle,enemyPortrait,paintPortrait} from './factions.mjs?v=battle-variety-1';
+import {mountHistoryLesson} from './history-view.mjs?v=battle-variety-1';
+import {renderSkillCutin} from './skill-cutin.mjs?v=battle-variety-1';
+import {renderMasterCutin} from './master-cutin.mjs?v=battle-variety-1';
+import {renderBossCutin} from './boss-cutin.mjs?v=battle-variety-1';
 import {mountBattleKeys} from './battle-keys.mjs?v=battle-focus-1';
-import {mountJourney} from './journey-view.mjs?v=river-gate-1';
-import {renderMission} from './chapter-mission-view.mjs?v=river-gate-1';
-import {mountCampaignMap} from './campaign-map.mjs?v=river-gate-1';
-import {advanceBattleFrame,normalizeBattleSpeed} from './battle-speed.mjs?v=river-gate-1';
-import {mountNovel} from './novel.mjs?v=river-gate-1';
-import {mountCamp} from './camp-view.mjs?v=river-gate-1';
-import {rewardVictory,useSupply,weaponsForLevel} from './campaign.mjs?v=river-gate-1';
+import {mountJourney} from './journey-view.mjs?v=battle-variety-1';
+import {renderMission} from './chapter-mission-view.mjs?v=battle-variety-1';
+import {mountCampaignMap} from './campaign-map.mjs?v=battle-variety-1';
+import {advanceBattleFrame,normalizeBattleSpeed} from './battle-speed.mjs?v=battle-variety-1';
+import {mountNovel} from './novel.mjs?v=battle-variety-1';
+import {mountCamp} from './camp-view.mjs?v=battle-variety-1';
+import {rewardVictory,useSupply,weaponsForLevel} from './campaign.mjs?v=battle-variety-1';
 import {createFirstGuide} from './first-guide.mjs?v=passive-feedback-1';
-import {mountStoryTask} from './story-play.mjs?v=river-gate-1';
-import {CHAPTER_BACKGROUNDS,STAGE_LEADS} from './prologue.mjs?v=river-gate-1';
-import {setMusic,setMusicMode,setMusicHome,musicTheme,musicOn,setSfx,unlockAudio,hitSound} from './audio.mjs?v=river-gate-1';
-import {renderDuel} from './duel-view.mjs?v=river-gate-1';
-import {chapterInfo,enemyArt,HEROES as BASE_HEROES,heroesForLevel,STAGES,ENEMY_ART,SHIELD_ART,FEATURES,heroDescription} from './story.mjs?v=river-gate-1';
-import {bossProfile,LANE_CAPACITY,laneCount,ENEMY_SWING,enemyAttackFrame,skipDuelEntrance,positionHero,commandHero,moveHero,BOSS_SKILLS,SAVE_KEY,normalizeProgress,createBattle,deploy,canDeploy,attackFrame,SWING} from './engine.mjs?v=river-gate-1';
+import {mountStoryTask} from './story-play.mjs?v=battle-variety-1';
+import {CHAPTER_BACKGROUNDS,STAGE_LEADS} from './prologue.mjs?v=battle-variety-1';
+import {setMusic,setMusicMode,setMusicHome,musicTheme,musicOn,setSfx,unlockAudio,hitSound} from './audio.mjs?v=battle-variety-1';
+import {renderDuel} from './duel-view.mjs?v=battle-variety-1';
+import {chapterInfo,enemyArt,HEROES as BASE_HEROES,heroesForLevel,STAGES,ENEMY_ART,SHIELD_ART,FEATURES,heroDescription} from './story.mjs?v=battle-variety-1';
+import {bossProfile,LANE_CAPACITY,laneCount,ENEMY_SWING,enemyAttackFrame,skipDuelEntrance,positionHero,commandHero,moveHero,BOSS_SKILLS,SAVE_KEY,normalizeProgress,createBattle,deploy,canDeploy,attackFrame,SWING} from './engine.mjs?v=battle-variety-1';
 
 const $=id=>document.getElementById(id);
 let HEROES=BASE_HEROES;
@@ -199,7 +200,7 @@ function buildControls(){
 }
 function buildDeploymentControls(){
  const labels=Array.from({length:lanesFor(battle)},(_,i)=>battle.mission?.kind==='naval'?channelName(battle,i):laneLabel(battle,i)+'路');$('lanes').style.gridTemplateRows=`repeat(${labels.length},1fr)`;$('field').dataset.lanes=labels.length;
- $('lanes').replaceChildren(...labels.map((label,lane)=>{const b=document.createElement('button');b.type='button';b.className='lane';b.dataset.lane=lane;b.setAttribute('aria-label',`${label}，點擊出兵`);b.innerHTML=`<span class="lane-label">${label}</span><span class="lane-capacity"></span><span class="deploy-zone-label">出兵區</span><span class="lane-direction" aria-hidden="true">→　→　→</span><span class="enemy-zone-label" aria-hidden="true">敵軍 ←</span>`;b.onclick=event=>{
+ $('lanes').replaceChildren(...labels.map((label,lane)=>{const b=document.createElement('button');b.type='button';b.className='lane';b.dataset.lane=lane;b.setAttribute('aria-label',`${label}，點擊出兵`);b.innerHTML=`<span class="lane-label">${label}</span><span class="lane-capacity"></span><span class="deploy-zone-label">出兵區</span><span class="lane-direction" aria-hidden="true">→　→　→</span><span class="outpost-marker" hidden></span><span class="enemy-zone-label" aria-hidden="true">敵軍 ←</span>`;b.onclick=event=>{
   if(!selected){battle.notice='先選下方一張兵卡，再點路線。';battle.noticeUntil=battle.time+3;renderBattle();return}
   const active=selectedUnit();
   if(active){const rect=$('field').getBoundingClientRect();const unit=active;if(positionHero(battle,unit.id,lane,event.detail===0?unit.x:(event.clientX-rect.left)/rect.width)&&unit.order==='forward')firstGuide?.event('move')}else {const deploying=selected;if(deploy(battle,deploying,lane)){if(deploying!=='archer')firstGuide?.event('deploy');selected=null;selectedUnitId=null;}}renderBattle();
@@ -285,9 +286,22 @@ function renderBattle(){
  }
  for(const lane of $('lanes').children){const index=Number(lane.dataset.lane),unit=selectedUnit(),ready=unit?unit.lane!==index&&battle.time>=(unit.moveReadyAt||0)&&laneCount(battle,index)<LANE_CAPACITY:selected&&!canDeploy(battle,selected,index);const count=laneCount(battle,index),full=count>=LANE_CAPACITY;
   const naval=battle.mission?.kind==='naval',name=naval?channelName(battle,index):laneLabel(battle,index)+'路';
-  const hazard=naval?channelHazard(battle,index):'',warning=hazard==='warning'?'・快封航':hazard==='blocked'?'・封航':'';
+  const hazard=naval?channelHazard(battle,index):'';
+  const fire=battle.level===87?fireLaneState(battle,index):'';
+  const mode=battle.mission?.kind;
+  const threat=(mode==='siege'||mode==='pass-defense')&&battle.spawned<stage.enemyCount&&battle.nextSpawn-battle.time<=3&&index===(mode==='siege'?siegeLane(battle):passLane(battle));
+  const warning=fire?({warning:'・快起火',burning:'・燃燒中',safe:'・安全'})[fire]:hazard==='warning'?'・快封航':hazard==='blocked'?'・封航':mode==='pass-defense'&&threat?'・來敵':'';
+  lane.dataset.fire=fire;
+  lane.dataset.threat=String(threat);
+  const post=lane.querySelector('.outpost-marker');
+  const point=mode==='outposts'?OUTPOSTS.findIndex((_,i)=>outpostLane(battle,i)===index):-1;
+  post.hidden=point<0;
+  if(point>=0){
+   const m=battle.mission,progress=m.positions[point];
+   post.dataset.captured=String(progress>=OUTPOST_SECONDS);
+   post.textContent=`${OUTPOSTS[point].name}${progress>=OUTPOST_SECONDS?' ✓':m.target===point?` ${Math.floor(progress/OUTPOST_SECONDS*100)}%`:''}`;
+  }
   lane.dataset.hazard=hazard;
-  lane.dataset.threat=String(battle.mission?.kind==='siege'&&battle.spawned<stage.enemyCount&&battle.nextSpawn-battle.time<=3&&index===siegeLane(battle));
   lane.querySelector('.lane-label').textContent=name+warning;
   lane.querySelector('.lane-capacity').textContent=`${full?'已滿 ':''}${count}／${LANE_CAPACITY}`;lane.classList.toggle('full',full);lane.setAttribute('aria-label',`${name}${warning}，${count}／${LANE_CAPACITY} 名友軍${full?'，已滿；可調動本路單位，不能再增援或換入':''}`);lane.classList.toggle('ready',!!ready);lane.disabled=battle.paused||!!battle.duel||!!battle.introPending||battle.over}
  for(const button of $('supplies').children){const id=button.dataset.supply;button.textContent=`${id==='herb'?'藥包':'糧袋'} ×${progress.inventory[id]}`;button.disabled=!progress.inventory[id]||battle.paused||battle.over||!!battle.duel||!!battle.introPending}
@@ -302,7 +316,15 @@ function renderBattle(){
 }
 function showResult(){
  resultShown=true;selected=null;selectedUnitId=null;setMusicMode(battle.won?'victory':'prepare',battle.level);syncMusicButton();const stage=STAGES[battle.level-1];
- const balanceBefore=progress.coins;let earned=0,saved=true;const xp=awardExperience(progress,battle);if(battle.won)earned=rewardVictory(progress,battle.level);if(battle.won||xp.length)saved=saveProgress();
+ const balanceBefore=progress.coins;let earned=0,saved=true;const xp=awardExperience(progress,battle);if(battle.won)earned=rewardVictory(progress,battle.level);
+ const record=recordBattleVictory(progress,battle),recordBox=$('resultRecord');
+ recordBox.hidden=!record;
+ if(record){
+  const {label,unit,score,best,improved}=record;
+  $('resultRecordCurrent').textContent=`${label} ${score} ${unit}`;
+  $('resultRecordBest').textContent=improved?`個人新紀錄 · ${best} ${unit}`:`個人最佳 · ${best} ${unit}`;
+ }
+ if(battle.won||xp.length)saved=saveProgress();
  const resultKeys=battle.heroMode?SLOTS.slice(0,battle.team.length):['guanyu','liubei','zhangfei'];document.querySelector('.result-company').replaceChildren(...resultKeys.map(key=>{const img=document.createElement('img');paintPortrait(img,HEROES[key]);img.alt=HEROES[key].name;return img}));
  document.querySelector('.result-next-step').textContent=battle.level>=17?'戰報看完了？回營整備，再聽同伴說說這一戰。':'戰報看完了？回營歇一歇，再聽三兄弟的故事。';
  document.querySelector('.victory-ribbon').textContent=stage.successRibbon||(stage.successTitle?'保 全 隊 伍 ・ 回 營 整 備':'捷 報 傳 回 ・ 凱 旋 歸 營');
@@ -312,7 +334,7 @@ function showResult(){
  $('result').dataset.outcome=battle.won?'victory':'defeat';$('result').dataset.reward=String(progress.coins>balanceBefore);if(battle.won&&!xp.some(x=>x.amount>0))void hitSound('oath');
  $('resultEarned').textContent=`+${progress.coins-balanceBefore}`;$('resultBalance').textContent=progress.coins.toLocaleString('en-US');
  $('resultRewardReason').textContent=!battle.won?'這次未能守住防線，沒有獲得軍資；已有軍資不扣除。':!earned?'本關首次通關獎勵已領取，重玩不重複發放。':progress.coins-balanceBefore<earned?'首次通關！軍資已補至持有上限 99,999。':'首次通關獎勵・80 軍資';
- $('resultSaved').textContent=!saved?'進度、經驗與軍資僅暫存於本頁，尚未保存；關閉或重新整理後可能遺失。':battle.won&&earned?'軍資、經驗與進度已保存，可在營地使用':'保留目前軍資，可到營地整備';
+ $('resultSaved').textContent=!saved?'進度、成績、經驗與軍資僅暫存於本頁，尚未保存；關閉或重新整理後可能遺失。':battle.won&&earned?'軍資、經驗與進度已保存，可在營地使用':'保留目前軍資，可到營地整備';
  $('resultRetrySave').hidden=saved||storageReadFailed;
  $('resultNext').textContent='前往戰後營地 →';show('result');$('resultTitle').focus({preventScroll:true});const resultBattle=battle;experienceView.start(xp,progress,()=>{if(screen==='result'&&battle===resultBattle)skillIntro.upgrades(xp)});
 }

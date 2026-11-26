@@ -20,6 +20,14 @@ npm run test:hero:engine
 npx playwright test --config=playwright.hero-input.config.js
 ```
 
+## 2026-11-26 攻城、火路撤離、分波守關與個人成績
+
+- 第 45 關先選攻箭樓或補給點。拿下箭樓會停止射擊，拿下補給點會加快軍糧補充。兩處都拿下並清退敵軍可過關。
+- 第 87 關的戰場各路顯示「安全／快起火／燃燒中」。火路仍有友軍時，每場可開路一次，撤離時顯示還有幾隊在場。
+- 第 124 關依序從上、下、中路來敵。戰前與戰場顯示來路預警，守住防線並擊退三波可過關。
+- 每關勝利結算顯示本次與個人最佳。一般關卡記通關時間，第 87 關記損失隊數，第 124 關記剩餘防線，第 165 關記城門耐久。舊存檔下次完成關卡時會建立新紀錄。首勝軍資及重玩獎勵規則沿用。劇情、營地、行軍圖及第 142 關主篇結局沿用。
+- 快取版 `battle-variety-1`。觸控驗證指令 `npx playwright test --config=playwright.hero-battle-variety.config.js`。
+
 ## 2026-11-26 第 141 關水戰與第 165 關守城戰
 
 - 已發布 `eda99ca`。正式站手機 Chromium 和平板 WebKit 以正常敵波及起始軍糧通過第 141、142、165 關。核對換航道保留進度、主篇回顧、城門受損與修補、第 165 關重玩及舊存檔。另核對四種尺寸操作、155 張圖鑑頭像及 51 份變更資源。 [正式遊戲](https://gm0621.github.io/pvz-web-prototype/hero/?v=eda99ca) · [人物圖鑑](https://gm0621.github.io/pvz-web-prototype/hero/people.html?v=eda99ca) · [發布紀錄](https://github.com/gm0621/pvz-web-prototype/actions/runs/45741335229)

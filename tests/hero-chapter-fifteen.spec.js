@@ -149,6 +149,7 @@ test('chapter fifteen carries a completed Xiangfan save through the retreat to Y
    await expect(page.locator('#bossHudState')).toContainText('中路即將起火');
    expect(await page.locator('#bossHudState').evaluate(node=>node.scrollWidth<=node.clientWidth)).toBe(true);
    await expect(page.locator('.lane').nth(1)).toHaveClass(/danger/);
+   await expect(page.locator('.lane-label').nth(1)).toContainText('快起火');
    const duringWarning=await page.evaluate(()=>window.chapterBattle.time);
    await tap('#battleMenuButton');
    await tap('#battleMapButton');
@@ -171,6 +172,12 @@ test('chapter fifteen carries a completed Xiangfan save through the retreat to Y
    await advanceUntil(()=>window.chapterBattle.hazards.some(h=>h.lane===1&&h.nextTick>h.until-1.3));
    expect((await unit('guanyu')).hp).toBe(safeBefore);
    expect((await unit('zhangfei')).hp).toBeLessThan(exposedBefore);
+   await expect(page.locator('.lane-label').nth(1)).toContainText('燃燒中');
+   await tap('#missionDrawerButton');
+   await tap('#missionChoices [data-action="clear-fire"]:nth-child(2)');
+   await expect(page.locator('.lane-label').nth(1)).toContainText('安全');
+   await expect(page.locator('#missionQuick')).toContainText('開路剩 0 次');
+   await tap('#missionDrawerClose');
    await advanceUntil(()=>window.chapterBattle.time>=window.chapterBattle.mission.withdrawAt);
    await expect(page.locator('#missionQuickAction')).toHaveText('全軍撤離');
    await tap('#missionQuickAction');

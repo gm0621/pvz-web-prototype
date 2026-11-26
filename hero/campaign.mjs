@@ -1,7 +1,8 @@
 import {LEARNING_LEVELS} from './skill-growth.mjs?v=passive-feedback-1';
-import {growthState,selectedTeam,DEFAULT_TEAM,ALL_GENERALS} from './roster.mjs?v=river-gate-1';
-import {factionFor} from './factions.mjs?v=river-gate-1';
-import {CAMPAIGN_LENGTH} from './campaign-config.mjs?v=river-gate-1';
+import {growthState,selectedTeam,DEFAULT_TEAM,ALL_GENERALS} from './roster.mjs?v=battle-variety-1';
+import {factionFor} from './factions.mjs?v=battle-variety-1';
+import {normalizeBattleRecords} from './battle-records.mjs?v=battle-variety-1';
+import {CAMPAIGN_LENGTH} from './campaign-config.mjs?v=battle-variety-1';
 // Local campaign economy, independent of the original zombie game's account/store.
 export const GOODS={
  herb:{name:'行軍藥包',shop:'items',price:25,icon:'✚',description:'戰鬥中使用，所有在場友軍回復 60 生命。'},
@@ -15,7 +16,7 @@ const ranks=raw=>Object.fromEntries(['liubei','guanyu','zhangfei'].map(k=>[k,bou
 export function weaponsForLevel(progress,level=1){const army=factionFor(level);return army?progress.armyWeapons[army]:progress.weapons}
 export function campaignState(raw,completed){
  const legacy=!raw||!Object.hasOwn(raw,'coins');const heroGrowth=growthState(raw?.heroGrowth);if(!raw?.heroGrowth)for(const [i,id] of DEFAULT_TEAM.entries())heroGrowth[id].weapon=ranks(raw?.armyWeapons?.cao)[['liubei','guanyu','zhangfei'][i]];
- return {skillSeen:Array.isArray(raw?.skillSeen)?[...new Set(raw.skillSeen.filter(key=>Object.keys(ALL_GENERALS).some(id=>LEARNING_LEVELS.some(level=>key===id+':'+level))))]:[],heroGrowth,caoTeam:selectedTeam(raw?.caoTeam),battleLanes:[3,4,5].includes(raw?.battleLanes)?raw.battleLanes:3,coins:legacy?completed*80:bounded(raw.coins,99999),rewarded:Array.from({length:completed},(_,i)=>i+1),inventory:{herb:bounded(raw?.inventory?.herb,9),grain:bounded(raw?.inventory?.grain,9)},weapons:ranks(raw?.weapons),armyWeapons:{cao:ranks(raw?.armyWeapons?.cao),sun:ranks(raw?.armyWeapons?.sun)}};
+ return {battleRecords:normalizeBattleRecords(raw?.battleRecords,completed),skillSeen:Array.isArray(raw?.skillSeen)?[...new Set(raw.skillSeen.filter(key=>Object.keys(ALL_GENERALS).some(id=>LEARNING_LEVELS.some(level=>key===id+':'+level))))]:[],heroGrowth,caoTeam:selectedTeam(raw?.caoTeam),battleLanes:[3,4,5].includes(raw?.battleLanes)?raw.battleLanes:3,coins:legacy?completed*80:bounded(raw.coins,99999),rewarded:Array.from({length:completed},(_,i)=>i+1),inventory:{herb:bounded(raw?.inventory?.herb,9),grain:bounded(raw?.inventory?.grain,9)},weapons:ranks(raw?.weapons),armyWeapons:{cao:ranks(raw?.armyWeapons?.cao),sun:ranks(raw?.armyWeapons?.sun)}};
 }
 export function rewardVictory(progress,level){
  if(!Number.isInteger(level)||level<1||level>CAMPAIGN_LENGTH)return 0;

@@ -6,7 +6,7 @@ const stages=[
  {name:'侯和退屯',route:'侯和 → 沓中',leader:'姜維',guest:'姜維',opponent:'鄧艾',kind:'supply',year:262,outcome:'姜維在侯和失利後留駐沓中'},
  {name:'沓中脫身',route:'沓中 → 陰平',leader:'姜維',guest:'廖化',opponent:'鄧艾',kind:'withdraw',year:263,outcome:'姜維趕過陰平橋頭'},
  {name:'漢壽會師',route:'陰平 → 漢壽',leader:'姜維',guest:'張翼',opponent:'鍾會',kind:'dispatch',year:263,outcome:'退下來的蜀軍會合'},
- {name:'劍閣守關',route:'漢壽 → 劍閣',leader:'姜維',guest:'張翼',opponent:'鍾會',marker:true,kind:'holdout',year:263,outcome:'劍閣擋住了鍾會'}
+ {name:'劍閣守關',route:'漢壽 → 劍閣',leader:'姜維',guest:'張翼',opponent:'鍾會',marker:true,kind:'pass-defense',year:263,outcome:'劍閣擋住了鍾會'}
 ];
 
 test('stage 118 continues through Jiange and keeps campaign saves on touch screens',async({page})=>{
@@ -35,19 +35,26 @@ test('stage 118 continues through Jiange and keeps campaign saves on touch scree
  const advance=ms=>page.clock.runFor(ms);
  const snapshot=()=>page.evaluate(()=>({time:window.chapterBattle.time,mission:window.chapterBattle.mission}));
  const readSave=()=>page.evaluate(key=>JSON.parse(localStorage.getItem(key)),saveKey);
- async function controlledBattle(){
+ async function queueFinalWave(){
+  await page.evaluate(()=>{
+   const battle=window.chapterBattle;
+   battle.spawned=11;
+   battle.nextSpawn=battle.time+2;
+  });
+ }
+ async function controlledBattle(waitForWaves=false){
   await tap('#storySkip');
   await expect(page.locator('#battle')).toBeVisible({timeout:25000});
   await expect(page.locator('#battleTitle')).toContainText('蜀漢軍');
   expect(await page.evaluate(()=>window.chapterBattle.weapons.guanyu)).toBe(2);
   await page.locator('#battleSpeed').selectOption('2');
   // Only enemy waves and starting food are sandboxed. Mission and save paths run through UI.
-  await page.evaluate(()=>{
+  await page.evaluate(wait=>{
    const battle=window.chapterBattle;
-   battle.bossSpawned=true;
+   battle.bossSpawned=!wait;
    battle.nextSpawn=Infinity;
    battle.food=300;
-  });
+  },waitForWaves);
   for(const [lane,key] of ['liubei','guanyu','zhangfei'].entries()){
    await tap(`#cards [data-hero=${key}]`);
    await page.locator('.lane').nth(lane).tap({position:{x:40,y:25}});
@@ -173,7 +180,7 @@ test('stage 118 continues through Jiange and keeps campaign saves on touch scree
   await expect(page.locator('.history-sources a').first()).toBeVisible();
   await expect(page.locator('.history-sources a').first()).toHaveAttribute('href',/wikisource/);
   await tap('#storyDetails header button');
-  await controlledBattle();
+  await controlledBattle(level===124);
 
   await tap('#battleMenuButton');
   await tap('#battleMapButton');
@@ -226,22 +233,18 @@ test('stage 118 continues through Jiange and keeps campaign saves on touch scree
    await expect(page.locator('#missionQuick')).toContainText('軍糧 3／3');
   }
   else if(level===124){
-   await advance(3750);
-   await expect(page.locator('#missionQuick')).toContainText('接應計時中');
-   const guardId=await page.evaluate(()=>String(window.chapterBattle.allies.find(u=>u.key==='zhangfei').id));
-   await page.locator('#unitSelect').selectOption(guardId);
-   await tap('#commandDrawerButton');
-   await tap('#orders [data-order="up"]');
-   await tap('#commandDrawerClose');
-   await expect(page.locator('#missionQuick')).toContainText('下路缺接應');
-   const hold=(await snapshot()).mission.hold;
-   expect(hold).toBeGreaterThan(0);
+   await expect(page.locator('#missionQuick')).toContainText('第 1／3 波 · 上路來敵');
+   await tap('#pauseBtn');
+   const frozen=await snapshot();
    await advance(900);
-   expect((await snapshot()).mission.hold).toBe(hold);
+   expect(await snapshot()).toEqual(frozen);
+   await tap('#pauseBtn');
+   await queueFinalWave();
+   await advance(100);
+   await expect(page.locator('#missionQuick')).toContainText('第 3／3 波 · 中路來敵');
+   await expect(page.locator('.lane').nth(1)).toHaveAttribute('data-threat','true');
    await expect(page.locator('#result')).toBeHidden();
-   await tap('#cards [data-hero=archer]');
-   await page.locator('.lane').nth(2).tap({position:{x:40,y:25}});
-   await advance(16200);
+   await advance(31000);
   }else if(stage.kind==='withdraw'){
    await withdraw();
   }else if(level===123){
@@ -296,17 +299,21 @@ test('stage 118 continues through Jiange and keeps campaign saves on touch scree
  await expect(page.locator('#homeProgress')).toContainText('124 / 142');
  const cleared={completed:124,coins:605,weapons:{guanyu:2},inventory:{grain:2,herb:1}};
  expect(await readSave()).toMatchObject(cleared);
+ const best=(await readSave()).battleRecords[124];
  await choose(21,124);
- await controlledBattle();
- await advance(18500);
+ await controlledBattle(true);
+ await queueFinalWave();
+ await advance(31000);
  await expect(page.locator('#resultEarned')).toHaveText('+0');
- expect(await readSave()).toMatchObject(cleared);
+ await expect(page.locator('#resultRecordBest')).toContainText('個人最佳');
+ expect(await readSave()).toMatchObject({...cleared,battleRecords:{124:best}});
 
  await page.goto('/hero/people.html',{waitUntil:'domcontentloaded'});
- for(const [query,name,levels] of [['士載','鄧艾',[119,120,121,122,124,125,126,127,128,129,130]],['士季','鍾會',[122,123,124,125,130]],['元儉','廖化',[122,123,124,129]],['伯恭','張翼',[123,124]]]){
+ for(const [query,name,levels] of [['士載','鄧艾',[119,120,121,122,124]],['士季','鍾會',[122,123,124]],['元儉','廖化',[122,123,124]],['伯恭','張翼',[123,124]]]){
   await page.locator('#peopleSearch').fill(query);
   const card=page.locator(`[data-person="${name}"]`);
-  await expect(card.locator('.stage-pills span')).toHaveText(levels.map(level=>new RegExp(`第 ${level} 關`)));
+  const chapterAppearances=card.locator('.stage-pills span').filter({hasText:/第 (119|12[0-4]) 關/});
+  await expect(chapterAppearances).toHaveText(levels.map(level=>new RegExp(`第 ${level} 關`)));
   await expect(card.locator('img')).toHaveAttribute('src',expressionPortrait(name));
   expect(await card.locator('img').evaluate(img=>img.decode().then(()=>img.naturalWidth))).toBe(320);
  }

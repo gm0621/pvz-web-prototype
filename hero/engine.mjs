@@ -1,14 +1,14 @@
 import {stepDoctrine,duelDoctrine,signature} from './army-doctrine.mjs?v=army-1';
 import {passiveCue,passiveLabel,learnedPassives,passiveName,tickPassives,passiveSnapshot,castPassiveFeedback} from './passive-feedback.mjs?v=passive-feedback-1';
-import {hitGate,siegeLane} from './field-missions.mjs?v=river-gate-1';
-import {extracted} from './history-missions.mjs?v=river-gate-1';
-import {createMission,stepMission,protectBarrier,missionReady,missionDuelReady} from './chapter-missions.mjs?v=river-gate-1';
+import {OUTPOST_SECONDS,outpostLane,PASS_WAVE_SIZE,passLane,hitGate,siegeLane} from './field-missions.mjs?v=battle-variety-1';
+import {extracted} from './history-missions.mjs?v=battle-variety-1';
+import {createMission,stepMission,protectBarrier,missionReady,missionDuelReady} from './chapter-missions.mjs?v=battle-variety-1';
 import {duelBeats} from './duel-patterns.mjs?v=passive-feedback-1';
 export {duelBeats} from './duel-patterns.mjs?v=passive-feedback-1';
 import {WEATHER_GENERALS} from './weather-generals.mjs?v=passive-feedback-1';
-import {campaignState,weaponBonus} from './campaign.mjs?v=river-gate-1';
-import {heroSkill} from './skills.mjs?v=river-gate-1';
-import {heroesForLevel,STAGES,UNLOCKS,FEATURES} from './story.mjs?v=river-gate-1';
+import {campaignState,weaponBonus} from './campaign.mjs?v=battle-variety-1';
+import {heroSkill} from './skills.mjs?v=battle-variety-1';
+import {heroesForLevel,STAGES,UNLOCKS,FEATURES} from './story.mjs?v=battle-variety-1';
 
 export const SWING={duration:.58,impact:.24,frameTime:.08,frames:6};
 export const DUEL_DURATION=19;
@@ -77,7 +77,7 @@ export function normalizeProgress(raw){
 }
 export function createBattle(level,seed=Date.now(),weapons={}){
  if(!Number.isInteger(level)||!STAGES[level-1])throw new Error('關卡不存在');
- return {level,mission:createMission(level),weapons:{...weapons},seed:seed>>>0,time:0,food:220,lives:3,spawned:0,nextSpawn:6,bossSpawned:false,allies:[],enemies:[],effects:[],projectiles:[],hazards:[],oathUsed:false,skillNotice:null,cooldowns:{},nextId:1,paused:false,over:false,won:false,duel:null,duelSeen:false,notice:FEATURES[level-1].text,noticeUntil:8};
+ return {level,mission:createMission(level),weapons:{...weapons},seed:seed>>>0,time:0,food:220,lives:3,allyLosses:0,spawned:0,nextSpawn:6,bossSpawned:false,allies:[],enemies:[],effects:[],projectiles:[],hazards:[],oathUsed:false,skillNotice:null,cooldowns:{},nextId:1,paused:false,over:false,won:false,duel:null,duelSeen:false,notice:FEATURES[level-1].text,noticeUntil:8};
 }
 function random(b){b.seed=(Math.imul(b.seed,1664525)+1013904223)>>>0;return b.seed/4294967296}
 export function canDeploy(b,key,lane){
@@ -101,7 +101,7 @@ function effect(b,type,lane,from,to=from,details={}){const duration=['roar','cle
 function spawn(b){
  const stage=STAGES[b.level-1],boss=b.spawned>=stage.enemyCount;
  if(boss&&stage.noBoss){b.bossSpawned=true;b.nextSpawn=Infinity;return}
- const lane=boss?Math.floor(lanesFor(b)/2):b.mission?.kind==='siege'?siegeLane(b):lanesFor(b)===3?([1,0,2][b.spawned%3]):(b.spawned+Math.floor(b.spawned/lanesFor(b))*(lanesFor(b)===4?1:2))%lanesFor(b);
+ const lane=boss?Math.floor(lanesFor(b)/2):b.mission?.kind==='siege'?siegeLane(b):b.mission?.kind==='pass-defense'?passLane(b):lanesFor(b)===3?([1,0,2][b.spawned%3]):(b.spawned+Math.floor(b.spawned/lanesFor(b))*(lanesFor(b)===4?1:2))%lanesFor(b);
  const naval=b.mission?.kind==='naval';
  const heavy=!boss&&b.level>=UNLOCKS.shields&&b.spawned%4===3;
  const ranged=b.level<17&&!boss&&!heavy&&b.level>=4&&b.spawned%6===4;
@@ -109,7 +109,7 @@ function spawn(b){
  b.enemies.push({id:b.nextId++,lane,x:.94,hp,maxHp:hp,boss,ranged,name:boss?stage.bossName:naval?(heavy?'吳軍重船':'吳軍巡船'):b.level>=17?(stage.enemyArmy?(stage.enemyArmy+(heavy?'盾兵':'步兵')):(heavy?'董軍盾兵':'董軍刀兵')):ranged?'黃巾弓手':heavy?'黃巾盾賊':'黃巾刀賊',shielded:heavy||(boss&&b.level===5),stunnedUntil:0,damage:ranged?8:boss?17+Math.min(6,b.level):7+Math.min(6,b.level),rate:ranged?2.6:boss?1.6:1.5,speed:boss?.019:.027+random(b)*.004,lastAttack:b.time,flash:0,action:'marching'});
  if(b.level===14&&!boss&&[0,6,12].includes(b.spawned)){for(const side of [0,2])b.enemies.push({id:b.nextId++,lane:side,x:.97,hp:52,maxHp:52,name:'黃旗衝鋒兵',elite:true,boss:false,damage:9,rate:1.5,speed:.04,lastAttack:b.time,flash:0});b.skillNotice={key:'enemy',text:`第 ${Math.floor(b.spawned/6)+1} 波・黃旗衝鋒`,until:b.time+3};}
  if(ranged){b.notice='黃巾弓手出現！會在遠處蓄力射箭，換路避箭或派武將逼近。';b.noticeUntil=b.time+5;}
- if(!boss&&b.level>=3&&b.mission?.kind!=='siege'){
+ if(!boss&&b.level>=3&&!['siege','pass-defense'].includes(b.mission?.kind)){
   const number=b.spawned+1,ambushes=[Math.max(3,Math.ceil(stage.enemyCount*.35)),Math.max(6,Math.ceil(stage.enemyCount*.7))];
   if(ambushes.includes(number)){
    const raidLane=(lane+(lanesFor(b)===3?(number%2?1:2):1+(b.level+number)%(lanesFor(b)-1)))%lanesFor(b),raidHp=Math.round(35+Math.min(10,b.level)*3);
@@ -120,7 +120,7 @@ function spawn(b){
  }
  if(b.level===8&&!boss)for(const general of Object.values(WEATHER_GENERALS))if(b.spawned===general.spawnAt){b.enemies.push({id:b.nextId++,lane:general.lane,x:.94,hp:general.hp,maxHp:general.hp,boss:true,support:true,name:general.name,damage:10,rate:1.8,speed:.022,lastAttack:b.time,flash:0,stunnedUntil:0});b.skillNotice={key:'enemy',text:`${general.title}・${general.name}出陣！${general.skillName}`,until:b.time+4};}
  if(boss){if(b.level>=17&&['withdraw','decoy'].includes(stage.mission))b.enemies[b.enemies.length-1].x=.5;b.bossSpawned=true;b.introPending=true;}else b.spawned++;
- b.nextSpawn=b.time+stage.interval;
+ b.nextSpawn=b.time+(b.mission?.kind==='pass-defense'&&b.spawned%PASS_WAVE_SIZE===0?7:stage.interval);
  if(boss){b.notice=`${stage.bossName}出陣！`;b.noticeUntil=b.time+4}
 }
 function resolveDuel(b){
@@ -152,7 +152,18 @@ export function stepBattle(b,seconds){
  b.projectiles=b.projectiles.filter(shot=>b.time+1e-8<shot.impactAt);
  for(const h of b.hazards||[]){if(b.time>=h.nextTick&&h.nextTick<=h.until){for(const u of b.allies)if(u.hp>0&&u.lane===h.lane){damageAlly(b,u,6);u.flash=.2}h.nextTick+=1}}
  b.hazards=(b.hazards||[]).filter(h=>h.until>b.time);
- b.food=Math.min(300,b.food+12*dt);
+ const outposts=b.mission?.kind==='outposts'?b.mission:null;
+ if(outposts&&outposts.positions[0]<OUTPOST_SECONDS&&b.time>=outposts.nextVolley){
+  const lane=outpostLane(b,0),victim=b.allies.filter(u=>u.hp>0&&u.lane===lane).sort((a,c)=>c.x-a.x)[0];
+  if(victim){
+   b.projectiles.push({targetId:victim.id,lane,aimX:victim.x,impactAt:b.time+.55,damage:12});
+   effect(b,'enemy-arrow',lane,.92,victim.x,{duration:.55,remaining:.55});
+   b.notice='箭樓開火！拿下箭樓可停掉射擊。';
+   b.noticeUntil=b.time+3;
+  }
+  outposts.nextVolley=b.time+7;
+ }
+ b.food=Math.min(300,b.food+(outposts?.positions[1]>=OUTPOST_SECONDS?17:12)*dt);
  const stage=STAGES[b.level-1];
  if(!b.bossSpawned&&b.time>=b.nextSpawn)spawn(b);
  if(b.introPending)return;
@@ -279,11 +290,13 @@ export function stepBattle(b,seconds){
  if(b.level>=UNLOCKS.oath&&!b.oathUsed&&['liubei','guanyu','zhangfei'].every(key=>b.allies.some(u=>u.key===key&&u.hp>0))){b.oathUsed=true;b.oathBuffUntil=b.time+5;for(const ally of b.allies)if(ally.hp>0){ally.hp=Math.min(ally.maxHp,ally.hp+55);effect(b,'oath',ally.lane,ally.x)}const name=stage.faction&&stage.faction!=='shu'?'同袍合陣':'桃園同心';b.skillNotice={key:'liubei',text:`合擊・${name}`,until:b.time+2.2};b.notice=name+'！全軍回復，五秒內攻擊提升。';b.noticeUntil=b.time+5}
  for(const unit of [...b.allies,...b.enemies])if(unit.hp<=0&&!unit.escaped){const captured=unit.boss&&!unit.support&&stage.duelOutcome==='capture',retreat=unit.boss&&(stage.duelOutcome==='retreat'||unit.support);effect(b,captured?'capture':retreat?'retreat':'defeat',unit.lane,unit.x,retreat?1.1:unit.x,{key:unit.key||null,enemy:!unit.key,boss:!!unit.boss,shielded:!!unit.shielded,ranged:!!unit.ranged,bossName:unit.name});if(captured){b.bossCaptured=true;b.notice=unit.name+'已被俘，繼續清退餘兵。';b.noticeUntil=b.time+4}if(retreat)b.bossRetreated=true;if(unit.key&&!troop(b,unit.key))b.cooldowns[unit.key]=b.time+12}
  stepDoctrine(b,dt);
+ b.allyLosses+=b.allies.filter(u=>u.hp<=0).length;
  b.allies=b.allies.filter(u=>u.hp>0);b.enemies=b.enemies.filter(u=>u.hp>0);
  // Recheck evacuation after this tick's damage and movement, without advancing mission time.
  if(['withdraw','decoy'].includes(b.mission?.kind))stepMission(b,0);
  const cleared=b.bossSpawned&&!b.enemies.length;
  if(b.mission?.kind==='siege')b.mission.done=cleared&&b.mission.gate>0;
+ if(b.mission?.kind==='pass-defense')b.mission.done=cleared&&b.lives>0;
  if(b.lives<=0||b.lossReason==='commander-breach'||b.lossReason==='gate-broken'){b.over=true;b.won=false}
  else if(extracted(b)||cleared&&missionReady(b)){b.over=true;b.won=true}
 }

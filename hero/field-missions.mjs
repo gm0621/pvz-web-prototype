@@ -77,3 +77,56 @@ export function repairGate(m){
  m.message=`城門修補 +${restored}，還可修 ${m.repairs} 次。`;
  return true;
 }
+
+export const OUTPOSTS=[
+ {name:'箭樓',benefit:'停掉箭樓射擊'},
+ {name:'補給點',benefit:'軍糧補得更快'}
+];
+export const OUTPOST_SECONDS=7;
+export const outpostLane=(b,index)=>index===0?0:(b.laneTotal||3)-1;
+export const nextOutpost=m=>m.positions.findIndex(seconds=>seconds<OUTPOST_SECONDS);
+
+export function stepOutposts(b,dt){
+ const m=b.mission,index=m.target;
+ if(index<0)return;
+ const lane=outpostLane(b,index);
+ if(!hasEscort(b,lane)||b.enemies.some(e=>e.lane===lane&&e.hp>0&&e.x<.48))return;
+ m.positions[index]=Math.min(OUTPOST_SECONDS,m.positions[index]+dt);
+ if(m.positions[index]>=OUTPOST_SECONDS){
+  m.message=`拿下${OUTPOSTS[index].name}！${OUTPOSTS[index].benefit}。`;
+  m.target=-1;
+  m.done=nextOutpost(m)<0;
+ }
+}
+
+export function selectOutpost(b,index){
+ const m=b.mission;
+ if(!Number.isInteger(index)||!OUTPOSTS[index]||m.positions[index]>=OUTPOST_SECONDS||m.target===index)return false;
+ m.target=index;
+ m.message=`正在爭取${OUTPOSTS[index].name}，派友軍守住對應路線。`;
+ return true;
+}
+
+export const PASS_WAVE_SIZE=4;
+const passLanes=[0,2,1];
+export const passWave=b=>Math.floor(b.spawned/PASS_WAVE_SIZE)+1;
+export const passLane=b=>passLanes[passWave(b)-1];
+
+export function fireLaneState(b,lane){
+ if(b.hazards.some(fire=>fire.lane===lane&&fire.until>b.time))return 'burning';
+ if(b.enemies.some(e=>e.boss&&e.hp>0&&e.castAt&&(e.castLanes||[e.lane]).includes(lane)))return 'warning';
+ return 'safe';
+}
+
+export function canClearFire(b,lane){
+ return b.mission.clearings>0&&fireLaneState(b,lane)==='burning'&&hasEscort(b,lane);
+}
+
+export function clearFireLane(b,lane){
+ if(!Number.isInteger(lane)||lane<0||lane>=(b.laneTotal||3)||!canClearFire(b,lane))return false;
+ b.hazards=b.hazards.filter(fire=>fire.lane!==lane);
+ b.effects=b.effects.filter(effect=>effect.type!=='fire'||effect.lane!==lane);
+ b.mission.clearings--;
+ b.mission.message='火已清開，快從這一路撤回！';
+ return true;
+}

@@ -58,9 +58,9 @@ const stages=[
  {
   name:'劍閣守關',year:263,origin:'hanshou',place:'jiange',leader:'姜維',guest:'張翼',opponent:'鍾會',
   historyCast:['姜維','廖化','張翼','鍾會','鄧艾'],matchupLabel:'鍾會在劍閣受阻・鄧艾另走陰平',
-  mission:'holdout',missionTitle:'劍閣接應',scene:'mountain-front',enemyArmy:'魏軍前鋒',
+  mission:'pass-defense',scene:'mountain-front',enemyArmy:'魏軍前鋒',
   history:'姜維、張翼和廖化等人據險守住劍閣。鍾會攻不下關口，軍糧又要從遠處運來，便考慮退軍。此時鄧艾另從陰平走山路，向蜀地腹地前進。',
-  briefing:'讓三路都有友軍守住，安全時累計 24 秒，再清退餘兵。',
+  briefing:'看預告在哪一路，調友軍守住關口。三波敵軍全數清退，防線還在就過關。',
   ending:'劍閣擋住了鍾會。另一邊，鄧艾走陰平山路深入蜀地，成都接下來還要面對新的危機。',
   camp:'先把山口守住了。糧冊點完，再派人打聽另一條線的消息。',
   question:'劍閣守軍擋住了哪位魏將的軍隊？',choices:['鍾會','從陰平繞行的魏將','從東吳來的援將'],refs:[jiangWei,zhongHui,dengAi,zhangYi,ruler]
