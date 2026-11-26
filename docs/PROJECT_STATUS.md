@@ -8,7 +8,7 @@
 
 ## Obsidian 尚未同步時，從這裡接手
 
-1. **確認版本。** 在剛拉下來的 `main` 執行 `git status --short --branch`、`git log -1 --oneline`。`git log` 顯示目前 checkout 的提交。正式遊戲版本另看下方最新一筆含「已發布」及 Pages 工作的功能紀錄。截至 2026-11-26，最新已驗證的正式遊戲版本為 `25c6b7c`（主篇 142 關，《西晉後日談》18 關，《洛陽風雲》6 關，《長安西行》6 關）。 [正式遊戲](https://gm0621.github.io/pvz-web-prototype/hero/?v=25c6b7c) · [人物圖鑑](https://gm0621.github.io/pvz-web-prototype/hero/people.html?v=25c6b7c) · [發布紀錄](https://github.com/gm0621/pvz-web-prototype/actions/runs/45770048915)
+1. **確認版本。** 在剛拉下來的 `main` 執行 `git status --short --branch`、`git log -1 --oneline`。`git log` 顯示目前 checkout 的提交。正式遊戲版本另看下方最新一筆含「已發布」及 Pages 工作的功能紀錄。截至 2026-11-26，最新已驗證的正式遊戲版本為 `af233de`（主篇 142 關，《西晉後日談》18 關，《洛陽風雲》6 關，《長安西行》6 關）。 [正式遊戲](https://gm0621.github.io/pvz-web-prototype/hero/?v=af233de) · [人物圖鑑](https://gm0621.github.io/pvz-web-prototype/hero/people.html?v=af233de) · [發布紀錄](https://github.com/gm0621/pvz-web-prototype/actions/runs/45771830888)
 2. **安裝並做基本驗證。** 在專案根目錄用 Node.js 20 以上與 npm。執行下列指令可驗證引擎、桌面滑鼠／鍵盤及手機平板觸控。更多測試和本機預覽見 [開發指南](DEVELOPMENT.md)。Playwright 會啟動 4174 埠的測試服務，先關閉佔用該埠的手動預覽。
 3. **開工前看目前進度。** 先讀 [AGENTS.md](../AGENTS.md) 的「重要約束」及下方與任務相關的紀錄。英雄演義是獨立的 `/hero/` 遊戲，關卡上限見 `hero/campaign-config.mjs`。正式存檔 `heroLegendProgress_v1` 與本機、線上跳關測試的存檔分開。跨電腦時瀏覽器存檔和未提交的檔案需另外移轉。保留滑鼠、鍵盤與觸控操作，也要保留首勝軍資、重玩及暫停的既有規則。 [跳關工具和存檔說明](hero-local-testing.md)
 4. **繼續當次工作。** 依使用者的新需求從最新 `main` 開分支，保留原工作區修改。完成後把變更、實際測試結果、版本與注意事項記在本檔。Obsidian 未同步時註明待補，能讀取後再更新。正式發布依當次授權。
@@ -19,6 +19,13 @@ npx playwright install chromium webkit
 npm run test:hero:engine
 npx playwright test --config=playwright.hero-input.config.js
 ```
+
+## 2026-11-26 祁山分段運糧、五丈原分波撤離、洛陽城門守備
+
+- 已發布 `af233de`。手機 Chromium（320px、390px）和平板 WebKit（820px）正式站共 9 項正常敵波觸控流程通過，核對 52 份發布資源。 [正式遊戲](https://gm0621.github.io/pvz-web-prototype/hero/?v=af233de) · [人物圖鑑](https://gm0621.github.io/pvz-web-prototype/hero/people.html?v=af233de) · [發布紀錄](https://github.com/gm0621/pvz-web-prototype/actions/runs/45771830888)
+- 第 102 關依序護送三批糧車通過上路山口、中路棧道、下路前營。派友軍守亮起的那一路再發車，失去護衛就停車，保留進度；三批送完且清退餘兵才過關。第 106 關三波追兵從上、下、中路來，第三波出現後可下令全軍撤離。第 166 關城門有耐久，可修補兩次，守滿 40 秒再帶存活友軍撤回。《長安西行》仍由玩家自行進入。
+- 原劇情與存檔格式保留。三關皆驗證首勝、營地、章節銜接、重整和重玩，首勝軍資只發一次，舊兵器、道具與個人最佳保留。
+- 本機 433 項引擎測試、9 項觸控流程及第十八、二十八章合計 4 項手機和平板回歸通過。快取版 `qishan-escort-1`，觸控指令 `npx playwright test --config=playwright.hero-qishan-escort.config.js`。
 
 ## 2026-11-26 江陵、陳倉、益州新玩法複查
 
