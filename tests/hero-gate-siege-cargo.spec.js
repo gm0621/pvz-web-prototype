@@ -70,14 +70,17 @@ for(const stage of stages)test(`stage ${stage.level} clears and replays from an 
   await expect(page.locator('#field')).toHaveAttribute('data-terrain',terrain);
   await page.locator('#battleSpeed').selectOption('2');
   const secured=page.locator('.outpost-marker[data-captured=true]');
-  let repaired=false,retreated=false,second=false,switched=false,covering=false;
+  let repairs=0,lastGate=100,repairsSpent=false,retreated=false,second=false,switched=false,covering=false,sawCover=false;
   const batches=new Set();
 
   if(level===60||level===99){
    if(level===60)await expect(page.locator('#lives')).toHaveText('城門 100／100');
    await tap('#missionDrawerButton');
    await expect(buttons('retreat')).toBeDisabled();
-   if(level===60)await expect(buttons('repair')).toBeDisabled();
+   if(level===60){
+    await expect(buttons('repair')).toBeDisabled();
+    await expect(buttons('repair')).toContainText('剩 2 次');
+   }
    await tap('#missionDrawerClose');
   }
   if(level===99)await chooseOutpost(order);
@@ -90,28 +93,40 @@ for(const stage of stages)test(`stage ${stage.level} clears and replays from an 
 
   for(let i=0;i<135&&!await result.isVisible();i++){
    const text=await objective.textContent();
-   if(level===60&&!repaired&&(await page.locator('#lives').textContent())==='城門 75／100'){
-    await pause();
-    await advance(2100);
-    await expect(objective).toContainText(text);
-    await expect(page.locator('#lives')).toHaveText('城門 75／100');
-    await resume();
-    if(await quick.textContent()==='修補城門')await quick.tap();
-    else{
+   if(level===60&&!repairsSpent){
+    const gate=Number((await page.locator('#lives').textContent()).match(/城門 (\d+)/)?.[1]);
+    if(gate<lastGate){
+     if(repairs===0){
+      await pause();
+      await advance(2100);
+      await expect(objective).toContainText(text);
+      await expect(page.locator('#lives')).toHaveText(`城門 ${gate}／100`);
+      await resume();
+     }
      await tap('#missionDrawerButton');
-     await buttons('repair').tap();
+     const repair=buttons('repair');
+     await expect(repair).toContainText(`剩 ${2-repairs} 次`);
+     if(repairs<2){
+      await repair.tap();
+      repairs++;
+      lastGate=Math.min(100,gate+30);
+      await expect(page.locator('#lives')).toHaveText(`城門 ${lastGate}／100`);
+      await expect(repair).toContainText(`剩 ${2-repairs} 次`);
+     }else{
+      await expect(repair).toBeDisabled();
+      await expect(buttons('retreat')).toBeEnabled();
+      repairsSpent=true;
+     }
      await tap('#missionDrawerClose');
     }
-    await expect(page.locator('#lives')).toHaveText('城門 100／100');
-    await expect(page.locator('#missionMessage')).toContainText('還可修 1 次');
-    repaired=true;
    }
    if(level===99&&!second&&await secured.count()===1){
     await expect(secured).toContainText(order===0?'攻城前陣':'側翼陣地');
     await chooseOutpost(1-order);
     second=true;
    }
-   if(level===99&&text.includes('掩護後隊')&&await quick.textContent()!=='全軍撤離'&&i%3===0){
+   if(level===99&&!sawCover&&text.includes('掩護後隊')&&await quick.textContent()!=='全軍撤離'){
+    sawCover=true;
     await expect(secured).toHaveCount(2);
     await tap('#missionDrawerButton');
     await expect(buttons('retreat')).toBeDisabled();
@@ -125,7 +140,7 @@ for(const stage of stages)test(`stage ${stage.level} clears and replays from an 
     await tap('#commandDrawerClose');
     covering=true;
    }
-   if((level===99||level===60&&repaired)&&!retreated&&await quick.textContent()==='全軍撤離'){
+   if((level===99||level===60&&repairsSpent)&&!retreated&&await quick.textContent()==='全軍撤離'){
     const ahead=await page.locator('#units .ally').evaluateAll(units=>units.some(unit=>parseFloat(unit.style.left)>18));
     expect(ahead).toBe(true);
     await quick.tap();
@@ -151,16 +166,16 @@ for(const stage of stages)test(`stage ${stage.level} clears and replays from an 
      switched=true;
     }
    }
-   if(!retreated)await reinforce(level===60&&!repaired);
+   if(!retreated)await reinforce(level===60&&!repairsSpent);
    await advance(1000);
   }
   await expect(result).toHaveAttribute('data-outcome','victory');
   await expect(result).toBeVisible();
   await expect(page.locator('#resultTitle')).toHaveText(resultTitle);
   await expect(page.locator('#resultText')).toContainText(ending);
-  if(level===60)expect(repaired&&retreated).toBe(true);
+  if(level===60)expect(repairs===2&&repairsSpent&&retreated).toBe(true);
   if(level===99){
-   expect(second&&retreated).toBe(true);
+   expect(second&&sawCover&&retreated).toBe(true);
    await expect(secured).toHaveCount(2);
   }
   if(level===140){

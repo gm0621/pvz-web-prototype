@@ -1,4 +1,4 @@
-import {LEVEL_XP,heroLevel} from './roster.mjs?v=gate-siege-cargo-1';
+import {LEVEL_XP,heroLevel} from './roster.mjs?v=gate-siege-cargo-2';
 export const EXPERIENCE_DURATION=3200;
 const mix=(a,b,p)=>a+(b-a)*Math.max(0,Math.min(1,p));
 // Presentation only. The campaign has already awarded and saved the final XP.

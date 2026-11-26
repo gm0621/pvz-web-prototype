@@ -1,7 +1,7 @@
-import {HISTORICAL_STAGES} from './history-stages.mjs?v=gate-siege-cargo-1';
-import {missionText} from './chapter-missions.mjs?v=gate-siege-cargo-1';
-import {retreatPartyNames,retreatPartyLabel,supplyReady,coverWaveText} from './history-missions.mjs?v=gate-siege-cargo-1';
-import {hasFireRoutes,hasGate,hasOutposts,canRepairGate} from './field-missions.mjs?v=gate-siege-cargo-1';
+import {HISTORICAL_STAGES} from './history-stages.mjs?v=gate-siege-cargo-2';
+import {missionText} from './chapter-missions.mjs?v=gate-siege-cargo-2';
+import {retreatPartyNames,retreatPartyLabel,supplyReady,coverWaveText} from './history-missions.mjs?v=gate-siege-cargo-2';
+import {hasFireRoutes,hasGate,hasOutposts,canRepairGate} from './field-missions.mjs?v=gate-siege-cargo-2';
 const names=['上','中','下'];
 export function missionQuickState(b){
  const m=b.mission;if(!m)return null;

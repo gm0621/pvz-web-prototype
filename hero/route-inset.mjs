@@ -1,4 +1,4 @@
-import {mapPersonSvg} from './characters.mjs?v=gate-siege-cargo-1';
+import {mapPersonSvg} from './characters.mjs?v=gate-siege-cargo-2';
 
 const standardHeight=304,dualHeight=374;
 

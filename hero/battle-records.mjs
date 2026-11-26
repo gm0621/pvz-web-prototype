@@ -1,4 +1,4 @@
-import {CAMPAIGN_LENGTH} from './campaign-config.mjs?v=gate-siege-cargo-1';
+import {CAMPAIGN_LENGTH} from './campaign-config.mjs?v=gate-siege-cargo-2';
 
 function recordRule(level){
  switch(level){
