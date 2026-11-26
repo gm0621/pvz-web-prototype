@@ -4,7 +4,7 @@ const stages=[
  {name:'襄陽屯田',year:269,route:'洛陽 → 襄陽',leader:'羊祜',guest:'羊祜',kind:'restoration',sites:['田地','水渠','糧倉'],outcome:'羊祜在襄陽屯田'},
  {name:'西陵守圍',year:272,route:'樂鄉 → 西陵',leader:'陸抗',guest:'陸抗',opponent:'羊祜',role:'江陵另路',matchup:'晉援軍・羊祜另一路往江陵',wu:true,enemyArmy:'晉軍援兵',kind:'holdout',outcome:'陸抗拿回西陵，晉軍撤退'},
  {name:'襄陽交印',year:278,route:'襄陽',leader:'杜預',guest:'杜預',opponent:'羊祜',role:'舉薦',station:'接任地',kind:'dispatch',outcome:'羊祜舉薦的杜預接掌荊州'},
- {name:'益州備舟',year:279,route:'益州',leader:'王濬',guest:'王濬',station:'備舟地',kind:'supply',outcome:'王濬的船隊從長江上游出發'},
+ {name:'益州備舟',year:279,route:'益州',leader:'王濬',guest:'王濬',station:'備舟地',kind:'naval',outcome:'王濬的船隊從長江上游出發'},
  {name:'西陵順流',year:280,route:'永安 → 西陵',leader:'王濬',guest:'王濬',enemyArmy:'吳軍巡江船隊',kind:'naval',outcome:'這次西陵落入晉軍手中'},
  {name:'孫皓受降',year:280,route:'武昌 → 石頭城',leader:'王濬',guest:'孫皓',opponent:'孫皓',role:'請降',kind:'restoration',sites:['降書','印綬','城門'],outcome:'孫皓在石頭城向王濬投降'}
 ];
@@ -57,13 +57,6 @@ test('stage 136 continues through the surrender of Wu and keeps campaign saves o
    await tap(`#cards [data-hero=${key}]`);
    await page.locator('.lane').nth(lane).tap({position:{x:40,y:25}});
    await advance(200);
-  }
- }
- async function sendCarts(){
-  for(let batch=0;batch<3;batch++){
-   await advance(7600);
-   await expect(page.locator('#missionQuickAction')).toHaveText('發送糧車');
-   await tap('#missionQuickAction');
   }
  }
  async function checkRouteInset(scope,route,station){
@@ -195,36 +188,7 @@ test('stage 136 continues through the surrender of Wu and keeps campaign saves o
   expect((await snapshot()).time).toBeGreaterThan(paused.time);
 
   if(level===142)await page.evaluate(()=>window.blockSave=true);
-  if(stage.kind==='supply'){
-   await advance(2500);
-   await tap('#pauseBtn');
-   const prepping=await snapshot();
-   expect(prepping.mission.charge).toBeGreaterThan(0);
-   expect(prepping.mission.charge).toBeLessThan(10);
-   await advance(650);
-   expect(await snapshot()).toEqual(prepping);
-   await expect(page.locator('#missionQuickAction')).toBeDisabled();
-   await tap('#pauseBtn');
-   await advance(5100);
-   await expect(page.locator('#missionQuickAction')).toHaveText('發送糧車');
-   const guardId=await page.evaluate(()=>String(window.chapterBattle.allies.find(u=>u.key==='zhangfei').id));
-   await page.locator('#unitSelect').selectOption(guardId);
-   await tap('#commandDrawerButton');
-   await tap('#orders [data-order="up"]');
-   await tap('#commandDrawerClose');
-   await expect(page.locator('#missionQuick')).toContainText('下路缺接應');
-   await tap('#missionQuickAction');
-   await expect(page.locator('#missionChoices [data-action=supply]')).toBeDisabled();
-   expect((await snapshot()).mission).toMatchObject({charge:10,delivered:0});
-   await tap('#missionDrawerClose');
-   await tap('#cards [data-hero=archer]');
-   await page.locator('.lane').nth(2).tap({position:{x:40,y:25}});
-   await advance(100);
-   await expect(page.locator('#missionQuickAction')).toHaveText('發送糧車');
-   await sendCarts();
-   await expect(page.locator('#missionQuick')).toContainText('軍糧 3／3');
-  }
-  else if(stage.kind==='restoration'){
+  if(stage.kind==='restoration'){
    await tap('#missionDrawerButton');
    for(const [lane,site] of stage.sites.entries()){
     const option=page.locator('#missionChoices [data-action=site]').nth(lane);
@@ -280,8 +244,8 @@ test('stage 136 continues through the surrender of Wu and keeps campaign saves o
    await tap('#missionChoices button:first-child');
    expect((await snapshot()).mission).toMatchObject({lane:0,travel:before.mission.travel});
    await tap('#missionDrawerClose');
-   await advance(13500);
-   expect((await snapshot()).mission).toMatchObject({done:true,travel:1});
+   await advance(level===140?43500:13500);
+   expect((await snapshot()).mission).toMatchObject({done:true,travel:1,...(level===140?{delivered:3}:{})});
   }else if(stage.kind==='dispatch'){
    await tap('#missionDrawerButton');
    await tap('#missionChoices [data-action=route]:first-child');

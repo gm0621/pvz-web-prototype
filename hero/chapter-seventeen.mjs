@@ -45,10 +45,11 @@ const stages=[
  },
  {
   name:'陳倉糧盡',year:228,place:'chencang',origin:'sanguan',leader:'諸葛亮',guest:'諸葛亮',opponent:'郝昭',
-  historyCast:['諸葛亮','郝昭','曹真'],mission:'withdraw',scene:'enemy-camp',enemyArmy:'魏軍守隊',
+  historyCast:['諸葛亮','郝昭','曹真'],mission:'withdraw',
+  outpostSites:[{name:'攻城前陣'},{name:'側翼陣地'}],scene:'enemy-camp',enemyArmy:'魏軍守隊',
   matchupLabel:'魏軍守將・陳倉守城',
   history:'228 年冬，諸葛亮出散關圍陳倉。魏方已有準備，郝昭守住城池。蜀軍糧食用盡，諸葛亮下令撤回。此後魏將王雙追擊，敗於蜀軍。',
-  briefing:'城池仍由魏軍守住。等待後隊接應，再用「全軍撤離」把存活的友軍帶回左側。',
+  briefing:'先選一處城外陣地，派友軍守住那一路，兩處都站穩後掩護後隊。接應到了就按「全軍撤離」，把友軍帶回左側。郝昭仍守著陳倉。',
   ending:'蜀軍糧盡後撤，陳倉未被攻下。王雙追擊時戰敗身亡，蜀軍回到漢中。',
   camp:'再堅固的軍隊也需要吃飯。糧食用盡，就得先把同伴接回去。',
   question:'蜀軍為什麼撤離陳倉？',choices:['軍糧用盡','城已攻下','準備渡江出使'],refs:[zhuge,ruler,cao]
@@ -71,6 +72,7 @@ export const SEVENTEENTH_CHAPTER=stages.map((stage,index)=>({
  leaderName:stage.leader,opponentName:stage.opponent,mapOpponent:stage.mapOpponent??!!stage.opponent,matchupLabel:stage.matchupLabel,
  scene:`./assets/scenes/${stage.scene}.jpg`,mission:stage.mission,missionTitle:stage.missionTitle,
  ...(stage.coverWaves?{coverWaves:true}:{}),
+ ...(stage.outpostSites?{outpostSites:stage.outpostSites}:{}),
  ...(stage.mission==='withdraw'?{retreatKeys:[],successTitle:'全軍撤回'}:{}),
  noBoss:true,bossName:stage.enemyArmy,bossHp:0,enemyArmy:stage.enemyArmy,enemyCount:12,interval:3.8,
  lead:stage.history,history:stage.history,adaptation,note:adaptation,bossTip:stage.briefing,

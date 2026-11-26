@@ -1,6 +1,6 @@
-import {HISTORICAL_STAGES} from './history-stages.mjs?v=pass-river-2';
-import {FACTIONS,factionFor} from './factions.mjs?v=pass-river-2';
-import {OUTPOSTS,RAID_POINTS,OUTPOST_SECONDS,outpostLane,pointCompleted,nextOutpost,canIgniteRaid,igniteRaid,stepOutposts,selectOutpost,passWave,passLane,thirdWaveStarted,hasFireRoutes,canClearFire,clearFireLane,GATE_MAX,channelHazard,channelName,fleetChannel,fleetStatus,canRepairGate,repairGate,selectFleetChannel,siegeLane,stepFleet} from './field-missions.mjs?v=pass-river-2';
+import {HISTORICAL_STAGES} from './history-stages.mjs?v=gate-siege-cargo-1';
+import {FACTIONS,factionFor} from './factions.mjs?v=gate-siege-cargo-1';
+import {OUTPOSTS,RAID_POINTS,OUTPOST_SECONDS,outpostLane,pointCompleted,nextOutpost,canIgniteRaid,igniteRaid,stepOutposts,selectOutpost,passWave,passLane,thirdWaveStarted,hasFireRoutes,canClearFire,clearFireLane,GATE_MAX,hasGate,hasOutposts,channelHazard,channelName,fleetChannel,fleetStatus,canRepairGate,repairGate,selectFleetChannel,siegeLane,stepFleet} from './field-missions.mjs?v=gate-siege-cargo-1';
 import {PEACH_HEROES} from './hero-base.mjs?v=passive-feedback-1';
 const defaultRetreatSlots=['liubei','zhangfei'];
 const retreatSlots=battle=>HISTORICAL_STAGES[battle.level-17]?.retreatKeys||defaultRetreatSlots;
@@ -24,7 +24,9 @@ export function createHistoryMission(level){
  if(kind==='pass-defense')return {level,kind,done:false,message:''};
  if(kind==='naval')return {level,kind,destination:stage.fleetDestination||'西陵',lane:null,travel:0,...(stage.cargoRuns?{cargoRuns:stage.cargoRuns,delivered:0}:{}),done:false,message:''};
  if(kind==='siege')return {level,kind,gate:GATE_MAX,repairs:2,done:false,message:''};
- return {level,kind,...(stage?.coverWaves?{coverWaves:true}:{}),...((level===87||stage?.fireRoutes)?{clearings:1}:{}),...(stage?.fireRoutes?{fireAttack:{lane:1,at:13}}:{}),hold:0,done:false,message:'',lane:1,travel:0,rescued:0,delivered:0,charge:0,withdrawAt:null,ordered:false,decoyUsed:false,decoyLane:null,site:-1,sites:[0,0,0]}}
+ const gate=stage.gateHold?{gate:GATE_MAX,repairs:2}:{};
+ const outposts=kind==='withdraw'&&stage.outpostSites?{points:stage.outpostSites,positions:[0,0],target:-1}:{};
+ return {level,kind,...gate,...outposts,...(stage.coverWaves?{coverWaves:true}:{}),...((level===87||stage?.fireRoutes)?{clearings:1}:{}),...(stage?.fireRoutes?{fireAttack:{lane:1,at:13}}:{}),hold:0,done:false,message:'',lane:1,travel:0,rescued:0,delivered:0,charge:0,withdrawAt:stage.gateHold??null,ordered:false,decoyUsed:false,decoyLane:null,site:-1,sites:[0,0,0]}}
 const active=b=>b?.mission&&b.level>=17&&!b.over&&!b.paused&&!b.duel&&!b.introPending;
 const safe=(b,lane)=>b.allies.some(u=>u.hp>0&&u.lane===lane)&&!b.enemies.some(e=>e.hp>0&&e.lane===lane&&e.x<.48);
 export function supplyReady(b){
@@ -32,11 +34,11 @@ export function supplyReady(b){
 }
 export function historyAction(b,action,index=0){
  if(!active(b)||b.mission.done)return false;const m=b.mission;
- if(m.kind==='outposts'&&action==='outpost')return selectOutpost(b,index);
+ if(hasOutposts(m)&&action==='outpost')return selectOutpost(b,index);
  if(m.kind==='fire-raid'&&action==='ignite')return igniteRaid(b,index);
  if(hasFireRoutes(m)&&action==='clear-fire')return clearFireLane(b,index);
  if(m.kind==='naval'&&action==='channel')return selectFleetChannel(b,index);
- if(m.kind==='siege'&&action==='repair')return repairGate(m);
+ if(hasGate(m)&&action==='repair')return repairGate(m);
  if(action==='route'&&m.kind==='dispatch'&&Number.isInteger(index)&&index>=0&&index<(b.laneTotal||3)){m.lane=index;return true}
  if(action==='supply'&&m.kind==='supply'&&supplyReady(b)){m.delivered++;m.charge=0;m.done=m.delivered>=3;m.message=`第 ${m.delivered} 批軍糧送達！`;return true}
  if(action==='decoy'&&m.kind==='decoy'&&!m.decoyUsed&&Number.isInteger(index)&&index>=0&&index<3){const boss=b.enemies.find(e=>e.boss&&e.hp>0);if(!boss||boss.castAt)return false;boss.lane=index;m.decoyUsed=true;m.decoyLane=index;m.message='赤幘引開追兵，趁機照應退路！';return true}
@@ -62,8 +64,10 @@ export function stepHistoryMission(b,dt){
  if(m.kind==='supply'){if(laneList(b).every(l=>safe(b,l)))m.charge=Math.min(10,m.charge+dt);m.done=m.delivered>=3}
  if(['withdraw','decoy'].includes(m.kind)){
   if(m.withdrawAt===null){
-   if(m.coverWaves&&thirdWaveStarted(b))m.withdrawAt=b.time;
-   else if(!m.coverWaves&&b.bossSpawned)m.withdrawAt=b.time+18;
+   if(hasOutposts(m)){
+    stepOutposts(b,dt);
+    if(nextOutpost(m)<0)m.withdrawAt=b.time+8;
+   }else if(m.coverWaves?thirdWaveStarted(b):b.bossSpawned)m.withdrawAt=b.time+(m.coverWaves?0:18);
   }
   const living=b.allies.filter(u=>u.hp>0);
   m.done=m.ordered&&living.length>0&&retreatSlots(b).every(key=>living.some(u=>u.key===key))&&living.every(u=>u.x<=.18);
@@ -83,10 +87,10 @@ export function historyMissionText(b){const fronts=['','','','三','四','五'][
   const goal=m.done?'兩處已點火，擊退淳于瓊和餘兵':b.paused?'已暫停':'派友軍守住糧屯所在路，再按點火';
   return `糧屯 ${lit}／2 · ${goal}`;
  }
- if(m.kind==='outposts'){
+ if(hasOutposts(m)&&m.withdrawAt==null){
   if(m.done)return '兩處據點已拿下 · 清退剩餘敵軍';
   const taken=m.positions.filter(time=>time>=OUTPOST_SECONDS).length;
-  const prefix=`${stage.missionTitle||(stage.outpostSites?'解圍據點':'城外據點')} ${taken}／2`;
+  const prefix=`${stage.missionTitle||(m.kind==='withdraw'?'城外陣地':stage.outpostSites?'解圍據點':'城外據點')} ${taken}／2`;
   if(b.paused)return prefix+' · 已暫停';
   const target=m.target;
   if(target<0)return prefix+(taken?` · 選${m.points[nextOutpost(m)].name}開始佔領`:' · 選一處先拿下');
@@ -100,7 +104,7 @@ export function historyMissionText(b){const fronts=['','','','三','四','五'][
  }
  if(m.kind==='naval'){
   const prefix=m.cargoRuns?`軍糧 ${m.delivered}／${m.cargoRuns} 批 · `:'';
-  if(m.done)return prefix+(m.cargoRuns?'清退剩餘敵船':`主船已抵達${m.destination} · 清退剩餘敵軍`);
+  if(m.done)return prefix+(m.cargoRuns?(stage.enemyCount?'清退剩餘敵船':`已抵達${m.destination}`):`主船已抵達${m.destination} · 清退剩餘敵軍`);
   const progress=prefix+`${m.cargoRuns?'糧船':'主船'} ${Math.floor(m.travel*100)}% · ${channelName(b,fleetChannel(b))}`;
   return progress+' · '+(b.paused?'暫停，航程保留':fleetStatus(b));
  }
@@ -134,10 +138,10 @@ export function historyMissionText(b){const fronts=['','','','三','四','五'][
   if(missing.length)return `${missing.join('、')}尚未在場，請整備後召回，再帶隊撤離${stage.noBoss?'':` · ${opponent}無須擊倒`}${paused}`;
   if(!b.allies.some(u=>u.hp>0))return '請先召回至少一隊友軍，再撤回左側'+paused;
   const remaining=b.allies.filter(u=>u.hp>0&&u.x>.18).length;
-  return (remaining?`${b.paused?'':'撤離中：'}尚有 ${remaining} ${hasFireRoutes(m)||m.coverWaves?'隊':'名'}友軍未回到左側 · 所有在場友軍都需撤回`:'隊伍已撤回左側，確認全員平安')+paused;
+  return (remaining?`${b.paused?'':'撤離中：'}尚有 ${remaining} ${hasFireRoutes(m)||hasGate(m)||hasOutposts(m)||m.coverWaves?'隊':'名'}友軍未回到左側 · 所有在場友軍都需撤回`:'隊伍已撤回左側，確認全員平安')+paused;
  }
  if(['withdraw','decoy'].includes(m.kind)){
-  const status=m.coverWaves?coverWaveText(b):m.withdrawAt===null?(stage.noBoss?`守住${fronts}路，等待後隊接應`:`守住${fronts}路，等${opponent}出陣`):b.time<m.withdrawAt?`接應尚需 ${Math.ceil(m.withdrawAt-b.time)} 秒`:'接應完成，按全軍撤離';
+  const status=hasGate(m)&&b.time<m.withdrawAt?`守住城門，還有 ${Math.ceil(m.withdrawAt-b.time)} 秒 · 修補剩 ${m.repairs} 次`:m.coverWaves?coverWaveText(b):m.withdrawAt===null?(stage.noBoss?`守住${fronts}路，等待後隊接應`:`守住${fronts}路，等${opponent}出陣`):b.time<m.withdrawAt?`${hasOutposts(m)?'兩處已拿下，掩護後隊':'接應尚需'} ${Math.ceil(m.withdrawAt-b.time)} 秒`:'接應完成，按全軍撤離';
   const party=stage.noBoss||stage.retreatKeys?` · ${retreatPartyLabel(b)}須撤回左側`:'';
   const goal=stage.noBoss?'':` · 無須擊倒${opponent}`;
   return (m.kind==='decoy'&&!m.decoyUsed?'先放置赤幘誘餌 · ':'')+status+party+goal+(b.paused?' · 已暫停，保留進度':'');
@@ -167,14 +171,15 @@ export function historyMissionText(b){const fronts=['','','','三','四','五'][
 export function renderHistoryMission(b,panel,scene,refresh,onAction=()=>{}){
  const m=b.mission,locked=!active(b),choices=panel.querySelector('#missionChoices');
  panel.querySelector('#missionObjective').textContent=historyMissionText(b);panel.querySelector('#missionMessage').textContent=m.message;
- const items=m.kind==='outposts'?m.points.map((point,i)=>['outpost',i,`${point.name} · ${pointCompleted(m,i)?'已拿下':point.benefit||routeName(b,outpostLane(b,i))+'路'}`])
+ const outpostChoices=hasOutposts(m)?m.points.map((point,i)=>['outpost',i,`${point.name} · ${pointCompleted(m,i)?'已拿下':point.benefit||routeName(b,outpostLane(b,i))+'路'}`]):[];
+ const items=m.kind==='outposts'?outpostChoices
  :m.kind==='fire-raid'?m.points.map((point,i)=>['ignite',i,pointCompleted(m,i)?`${point.name} · 已點火`:`點火・${point.name}（${routeName(b,outpostLane(b,i))}路）`])
  :m.kind==='naval'?laneList(b).map(i=>['channel',i,`${channelName(b,i)}${channelHazard(b,i)==='blocked'?' · 封航':i===fleetChannel(b)?' ✓':''}`])
  :m.kind==='siege'?[['repair',0,'修補城門']]
- :m.kind==='dispatch'?laneList(b).map(i=>['route',i,`使者走${routeName(b,i)}路`]):m.kind==='supply'?[['supply',0,'發送糧車']]:m.kind==='restoration'?restorationSites(b.level).map((x,i)=>['site',i,`${x}・${routeName(b,i)}路 ${Math.floor(m.sites[i]/8*100)}%`]):['withdraw','decoy'].includes(m.kind)?[...(hasFireRoutes(m)?laneList(b).map(i=>['clear-fire',i,`開路・${routeName(b,i)}路`]):[]),...(m.kind==='decoy'?[0,1,2].map(i=>['decoy',i,`赤幘放${['上','中','下'][i]}路`]):[]),['retreat',0,m.ordered?'重新下令撤離 ←':'全軍撤離 ←']]:[];
+ :m.kind==='dispatch'?laneList(b).map(i=>['route',i,`使者走${routeName(b,i)}路`]):m.kind==='supply'?[['supply',0,'發送糧車']]:m.kind==='restoration'?restorationSites(b.level).map((x,i)=>['site',i,`${x}・${routeName(b,i)}路 ${Math.floor(m.sites[i]/8*100)}%`]):['withdraw','decoy'].includes(m.kind)?[...outpostChoices,...(hasGate(m)?[['repair',0,'修補城門']]:[]),...(hasFireRoutes(m)?laneList(b).map(i=>['clear-fire',i,`開路・${routeName(b,i)}路`]):[]),...(m.kind==='decoy'?[0,1,2].map(i=>['decoy',i,`赤幘放${['上','中','下'][i]}路`]):[]),['retreat',0,m.ordered?'重新下令撤離 ←':'全軍撤離 ←']]:[];
  const mode=`${m.kind}:${b.laneTotal||3}:${items.length}`;if(choices.dataset.mode!==mode){choices.dataset.mode=mode;choices.replaceChildren(...items.map(()=>{const el=document.createElement('button');el.type='button';return el}))}
  items.forEach(([action,i,label],n)=>{const button=choices.children[n];button.textContent=label;button.dataset.action=action;button.disabled=locked||m.done||(action==='outpost'&&(m.positions[i]>=OUTPOST_SECONDS||m.target===i))||(action==='ignite'&&!canIgniteRaid(b,i))||(action==='clear-fire'&&!canClearFire(b,i))||(action==='repair'&&!canRepairGate(m))||(action==='channel'&&(i===fleetChannel(b)||channelHazard(b,i)==='blocked'))||(action==='supply'&&!supplyReady(b))||(action==='decoy'&&(m.decoyUsed||!b.enemies.some(e=>e.boss&&!e.castAt)))||(action==='retreat'&&(m.withdrawAt===null||b.time<m.withdrawAt||m.kind==='decoy'&&!m.decoyUsed))||(action==='site'&&m.sites[i]>=8);button.setAttribute('aria-pressed',String(action==='outpost'?m.target===i:action==='channel'?fleetChannel(b)===i:action==='route'?m.lane===i:action==='site'&&m.site===i));button.onclick=()=>{if(historyAction(b,action,i))onAction(b,action,i);refresh()}});
  scene.querySelector('.mission-fog').style.opacity='0';const group=scene.querySelector('.civilian-group');group.hidden=m.kind!=='dispatch'||m.done;group.querySelector('span').textContent='聯絡使者';group.style.left=`${18+m.travel*65}%`;group.style.top=`${(m.lane+.75)/(b.laneTotal||3)*100}%`;
- let marker=scene.querySelector('.history-decoy');if(!marker){marker=document.createElement('span');marker.className='history-decoy';marker.textContent='赤幘誘餌';scene.append(marker)}marker.hidden=m.decoyLane===null;marker.style.top=`${(m.decoyLane+.5)/(b.laneTotal||3)*100}%`;
+ let marker=scene.querySelector('.history-decoy');if(!marker){marker=document.createElement('span');marker.className='history-decoy';marker.textContent='赤幘誘餌';scene.append(marker)}marker.hidden=m.decoyLane==null;marker.style.top=`${(m.decoyLane+.5)/(b.laneTotal||3)*100}%`;
  scene.dataset.warning='';
 }

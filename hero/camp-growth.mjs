@@ -1,6 +1,6 @@
-import {previewButton,skillButtons} from './skill-preview.mjs?v=pass-river-2';
-import {LEVEL_XP,heroLevel,nextLesson,activeText} from './roster.mjs?v=pass-river-2';
-import {paintPortrait} from './factions.mjs?v=pass-river-2';
+import {previewButton,skillButtons} from './skill-preview.mjs?v=gate-siege-cargo-1';
+import {LEVEL_XP,heroLevel,nextLesson,activeText} from './roster.mjs?v=gate-siege-cargo-1';
+import {paintPortrait} from './factions.mjs?v=gate-siege-cargo-1';
 const el=(tag,text)=>{const e=document.createElement(tag);if(text)e.textContent=text;return e};
 // Read-only cards: use the same thresholds and skill definitions as battle rewards.
 export function campGrowthCard(id,g,xp,weapon,summary){

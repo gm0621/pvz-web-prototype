@@ -1,5 +1,6 @@
 export const GATE_MAX=100;
 const repairAmount=30;
+export const hasGate=m=>m?.gate!==undefined;
 const navigationCycle=22;
 export const mainChannel=b=>Math.floor((b.laneTotal||3)/2);
 
@@ -58,7 +59,8 @@ export function stepFleet(b,dt){
 export function selectFleetChannel(b,lane){
  if(!Number.isInteger(lane)||lane<0||lane>=(b.laneTotal||3)||lane===fleetChannel(b)||channelHazard(b,lane)==='blocked')return false;
  b.mission.lane=lane;
- b.mission.message=`主船改走${channelName(b,lane)}，航程保留。`;
+ const m=b.mission;
+ m.message=`${m.cargoRuns?'糧船':'主船'}改走${channelName(b,lane)}，航程保留。`;
  return true;
 }
 
@@ -91,6 +93,7 @@ export const OUTPOSTS=[
 ];
 export const RAID_POINTS=[{name:'一號糧屯'},{name:'二號糧屯'}];
 export const OUTPOST_SECONDS=7;
+export const hasOutposts=m=>m?.kind==='outposts'||(m?.kind==='withdraw'&&!!m.points);
 export const outpostLane=(b,index)=>index===0?0:(b.laneTotal||3)-1;
 export const pointCompleted=(m,index)=>m.positions[index]>=OUTPOST_SECONDS;
 export const nextOutpost=m=>m.positions.findIndex((_,index)=>!pointCompleted(m,index));
@@ -122,7 +125,7 @@ export function stepOutposts(b,dt){
   const point=m.points[index];
   m.message=`拿下${point.name}！${point.benefit?point.benefit+'。':''}`;
   m.target=-1;
-  m.done=nextOutpost(m)<0;
+  if(m.kind==='outposts')m.done=nextOutpost(m)<0;
  }
 }
 

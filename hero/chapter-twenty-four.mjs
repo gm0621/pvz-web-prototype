@@ -43,9 +43,9 @@ const stages=[
  {
   name:'益州備舟',year:279,origin:'jinYizhou',place:'jinYizhou',shift:true,
   leader:'王濬',guest:'王濬',mapStationRole:'備舟地',historyCast:['王濬','司馬炎'],
-  mission:'supply',scene:'supply-road',enemyArmy:'船隊補給',successTitle:'船隊補給送達',
+  mission:'naval',cargoRuns:3,fleetDestination:'備舟碼頭',scene:'supply-road',enemyArmy:'船隊補給',successTitle:'船隊補給送達',
   history:'王濬早已在益州準備戰船。279 年，司馬炎下令多路伐吳。王濬率領上游船隊，準備順長江往東。',
-  briefing:'每路都派友軍接應。備車完成後發送糧車，為船隊送出三批補給。',
+  briefing:'派友軍到糧船走的航道，護送三批軍糧到備舟碼頭。主航道快封時，按「改走航道」沿岸走，已走的距離會保留。',
   ending:'晉軍分路南下，王濬的船隊從長江上游出發。接下來要經過吳軍的西部關口。',
   camp:'船要走遠路，糧袋得先點好。三批補給都收到了，就把數目交給管理的人。',
   question:'王濬在什麼地方準備戰船？',choices:['益州','洛陽城內','襄陽田間'],refs:[wangJun,tongjian81]
@@ -77,6 +77,7 @@ export const TWENTY_FOURTH_CHAPTER=stages.map((stage,index)=>({
  mapPlace:stage.place,originPlace:stage.origin,detailedRoute:true,viaPlaces:[],viewpointShift:!!stage.shift,historyCast:stage.historyCast,
  leaderName:stage.leader,opponentName:stage.opponent,mapOpponent:stage.mapOpponent??!!stage.opponent,matchupLabel:stage.matchupLabel,mapOpponentRole:stage.mapOpponentRole,mapStationRole:stage.mapStationRole,
  scene:`./assets/scenes/${stage.scene}.jpg`,mission:stage.mission,missionTitle:stage.missionTitle,missionSites:stage.missionSites,
+ ...(stage.cargoRuns?{cargoRuns:stage.cargoRuns,fleetDestination:stage.fleetDestination}:{}),
  successTitle:stage.successTitle,successRibbon:'戰 事 記 錄 ・ 回 營 整 備',
  noBoss:true,bossName:stage.enemyArmy,bossHp:0,enemyArmy:stage.enemyArmy,enemyCount:stage.enemyCount??0,interval:3.8,
  lead:stage.history,history:stage.history,adaptation,note:adaptation,bossTip:stage.briefing,

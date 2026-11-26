@@ -1,5 +1,5 @@
-import {HISTORICAL_STAGES} from './history-stages.mjs?v=pass-river-2';
-import {paintPortrait} from './factions.mjs?v=pass-river-2';
+import {HISTORICAL_STAGES} from './history-stages.mjs?v=gate-siege-cargo-1';
+import {paintPortrait} from './factions.mjs?v=gate-siege-cargo-1';
 import {THIRD_CHAPTER} from './chapter-three.mjs?v=passive-feedback-1';
 // Original camp conversations, inspired by the story; not historical quotations.
 const GUAN=[

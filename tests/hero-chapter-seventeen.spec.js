@@ -128,8 +128,16 @@ test('chapter seventeen preserves the southern campaign save and completes all s
     await page.evaluate(()=>window.chapterBattle.spawned=9);
     await advance(100);
    }else{
+    await tap('#missionQuickAction');
+    const outposts=page.locator('#missionChoices [data-action=outpost]');
+    for(const index of [0,1]){
+     await outposts.nth(index).tap();
+     await advance(5500);
+     await expect(outposts.nth(index)).toContainText('已拿下');
+    }
+    await tap('#missionDrawerClose');
     await page.evaluate(()=>window.chapterBattle.allies[0].x=.43);
-    await advance(14000);
+    await advance(6500);
    }
    await expect(page.locator('#missionQuickAction')).toHaveText('全軍撤離');
    await tap('#missionQuickAction');

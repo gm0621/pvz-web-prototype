@@ -264,3 +264,31 @@ test('Jieting opens withdrawal when the third directed wave starts',async()=>{
  assert.equal(b.won,true);
  assert.ok(b.enemies.length>0);
 });
+
+test('Jiangling closes the retreat until the gate hold ends, and a broken gate defeats the rear guard',async()=>{
+ const {createBattle,deploy,stepBattle}=await import('../../hero/engine.mjs');
+ const {historyAction}=await import('../../hero/history-missions.mjs');
+ const b=createBattle(60);
+ b.nextSpawn=Infinity;
+ assert.ok(deploy(b,'liubei',0)&&deploy(b,'zhangfei',1));
+ assert.equal(historyAction(b,'retreat'),false);
+ const breach=()=>b.enemies.push({id:b.nextId++,name:'攻門兵',hp:50,x:.02,lane:2,speed:0});
+ for(let repair=0;repair<2;repair++){
+  breach();
+  stepBattle(b,.1);
+  assert.equal(b.mission.gate,75);
+  assert.equal(b.lives,3);
+  assert.ok(historyAction(b,'repair'));
+  assert.equal(b.mission.gate,100);
+ }
+ breach();
+ stepBattle(b,.1);
+ assert.equal(historyAction(b,'repair'),false);
+ b.time=b.mission.withdrawAt;
+ assert.ok(historyAction(b,'retreat'));
+ for(let i=0;i<3;i++)breach();
+ stepBattle(b,.1);
+ assert.equal(b.mission.gate,0);
+ assert.equal(b.lossReason,'gate-broken');
+ assert.ok(b.over&&!b.won);
+});
