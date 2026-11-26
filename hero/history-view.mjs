@@ -1,6 +1,6 @@
-import {stageFactionTitle,paintPortrait} from './factions.mjs?v=historical-battles-2';
-import {STORY_PEOPLE} from './characters.mjs?v=historical-battles-2';
-import {TWENTY_NINTH_CHAPTER} from './chapter-twenty-nine.mjs?v=historical-battles-2';
+import {stageFactionTitle,paintPortrait} from './factions.mjs?v=three-battles-1';
+import {STORY_PEOPLE} from './characters.mjs?v=three-battles-1';
+import {TWENTY_NINTH_CHAPTER} from './chapter-twenty-nine.mjs?v=three-battles-1';
 
 export function mountHistoryLesson(stage,heroes){
  let root=document.getElementById('historyLesson');if(!root){root=document.createElement('details');root.id='historyLesson';document.getElementById('storyPrologue').prepend(root)}root.hidden=!stage.year;if(!stage.year)return;root.open=false;

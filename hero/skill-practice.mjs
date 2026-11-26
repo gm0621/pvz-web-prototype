@@ -1,6 +1,6 @@
-import {archerArtwork} from './factions.mjs?v=historical-battles-2';
-import {createBattle,deploy,castActive,damageAlly} from './engine.mjs?v=historical-battles-2';
-import {ALL_GENERALS,PEACH_GENERALS,SUN_GENERALS,rosterFor,growthState,LEVEL_XP} from './roster.mjs?v=historical-battles-2';
+import {archerArtwork} from './factions.mjs?v=three-battles-1';
+import {createBattle,deploy,castActive,damageAlly} from './engine.mjs?v=three-battles-1';
+import {ALL_GENERALS,PEACH_GENERALS,SUN_GENERALS,rosterFor,growthState,LEVEL_XP} from './roster.mjs?v=three-battles-1';
 import {PEACH_HEROES} from './hero-base.mjs?v=passive-feedback-1';
 // A disposable battle. No campaign, storage, rewards, timers or normal wave stepping.
 export function createPractice(id,index,level){

@@ -139,6 +139,15 @@ test('chapter fourteen continues a completed Hanzhong save through Xiangfan',asy
    await expect(page.locator('#bossIntroTitle')).toContainText('圍陣守將');
    await tap('#bossIntroContinue');
    await page.evaluate(()=>window.chapterBattle.enemies[0].hp=0);
+   await deploy('liubei',0);
+   await deploy('guanyu',await page.locator('.lane').count()-1);
+   for(const i of [0,1]){
+    await tap('#missionQuickAction');
+    await page.locator('#missionChoices [data-action=outpost]').nth(i).tap();
+    await tap('#missionDrawerClose');
+    await advance(8000);
+    await expect(page.locator('.outpost-marker[data-captured=true]')).toHaveCount(i+1);
+   }
   }else{
    await suppressWaves();
    if(stage.goal==='withdraw')await deploy('archer',0);
@@ -161,6 +170,7 @@ test('chapter fourteen continues a completed Hanzhong save through Xiangfan',asy
    }else await advance(18500);
   }
   await advance(100);
+  await expect(page.locator('#result')).toBeVisible();
   await expect(page.locator('#resultEarned')).toHaveText('+80');
   if(stage.goal==='commander')expect(await page.evaluate(()=>window.chapterBattle.bossRetreated)).toBe(true);
   if(index===5){

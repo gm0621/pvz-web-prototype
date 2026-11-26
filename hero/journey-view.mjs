@@ -1,6 +1,6 @@
-import {stageFactionTitle} from './factions.mjs?v=historical-battles-2';
-import {stagePeople,mapPersonSvg,renderMatchup} from './characters.mjs?v=historical-battles-2';
-import {campaignMapSvg,includeSecondaryRoute,journeyRoute,MAP_PLACES,routeThrough} from './campaign-map.mjs?v=historical-battles-2';
+import {stageFactionTitle} from './factions.mjs?v=three-battles-1';
+import {stagePeople,mapPersonSvg,renderMatchup} from './characters.mjs?v=three-battles-1';
+import {campaignMapSvg,includeSecondaryRoute,journeyRoute,MAP_PLACES,routeThrough} from './campaign-map.mjs?v=three-battles-1';
 let cancelJourney=()=>{};
 export function mountJourney(level,stage){
  cancelJourney();let root=document.getElementById('journeyIntro');

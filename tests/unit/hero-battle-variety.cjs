@@ -133,3 +133,56 @@ test('personal results keep the better run and hydrate older saves without alter
  assert.equal(saved.coins,99);
  assert.equal(saved.inventory.grain,2);
 });
+
+test('Wuchao needs two guarded raid points and every enemy cleared',async()=>{
+ const {createBattle,deploy,stepBattle}=await import('../../hero/engine.mjs');
+ const {historyAction}=await import('../../hero/history-missions.mjs');
+ const b=createBattle(40,42);
+ b.laneTotal=4;
+ b.nextSpawn=Infinity;
+ assert.equal(historyAction(b,'ignite',0),false);
+ assert.equal(deploy(b,'liubei',0),true);
+ assert.equal(deploy(b,'guanyu',3),true);
+ b.enemies=[{lane:3,x:.4,hp:10}];
+ assert.equal(historyAction(b,'ignite',1),false);
+ b.paused=true;
+ assert.equal(historyAction(b,'ignite',0),false);
+ b.paused=false;
+ assert.equal(historyAction(b,'ignite',0),true);
+ assert.equal(historyAction(b,'ignite',0),false);
+ assert.equal(b.mission.done,false);
+ b.enemies=[];
+ assert.equal(historyAction(b,'ignite',1),true);
+ stepBattle(b,.1);
+ assert.equal(b.over,false);
+ b.bossSpawned=true;
+ stepBattle(b,.1);
+ assert.equal(b.won,true);
+});
+
+test('Fancheng relief retains partial captures and keeps the historic commander retreat',async()=>{
+ const {createBattle,deploy,stepBattle}=await import('../../hero/engine.mjs');
+ const {historyAction}=await import('../../hero/history-missions.mjs');
+ const b=createBattle(80,42);
+ b.nextSpawn=Infinity;
+ b.laneTotal=5;
+ assert.equal(deploy(b,'liubei',0),true);
+ assert.equal(deploy(b,'guanyu',4),true);
+ assert.equal(historyAction(b,'outpost',1),true);
+ for(let i=0;i<31;i++)stepBattle(b,.1);
+ const partial=b.mission.positions[1];
+ assert.ok(partial>0);
+ assert.equal(historyAction(b,'outpost',0),true);
+ for(let i=0;i<71;i++)stepBattle(b,.1);
+ assert.equal(b.mission.positions[1],partial);
+ assert.equal(b.mission.done,false);
+ assert.equal(historyAction(b,'outpost',1),true);
+ for(let i=0;i<71;i++)stepBattle(b,.1);
+ assert.equal(b.mission.done,true);
+ assert.equal(b.over,false);
+ b.bossSpawned=true;
+ b.enemies.push({id:99,boss:true,lane:2,x:.5,name:'圍陣守將',hp:0});
+ stepBattle(b,.1);
+ assert.equal(b.bossRetreated,true);
+ assert.equal(b.won,true);
+});

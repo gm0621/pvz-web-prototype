@@ -82,18 +82,38 @@ export const OUTPOSTS=[
  {name:'箭樓',benefit:'停掉箭樓射擊'},
  {name:'補給點',benefit:'軍糧補得更快'}
 ];
+export const RAID_POINTS=[{name:'一號糧屯'},{name:'二號糧屯'}];
 export const OUTPOST_SECONDS=7;
 export const outpostLane=(b,index)=>index===0?0:(b.laneTotal||3)-1;
-export const nextOutpost=m=>m.positions.findIndex(seconds=>seconds<OUTPOST_SECONDS);
+export const pointCompleted=(m,index)=>m.positions[index]>=OUTPOST_SECONDS;
+export const nextOutpost=m=>m.positions.findIndex((_,index)=>!pointCompleted(m,index));
+const guardPoint=(b,index)=>{
+ const lane=outpostLane(b,index);
+ return hasEscort(b,lane)&&!b.enemies.some(e=>e.lane===lane&&e.hp>0&&e.x<.48);
+};
+
+export function canIgniteRaid(b,index){
+ const m=b.mission;
+ return Number.isInteger(index)&&!!m.points[index]&&!pointCompleted(m,index)&&guardPoint(b,index);
+}
+
+export function igniteRaid(b,index){
+ if(!canIgniteRaid(b,index))return false;
+ const m=b.mission;
+ m.positions[index]=OUTPOST_SECONDS;
+ m.done=nextOutpost(m)<0;
+ m.message=`${m.points[index].name}已點火！`;
+ return true;
+}
 
 export function stepOutposts(b,dt){
  const m=b.mission,index=m.target;
  if(index<0)return;
- const lane=outpostLane(b,index);
- if(!hasEscort(b,lane)||b.enemies.some(e=>e.lane===lane&&e.hp>0&&e.x<.48))return;
+ if(!guardPoint(b,index))return;
  m.positions[index]=Math.min(OUTPOST_SECONDS,m.positions[index]+dt);
  if(m.positions[index]>=OUTPOST_SECONDS){
-  m.message=`拿下${OUTPOSTS[index].name}！${OUTPOSTS[index].benefit}。`;
+  const point=m.points[index];
+  m.message=`拿下${point.name}！${point.benefit?point.benefit+'。':''}`;
   m.target=-1;
   m.done=nextOutpost(m)<0;
  }
@@ -101,9 +121,9 @@ export function stepOutposts(b,dt){
 
 export function selectOutpost(b,index){
  const m=b.mission;
- if(!Number.isInteger(index)||!OUTPOSTS[index]||m.positions[index]>=OUTPOST_SECONDS||m.target===index)return false;
+ if(!Number.isInteger(index)||!m.points[index]||pointCompleted(m,index)||m.target===index)return false;
  m.target=index;
- m.message=`正在爭取${OUTPOSTS[index].name}，派友軍守住對應路線。`;
+ m.message=`正在爭取${m.points[index].name}，派友軍守住對應路線。`;
  return true;
 }
 

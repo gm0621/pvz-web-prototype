@@ -143,6 +143,11 @@ test('chapter thirteen continues old saves through the Hanzhong finale',async({p
     await expect(page.locator('#missionQuick p')).toContainText(`請召回${requiredHero}`);
     await deploy('zhangfei',2);
     await expect(page.locator('#resultTitle')).toHaveText('保全撤離');
+   }else if(i===2){
+    await tap('#missionQuickAction');
+    await tap('#missionChoices [data-action=channel]:first-child');
+    await tap('#missionDrawerClose');
+    await advance(18000);
    }else if(i===5){
     expect(await page.evaluate(()=>window.chapterBattle.weapons.guanyu)).toBe(1);
     for(let cart=0;cart<3;cart++){

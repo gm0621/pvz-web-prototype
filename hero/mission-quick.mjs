@@ -1,11 +1,15 @@
-import {HISTORICAL_STAGES} from './history-stages.mjs?v=historical-battles-2';
-import {missionText} from './chapter-missions.mjs?v=historical-battles-2';
-import {retreatPartyNames,retreatPartyLabel,supplyReady} from './history-missions.mjs?v=historical-battles-2';
-import {hasFireRoutes} from './field-missions.mjs?v=historical-battles-2';
+import {HISTORICAL_STAGES} from './history-stages.mjs?v=three-battles-1';
+import {missionText} from './chapter-missions.mjs?v=three-battles-1';
+import {retreatPartyNames,retreatPartyLabel,supplyReady} from './history-missions.mjs?v=three-battles-1';
+import {hasFireRoutes} from './field-missions.mjs?v=three-battles-1';
 const names=['上','中','下'];
 export function missionQuickState(b){
  const m=b.mission;if(!m)return null;
- if(m.kind==='outposts')return {heading:'攻城戰 · 拿下城外據點',text:missionText(b),button:m.done?'查看任務':'選擇據點'};
+ if(m.kind==='fire-raid')return {heading:'火攻 · 點燃兩處糧屯',doneHeading:'兩處已點火 · 繼續作戰',text:missionText(b),button:m.done?'查看任務':'選火攻點'};
+ if(m.kind==='outposts'){
+  const relief=HISTORICAL_STAGES[b.level-17]?.outpostSites;
+  return {heading:relief?'解圍戰 · 拿下兩處據點':'攻城戰 · 拿下城外據點',doneHeading:relief?'兩處已拿下 · 繼續作戰':undefined,text:missionText(b),button:m.done?'查看任務':'選擇據點'};
+ }
  if(m.kind==='pass-defense')return {heading:'守關戰 · 擋住三波',text:missionText(b),button:'查看任務'};
  if(m.kind==='naval')return {heading:'水戰 · 護送主船',text:missionText(b),button:m.done?'查看任務':'改走航道'};
  if(m.kind==='siege')return {heading:'守城戰 · 守住城門',text:missionText(b),button:'修補城門',action:'repair'};
@@ -38,5 +42,5 @@ export function missionQuickState(b){
 }
 export function mountMissionQuick(field,openMission){
  const root=document.createElement('aside');root.id='missionQuick';root.hidden=true;root.setAttribute('aria-label','過關任務');const text=document.createElement('p'),button=document.createElement('button');button.id='missionQuickAction';button.className='gold-button';const heading=document.createElement('strong');heading.textContent='⚑ 過關任務';heading.className='mission-quick-heading';const copy=document.createElement('div');copy.append(heading,text);root.append(copy,button);field.append(root);
- return b=>{const state=missionQuickState(b);root.hidden=!state||b.over||!!b.duel||!!b.introPending;field.classList.toggle('has-mission-quick',!root.hidden);if(!state)return;heading.textContent=b.mission.done?'✓ 任務已完成':state.heading||'⚑ 過關任務 · 別忘了這一步';text.textContent=state.text;text.title=state.text;button.textContent=state.button;const source=state.action?document.querySelector(`#missionChoices [data-action="${state.action}"]`):null;button.disabled=!!b.paused||!!b.duel||!!b.introPending||b.over||!!source?.disabled;button.onclick=()=>{if(state.action&&source)source.click();else openMission()};const needsChoice=!b.mission.done&&[...document.querySelectorAll('#missionChoices button')].some(x=>!x.disabled);root.dataset.ready=String((!!state.action||needsChoice)&&!button.disabled);root.style.setProperty('--mission-glow',String(matchMedia('(prefers-reduced-motion: reduce)').matches?0:.35+.25*Math.sin(b.time*3)));const top=document.getElementById('missionDrawerButton');if(top){top.textContent=b.mission.done?'任務 ✓':needsChoice?'任務！':'任務';top.dataset.pending=String(needsChoice)}};
+ return b=>{const state=missionQuickState(b);root.hidden=!state||b.over||!!b.duel||!!b.introPending;field.classList.toggle('has-mission-quick',!root.hidden);if(!state)return;heading.textContent=b.mission.done?(state.doneHeading||'✓ 任務已完成'):state.heading||'⚑ 過關任務 · 別忘了這一步';text.textContent=state.text;text.title=state.text;button.textContent=state.button;const source=state.action?document.querySelector(`#missionChoices [data-action="${state.action}"]`):null;button.disabled=!!b.paused||!!b.duel||!!b.introPending||b.over||!!source?.disabled;button.onclick=()=>{if(state.action&&source)source.click();else openMission()};const needsChoice=!b.mission.done&&[...document.querySelectorAll('#missionChoices button')].some(x=>!x.disabled);root.dataset.ready=String((!!state.action||needsChoice)&&!button.disabled);root.style.setProperty('--mission-glow',String(matchMedia('(prefers-reduced-motion: reduce)').matches?0:.35+.25*Math.sin(b.time*3)));const top=document.getElementById('missionDrawerButton');if(top){top.textContent=b.mission.done?'任務 ✓':needsChoice?'任務！':'任務';top.dataset.pending=String(needsChoice)}};
 }

@@ -33,9 +33,9 @@ const stages=[
  },
  {
   name:'樊城解圍',place:'fancheng',origin:'yancheng',leader:'徐晃',opponent:'關羽',shift:true,faction:'cao',
-  mission:'formation',scene:'enemy-camp',enemyArmy:'圍城敵軍',commander:'圍陣守將',
+  mission:'outposts',outpostSites:[{name:'外圍營地'},{name:'城門圍陣'}],scene:'enemy-camp',enemyArmy:'圍城敵軍',commander:'圍陣守將',
   history:'曹操派徐晃救援曹仁。徐晃突破圍陣，關羽撤去樊城之圍。此時孫權一方也正從長江下游向關羽後方行動。',
-  briefing:'留意「圍陣重擊」的路線預警，及時換路，擊退守將並清退餘兵。',
+  briefing:'選一處據點，派友軍守住那一路。拿下外圍營地和城門圍陣，再擊退守將與剩下的敵軍。',
   ending:'徐晃解了樊城之圍，關羽引軍撤離。江陵的消息也將改變關羽的處境。',
   guest:'徐晃',camp:'圍陣散開了，先清點隊伍。荊州後方的變化，也會影響這一戰。',
   question:'誰趕來替曹仁解了樊城之圍？',choices:['徐晃','夏侯淵','劉備'],refs:[guan,yuXu,chronicle]
@@ -72,6 +72,7 @@ export const FOURTEENTH_CHAPTER=stages.map((stage,index)=>{
   name,year:219,chapter:14,number:index+1,faction,place:name,mapPlace:place,originPlace:origin,viaPlaces,viewpointShift:shift,
   scene:`./assets/scenes/${scene}.jpg`,mission,missionTitle,enemyArmy,enemyCount:commander?14:12,interval:3.8,
   noBoss:!commander,bossName:commander||enemyArmy,bossHp:commander?640:0,
+  ...(stage.outpostSites?{outpostSites:stage.outpostSites,successTitle:'樊城解圍',successRibbon:'圍 陣 已 破 ・ 回 營 整 備'}:{}),
   ...(commander?{skillType:'charge',skillName:'圍陣重擊',bossTitle:'圍陣軍官・遊戲改編',duelOutcome:'retreat'}:{}),
   ...(retreatKeys?{retreatKeys,successTitle:'離開麥城',successRibbon:'戰 事 記 錄 ・ 聽 聽 後 記'}:{}),
   leaderName:leader,opponentName:opponent,mapOpponent,mapLeader,matchupLabel,
