@@ -8,7 +8,7 @@
 
 ## Obsidian 尚未同步時，從這裡接手
 
-1. **確認版本。** 在剛拉下來的 `main` 執行 `git status --short --branch`、`git log -1 --oneline`。`git log` 顯示目前 checkout 的提交。正式遊戲版本另看下方最新一筆含「已發布」及 Pages 工作的功能紀錄。截至 2026-11-26，最新已驗證的正式遊戲版本為 `530e2c4`（主篇 142 關，《西晉後日談》18 關，《洛陽風雲》6 關，《長安西行》6 關）。 [正式遊戲](https://gm0621.github.io/pvz-web-prototype/hero/?v=530e2c4) · [人物圖鑑](https://gm0621.github.io/pvz-web-prototype/hero/people.html?v=530e2c4) · [發布紀錄](https://github.com/gm0621/pvz-web-prototype/actions/runs/45739356018)
+1. **確認版本。** 在剛拉下來的 `main` 執行 `git status --short --branch`、`git log -1 --oneline`。`git log` 顯示目前 checkout 的提交。正式遊戲版本另看下方最新一筆含「已發布」及 Pages 工作的功能紀錄。截至 2026-11-26，最新已驗證的正式遊戲版本為 `eda99ca`（主篇 142 關，《西晉後日談》18 關，《洛陽風雲》6 關，《長安西行》6 關）。 [正式遊戲](https://gm0621.github.io/pvz-web-prototype/hero/?v=eda99ca) · [人物圖鑑](https://gm0621.github.io/pvz-web-prototype/hero/people.html?v=eda99ca) · [發布紀錄](https://github.com/gm0621/pvz-web-prototype/actions/runs/45741335229)
 2. **安裝並做基本驗證。** 在專案根目錄用 Node.js 20 以上與 npm。執行下列指令可驗證引擎、桌面滑鼠／鍵盤及手機平板觸控。更多測試和本機預覽見 [開發指南](DEVELOPMENT.md)。Playwright 會啟動 4174 埠的測試服務，先關閉佔用該埠的手動預覽。
 3. **開工前看目前進度。** 先讀 [AGENTS.md](../AGENTS.md) 的「重要約束」及下方與任務相關的紀錄。英雄演義是獨立的 `/hero/` 遊戲，關卡上限見 `hero/campaign-config.mjs`。正式存檔 `heroLegendProgress_v1` 與本機、線上跳關測試的存檔分開。跨電腦時瀏覽器存檔和未提交的檔案需另外移轉。保留滑鼠、鍵盤與觸控操作，也要保留首勝軍資、重玩及暫停的既有規則。 [跳關工具和存檔說明](hero-local-testing.md)
 4. **繼續當次工作。** 依使用者的新需求從最新 `main` 開分支，保留原工作區修改。完成後把變更、實際測試結果、版本與注意事項記在本檔。Obsidian 未同步時註明待補，能讀取後再更新。正式發布依當次授權。
@@ -21,6 +21,8 @@ npx playwright test --config=playwright.hero-input.config.js
 ```
 
 ## 2026-11-26 第 141 關水戰與第 165 關守城戰
+
+- 已發布 `eda99ca`。正式站手機 Chromium 和平板 WebKit 以正常敵波及起始軍糧通過第 141、142、165 關。核對換航道保留進度、主篇回顧、城門受損與修補、第 165 關重玩及舊存檔。另核對四種尺寸操作、155 張圖鑑頭像及 51 份變更資源。 [正式遊戲](https://gm0621.github.io/pvz-web-prototype/hero/?v=eda99ca) · [人物圖鑑](https://gm0621.github.io/pvz-web-prototype/hero/people.html?v=eda99ca) · [發布紀錄](https://github.com/gm0621/pvz-web-prototype/actions/runs/45741335229)
 
 - 第 141 關「西陵順流」改為護送主船。必須有友軍護航，主航道較快、有封航預警，岸邊較慢但不受封航影響。換航道保留進度，主船抵達並清退剩餘敵軍後過關。第 165 關「兩王攻洛」顯示下一波來路，普通敵軍突破扣城門 25，重兵扣 35。城門從 100 起，每場可修 2 次，每次最多補 30。城門失守即敗戰，守住並清退全部敵軍即過關。
 - 本機通過 421 項引擎測試與西晉一統、洛陽風雲的 9 項觸控回歸。手機 Chromium 和平板 WebKit 另以正常敵波與軍糧通過兩關，驗證換航道、第 141→142 關至主篇回顧、城門實際受損後修補、舊存檔與第 165 關重玩零軍資。四種尺寸檢視航道、預警、修補和觸控版面。受控測試另核對封航、暫停、修補用完與城門失守。
