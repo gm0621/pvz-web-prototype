@@ -8,7 +8,7 @@
 
 ## Obsidian 尚未同步時，從這裡接手
 
-1. **確認版本。** 在剛拉下來的 `main` 執行 `git status --short --branch`、`git log -1 --oneline`。`git log` 顯示目前 checkout 的提交。正式遊戲版本另看下方最新一筆含「已發布」及 Pages 工作的功能紀錄。截至 2026-11-26，最新已驗證的正式遊戲版本為 `be0132d`（主篇 142 關，《西晉後日談》18 關，《洛陽風雲》6 關，《長安西行》6 關）。 [正式遊戲](https://gm0621.github.io/pvz-web-prototype/hero/?v=be0132d) · [人物圖鑑](https://gm0621.github.io/pvz-web-prototype/hero/people.html?v=be0132d) · [發布紀錄](https://github.com/gm0621/pvz-web-prototype/actions/runs/45754051542)
+1. **確認版本。** 在剛拉下來的 `main` 執行 `git status --short --branch`、`git log -1 --oneline`。`git log` 顯示目前 checkout 的提交。正式遊戲版本另看下方最新一筆含「已發布」及 Pages 工作的功能紀錄。截至 2026-11-26，最新已驗證的正式遊戲版本為 `dbf3085`（主篇 142 關，《西晉後日談》18 關，《洛陽風雲》6 關，《長安西行》6 關）。 [正式遊戲](https://gm0621.github.io/pvz-web-prototype/hero/?v=dbf3085) · [人物圖鑑](https://gm0621.github.io/pvz-web-prototype/hero/people.html?v=dbf3085) · [發布紀錄](https://github.com/gm0621/pvz-web-prototype/actions/runs/45755474994)
 2. **安裝並做基本驗證。** 在專案根目錄用 Node.js 20 以上與 npm。執行下列指令可驗證引擎、桌面滑鼠／鍵盤及手機平板觸控。更多測試和本機預覽見 [開發指南](DEVELOPMENT.md)。Playwright 會啟動 4174 埠的測試服務，先關閉佔用該埠的手動預覽。
 3. **開工前看目前進度。** 先讀 [AGENTS.md](../AGENTS.md) 的「重要約束」及下方與任務相關的紀錄。英雄演義是獨立的 `/hero/` 遊戲，關卡上限見 `hero/campaign-config.mjs`。正式存檔 `heroLegendProgress_v1` 與本機、線上跳關測試的存檔分開。跨電腦時瀏覽器存檔和未提交的檔案需另外移轉。保留滑鼠、鍵盤與觸控操作，也要保留首勝軍資、重玩及暫停的既有規則。 [跳關工具和存檔說明](hero-local-testing.md)
 4. **繼續當次工作。** 依使用者的新需求從最新 `main` 開分支，保留原工作區修改。完成後把變更、實際測試結果、版本與注意事項記在本檔。Obsidian 未同步時註明待補，能讀取後再更新。正式發布依當次授權。
@@ -19,6 +19,13 @@ npx playwright install chromium webkit
 npm run test:hero:engine
 npx playwright test --config=playwright.hero-input.config.js
 ```
+
+## 2026-11-26 下邳、赤壁、興勢流程與重玩複查
+
+- 已發布 `dbf3085`。正式站手機 Chromium（320px、390px）及平板 WebKit（820px）共通過 12 項正常敵波觸控流程，核對 50 份變更資源。390px 的興勢測試曾在載圖時提早逾時，改等戰場出現後已單獨重跑通過。 [正式遊戲](https://gm0621.github.io/pvz-web-prototype/hero/?v=dbf3085) · [人物圖鑑](https://gm0621.github.io/pvz-web-prototype/hero/people.html?v=dbf3085) · [發布紀錄](https://github.com/gm0621/pvz-web-prototype/actions/runs/45755474994)
+- 三種尺寸各自驗證下邳先拿箭樓及先拿補給點、續打第 34 關的俘虜演出與章末劇情。赤壁驗證換航道保留航程、暫停和開路一次、帶指定武將撤離。興勢三波守關後，經營地與戰後劇情接到第 112 關，完成使者接應。
+- 第 34 關勝利結算補上「呂布與陳宮被俘」。測試覆蓋四關首勝 80 軍資、重玩 0 軍資、保留或改善個人最佳，以及重整後舊軍資、兩軍兵器、道具和既有紀錄。
+- 本機 426 項引擎測試與 12 項觸控測試通過。快取版 `historical-battles-2`，複查指令 `npx playwright test --config=playwright.hero-historical-battles.config.js`。
 
 ## 2026-11-26 下邳攻城、赤壁水戰與火攻、興勢分波守關
 

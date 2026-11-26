@@ -72,6 +72,7 @@ for(const stage of stages)test(`stage ${stage.level} plays from an old save thro
    if(level!==34)await expect(page.locator('#deployment')).toContainText(hint);
    await tap('#deploymentStart');
   }
+  await expect(page.locator('#battle')).toBeVisible({timeout:30000});
   await expect(page.locator('#field')).toHaveAttribute('data-terrain',terrain);
   await page.locator('#battleSpeed').selectOption('2');
   const waves=new Set();
