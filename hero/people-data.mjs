@@ -1,11 +1,11 @@
-import {GENERALS} from './roster.mjs?v=battle-variety-1';
-import {NOVEL_PAGES,CAMP_LINES} from './novel.mjs?v=battle-variety-1';
-import {campConversation} from './camp-talk.mjs?v=battle-variety-1';
-import {STORY_TASKS} from './story-play.mjs?v=battle-variety-1';
-import {CHAPTER_BACKGROUNDS,STAGE_LEADS} from './prologue.mjs?v=battle-variety-1';
-import {STORY_PEOPLE,hasPersonMention} from './characters.mjs?v=battle-variety-1';
-import {HEROES,STAGES,chapterInfo,enemyArt,heroesForLevel} from './story.mjs?v=battle-variety-1';
-import {FACTIONS,enemyPortrait} from './factions.mjs?v=battle-variety-1';
+import {GENERALS} from './roster.mjs?v=historical-battles-1';
+import {NOVEL_PAGES,CAMP_LINES} from './novel.mjs?v=historical-battles-1';
+import {campConversation} from './camp-talk.mjs?v=historical-battles-1';
+import {STORY_TASKS} from './story-play.mjs?v=historical-battles-1';
+import {CHAPTER_BACKGROUNDS,STAGE_LEADS} from './prologue.mjs?v=historical-battles-1';
+import {STORY_PEOPLE,hasPersonMention} from './characters.mjs?v=historical-battles-1';
+import {HEROES,STAGES,chapterInfo,enemyArt,heroesForLevel} from './story.mjs?v=historical-battles-1';
+import {FACTIONS,enemyPortrait} from './factions.mjs?v=historical-battles-1';
 // Child-friendly summaries; comparisons are memory aids, not historical quotations.
 const bios=[
  ['羊獻容','史實人物','在皇宮裡屢次遭到廢立的皇后','她是晉惠帝的皇后。司馬穎掌權後，她被廢去皇后身分。後來宮中局勢再變，她又數次被扶回皇后的位置。','酒紅宮衣、抬起的眉心和向旁看的眼睛，像在留意宮中的消息。','事蹟見《晉書・惠羊后》。'],
@@ -139,7 +139,7 @@ const bios=[
  ['曹安民','史實人物','和曹昂一起被記住的人','他是曹操的侄子，也在宛城之變中遇害。讀到他時，可以停一下，想想戰爭不只有輸贏。','記住親屬關係：曹操的侄子。','他的遭遇由劇情交代，沒有做成可以反覆救活的任務。'],
  ['賈詡','史實人物','先看清局勢的謀士','謀士就是替軍隊想辦法、分析局勢的人。他曾為張繡出謀劃策，後來歸曹操。','「詡」讀 ㄒㄩˇ。遇到難題先找線索，就能想起這位分析局勢的謀士。','本作人物卡介紹他的身分；不把其他年代的計策塞進宛城這一關。'],
  ['郭嘉','史實人物','幫曹操想下一步的人','下邳久攻不下時，他與荀攸的計策影響了曹操的選擇。謀士的工作不只是聰明，更是判斷局勢與後果。','郭嘉、荀攸：下邳段落裡一起記的兩個名字。','遊戲把漫長圍城縮短；真正的圍城牽動許多人的生活。他在 207 年北征後病逝，後續不會再作活著的營地訪客。'],
- ['荀攸','史實人物','下邳圍城的出主意夥伴','他是曹操軍的謀士。讀第六章時，留意他和郭嘉的名字；他們不是拿兵卡上場的武將。','荀攸和荀彧是兩個人！最後一個字不同，故事裡的工作也不同。','圍城補給的二十四秒計時是遊戲設計，不是史書記的時間。'],
+ ['荀攸','史實人物','下邳圍城的出主意夥伴','他是曹操軍的謀士。讀第六章時，留意他和郭嘉的名字；他們不是拿兵卡上場的武將。','荀攸和荀彧是兩個人！最後一個字不同，故事裡的工作也不同。','攻取箭樓與補給點是遊戲設計，用來呈現城外合圍。'],
  ['棗祗','史實人物','想到田地與糧倉的人','打仗不能只看兵器，還得有飯吃。他參與推動屯田，把耕作與供糧組織起來。','看到糧倉和稻穗，就想起這位管生產的官員。','遊戲幾秒就能備車，真實耕作卻要等待季節與收成。'],
  ['董卓','史實人物','讓朝廷局勢大變的掌權者','他進入洛陽掌握朝政，後來逼朝廷遷到長安。第四章許多軍隊喊著討董，就是在對抗他的勢力。','董卓在長安被殺，並不是曹操親自前往刺殺的遊戲任務。','本作依史實交代長安政變；對話是改寫。'],
  ['王允','史實人物','參與長安政變的朝臣','他與呂布參與誅殺董卓，之後局勢再變，王允也遇害。除去一名掌權者，並不會讓亂世立刻結束。','他在朝廷裡行動，不是東郡驛道的敵將。','第 23 關的曹操只是接收消息，沒有參與長安政變。'],

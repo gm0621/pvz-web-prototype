@@ -5,7 +5,7 @@ const stages=[
  {name:'成都接任',route:'成都',leader:'蔣琬',guest:'蔣琬',kind:'restoration',year:234,outcome:'蔣琬接下朝廷事務'},
  {name:'漢中整軍',route:'成都 → 沔陽',leader:'蔣琬',guest:'姜維',kind:'holdout',year:238,outcome:'漢中的隊伍整備完成'},
  {name:'涪城轉運',route:'沔陽 → 涪縣',leader:'蔣琬',guest:'費禕',kind:'supply',year:243,outcome:'補給送到涪縣'},
- {name:'興勢守關',route:'南鄭 → 興勢一帶',leader:'王平',guest:'王平',opponent:'曹爽',marker:true,kind:'holdout',year:244,outcome:'興勢仍由蜀軍守住'},
+ {name:'興勢守關',route:'南鄭 → 興勢一帶',leader:'王平',guest:'王平',opponent:'曹爽',marker:true,kind:'pass-defense',year:244,outcome:'興勢仍由蜀軍守住'},
  {name:'援軍解圍',route:'成都 → 興勢一帶',leader:'費禕',guest:'費禕',opponent:'曹爽',kind:'dispatch',year:244,outcome:'曹爽率魏軍退去'}
 ];
 
@@ -34,19 +34,19 @@ test('stage 106 continues through Xingshi and keeps campaign saves on touch scre
  const tap=selector=>page.locator(selector).tap();
  const advance=ms=>page.clock.runFor(ms);
  const readSave=()=>page.evaluate(key=>JSON.parse(localStorage.getItem(key)),saveKey);
- async function controlledBattle(){
+ async function controlledBattle(waitForWaves=false){
   await tap('#storySkip');
   await expect(page.locator('#battle')).toBeVisible({timeout:25000});
   await expect(page.locator('#battleTitle')).toContainText('蜀漢軍');
   expect(await page.evaluate(()=>window.chapterBattle.weapons.guanyu)).toBe(2);
   await page.locator('#battleSpeed').selectOption('2');
   // Only enemy waves and starting food are sandboxed. Mission and save paths run through UI.
-  await page.evaluate(()=>{
+  await page.evaluate(wait=>{
    const battle=window.chapterBattle;
-   battle.bossSpawned=true;
+   battle.bossSpawned=!wait;
    battle.nextSpawn=Infinity;
    battle.food=300;
-  });
+  },waitForWaves);
   for(const [lane,key] of ['liubei','guanyu','zhangfei'].entries()){
    await tap(`#cards [data-hero=${key}]`);
    await page.locator('.lane').nth(lane).tap({position:{x:40,y:25}});
@@ -112,7 +112,7 @@ test('stage 106 continues through Xingshi and keeps campaign saves on touch scre
   await expect(page.locator('.history-sources a').first()).toBeVisible();
   await expect(page.locator('.history-sources a').first()).toHaveAttribute('href',/wikisource/);
   await tap('#storyDetails header button');
-  await controlledBattle();
+  await controlledBattle(level===111);
 
   await tap('#battleMenuButton');
   await tap('#battleMapButton');
@@ -180,21 +180,21 @@ test('stage 106 continues through Xingshi and keeps campaign saves on touch scre
     await advance(6200);
    }
   }else if(level===111){
-   await advance(2600);
-   await expect(page.locator('#missionQuick')).toContainText('接應計時中');
-   const guardId=await page.evaluate(()=>String(window.chapterBattle.allies.find(u=>u.key==='zhangfei').id));
-   await page.locator('#unitSelect').selectOption(guardId);
-   await tap('#commandDrawerButton');
-   await tap('#orders [data-order="up"]');
-   await tap('#commandDrawerClose');
-   await expect(page.locator('#missionQuick')).toContainText('下路缺接應');
-   const held=(await snapshot()).mission.hold;
-   expect(held).toBeGreaterThan(0);
-   await advance(1000);
-   expect((await snapshot()).mission.hold).toBe(held);
-   await tap('#cards [data-hero=archer]');
-   await page.locator('.lane').nth(2).tap({position:{x:40,y:25}});
-   await advance(18500);
+   await expect(page.locator('#missionQuick')).toContainText('第 1／3 波 · 上路來敵');
+   await tap('#pauseBtn');
+   const frozen=await snapshot();
+   await advance(1200);
+   expect(await snapshot()).toEqual(frozen);
+   await tap('#resumeBtn');
+   // This chapter regression queues the final enemy. The touch battle spec runs every wave.
+   await page.evaluate(()=>{
+    const battle=window.chapterBattle;
+    battle.spawned=11;
+    battle.nextSpawn=battle.time+2;
+   });
+   await advance(100);
+   await expect(page.locator('#missionQuick')).toContainText('第 3／3 波 · 中路來敵');
+   await advance(31000);
   }else if(level===112){
    await tap('#missionDrawerButton');
    await tap('#missionChoices [data-action=route]:first-child');

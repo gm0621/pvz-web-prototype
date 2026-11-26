@@ -10,7 +10,15 @@ for(let level=53;level<=58;level++)test(`chapter ten ${level}: story map mission
  await tap(page.locator('#pauseBtn'));const frozen=await page.evaluate(()=>JSON.stringify(window.tenthBattle));await page.clock.runFor(3000);expect(await page.evaluate(()=>JSON.stringify(window.tenthBattle))).toBe(frozen);await tap(page.locator('#resumeBtn'));await tap(page.locator('#battleMapButton'));await expect(page.locator('#campaignMapStages li')).toHaveCount(64);await expect(page.locator('#campaignMapMatchup')).toContainText(['沿途游兵','劉琮','劉備','沿途游兵','周瑜','周瑜'][level-53]);await page.screenshot({path:info.outputPath(`map-${level}.png`),fullPage:true});await tap(page.locator('#campaignMapClose'));await page.clock.runFor(100);
  if([56].includes(level))for(let i=0;i<3;i++){await page.evaluate(()=>window.tenthBattle.mission.charge=9.9);await page.clock.runFor(300);await tap(page.locator('[data-action=supply]'))}
  if([54,55].includes(level))for(let i=0;i<3;i++){await tap(page.locator('[data-action=route]').nth(i));await page.evaluate(()=>window.tenthBattle.mission.travel=.99);await page.clock.runFor(300)}
- if([53,57].includes(level)){await page.clock.runFor(1000);const hold=await page.evaluate(()=>window.tenthBattle.mission.hold);await page.evaluate(()=>window.tenthBattle.enemies=[{id:90,name:'袁軍步兵',hp:999,maxHp:999,lane:1,x:.4,speed:0,damage:0,rate:999,lastAttack:999}]);await page.clock.runFor(1000);expect(await page.evaluate(()=>window.tenthBattle.mission.hold)).toBe(hold);await page.evaluate(()=>window.tenthBattle.enemies=[]);await page.clock.runFor(35000);await expect(page.locator('#missionObjective')).toContainText((level===53?'整軍':'江岸')+'接應 24／24 秒')}
+ if(level===53){await page.clock.runFor(1000);const hold=await page.evaluate(()=>window.tenthBattle.mission.hold);await page.evaluate(()=>window.tenthBattle.enemies=[{id:90,name:'袁軍步兵',hp:999,maxHp:999,lane:1,x:.4,speed:0,damage:0,rate:999,lastAttack:999}]);await page.clock.runFor(1000);expect(await page.evaluate(()=>window.tenthBattle.mission.hold)).toBe(hold);await page.evaluate(()=>window.tenthBattle.enemies=[]);await page.clock.runFor(35000);await expect(page.locator('#missionObjective')).toContainText('整軍接應 24／24 秒')}
+
+ if(level===57){
+  await tap(page.locator('#missionDrawerButton'));
+  await tap(page.locator('#missionChoices [data-action=channel]').first());
+  await tap(page.locator('#missionDrawerClose'));
+  await page.clock.runFor(24000);
+  await expect(page.locator('#missionObjective')).toContainText('主船已抵達北岸接應點');
+ }
 
  await page.evaluate(()=>{const b=window.tenthBattle;b.bossSpawned=true;b.nextSpawn=Infinity;b.enemies=[]});await page.clock.runFor(100);if(level===58){await expect(page.locator('[data-action=retreat]')).toBeDisabled();await page.clock.runFor(30000);await tap(page.locator('[data-action=retreat]'));await page.clock.runFor(30000);await expect(page.locator('#resultTitle')).toHaveText('保全撤離')}await expect(page.locator('#resultEarned')).toHaveText('+80');await tap(page.locator('#resultNext'));
  for(const key of ['guanyu','zhangfei']){await tap(page.locator(`[data-talk=${key}]`));let n=0;while(await page.locator('#campTalk').isVisible()){expect(++n).toBeLessThan(6);await expect(page.locator('#campTalkPortrait')).toHaveAttribute('alt',await page.locator('#campTalkName').textContent());await tap(page.locator('#campTalkNext'))}}

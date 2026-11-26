@@ -44,9 +44,9 @@ const stages=[
  {
   name:'興勢守關',year:244,origin:'nanzheng',place:'xingshi',leader:'王平',guest:'王平',opponent:'曹爽',
   historyCast:['王平','曹爽'],matchupLabel:'魏軍主帥・經駱谷進兵',
-  mission:'holdout',missionTitle:'興勢接應',scene:'mountain-front',enemyArmy:'魏軍前鋒',
+  mission:'pass-defense',scene:'mountain-front',enemyArmy:'魏軍前鋒',
   history:'244 年，曹爽率魏軍經駱谷進攻漢中。守軍少，王平主張先守住興勢，不讓魏軍進入平地。他派劉敏等先去守關，自己帶隊在後接應。',
-  briefing:'守住三路，累計接應 24 秒，再清退餘兵，讓援軍來得及抵達。',
+  briefing:'看預警，派友軍守住來敵的路。上路、下路、中路各來一波。守住防線、清完三波就過關。',
   ending:'興勢仍由蜀軍守住。涪縣援軍趕往漢中，費禕也從成都出發。',
   camp:'前面的隊伍守山口，我們在後面照應。援軍到了，大家就能互相支援。',
   question:'王平為什麼先派人守住興勢？',choices:['不讓魏軍踏入漢中平地','要把軍糧全搬去洛陽','等魏軍送來援兵'],refs:[wang,fei,cao,ruler]

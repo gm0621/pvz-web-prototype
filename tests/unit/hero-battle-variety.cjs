@@ -36,24 +36,57 @@ test('Ye takes either outpost first and applies separate field benefits on compl
  }
 });
 
-test('Jiange sends four attackers per forecast lane and clears only with a surviving defense',async()=>{
+test('Xingshi and Jiange send four attackers per forecast lane and keep fighting until the last wave',async()=>{
  const {createBattle,stepBattle}=await import('../../hero/engine.mjs');
  const {passLane}=await import('../../hero/field-missions.mjs');
- const b=createBattle(124,42),lanes=[];
- for(let wave=0;wave<12;wave++){
+ for(const level of [111,124]){
+  const b=createBattle(level,42),lanes=[];
+  for(let wave=0;wave<12;wave++){
+   b.nextSpawn=b.time;
+   const next=passLane(b);
+   stepBattle(b,.1);
+   assert.equal(b.enemies.length,1);
+   assert.equal(b.enemies[0].lane,next);
+   lanes.push(next);
+   b.enemies=[];
+   assert.equal(b.over,false);
+  }
+  assert.deepEqual(lanes,[0,0,0,0,2,2,2,2,1,1,1,1]);
   b.nextSpawn=b.time;
-  const next=passLane(b);
   stepBattle(b,.1);
-  assert.equal(b.enemies.length,1);
-  assert.equal(b.enemies[0].lane,next);
-  lanes.push(next);
-  b.enemies=[];
-  assert.equal(b.over,false);
+  assert.equal(b.won,true);
  }
- assert.deepEqual(lanes,[0,0,0,0,2,2,2,2,1,1,1,1]);
- b.nextSpawn=b.time;
- stepBattle(b,.1);
- assert.equal(b.won,true);
+});
+
+test('Red Cliffs warns before fire, freezes the warning on pause and leaves the safe lanes unharmed',async()=>{
+ const {createBattle,deploy,stepBattle}=await import('../../hero/engine.mjs');
+ const {fireLaneState}=await import('../../hero/field-missions.mjs');
+ const {historyAction}=await import('../../hero/history-missions.mjs');
+ const b=createBattle(58,42);
+ b.nextSpawn=Infinity;
+ b.laneTotal=5;
+ assert.equal(deploy(b,'liubei',0),true);
+ assert.equal(deploy(b,'guanyu',1),true);
+ const [safe,exposed]=b.allies;
+ const health=[safe.hp,exposed.hp];
+ for(let i=0;i<105;i++)stepBattle(b,.1);
+ assert.equal(fireLaneState(b,1),'warning');
+ assert.equal(historyAction(b,'clear-fire',1),false);
+ b.paused=true;
+ const time=b.time;
+ stepBattle(b,2);
+ assert.equal(b.time,time);
+ assert.equal(fireLaneState(b,1),'warning');
+ b.paused=false;
+ for(let i=0;i<38;i++)stepBattle(b,.1);
+ assert.equal(fireLaneState(b,1),'burning');
+ assert.equal(safe.hp,health[0]);
+ assert.ok(exposed.hp<health[1]);
+ assert.equal(historyAction(b,'clear-fire',1),true);
+ assert.equal(fireLaneState(b,1),'safe');
+ assert.equal(b.mission.clearings,0);
+ for(let i=0;i<100;i++)stepBattle(b,.1);
+ assert.equal(fireLaneState(b,2),'warning');
 });
 
 test('Yiling needs an ally to clear a burning road and allows it once',async()=>{

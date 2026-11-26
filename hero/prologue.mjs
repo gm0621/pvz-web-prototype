@@ -1,5 +1,5 @@
-import {HISTORICAL_STAGES} from './history-stages.mjs?v=battle-variety-1';
-import {paintPortrait} from './factions.mjs?v=battle-variety-1';
+import {HISTORICAL_STAGES} from './history-stages.mjs?v=historical-battles-1';
+import {paintPortrait} from './factions.mjs?v=historical-battles-1';
 import {THIRD_CHAPTER} from './chapter-three.mjs?v=passive-feedback-1';
 // History and novel adaptation are deliberately separated in the introduction.
 export const CHAPTER_BACKGROUNDS={
@@ -27,13 +27,13 @@ STAGE_LEADS.push(...HISTORICAL_STAGES.map(s=>s.lead));
 
 CHAPTER_BACKGROUNDS[5]={era:'192—195 年・兗州風雲',history:'長安政變後，關東戰事仍未停歇。曹操立足兗州，後與呂布爭奪各地；守城、敗退與缺糧交織，並非一路凱旋。',story:'本章沿用曹操軍。接應、糧車與三路任務為改編；濮陽保留曹操失利，定陶保留呂布向東退走。'};
 
-CHAPTER_BACKGROUNDS[6]={era:'196—198 年・迎駕與下邳',history:'漢獻帝遷許、屯田與宛城敗退之後，曹操軍再向下邳進發。建安三年末的下邳結局按公曆換算可跨入 199 年初。',story:'沿用曹操軍；接應、運糧與圍城補給為改編。宛城保留敗退與傷亡，下邳保留呂布被俘後處死的結果。'};
+CHAPTER_BACKGROUNDS[6]={era:'196—198 年・迎駕與下邳',history:'漢獻帝遷許、屯田與宛城敗退之後，曹操軍再向下邳進發。建安三年末的下邳結局按公曆換算可跨入 199 年初。',story:'沿用曹操軍；接應、運糧與攻取城外據點為改編。宛城保留敗退與傷亡，下邳保留呂布被俘後處死的結果。'};
 
 CHAPTER_BACKGROUNDS[9]={era:'205—207 年・北征與歸途',history:'南皮、壺關之後，曹操北征烏桓，經盧龍至白狼山、柳城。袁氏兄弟的故事逐一走向結局。',story:'延續曹操軍視角。三路任務、兵卡及整備為改編；主戰與人物結局另由文字交代，不等於天下統一。'};
 CHAPTER_BACKGROUNDS[8]={era:'201—204 年・河北爭戰',history:'官渡後的倉亭、黎陽與鄴城戰事；袁紹病逝，袁譚、袁尚爭奪勢力。',story:'沿史書交代結果；三路任務與戰後整備是改編。取得鄴城不代表河北全定。'};
 CHAPTER_BACKGROUNDS[7]={era:'199—200 年・官渡風雲',history:'下邳戰後，曹操與袁紹在官渡對峙。白馬、延津、糧運與烏巢，牽動兩軍勝敗。',story:'本章保留史實功勞與結局；三路任務是改編，兵卡是抽象職能，不代表每位武將在場。'};
 
-CHAPTER_BACKGROUNDS[10]={era:'208 年・荊州與赤壁',history:'曹操南征、劉琮歸降，長坂交戰後，孫權與劉備聯合抗曹。赤壁保留曹軍敗退的結果。',story:'沿用曹操軍；三路任務代表岸邊與驛道，不模擬水戰。人物對話為改編，關羽義釋曹操、借東風等小說情節不當作本章史實。'};
+CHAPTER_BACKGROUNDS[10]={era:'208 年・荊州與赤壁',history:'曹操南征、劉琮歸降，長坂交戰後，孫權與劉備聯合抗曹。赤壁保留曹軍敗退的結果。',story:'沿用曹操軍，先在驛道接應，再到赤壁護船、避火撤離。人物對話為改編，關羽義釋曹操、借東風等小說情節不當作本章史實。'};
 
 CHAPTER_BACKGROUNDS[15]={era:'221—222 年・夷陵之戰',history:'麥城後，曹丕建立魏，劉備在成都稱帝。劉備東征伐吳，與孫權軍對峙，最終在猇亭敗退並安頓於永安。',story:'六關沿用劉備軍的三路玩法。張飛出征前遇害，夷陵的火攻與敗退、黃權降魏和永安和談都由劇情交代。'};
 CHAPTER_BACKGROUNDS[14]={era:'219 年・襄樊風雲',history:'劉備成為漢中王後，視角轉到荊州。關羽圍樊城，漢水暴漲改變戰局。徐晃解圍與孫權取荊州在不同戰線相繼影響關羽軍。',story:'前後以劉備軍為主，第 80 關切到徐晃所在的曹操軍。麥城關卡演出出走途中，戰後交代關羽與關平的史實結局。'};

@@ -44,7 +44,7 @@ export function stepFleet(b,dt){
  if(m.travel>=1-1e-8){
   m.travel=1;
   m.done=true;
-  m.message='主船抵達西陵！';
+  m.message=`主船抵達${m.destination}！`;
  }
 }
 
@@ -112,9 +112,16 @@ const passLanes=[0,2,1];
 export const passWave=b=>Math.floor(b.spawned/PASS_WAVE_SIZE)+1;
 export const passLane=b=>passLanes[passWave(b)-1];
 
+export const hasFireRoutes=m=>m?.clearings!==undefined;
+
+export function scheduledFireWarning(b){
+ const fire=b.mission?.fireAttack;
+ return fire&&fire.at-b.time<=3?fire.lane:null;
+}
+
 export function fireLaneState(b,lane){
  if(b.hazards.some(fire=>fire.lane===lane&&fire.until>b.time))return 'burning';
- if(b.enemies.some(e=>e.boss&&e.hp>0&&e.castAt&&(e.castLanes||[e.lane]).includes(lane)))return 'warning';
+ if(scheduledFireWarning(b)===lane||b.enemies.some(e=>e.boss&&e.hp>0&&e.castAt&&(e.castLanes||[e.lane]).includes(lane)))return 'warning';
  return 'safe';
 }
 

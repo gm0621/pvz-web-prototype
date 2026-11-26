@@ -1,7 +1,7 @@
-import {ALL_GENERALS as GENERALS} from './roster.mjs?v=battle-variety-1';
-import {skillSummary} from './roster-view.mjs?v=battle-variety-1';
-import {PEOPLE,searchPeople} from './people-data.mjs?v=battle-variety-1';
-import {paintPortrait} from './factions.mjs?v=battle-variety-1';
+import {ALL_GENERALS as GENERALS} from './roster.mjs?v=historical-battles-1';
+import {skillSummary} from './roster-view.mjs?v=historical-battles-1';
+import {PEOPLE,searchPeople} from './people-data.mjs?v=historical-battles-1';
+import {paintPortrait} from './factions.mjs?v=historical-battles-1';
 const $=id=>document.getElementById(id);let kind='all';
 const node=(tag,text,className)=>{const e=document.createElement(tag);if(text)e.textContent=text;if(className)e.className=className;return e};
 function render(){

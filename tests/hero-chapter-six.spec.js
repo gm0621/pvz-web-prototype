@@ -10,7 +10,16 @@ for(let level=29;level<=34;level++)test(`chapter six ${level} story, mission, ca
  await page.evaluate(()=>window.sixthBattle.allies.forEach(u=>Object.assign(u,{hp:2000,maxHp:2000,lastAttack:999,lastHeal:999,lastSkill:999})));await frozen(page);await tap(page.locator('#battleMapButton'));await expect(page.locator('#campaignMapStages li')).toHaveCount(64);await expect(page.locator('#campaignMapMatchup')).toContainText('曹操');await tap(page.locator('#campaignMapClose'));await page.clock.runFor(100);
  if(level===29)for(let i=0;i<3;i++){await tap(page.locator('[data-action=route]').nth(i));await page.evaluate(()=>window.sixthBattle.mission.travel=.99);await page.clock.runFor(300)}
  if(level===30)for(let i=0;i<3;i++){await page.evaluate(()=>window.sixthBattle.mission.charge=9.9);await page.clock.runFor(300);await tap(page.locator('[data-action=supply]'))}
- if(level===33){await page.clock.runFor(1000);const partial=await page.evaluate(()=>window.sixthBattle.mission.hold);await page.evaluate(()=>window.sixthBattle.enemies=[{id:90,name:'呂布軍步兵',hp:1000,maxHp:1000,lane:1,x:.4,damage:0,speed:0,rate:999,lastAttack:999}]);await page.clock.runFor(1000);expect(await page.evaluate(()=>window.sixthBattle.mission.hold)).toBe(partial);await frozen(page);await page.evaluate(()=>window.sixthBattle.enemies=[]);await page.clock.runFor(35000);await expect(page.locator('#missionObjective')).toContainText('圍城補給 24／24 秒');await expect(page.locator('#result')).toBeHidden()}
+ if(level===33){
+  await tap(page.locator('#missionDrawerButton'));
+  for(const i of [0,1]){
+   await tap(page.locator('#missionChoices [data-action=outpost]').nth(i));
+   await page.clock.runFor(9000);
+  }
+  await expect(page.locator('#missionObjective')).toContainText('兩處據點已拿下');
+  await tap(page.locator('#missionDrawerClose'));
+  await expect(page.locator('#result')).toBeHidden();
+ }
  if([31,32,34].includes(level)){
   const bossName=level===31?'張繡':level===32?'橋蕤':'呂布',skill=level===31?'長槍牽制':level===32?'軍旗催陣':'方天破陣';await page.evaluate(()=>{const b=window.sixthBattle;b.spawned=100;b.nextSpawn=0});await page.clock.runFor(100);await expect(page.locator('#bossIntroTitle')).toContainText(bossName);expect(await page.locator('#bossIntroArt').evaluate(e=>e.style.backgroundImage)).toContain(level===34?'yan.png':'central.png');await tap(page.locator('#bossIntroContinue'));
   await page.evaluate(()=>{const b=window.sixthBattle,e=b.enemies.find(e=>e.boss);Object.assign(e,{x:.3,lane:1,castAt:b.time+1,castStartedAt:b.time,castTargetId:b.allies[1].id,castLanes:[1],nextSkill:999,lastAttack:999});if(b.level===32)b.enemies.push({id:90,name:'袁術軍步兵',hp:1000,maxHp:1000,lane:0,x:.9,damage:0,speed:0,rate:999,lastAttack:999})});await page.clock.runFor(100);await expect(page.locator('#bossHudState')).toContainText(skill);await frozen(page);const hp=await page.evaluate(()=>window.sixthBattle.allies[1].hp);await page.screenshot({path:info.outputPath(`boss-${level}.png`),fullPage:true,timeout:10000});await page.clock.runFor(1500);

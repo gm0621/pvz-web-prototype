@@ -1,6 +1,7 @@
-import {HISTORICAL_STAGES} from './history-stages.mjs?v=battle-variety-1';
-import {missionText} from './chapter-missions.mjs?v=battle-variety-1';
-import {retreatPartyNames,retreatPartyLabel,supplyReady} from './history-missions.mjs?v=battle-variety-1';
+import {HISTORICAL_STAGES} from './history-stages.mjs?v=historical-battles-1';
+import {missionText} from './chapter-missions.mjs?v=historical-battles-1';
+import {retreatPartyNames,retreatPartyLabel,supplyReady} from './history-missions.mjs?v=historical-battles-1';
+import {hasFireRoutes} from './field-missions.mjs?v=historical-battles-1';
 const names=['上','中','下'];
 export function missionQuickState(b){
  const m=b.mission;if(!m)return null;
@@ -22,7 +23,7 @@ export function missionQuickState(b){
  const ready=m.withdrawAt!==null&&b.time>=m.withdrawAt;
  const paused=b.paused?'已暫停，保留進度 · ':'';
  const noBoss=stage?.noBoss;
- const fire=m.level===87,clearing=fire?` · 開路剩 ${m.clearings} 次`:'';
+ const fire=hasFireRoutes(m),clearing=fire?` · 開路剩 ${m.clearings} 次`:'';
  const fireButton=fire&&m.clearings?'開路選項':'查看任務';
  const wait=m.withdrawAt===null?(noBoss?'守線等待接應':'等待敵將出場'):ready?'接應完成':`接應尚需 ${Math.ceil(m.withdrawAt-b.time)} 秒`;
  if(m.ordered){
