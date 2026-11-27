@@ -8,7 +8,7 @@
 
 ## Obsidian 尚未同步時，從這裡接手
 
-1. **確認版本。** 在剛拉下來的 `main` 執行 `git status --short --branch`、`git log -1 --oneline`。`git log` 顯示目前 checkout 的提交。正式遊戲版本另看下方最新一筆含「已發布」及 Pages 工作的功能紀錄。截至 2026-11-27，最新已驗證的正式遊戲版本為 `b5a40ce`（主篇 142 關，《西晉後日談》18 關，《洛陽風雲》6 關，《長安西行》6 關）。 [正式遊戲](https://gm0621.github.io/pvz-web-prototype/hero/?v=b5a40ce) · [人物圖鑑](https://gm0621.github.io/pvz-web-prototype/hero/people.html?v=b5a40ce) · [發布紀錄](https://github.com/gm0621/pvz-web-prototype/actions/runs/45968880392)
+1. **確認版本。** 在剛拉下來的 `main` 執行 `git status --short --branch`、`git log -1 --oneline`。`git log` 顯示目前 checkout 的提交。正式遊戲版本另看下方最新一筆含「已發布」及 Pages 工作的功能紀錄。截至 2026-11-27，最新已驗證的正式遊戲版本為 `2e4b011`（主篇 142 關，《西晉後日談》18 關，《洛陽風雲》6 關，《長安西行》6 關）。 [正式遊戲](https://gm0621.github.io/pvz-web-prototype/hero/?v=2e4b011) · [人物圖鑑](https://gm0621.github.io/pvz-web-prototype/hero/people.html?v=2e4b011) · [發布紀錄](https://github.com/gm0621/pvz-web-prototype/actions/runs/45970295787)
 2. **安裝並做基本驗證。** 在專案根目錄用 Node.js 20 以上與 npm。執行下列指令可驗證引擎、桌面滑鼠／鍵盤及手機平板觸控。更多測試和本機預覽見 [開發指南](DEVELOPMENT.md)。Playwright 會啟動 4174 埠的測試服務，先關閉佔用該埠的手動預覽。
 3. **開工前看目前進度。** 先讀 [AGENTS.md](../AGENTS.md) 的「重要約束」及下方與任務相關的紀錄。英雄演義是獨立的 `/hero/` 遊戲，關卡上限見 `hero/campaign-config.mjs`。正式存檔 `heroLegendProgress_v1` 與本機、線上跳關測試的存檔分開。跨電腦時瀏覽器存檔和未提交的檔案需另外移轉。保留滑鼠、鍵盤與觸控操作，也要保留首勝軍資、重玩及暫停的既有規則。 [跳關工具和存檔說明](hero-local-testing.md)
 4. **繼續當次工作。** 依使用者的新需求從最新 `main` 開分支，保留原工作區修改。完成後把變更、實際測試結果、版本與注意事項記在本檔。Obsidian 未同步時註明待補，能讀取後再更新。正式發布依當次授權。
@@ -19,6 +19,13 @@ npx playwright install chromium webkit
 npm run test:hero:engine
 npx playwright test --config=playwright.hero-input.config.js
 ```
+
+## 2026-11-27 主篇結局與番外配樂銜接
+
+- 已發布 `2e4b011`，快取 `hero-finale-audio-1`。 [正式遊戲](https://gm0621.github.io/pvz-web-prototype/hero/?v=2e4b011) · [人物圖鑑](https://gm0621.github.io/pvz-web-prototype/hero/people.html?v=2e4b011) · [發布紀錄](https://github.com/gm0621/pvz-web-prototype/actions/runs/45970295787)
+- 修正從背景回來時，快速由結局回主選單並選番外可能漏播的問題。恢復音訊時使用最後選到的場景。進出章末和全篇回顧使用較慢的淡入，主選單與劇情配樂降低播放音量。第 142 關戰後劇情進入全篇回顧時，同一首章末曲接著播放。
+- 本機 441 項引擎／音訊單元測試及 58 項瀏覽器測試通過，含 320px 手機的 4 項結局／番外流程。正式站 21 項瀏覽器流程及 19 份發布資源比對通過。第 142 關由受控整備進入正常結算、回營、五幕回顧和通關紀念。用已到第 142、160、166 關的舊格式存檔重看結局，核對既有進度、軍資與道具，再經主選單進《西晉後日談》、《八王之亂外傳：洛陽風雲》或《八王之亂外傳：長安西行》的開場和戰場。模擬由背景回來立即選《長安西行》，確認配樂不需再點一下才播放。驗證播放曲目、匯流排波形峰值與淡入時程。使用 390×844 Chromium、390×844 WebKit 手機及 820×1180 WebKit 平板模擬。實機聽感待確認。
+- 回歸指令 `npx playwright test --config=playwright.hero-dispatch-supply.config.js tests/hero-finale-audio.spec.js --project=small-phone --project=webkit-phone --project=webkit-tablet`。
 
 ## 2026-11-27 單挑、結算、營地與章末配樂銜接
 
