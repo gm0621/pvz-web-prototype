@@ -20,6 +20,14 @@ npm run test:hero:engine
 npx playwright test --config=playwright.hero-input.config.js
 ```
 
+## 2026-11-27 配樂與實錄戰鬥音效
+
+- 本機分支 `codex/hero-music-and-effects`，功能提交 `3f61ed1`，快取 `hero-audio-mix-1`，本機預覽中。正式遊戲最新功能發布仍為 `9a38088`。
+- 戰前、單挑與一般勝利各有原創配樂。172 關戰鬥依各關旋律加入八小節編曲，敵軍聚集、來襲或敵將蓄力時增加戰鼓。29 個章末使用較舒緩的收尾。場景轉換停止上一段配樂，音樂與音效可各自關閉。
+- 揮刀、近戰命中、格擋、射箭改用四種 CC0 實錄。揮刀在武器動作開始時播放，命中聲只跟隨成功命中，射箭使用放弦聲。新增出兵及來敵提示，密集的普通攻擊限制重複播放。 [錄音來源](../hero/assets/audio/combat/CREDITS.md)
+- 435 項引擎與音訊單元測試、27 項手機／平板瀏覽器音訊測試通過。另用 390px Chromium、820×1180 WebKit 的受控戰局，確認實際部署後依序觸發揮刀、命中、放弦三段錄音。瀏覽器檢查音訊輸出、靜音、切換和音訊暫停恢復。尚待實機聽感及正式站驗證。
+- 可用 `node tests/support/static-server.js` 啟動本機預覽，在遊戲主選單開啟「音樂」並點「試聽音效」。回歸指令 `npx playwright test --config=playwright.hero-dispatch-supply.config.js tests/hero-audio.spec.js --project=small-phone --project=webkit-phone --project=webkit-tablet`。重製三首場景配樂使用 `tools/compose-hero-interludes.py`，需要 Python、NumPy 與 afconvert 或 ffmpeg。播放時直接使用專案內的音檔。
+
 ## 2026-11-27 越巂分波守備、巫口分段護糧與洮西撤離
 
 - 已發布 `9a38088`。正式站手機 Chromium（320px、390px）6 項、平板 WebKit（820×1180）3 項完整觸控流程通過，核對 52 份發布資源。 [正式遊戲](https://gm0621.github.io/pvz-web-prototype/hero/?v=9a38088) · [人物圖鑑](https://gm0621.github.io/pvz-web-prototype/hero/people.html?v=9a38088) · [發布紀錄](https://github.com/gm0621/pvz-web-prototype/actions/runs/45963102939)
