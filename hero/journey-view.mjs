@@ -1,6 +1,6 @@
-import {stageFactionTitle} from './factions.mjs?v=hanshou-wudu-dangqu-1';
-import {stagePeople,mapPersonSvg,renderMatchup} from './characters.mjs?v=hanshou-wudu-dangqu-1';
-import {campaignMapSvg,includeSecondaryRoute,journeyRoute,MAP_PLACES,routeThrough} from './campaign-map.mjs?v=hanshou-wudu-dangqu-1';
+import {stageFactionTitle} from './factions.mjs?v=maming-hanzhong-jigu-1';
+import {stagePeople,mapPersonSvg,renderMatchup} from './characters.mjs?v=maming-hanzhong-jigu-1';
+import {campaignMapSvg,includeSecondaryRoute,journeyRoute,MAP_PLACES,routeThrough} from './campaign-map.mjs?v=maming-hanzhong-jigu-1';
 let cancelJourney=()=>{};
 export function mountJourney(level,stage){
  cancelJourney();let root=document.getElementById('journeyIntro');

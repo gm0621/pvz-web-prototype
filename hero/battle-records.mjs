@@ -1,4 +1,4 @@
-import {CAMPAIGN_LENGTH} from './campaign-config.mjs?v=hanshou-wudu-dangqu-1';
+import {CAMPAIGN_LENGTH} from './campaign-config.mjs?v=maming-hanzhong-jigu-1';
 
 function recordRule(level){
  switch(level){

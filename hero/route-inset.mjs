@@ -1,4 +1,4 @@
-import {mapPersonSvg} from './characters.mjs?v=hanshou-wudu-dangqu-1';
+import {mapPersonSvg} from './characters.mjs?v=maming-hanzhong-jigu-1';
 
 const standardHeight=304,dualHeight=374;
 

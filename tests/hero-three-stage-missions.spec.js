@@ -25,7 +25,10 @@ const stages=[
  {level:135,kind:'supply',stops:['成都城外','途中驛站','洛陽城門'],chapter:23,title:'安樂公入洛',terrain:'',ending:'劉禪到洛陽後受封安樂公',next:'洛陽建晉',resultTitle:'隨行補給送達',peaceful:true},
  {level:71,kind:'withdrawal',chapter:13,title:'宕渠收兵',terrain:'pass-defense',ending:'張郃收攏隊伍，退回南鄭',next:'鄴城魏王',resultTitle:'保全撤離',selectArmy:true},
  {level:100,kind:'supply',stops:['武都營地','山路驛站','陰平營地'],chapter:17,title:'武都陰平',terrain:'',ending:'蜀軍取得武都、陰平兩郡',next:'雨阻漢中'},
- {level:123,kind:'defense',chapter:21,title:'漢壽會師',terrain:'pass-defense',ending:'退下來的蜀軍會合',next:'劍閣守關'}
+ {level:123,kind:'defense',chapter:21,title:'漢壽會師',terrain:'pass-defense',ending:'退下來的蜀軍會合',next:'劍閣守關'},
+ {level:74,kind:'defense',chapter:13,title:'馬鳴閣道',terrain:'pass-defense',ending:'徐晃保住了閣道',next:'定軍山爭高地',selectArmy:true},
+ {level:76,kind:'supply',stops:['定軍山營地','山路驛站','沔陽營地'],chapter:13,title:'漢中歸劉',terrain:'',ending:'曹操撤回長安，漢中由劉備掌握',next:'沔陽傳令'},
+ {level:98,kind:'withdrawal',chapter:17,title:'箕谷收兵',terrain:'pass-defense',ending:'趙雲與鄧芝收兵回漢中',next:'陳倉糧盡',resultTitle:'全軍撤回'}
 ];
 
 test('stage 71 opens from home with an old save before and after reload',async({page})=>{

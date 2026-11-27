@@ -4,7 +4,7 @@ const stages=[
  {name:'漢中出師',route:'成都 → 沔陽',leader:'諸葛亮',guest:'諸葛亮',kind:'dispatch',year:227},
  {name:'隴右響應',route:'祁山 → 天水一帶',leader:'諸葛亮',guest:'姜維',kind:'holdout',year:228},
  {name:'街亭撤離',route:'祁山 → 街亭一帶',leader:'馬謖',guest:'王平',opponent:'張郃',onMap:true,kind:'withdraw',year:228},
- {name:'箕谷收兵',route:'箕谷一帶 → 南鄭',leader:'趙雲',guest:'鄧芝',opponent:'曹真',kind:'holdout',year:228},
+ {name:'箕谷收兵',route:'箕谷一帶 → 南鄭',leader:'趙雲',guest:'鄧芝',opponent:'曹真',kind:'withdraw',year:228},
  {name:'陳倉糧盡',route:'散關 → 陳倉',leader:'諸葛亮',guest:'諸葛亮',opponent:'郝昭',onMap:true,kind:'withdraw',year:228},
  {name:'武都陰平',route:'武都 → 陰平',leader:'陳式',guest:'陳式',opponent:'郭淮',kind:'supply',year:229}
 ];
@@ -128,6 +128,16 @@ test('chapter seventeen preserves the southern campaign save and completes all s
     await expect(page.locator('#missionQuick')).toContainText('第 1／3 波');
     await page.evaluate(()=>window.chapterBattle.spawned=9);
     await advance(100);
+   }else if(index===3){
+    await page.evaluate(()=>{
+     window.chapterBattle.spawned=8;
+     window.chapterBattle.allies[0].x=.48;
+    });
+    await advance(100);
+    await expect(page.locator('#missionQuick')).toContainText('第 3／3 波 · 中路來敵');
+    await expect(page.locator('#missionQuickAction')).toHaveText('查看任務');
+    await page.evaluate(()=>window.chapterBattle.spawned=9);
+    await advance(100);
    }else{
     await tap('#missionQuickAction');
     const outposts=page.locator('#missionChoices [data-action=outpost]');
@@ -149,7 +159,7 @@ test('chapter seventeen preserves the southern campaign save and completes all s
     await deploy('archer',1);
    }
    await advance(3600);
-   await expect(page.locator('#resultText')).toContainText(index===2?'街亭仍由魏軍取勝':'陳倉未被攻下');
+   await expect(page.locator('#resultText')).toContainText(index===2?'街亭仍由魏軍取勝':index===3?'趙雲與鄧芝收兵回漢中':'陳倉未被攻下');
   }else if(stage.kind==='supply'){
    await expect(page.locator('#missionQuick')).toContainText('上路武都營地');
    await sendCarts({segmented:true});

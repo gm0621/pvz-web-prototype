@@ -12,7 +12,7 @@ test('chapter thirteen keeps independent army equipment and extends a completed 
  let progress=normalizeProgress({completed:70,coins:100,inventory:{grain:2},weapons:{liubei:3},armyWeapons:{cao:{liubei:1}}});
  assert.equal(rewardVictory(progress,70),0);
  assert.deepEqual(STAGES.slice(70,76).map(stage=>stage.year),[215,216,217,218,219,219]);
- assert.deepEqual(STAGES.slice(70,76).map(stage=>stage.mission),['withdraw','dispatch','naval','holdout','formation','supply']);
+ assert.deepEqual(STAGES.slice(70,76).map(stage=>stage.mission),['withdraw','dispatch','naval','pass-defense','formation','supply']);
  for(let level=71;level<=76;level++){
   assert.deepEqual(chapterInfo(level),{chapter:13,number:level-70,count:6,title:'漢中爭雄'});
   assert.equal(factionFor(level),level<=74?'cao':null);

@@ -35,10 +35,10 @@ const stages=[
  },
  {
   name:'箕谷收兵',year:228,place:'nanzheng',origin:'jigu',leader:'趙雲',guest:'鄧芝',opponent:'曹真',mapOpponent:false,shift:true,
-  historyCast:['趙雲','鄧芝','曹真'],mission:'holdout',missionTitle:'箕谷退路接應',scene:'mountain-front',enemyArmy:'沿道魏軍',
+  historyCast:['趙雲','鄧芝','曹真'],mission:'withdraw',coverWaves:true,scene:'mountain-front',enemyArmy:'沿道魏軍',
   matchupLabel:'魏軍統帥・箕谷戰線',
   history:'第一次北伐有兩條戰線。諸葛亮往祁山時，趙雲和鄧芝在箕谷牽制魏軍。遇到曹真軍抵抗，蜀軍失利，趙雲收束隊伍，避免更大的損失。',
-  briefing:'這一關演出失利後的接應。各路有人照應才會計時，守住退路後帶隊回營。',
+  briefing:'哪一路亮起，就派友軍去擋。第三波追兵出現後按「全軍撤離」。至少保住一隊，讓所有還在場的友軍回到左側。',
   ending:'趙雲與鄧芝收兵回漢中。箕谷沒有取勝，這次保住更多部隊和物資。',
   camp:'守住退路、把隊伍整整齊齊帶回去，也是重要的任務。',
   question:'在箕谷領隊牽制魏軍的是誰？',choices:['趙雲與鄧芝','祁山的主力軍','成都的守城隊'],refs:[zhuge,zhao,cao]

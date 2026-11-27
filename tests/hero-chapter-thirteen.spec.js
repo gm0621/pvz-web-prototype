@@ -41,7 +41,9 @@ test('chapter thirteen continues old saves through the Hanzhong finale',async({p
  const deploy=async(key,lane)=>{
   await page.evaluate(()=>window.chapterBattle.food=300);
   await tap(`#cards [data-hero=${key}]`);
-  await page.locator('.lane').nth(lane).tap({position:{x:40,y:25}});
+  const road=page.locator('.lane').nth(lane);
+  const width=await road.evaluate(node=>node.clientWidth);
+  await road.tap({position:{x:Math.floor(width*.6),y:25}});
   await advance(200);
  };
  const toCamp=async()=>{
@@ -126,7 +128,7 @@ test('chapter thirteen continues old saves through the Hanzhong finale',async({p
    await tap('#bossIntroContinue');
    await page.evaluate(()=>window.chapterBattle.enemies[0].hp=0);
   }else{
-   await suppressWaves();
+   if(i!==3)await suppressWaves();
    const slots=['liubei','guanyu','zhangfei','hero4','hero5'];
    for(let lane=0;lane<stage.lanes;lane++)if(i!==0||lane!==2)await deploy(slots[lane],lane);
    if(i===0){
@@ -151,13 +153,28 @@ test('chapter thirteen continues old saves through the Hanzhong finale',async({p
     await tap('#missionChoices [data-action=channel]:first-child');
     await tap('#missionDrawerClose');
     await advance(18000);
+   }else if(i===3){
+    await expect(page.locator('#missionQuick p')).toContainText('第 1／3 波 · 第 1路來敵');
+    const result=page.locator('#result');
+    for(let check=0;check<16&&!await result.isVisible();check++){
+     for(const lane of [0,4,2]){
+      const card=page.locator(`#cards [data-hero=${slots[lane]}] .card-status`);
+      const support=page.locator('#cards [data-hero=archer] .card-status');
+      const defenders=page.locator(`#units .ally[data-lane="${lane}"]`);
+      if(await card.textContent()==='可出戰')await deploy(slots[lane],lane);
+      else if(await defenders.count()<2&&await support.textContent()==='可增援')await deploy('archer',lane);
+     }
+     await advance(4000);
+    }
+    await expect(page.locator('#missionObjective')).toHaveText('三波已守住 · 敵軍已清退');
    }else if(i===5){
     expect(await page.evaluate(()=>window.chapterBattle.weapons.guanyu)).toBe(1);
-    for(let cart=0;cart<3;cart++){
-     await advance(7500);
+    for(const [round,stop] of ['定軍山營地','山路驛站','沔陽營地'].entries()){
+     await expect(page.locator('#missionQuick p')).toContainText(stop);
      await expect(page.locator('#missionQuickAction')).toHaveText('發送糧車');
-     if(cart===2)await page.evaluate(()=>window.blockSave=true);
+     if(round===2)await page.evaluate(()=>window.blockSave=true);
      await tap('#missionQuickAction');
+     await advance(6200);
     }
    }else await advance(18500);
   }

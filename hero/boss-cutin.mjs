@@ -1,7 +1,7 @@
-import {paintPortrait} from './factions.mjs?v=hanshou-wudu-dangqu-1';
-import {bossProfile,laneLabel} from './engine.mjs?v=hanshou-wudu-dangqu-1';
-import {battleBossPortrait} from './characters.mjs?v=hanshou-wudu-dangqu-1';
-import {hitSound} from './audio.mjs?v=hanshou-wudu-dangqu-1';
+import {paintPortrait} from './factions.mjs?v=maming-hanzhong-jigu-1';
+import {bossProfile,laneLabel} from './engine.mjs?v=maming-hanzhong-jigu-1';
+import {battleBossPortrait} from './characters.mjs?v=maming-hanzhong-jigu-1';
+import {hitSound} from './audio.mjs?v=maming-hanzhong-jigu-1';
 const seen=new WeakMap();
 const label=(root,selector,text)=>{const node=root.querySelector(selector);if(node.textContent!==text)node.textContent=text};
 const clamp=n=>Math.max(0,Math.min(1,n));
