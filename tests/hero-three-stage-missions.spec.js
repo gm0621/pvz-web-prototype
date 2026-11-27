@@ -22,12 +22,15 @@ const stages=[
  {level:143,kind:'supply',stops:['石頭城外','途中驛站','洛陽城門'],chapter:25,title:'孫皓入洛',terrain:'',ending:'孫皓到了洛陽，受封歸命侯',next:'太康裁兵',resultTitle:'隨行補給送達',bonusButton:'homeExtra',bonusClears:1,peaceful:true,sun:true},
  {level:119,kind:'withdrawal',chapter:21,title:'段谷撤兵',terrain:'pass-defense',ending:'蜀軍在段谷戰敗',next:'芒水相持',resultTitle:'全軍撤回'},
  {level:120,kind:'defense',chapter:21,title:'芒水相持',terrain:'pass-defense',ending:'兩軍在芒水一帶相持',next:'侯和退屯'},
- {level:135,kind:'supply',stops:['成都城外','途中驛站','洛陽城門'],chapter:23,title:'安樂公入洛',terrain:'',ending:'劉禪到洛陽後受封安樂公',next:'洛陽建晉',resultTitle:'隨行補給送達',peaceful:true}
+ {level:135,kind:'supply',stops:['成都城外','途中驛站','洛陽城門'],chapter:23,title:'安樂公入洛',terrain:'',ending:'劉禪到洛陽後受封安樂公',next:'洛陽建晉',resultTitle:'隨行補給送達',peaceful:true},
+ {level:71,kind:'withdrawal',chapter:13,title:'宕渠收兵',terrain:'pass-defense',ending:'張郃收攏隊伍，退回南鄭',next:'鄴城魏王',resultTitle:'保全撤離',selectArmy:true},
+ {level:100,kind:'supply',stops:['武都營地','山路驛站','陰平營地'],chapter:17,title:'武都陰平',terrain:'',ending:'蜀軍取得武都、陰平兩郡',next:'雨阻漢中'},
+ {level:123,kind:'defense',chapter:21,title:'漢壽會師',terrain:'pass-defense',ending:'退下來的蜀軍會合',next:'劍閣守關'}
 ];
 
 for(const stage of stages)test(`stage ${stage.level} clears and replays from an old save on touch`,async({page})=>{
  test.setTimeout(420000);
- const {level,chapter,next,kind,bonusButton,bonusClears,stops,peaceful,sun}=stage;
+ const {level,chapter,next,kind,bonusButton,bonusClears,stops,peaceful,sun,selectArmy}=stage;
  const cargo=kind==='supply',defense=kind==='defense',withdrawal=kind==='withdrawal',maicheng=level===82;
  const errors=[];
  page.on('pageerror',error=>errors.push(error.message));
@@ -95,7 +98,7 @@ for(const stage of stages)test(`stage ${stage.level} clears and replays from an 
  async function play({level,title,terrain,ending,resultTitle}){
   await expect(page.locator('#storyTitle')).toHaveText(title);
   await tap('#storySkip');
-  if(bonusButton&&!sun)await tap('#deploymentStart');
+  if(selectArmy||(bonusButton&&!sun))await tap('#deploymentStart');
   await expect(page.locator('#battle')).toBeVisible({timeout:30000});
   if(sun)await expect(page.locator('#cards [data-hero=zhangfei]')).toContainText('黃蓋');
   await expect(page.locator('#field')).toHaveAttribute('data-terrain',terrain);

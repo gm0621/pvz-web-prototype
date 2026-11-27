@@ -1,7 +1,7 @@
 import {skillPresentation,skillArtwork} from './skill-presentation.mjs?v=passive-feedback-1';
-import {ALL_GENERALS} from './roster.mjs?v=mangshui-qianluo-duangu-1';
-import {paintPortrait} from './factions.mjs?v=mangshui-qianluo-duangu-1';
-import {hitSound} from './audio.mjs?v=mangshui-qianluo-duangu-1';
+import {ALL_GENERALS} from './roster.mjs?v=hanshou-wudu-dangqu-1';
+import {paintPortrait} from './factions.mjs?v=hanshou-wudu-dangqu-1';
+import {hitSound} from './audio.mjs?v=hanshou-wudu-dangqu-1';
 const seen=new WeakMap();
 export function renderSkillCutin(b){
  let root=document.getElementById('skillCutin'),fx=document.getElementById('skillBurst');

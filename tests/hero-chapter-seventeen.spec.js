@@ -45,11 +45,12 @@ test('chapter seventeen preserves the southern campaign save and completes all s
   for(const [lane,key] of ['liubei','guanyu','zhangfei'].entries())await deploy(key,lane);
  }
 
- async function sendCarts(){
+ async function sendCarts({segmented=false}={}){
   for(let batch=0;batch<3;batch++){
-   await advance(7600);
+   if(!segmented)await advance(7600);
    await expect(page.locator('#missionQuickAction')).toHaveText('發送糧車');
    await tap('#missionQuickAction');
+   if(segmented)await advance(6200);
   }
  }
 
@@ -150,21 +151,8 @@ test('chapter seventeen preserves the southern campaign save and completes all s
    await advance(3600);
    await expect(page.locator('#resultText')).toContainText(index===2?'街亭仍由魏軍取勝':'陳倉未被攻下');
   }else if(stage.kind==='supply'){
-   await advance(7600);
-   await expect(page.locator('#missionQuickAction')).toHaveText('發送糧車');
-   const guardId=await page.evaluate(()=>String(window.chapterBattle.allies.find(u=>u.key==='zhangfei').id));
-   await page.locator('#unitSelect').selectOption(guardId);
-   await tap('#commandDrawerButton');
-   await tap('#orders [data-order="up"]');
-   await tap('#commandDrawerClose');
-   await expect(page.locator('#missionQuick')).toContainText('下路缺接應');
-   await tap('#missionQuickAction');
-   await expect(page.locator('#missionChoices [data-action=supply]')).toBeDisabled();
-   expect(await page.evaluate(()=>window.chapterBattle.mission)).toMatchObject({charge:10,delivered:0});
-   await tap('#missionDrawerClose');
-   await deploy('archer',2);
-   await expect(page.locator('#missionQuickAction')).toHaveText('發送糧車');
-   await sendCarts();
+   await expect(page.locator('#missionQuick')).toContainText('上路武都營地');
+   await sendCarts({segmented:true});
   }else await advance(18500);
 
   await advance(300);
@@ -213,7 +201,7 @@ test('chapter seventeen preserves the southern campaign save and completes all s
   battle.food=300;
  });
  await deployTeam();
- await sendCarts();
+ await sendCarts({segmented:true});
  await advance(300);
  await expect(page.locator('#resultEarned')).toHaveText('+0');
  expect(await readSave()).toMatchObject({completed:100,coins:605,weapons:{guanyu:2},inventory:{grain:2,herb:1}});

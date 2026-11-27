@@ -48,30 +48,34 @@ test('chapter thirteen keeps independent army equipment and extends a completed 
  }
 });
 
-test('stage 71 waits for the relief countdown and an explicit retreat order without an enemy general',async()=>{
+test('stage 71 opens withdrawal on the third wave and waits for every surviving unit',async()=>{
  const {createBattle,deploy,stepBattle}=await import('../../hero/engine.mjs');
- const {historyAction,historyMissionText}=await import('../../hero/history-missions.mjs');
+ const {historyAction,stepHistoryMission}=await import('../../hero/history-missions.mjs');
  const {missionQuickState}=await import('../../hero/mission-quick.mjs');
  const battle=createBattle(71,42);
- assert.match(missionQuickState(battle).text,/守線等待接應.*曹操、曹洪與友軍撤回左側/);
- battle.spawned=12;
- battle.nextSpawn=0;
- deploy(battle,'liubei',0);
- deploy(battle,'zhangfei',2);
- stepBattle(battle,.1);
- assert.ok(battle.bossSpawned);
- assert.equal(battle.enemies.length,0);
+ assert.match(missionQuickState(battle).text,/第 1／3 波/);
+ assert.ok(deploy(battle,'guanyu',0));
+ assert.ok(deploy(battle,'archer',2));
+ battle.spawned=8;
+ battle.nextSpawn=battle.time;
+ stepHistoryMission(battle,.1);
+ assert.match(missionQuickState(battle).text,/第 3／3 波/);
  assert.equal(historyAction(battle,'retreat'),false);
  battle.paused=true;
- const time=battle.time;
  stepBattle(battle,.1);
- assert.equal(battle.time,time);
+ assert.equal(battle.spawned,8);
  battle.paused=false;
- for(let i=0;i<181;i++)stepBattle(battle,.1);
- assert.equal(battle.won,false);
- assert.match(historyMissionText(battle),/按全軍撤離/);
+ stepBattle(battle,.1);
+ assert.equal(battle.spawned,9);
+ assert.equal(battle.enemies[0].lane,1);
  assert.equal(historyAction(battle,'retreat'),true);
- for(let i=0;i<200&&!battle.over;i++)stepBattle(battle,.1);
+ const [general,soldier]=battle.allies;
+ general.x=.08;
+ soldier.x=.35;
+ stepHistoryMission(battle,.1);
+ assert.equal(battle.mission.done,false);
+ soldier.x=.18;
+ stepBattle(battle,.1);
  assert.ok(battle.won);
 });
 

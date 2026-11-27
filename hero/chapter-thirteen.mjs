@@ -7,9 +7,9 @@ const adaptation='對話、行軍圖及任務為遊戲改編。出戰隊伍代�
 const stages=[
  {
   name:'宕渠收兵',year:215,place:'dangqu',origin:'nanzheng',leader:'張郃',opponent:'張飛',
-  mission:'withdraw',scene:'ambush-valley',enemyArmy:'巴西追兵',
+  mission:'withdraw',coverWaves:true,scene:'ambush-valley',enemyArmy:'巴西追兵',
   history:'張魯歸降後，曹操派張郃向巴地進軍。張飛在宕渠一帶擊敗張郃，張郃退回南鄭。瓦口交戰承接建安二十年末的戰事。',
-  briefing:'山道狹窄，先不要硬闖。等接應就緒，按「全軍撤離」，帶隊回到戰場左側。',
+  briefing:'哪一路亮起，就派友軍去擋。第三波追兵出現後按「全軍撤離」。至少保住一隊，讓所有還在場的友軍回到左側。',
   ending:'張郃收攏隊伍，退回南鄭。這一關救回了隊伍，瓦口之戰仍由張飛打勝。',
   speaker:'張郃',camp:'山道窄，一隊掉頭慢了，後面就都堵住。下次記得先留退路。',
   question:'宕渠一帶的瓦口之戰，誰打退了張郃？',choices:['張飛','張魯','曹丕'],
@@ -75,7 +75,7 @@ export const THIRTEENTH_CHAPTER=stages.map((stage,index)=>{
   scene:`./assets/scenes/${scene}.jpg`,mission,missionTitle,enemyArmy,enemyCount:commander?14:12,interval:3.8,
   noBoss:!commander,bossName:commander?opponent:enemyArmy,bossHp:commander?620:0,
   ...(commander?{skillType:'charge',skillName:'山陣突擊',bossTitle:'漢中守將'}:{}),
-  ...(withdraw?{successTitle:'保全撤離'}:mission==='naval'?{fleetDestination:stage.fleetDestination,successTitle:stage.successTitle,successRibbon:'平 安 靠 岸 ・ 回 營 整 備'}:{}),
+  ...(withdraw?{coverWaves:stage.coverWaves,retreatKeys:[],successTitle:'保全撤離'}:mission==='naval'?{fleetDestination:stage.fleetDestination,successTitle:stage.successTitle,successRibbon:'平 安 靠 岸 ・ 回 營 整 備'}:{}),
   leaderName:leader,opponentName:opponent,mapOpponent,matchupLabel:matchupLabel||(opponent&&!withdraw?'對方主事者・劇情人物':undefined),
   lead:history,history,adaptation,note:adaptation,novel:[['說書人',history],[speaker,camp]],
   opening:[['說書人',history],[leader,briefing],['說書人',adaptation]],

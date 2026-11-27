@@ -130,18 +130,21 @@ test('chapter thirteen continues old saves through the Hanzhong finale',async({p
    const slots=['liubei','guanyu','zhangfei','hero4','hero5'];
    for(let lane=0;lane<stage.lanes;lane++)if(i!==0||lane!==2)await deploy(slots[lane],lane);
    if(i===0){
-    const requiredHero=await page.locator('#cards [data-hero=zhangfei] strong').innerText();
-    await expect(page.locator('#missionQuick p')).toContainText(`${requiredHero}與友軍撤回左側`);
+    await expect(page.locator('#missionQuick p')).toContainText('第 1／3 波 · 第 1路來敵');
     expect(await page.locator('#missionQuick p').evaluate(el=>el.scrollHeight<=el.clientHeight)).toBe(true);
-    await page.evaluate(()=>window.chapterBattle.allies.forEach(unit=>unit.x=.35));
+    await page.evaluate(()=>{
+     window.chapterBattle.spawned=8;
+     window.chapterBattle.allies[0].x=.45;
+    });
+    await advance(100);
+    await expect(page.locator('#missionQuick p')).toContainText('第 3／3 波 · 第 3路來敵');
     await expect(page.locator('#missionQuickAction')).toHaveText('查看任務');
-    await advance(14000);
+    await page.evaluate(()=>window.chapterBattle.spawned=9);
+    await advance(100);
     await expect(page.locator('#missionQuickAction')).toHaveText('全軍撤離');
     await tap('#missionQuickAction');
-    await advance(7000);
     await expect(page.locator('#result')).toBeHidden();
-    await expect(page.locator('#missionQuick p')).toContainText(`請召回${requiredHero}`);
-    await deploy('zhangfei',2);
+    await advance(7000);
     await expect(page.locator('#resultTitle')).toHaveText('保全撤離');
    }else if(i===2){
     await tap('#missionQuickAction');

@@ -5,7 +5,7 @@ const stages=[
  {name:'芒水相持',route:'駱谷 → 芒水一帶',leader:'姜維',guest:'姜維',opponent:'鄧艾',kind:'pass-defense',year:257,outcome:'兩軍在芒水一帶相持'},
  {name:'侯和退屯',route:'侯和 → 沓中',leader:'姜維',guest:'姜維',opponent:'鄧艾',kind:'supply',year:262,outcome:'姜維在侯和失利後留駐沓中'},
  {name:'沓中脫身',route:'沓中 → 陰平',leader:'姜維',guest:'廖化',opponent:'鄧艾',kind:'withdraw',cover:true,year:263,outcome:'姜維趕過陰平橋頭'},
- {name:'漢壽會師',route:'陰平 → 漢壽',leader:'姜維',guest:'張翼',opponent:'鍾會',kind:'dispatch',year:263,outcome:'退下來的蜀軍會合'},
+ {name:'漢壽會師',route:'陰平 → 漢壽',leader:'姜維',guest:'張翼',opponent:'鍾會',kind:'pass-defense',year:263,outcome:'退下來的蜀軍會合'},
  {name:'劍閣守關',route:'漢壽 → 劍閣',leader:'姜維',guest:'張翼',opponent:'鍾會',marker:true,kind:'pass-defense',year:263,outcome:'劍閣擋住了鍾會'}
 ];
 
@@ -230,22 +230,7 @@ test('stage 118 continues through Jiange and keeps campaign saves on touch scree
    await advance(31000);
   }else if(stage.kind==='withdraw'){
    await withdraw(stage.cover);
-  }else if(level===123){
-   await tap('#missionDrawerButton');
-   await tap('#missionChoices [data-action=route]:first-child');
-   await advance(650);
-   expect((await snapshot()).mission.travel).toBeGreaterThan(0);
-   await tap('#pauseBtn');
-   const frozen=await snapshot();
-   await advance(800);
-   expect(await snapshot()).toEqual(frozen);
-   await expect(page.locator('#missionChoices [data-action=route]:nth-child(2)')).toBeDisabled();
-   await tap('#pauseBtn');
-   await advance(100);
-   await tap('#missionChoices [data-action=route]:nth-child(2)');
-   await tap('#missionDrawerClose');
-   await advance(18500);
-  }else await advance(18500);
+  }
 
   await advance(300);
   await expect(page.locator('#resultEarned')).toHaveText('+80');

@@ -56,10 +56,10 @@ const stages=[
  },
  {
   name:'武都陰平',year:229,place:'yinping',origin:'wudu',leader:'陳式',guest:'陳式',opponent:'郭淮',mapOpponent:false,
-  historyCast:['陳式','諸葛亮','郭淮'],mission:'supply',scene:'supply-road',enemyArmy:'沿路魏軍',
+  historyCast:['陳式','諸葛亮','郭淮'],mission:'supply',supplyStops:['武都營地','山路驛站','陰平營地'],scene:'supply-road',enemyArmy:'沿路魏軍',
   matchupLabel:'魏方援將・諸葛亮進至建威後退走',
   history:'229 年，諸葛亮派陳式進攻武都、陰平。魏將郭淮準備救援，諸葛亮率軍到建威，郭淮退走，兩郡由蜀軍取得。',
-  briefing:'各路維持接應，把三批軍糧送到營地，再守住防線。',
+  briefing:'派友軍守住亮起的路，再按「發送糧車」。護衛離開時糧車會停，回到這一路就繼續。三批糧車都送到，再清完剩下的敵兵。',
   ending:'蜀軍取得武都、陰平兩郡。諸葛亮恢復丞相職位。北伐的故事在這裡暫歇。',
   camp:'打開道路後，先把糧車送到。新的地方也需要時間和人手來安頓。',
   question:'陳式這一回拿下了哪兩郡？',choices:['武都、陰平','南安、安定','南鄭、成都'],refs:[ruler,zhuge,guo]
@@ -72,6 +72,7 @@ export const SEVENTEENTH_CHAPTER=stages.map((stage,index)=>({
  leaderName:stage.leader,opponentName:stage.opponent,mapOpponent:stage.mapOpponent??!!stage.opponent,matchupLabel:stage.matchupLabel,
  scene:`./assets/scenes/${stage.scene}.jpg`,mission:stage.mission,missionTitle:stage.missionTitle,
  ...(stage.coverWaves?{coverWaves:true}:{}),
+ ...(stage.supplyStops?{supplyStops:stage.supplyStops}:{}),
  ...(stage.outpostSites?{outpostSites:stage.outpostSites}:{}),
  ...(stage.mission==='withdraw'?{retreatKeys:[],successTitle:'全軍撤回'}:{}),
  noBoss:true,bossName:stage.enemyArmy,bossHp:0,enemyArmy:stage.enemyArmy,enemyCount:12,interval:3.8,

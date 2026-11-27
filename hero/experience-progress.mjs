@@ -1,4 +1,4 @@
-import {LEVEL_XP,heroLevel} from './roster.mjs?v=mangshui-qianluo-duangu-1';
+import {LEVEL_XP,heroLevel} from './roster.mjs?v=hanshou-wudu-dangqu-1';
 export const EXPERIENCE_DURATION=3200;
 const mix=(a,b,p)=>a+(b-a)*Math.max(0,Math.min(1,p));
 // Presentation only. The campaign has already awarded and saved the final XP.

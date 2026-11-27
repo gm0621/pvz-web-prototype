@@ -1,7 +1,7 @@
-import {routeInset,routeInsetSvg} from './route-inset.mjs?v=mangshui-qianluo-duangu-1';
-import {stagePeople,mapPersonSvg,renderMatchup} from './characters.mjs?v=mangshui-qianluo-duangu-1';
-import {stageFactionTitle} from './factions.mjs?v=mangshui-qianluo-duangu-1';
-import {HISTORICAL_STAGES} from './history-stages.mjs?v=mangshui-qianluo-duangu-1';
+import {routeInset,routeInsetSvg} from './route-inset.mjs?v=hanshou-wudu-dangqu-1';
+import {stagePeople,mapPersonSvg,renderMatchup} from './characters.mjs?v=hanshou-wudu-dangqu-1';
+import {stageFactionTitle} from './factions.mjs?v=hanshou-wudu-dangqu-1';
+import {HISTORICAL_STAGES} from './history-stages.mjs?v=hanshou-wudu-dangqu-1';
 // Approximate regional placement, not historical borders or a surveyed route.
 export const MAP_PLACES={
  zhuo:{name:'涿郡',modern:'今河北涿州一帶',x:402,y:78},

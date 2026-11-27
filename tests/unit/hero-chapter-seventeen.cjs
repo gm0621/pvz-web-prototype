@@ -55,24 +55,22 @@ test('retreats without named hero slots still require living allies to reach the
  }
 });
 
-test('stage 100 retains a prepared cart when a lane becomes unsafe and can send it once the route is clear',async()=>{
+test('stage 100 keeps a travelling cart at the same position when its road is blocked',async()=>{
  const {createBattle,deploy}=await import('../../hero/engine.mjs');
- const {historyAction}=await import('../../hero/history-missions.mjs');
- const {missionQuickState}=await import('../../hero/mission-quick.mjs');
+ const {historyAction,stepHistoryMission,supplyLeg}=await import('../../hero/history-missions.mjs');
  const battle=createBattle(100);
- battle.food=300;
- for(const [lane,key] of ['liubei','guanyu','zhangfei'].entries())assert.ok(deploy(battle,key,lane));
- battle.mission.charge=10;
- battle.enemies.push({hp:10,x:.3,lane:2});
- assert.match(missionQuickState(battle).text,/下路受阻/);
+ assert.deepEqual(supplyLeg(battle),{lane:0,name:'武都營地',progress:0});
+ assert.equal(historyAction(battle,'supply'),false);
+ assert.ok(deploy(battle,'liubei',0));
+ assert.ok(historyAction(battle,'supply'));
+ stepHistoryMission(battle,2);
+ assert.equal(supplyLeg(battle).progress,.25);
+ battle.enemies.push({hp:10,x:.3,lane:0});
+ stepHistoryMission(battle,2);
+ assert.equal(supplyLeg(battle).progress,.25);
  assert.equal(historyAction(battle,'supply'),false);
  battle.enemies=[];
- battle.allies[2].lane=1;
- assert.match(missionQuickState(battle).text,/下路缺接應/);
- assert.equal(historyAction(battle,'supply'),false);
- assert.equal(battle.mission.charge,10);
- battle.allies[2].lane=2;
- assert.ok(historyAction(battle,'supply'));
+ stepHistoryMission(battle,6);
  assert.equal(battle.mission.delivered,1);
- assert.equal(historyAction(battle,'supply'),false);
+ assert.deepEqual(supplyLeg(battle),{lane:1,name:'山路驛站',progress:0});
 });

@@ -14,7 +14,7 @@ test('Jiange extends a finished Di Dao save with six historical routes and disti
  assert.equal(rewardVictory(progress,118),0);
  const chapter=STAGES.slice(118,124);
  assert.deepEqual(chapter.map(stage=>stage.year),[256,257,262,263,263,263]);
- assert.deepEqual(chapter.map(stage=>stage.mission),['withdraw','pass-defense','supply','withdraw','dispatch','pass-defense']);
+ assert.deepEqual(chapter.map(stage=>stage.mission),['withdraw','pass-defense','supply','withdraw','pass-defense','pass-defense']);
  for(const [i,stage] of chapter.entries()){
   const level=119+i;
   assert.deepEqual(chapterInfo(level),{chapter:21,number:i+1,count:6,title:'劍閣守關'});

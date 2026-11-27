@@ -48,9 +48,9 @@ const stages=[
  {
   name:'漢壽會師',year:263,origin:'yinping',place:'hanshou',leader:'姜維',guest:'張翼',opponent:'鍾會',mapOpponent:false,shift:true,
   historyCast:['姜維','廖化','張翼','鍾會'],matchupLabel:'魏將鍾會・由漢中繼續向南',
-  mission:'dispatch',scene:'supply-road',enemyArmy:'沿路魏兵',
+  mission:'pass-defense',missionTitle:'會師守備',scene:'mountain-front',enemyArmy:'沿路魏兵',
   history:'陽安關口失守，魏軍繼續南下。張翼等援軍剛到漢壽，姜維與廖化也離開陰平。幾路蜀軍會合後，一起往劍閣退去。行軍圖以漢壽標示援軍所在的方向。',
-  briefing:'派友軍守住路口，接回三隊聯絡使者，讓各隊知道會合方向。',
+  briefing:'哪一路亮起，就派友軍去守。依序擋住上路、下路、中路三波敵兵，再清完剩下的敵兵，讓各隊平安會合。',
   ending:'退下來的蜀軍會合，把防線移到劍閣。鍾會率魏軍繼續追來。',
   camp:'陽安關來不及救了。把消息送到各隊手上，大家才知道下一個集合點在劍閣。',
   question:'幾路蜀軍會合後，到哪裡一起守關？',choices:['劍閣','白帝城','洛陽'],refs:[jiangWei,zhongHui,zhangYi]
