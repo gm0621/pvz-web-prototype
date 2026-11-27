@@ -20,6 +20,13 @@ npm run test:hero:engine
 npx playwright test --config=playwright.hero-input.config.js
 ```
 
+## 2026-11-27 許昌、賈后被廢、黃橋玩法複查
+
+- 回歸測試提交 `0693ae1` 已合併並完成 Pages 部署。遊戲資源沿用 `e740a9e`；正式站手機 Chromium（320px、390px）6 項、平板 WebKit（820×1180）3 項觸控流程通過，核對 51 份遊戲資源。 [正式遊戲](https://gm0621.github.io/pvz-web-prototype/hero/?v=e740a9e) · [人物圖鑑](https://gm0621.github.io/pvz-web-prototype/hero/people.html?v=e740a9e) · [回歸測試部署](https://github.com/gm0621/pvz-web-prototype/actions/runs/45922842998)
+- 第 151 關許昌幽居三次調離護衛，糧車位置與百分比都停在原處，護衛回來後續走，第三批送達才結算。第 152 關賈后被廢的上、下、中路三次預警與出兵路線相符，餘兵數與場上相同，清完後才結算。第 157 關黃橋收兵第三波第一隊追兵出現才開放撤離；故意留一隊駐守前方時未結算，重新下令後所有在場友軍撤回左側才勝利。
+- 三關均從舊格式存檔驗證首勝、暫停恢復、原劇情、營地、下一關、重整和重玩。舊兵器、物資和個人最佳保留，首勝軍資只發一次。
+- 本機 433 項引擎測試及 9 項觸控流程通過。裝置使用瀏覽器模擬觸控；快取版 `xuchang-jia-huangqiao-1`，觸控指令 `npx playwright test --config=playwright.hero-xuchang-jia-huangqiao.config.js`。
+
 ## 2026-11-27 許昌分段運糧、賈后分波守備及黃橋撤離
 
 - 已發布 `e740a9e`。正式站手機 Chromium（320px、390px）6 項、平板 WebKit（820×1180）3 項完整觸控流程通過，核對 51 份發布資源。 [正式遊戲](https://gm0621.github.io/pvz-web-prototype/hero/?v=e740a9e) · [人物圖鑑](https://gm0621.github.io/pvz-web-prototype/hero/people.html?v=e740a9e) · [發布紀錄](https://github.com/gm0621/pvz-web-prototype/actions/runs/45922152538)
