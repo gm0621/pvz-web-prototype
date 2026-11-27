@@ -5,22 +5,24 @@ import {STAGES,chapterInfo} from './story.mjs?v=yuesui-wukou-taoxi-1';
 // Recorded interludes, stage scores and chapter codas share one switchable music bus.
 let context,musicBus,sfxBus,scoreBus,timer=null,step=0,enabled=false,sfx=true,revision=0,scene=0,recordedMode='home',chapterEnding=false,pageInactive=false,backgroundPaused=false;
 const recordedTracks=new Map(),recordedSources=[];
-const sceneLevels={home:.42,prepare:.23,duel:.25,camp:.27,victory:.23};
+const sceneLevels={home:.34,story:.25,prepare:.23,duel:.25,camp:.27,victory:.23};
 let cachedRecording,decodedPlayback,rewindTrack=false,musicPlaying=false,fading=false;
+let backgroundEpoch=0,gentleMusicEntry=false;
 
 let battlePaused=false,effectsOutput,combatBus,skillBus,previewOutput,effectsEpoch=0;
 let warningUntil=0,skillUntil=0;
 const audioBlocked=()=>battlePaused||backgroundPaused||isBackground();
 const musicLevel=()=>sceneLevels[recordedMode]??(recordedMode?.36:.40);
-function mixLevel(param,base,warning,skill,now){
+function mixLevel(param,base,warning,skill,now,recovery=.13){
  param.cancelScheduledValues(now);
  if(warningUntil>now){param.setTargetAtTime(base*warning,now,.012);now=warningUntil}
  if(skillUntil>now){param.setTargetAtTime(base*skill,now,.023);now=skillUntil}
- param.setTargetAtTime(base,now,.13);
+ param.setTargetAtTime(base,now,recovery);
 }
-function updateMix(){
+function updateMix(starting=false){
  const now=context.currentTime;
- if(enabled&&musicPlaying&&!fading&&!audioBlocked())mixLevel(musicBus.gain,musicLevel(),.22,.50,now);
+ const musicRecovery=starting&&gentleMusicEntry ? .25 : .13;
+ if(enabled&&musicPlaying&&!fading&&!audioBlocked())mixLevel(musicBus.gain,musicLevel(),.22,.50,now,musicRecovery);
  if(effectsOutput){
   mixLevel(combatBus.gain,1,.20,.48,now);
   mixLevel(skillBus.gain,1,.70,1,now);
@@ -87,6 +89,7 @@ export function setMusicMode(mode,level=scene+1){
  const nextMode=mode!=='battle'&&!ending&&RECORDED_THEMES[mode]?mode:null;
  const changed=nextMode!==recordedMode||next!==scene||ending!==chapterEnding;
  if(!changed)return;
+ gentleMusicEntry=ending||chapterEnding||((fading||backgroundPaused)&&gentleMusicEntry);
  recordedMode=nextMode;
  chapterEnding=ending;
  scene=next;
@@ -136,7 +139,7 @@ function silencePlayback(){
  if(musicBus){musicBus.disconnect();musicBus.gain.cancelScheduledValues(context.currentTime);musicBus.gain.setValueAtTime(0,context.currentTime)}
 }
 function pauseBackgroundAudio(){
- backgroundPaused=true;++revision;stopEffects();silencePlayback();
+ backgroundPaused=true;++backgroundEpoch;++revision;stopEffects();silencePlayback();
  previewOutput?.disconnect();
  previewOutput=null;
  if(sfxBus)sfxBus.gain.value=0;
@@ -187,13 +190,13 @@ export async function setMusic(on,transition=false){
    let recorded=true;try{await track.play()}catch{recorded=false}
    if(isBackground()||backgroundPaused){pauseBackgroundAudio();return enabled}
    if(!enabled||request!==revision||battlePaused){if(!enabled||battlePaused||track!==recordedTracks.get(recordedMode))track.pause();return enabled}
-   if(recorded){musicPlaying=true;updateMix()}
+   if(recorded){musicPlaying=true;updateMix(true)}
    else{
     track.pause();
     const buffer=await decodeRecording(track);
     if(request!==revision||!enabled||audioBlocked())return enabled;
     musicPlaying=true;
-    updateMix();
+    updateMix(true);
     if(buffer){
      const source=context.createBufferSource();
      const offset=track.currentTime%buffer.duration;
@@ -204,7 +207,7 @@ export async function setMusic(on,transition=false){
      decodedPlayback={track,source,offset,started:context.currentTime};
     }else beginScore();
    }
-  }else{musicPlaying=true;updateMix();beginScore()}
+  }else{musicPlaying=true;updateMix(true);beginScore()}
   return enabled;
  }catch{
   if(request===revision&&!audioBlocked()){enabled=false;silencePlayback()}
@@ -224,10 +227,13 @@ export function setSfx(on){
 }
 export async function unlockAudio(){
  if(isBackground())return false;
- const request=revision;
+ const epoch=backgroundEpoch;
  try{
   await init().resume();
-  if(isBackground()||request!==revision){if(isBackground())pauseBackgroundAudio();return false}
+  if(isBackground()){pauseBackgroundAudio();return false}
+  // Scene selection can change while the browser resumes. Restore the latest
+  // scene unless the page entered the background again during this request.
+  if(epoch!==backgroundEpoch)return false;
   const restore=backgroundPaused;backgroundPaused=false;sfxBus.gain.value=sfx?.7:0;
   if(sfx)void preloadCombatSounds();
   if(restore&&enabled&&!battlePaused)await setMusic(true);

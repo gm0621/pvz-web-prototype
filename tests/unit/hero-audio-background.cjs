@@ -181,3 +181,23 @@ test('rapid scene changes discard the obsolete recording and stop the spent comb
  assert.equal(f.tracks[4].paused,false);
  assert.equal(f.ctx.gains[0].gain.value,.27);
 });
+
+test('foreground audio unlock follows the bonus selected while the browser is resuming',async t=>{
+ const f=await setup(t);
+ f.audio.setMusicMode('victory',142);
+ await f.audio.setMusic(true);
+ f.hide();
+ let ready;
+ f.ctx.pending=new Promise(resolve=>{ready=resolve});
+ f.show();
+ const unlock=f.audio.unlockAudio();
+ f.audio.setMusicHome();
+ await f.audio.setMusicMode('story',143);
+ ready();
+ await unlock;
+ await new Promise(resolve=>setImmediate(resolve));
+ assert.equal(f.audio.audioStatus().backgroundPaused,false);
+ assert.equal(f.audio.audioStatus().theme,'桃園說書');
+ assert.equal(f.timers.size,1); // The test has no recorded story track, so it uses the score.
+ assert.equal(f.tracks[0].plays,0);
+});

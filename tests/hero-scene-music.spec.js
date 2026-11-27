@@ -1,6 +1,6 @@
 const {test,expect}=require('@playwright/test');
 const entry=process.env.HERO_TEST_ENTRY||'/hero/';
-const audioPath='audio.mjs?v=hero-scene-music-1';
+const audioPath='audio.mjs?v=hero-finale-audio-1';
 
 async function open(page,level){
  await page.addInitScript(level=>{
@@ -204,7 +204,7 @@ test('chapter coda survives the background and returns after camp before the nex
  await expect.poll(()=>peak(page)).toBeGreaterThan(.01);
  await tap(page,'#storySkip');
  await expect(page.locator('#storyTitle')).toHaveText('廣宗拜師');
- await hearRecording(page,'story',.36);
+ await hearRecording(page,'story',.25);
  expect(await page.evaluate(()=>window.trackProbe.starts.some(x=>x.mode==='victory'))).toBe(false);
 });
 
