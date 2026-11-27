@@ -20,6 +20,13 @@ npm run test:hero:engine
 npx playwright test --config=playwright.hero-input.config.js
 ```
 
+## 2026-11-27 三個番外末關配樂複查
+
+- 第 160 關「齊王輔政」、第 166 關「洛陽圍城」和第 172 關「長安西行」從戰鬥切到各自的章末曲，進營地切營地曲，回尾聲接章末曲，再回主選單。第 160、166 關結算後各自開放下一個番外入口，玩家可自行選擇。第 172 關尾聲回到主選單。三關都能從選關重玩，配樂從頭播放。首勝 +80 軍資，重玩 +0，原有兵器與道具留在舊格式存檔中。
+- 回歸測試提交 `a162151` 已由 Pages 發布。正式遊戲程式版本為 `2e4b011`，快取 `hero-finale-audio-1`。 [正式遊戲](https://gm0621.github.io/pvz-web-prototype/hero/?v=a162151) · [發布紀錄](https://github.com/gm0621/pvz-web-prototype/actions/runs/45972087432)
+- 本機 12 項番外末關測試通過。正式站 21 項結局／番外音訊測試通過，其中 9 項為三個番外末關流程。另比對 19 份發布資源。測試核對播放曲目、錄音開始位置、重疊、波形峰值與主選單淡入時程，涵蓋完整閱讀與略過尾聲。以受控戰局觸發正常結算，使用 390×844 Chromium、390×844 WebKit 手機與 820×1180 WebKit 平板模擬。本機另驗證 320×568 Chromium 手機。實機聽感待確認。
+- 重跑指令 `npx playwright test --config=playwright.hero-dispatch-supply.config.js tests/hero-finale-audio.spec.js --project=small-phone --project=webkit-phone --project=webkit-tablet --grep 'bonus finale'`。
+
 ## 2026-11-27 主篇結局與番外配樂銜接
 
 - 已發布 `2e4b011`，快取 `hero-finale-audio-1`。 [正式遊戲](https://gm0621.github.io/pvz-web-prototype/hero/?v=2e4b011) · [人物圖鑑](https://gm0621.github.io/pvz-web-prototype/hero/people.html?v=2e4b011) · [發布紀錄](https://github.com/gm0621/pvz-web-prototype/actions/runs/45970295787)
