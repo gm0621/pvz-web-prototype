@@ -8,7 +8,7 @@
 
 ## Obsidian 尚未同步時，從這裡接手
 
-1. **確認版本。** 在剛拉下來的 `main` 執行 `git status --short --branch`、`git log -1 --oneline`。`git log` 顯示目前 checkout 的提交。正式遊戲版本另看下方最新一筆含「已發布」及 Pages 工作的功能紀錄。截至 2026-11-27，最新已驗證的正式遊戲版本為 `96ea285`（主篇 142 關，《西晉後日談》18 關，《洛陽風雲》6 關，《長安西行》6 關）。 [正式遊戲](https://gm0621.github.io/pvz-web-prototype/hero/?v=96ea285) · [人物圖鑑](https://gm0621.github.io/pvz-web-prototype/hero/people.html?v=96ea285) · [發布紀錄](https://github.com/gm0621/pvz-web-prototype/actions/runs/45930458975)
+1. **確認版本。** 在剛拉下來的 `main` 執行 `git status --short --branch`、`git log -1 --oneline`。`git log` 顯示目前 checkout 的提交。正式遊戲版本另看下方最新一筆含「已發布」及 Pages 工作的功能紀錄。截至 2026-11-27，最新已驗證的正式遊戲版本為 `fc9fd7c`（主篇 142 關，《西晉後日談》18 關，《洛陽風雲》6 關，《長安西行》6 關）。 [正式遊戲](https://gm0621.github.io/pvz-web-prototype/hero/?v=fc9fd7c) · [人物圖鑑](https://gm0621.github.io/pvz-web-prototype/hero/people.html?v=fc9fd7c) · [發布紀錄](https://github.com/gm0621/pvz-web-prototype/actions/runs/45932314112)
 2. **安裝並做基本驗證。** 在專案根目錄用 Node.js 20 以上與 npm。執行下列指令可驗證引擎、桌面滑鼠／鍵盤及手機平板觸控。更多測試和本機預覽見 [開發指南](DEVELOPMENT.md)。Playwright 會啟動 4174 埠的測試服務，先關閉佔用該埠的手動預覽。
 3. **開工前看目前進度。** 先讀 [AGENTS.md](../AGENTS.md) 的「重要約束」及下方與任務相關的紀錄。英雄演義是獨立的 `/hero/` 遊戲，關卡上限見 `hero/campaign-config.mjs`。正式存檔 `heroLegendProgress_v1` 與本機、線上跳關測試的存檔分開。跨電腦時瀏覽器存檔和未提交的檔案需另外移轉。保留滑鼠、鍵盤與觸控操作，也要保留首勝軍資、重玩及暫停的既有規則。 [跳關工具和存檔說明](hero-local-testing.md)
 4. **繼續當次工作。** 依使用者的新需求從最新 `main` 開分支，保留原工作區修改。完成後把變更、實際測試結果、版本與注意事項記在本檔。Obsidian 未同步時註明待補，能讀取後再更新。正式發布依當次授權。
@@ -19,6 +19,15 @@ npx playwright install chromium webkit
 npm run test:hero:engine
 npx playwright test --config=playwright.hero-input.config.js
 ```
+
+## 2026-11-27 漢壽分波守備、武都陰平分段護糧與宕渠撤離
+
+- 已發布 `fc9fd7c`。正式站手機 Chromium（320px、390px）6 項、平板 WebKit（820×1180）3 項觸控流程通過，核對 52 份發布資源。首輪宕渠手機首頁載入時，GitHub Pages 的一份模組短暫回傳 HTTP 503；同一網址恢復 HTTP 200 後，以全新瀏覽器重跑該關完整流程通過。 [正式遊戲](https://gm0621.github.io/pvz-web-prototype/hero/?v=fc9fd7c) · [人物圖鑑](https://gm0621.github.io/pvz-web-prototype/hero/people.html?v=fc9fd7c) · [發布紀錄](https://github.com/gm0621/pvz-web-prototype/actions/runs/45932314112)
+- 第 123 關漢壽會師改為會師守備，上、下、中路分三波來敵，波次預警與實際出兵一致，清完餘兵才結算，再進劍閣守關。
+- 第 100 關武都陰平分三批護送糧車經武都營地、山路驛站、陰平營地。逐批測試護衛離開後停在原處，回到同路後從原進度繼續。三批送達並清完餘兵後接到雨阻漢中。
+- 第 71 關宕渠收兵在第三波第一隊追兵出場才開放撤離。保住至少一隊，所有仍在場的友軍回到左側後結算。曹軍選將時可用自己派出的隊伍，沿用張郃退回南鄭、張飛贏得瓦口之戰的劇情。
+- 三關從舊格式存檔測過暫停恢復、營地、下一關、重整和重玩。既有兵器、物資和個人最佳保留，首勝軍資只發一次。
+- 本機 433 項引擎測試、9 項觸控流程及第十三、十七、二十一章手機銜接測試通過。裝置使用瀏覽器模擬觸控。快取版 `hanshou-wudu-dangqu-1`，觸控指令 `npx playwright test --config=playwright.hero-hanshou-wudu-dangqu.config.js`。
 
 ## 2026-11-27 段谷、芒水、遷洛玩法複查
 
