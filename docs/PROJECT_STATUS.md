@@ -20,6 +20,13 @@ npm run test:hero:engine
 npx playwright test --config=playwright.hero-input.config.js
 ```
 
+## 2026-11-27 洛陽、湨水、長安玩法複查
+
+- 回歸測試提交 `94cb5eb` 已合併並完成 Pages 部署。遊戲資源沿用 `f9a7bab`；正式站手機 Chromium（320px、390px）6 項、平板 WebKit（820×1180）3 項觸控流程通過，核對 51 份遊戲資源。 [正式遊戲](https://gm0621.github.io/pvz-web-prototype/hero/?v=f9a7bab) · [人物圖鑑](https://gm0621.github.io/pvz-web-prototype/hero/people.html?v=f9a7bab) · [回歸測試部署](https://github.com/gm0621/pvz-web-prototype/actions/runs/45926686428)
+- 第 148 關洛陽再變確認第八隊敵兵時仍不能撤離，第三波第一隊出現才開放。故意留一隊在前方時，結算與存檔不變，重新下令並全員退回左側才過關。第 158 關湨水反擊上、下、中路預警與實際出兵相符，餘兵數隨清場下降且和場上相符，清完才結算。第 172 關長安西行逐批調離和調回護衛，驗證糧車位置與百分比停在原地、回隊後續走。第三批送達後完成尾聲，按「回主選單」確認外傳 6／6 關與重玩入口。
+- 三關均從舊格式存檔驗證首勝、暫停恢復、原劇情、營地、下一關或外傳完結、重整和重玩。舊兵器、物資和個人最佳保留，首勝軍資只發一次。
+- 本機 433 項引擎測試及 9 項觸控流程通過。裝置使用瀏覽器模擬觸控；快取版 `jushui-changan-luoyang-1`，觸控指令 `npx playwright test --config=playwright.hero-jushui-changan-luoyang.config.js`。
+
 ## 2026-11-27 湨水分波守備、長安分段護糧與洛陽撤離
 
 - 已發布 `f9a7bab`。正式站手機 Chromium（320px、390px）6 項、平板 WebKit（820×1180）3 項完整觸控流程通過，核對 51 份發布資源。 [正式遊戲](https://gm0621.github.io/pvz-web-prototype/hero/?v=f9a7bab) · [人物圖鑑](https://gm0621.github.io/pvz-web-prototype/hero/people.html?v=f9a7bab) · [發布紀錄](https://github.com/gm0621/pvz-web-prototype/actions/runs/45925743174)
