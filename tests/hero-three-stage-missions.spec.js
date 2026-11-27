@@ -90,7 +90,8 @@ for(const stage of stages)test(`stage ${stage.level} clears and replays from an 
   await expect(page.locator('#field')).toHaveAttribute('data-terrain',terrain);
   await expect(lanes).toHaveCount(3);
   await page.locator('#battleSpeed').selectOption('2');
-  let sent=0,escorted=0,retreated=false,forward=false,paused=false,sawFinalDefense=false;
+  let sent=0,escorted=0,retreated=false,forward=false,paused=false;
+  const remainingCounts=new Set();
   let departure=0;
   const warnings=new Set(),litRoutes=new Set(),spawnedRoutes=new Set();
   const waveText=page.locator('#waveText');
@@ -139,10 +140,12 @@ for(const stage of stages)test(`stage ${stage.level} clears and replays from an 
     await expect(page.locator('#missionObjective')).toContainText(/\d+% · 糧車停下/);
     const details=page.locator('#missionObjective');
     const stoppedText=await details.textContent();
+    const beforeDelivery=await save();
     await advance(2100);
     expect(await distance(cart)).toBe(waiting);
     await expect(details).toHaveText(stoppedText);
     await expect(result).toBeHidden();
+    expect(await save()).toEqual(beforeDelivery);
     await expect(objective).toContainText(`軍糧 ${sent-1}／3 批`);
     await command(unit,road===2?'down':'up');
     await expect(unit).toHaveAttribute('data-lane',String(road));
@@ -151,6 +154,8 @@ for(const stage of stages)test(`stage ${stage.level} clears and replays from an 
     await expect(details).toHaveText(stoppedText.replace('糧車停下，派友軍回這一路護送','糧車前進中'));
     await advance(500);
     expect(await distance(cart)).toBeGreaterThan(waiting);
+    const progress=value=>Number(value.match(/(\d+)%/)?.[1]);
+    expect(progress(await details.textContent())).toBeGreaterThan(progress(stoppedText));
     escorted++;
    }
    if(!cargo){
@@ -189,12 +194,14 @@ for(const stage of stages)test(`stage ${stage.level} clears and replays from an 
      paused=true;
     }
    }
-   if(defense&&!sawFinalDefense&&text.includes('三波已出場')){
-    await expect(result).toBeHidden();
-    const remaining=await page.locator('#units .enemy').count();
-    expect(remaining).toBeGreaterThan(0);
-    await expect(objective).toContainText(`清退剩下的 ${remaining} 名敵兵`);
-    sawFinalDefense=true;
+   if(defense&&text.includes('三波已出場')){
+    const remaining=Number(text.match(/清退剩下的 (\d+) 名敵兵/)?.[1]);
+    if(!remainingCounts.has(remaining)){
+     expect(remaining).toBeGreaterThan(0);
+     await expect(result).toBeHidden();
+     await expect(page.locator('#units .enemy')).toHaveCount(remaining);
+     remainingCounts.add(remaining);
+    }
    }
    if(withdrawal&&!forward&&i>=7){
     await command(lead,'forward');
@@ -248,7 +255,8 @@ for(const stage of stages)test(`stage ${stage.level} clears and replays from an 
    await expect(page.locator('#missionObjective')).toContainText('軍糧 3／3 批');
   }else expect([...warnings]).toEqual(positions.map((name,i)=>i+1+name));
   if(defense){
-   expect(sawFinalDefense).toBe(true);
+   expect(remainingCounts.size).toBeGreaterThan(1);
+   expect([...remainingCounts]).toEqual([...remainingCounts].sort((a,b)=>b-a));
    expect([...litRoutes]).toEqual([1,2,3]);
    expect([...spawnedRoutes]).toEqual([0,1,2]);
    await expect(page.locator('#missionObjective')).toHaveText('三波已守住 · 敵軍已清退');
@@ -276,15 +284,23 @@ for(const stage of stages)test(`stage ${stage.level} clears and replays from an 
   const storyLine=page.locator('#storyLine');
   const pages=Number((await page.locator('#storyCount').textContent()).split('/')[1]);
   let story=await storyLine.textContent();
-  for(let i=1;i<pages&&!story.includes(ending);i++){
+  for(let i=1;i<pages&&(!next||!story.includes(ending));i++){
    await tap('#storyNext');
    story+=await storyLine.textContent();
   }
   expect(story).toContain(ending);
-  if(!next)await expect(page.locator('#storySkip')).toHaveText('回主選單');
-  await tap('#storySkip');
-  if(next)await expect(page.locator('#storyTitle')).toHaveText(next);
-  else await expect(page.locator('#home')).toBeVisible();
+  if(next){
+   await tap('#storySkip');
+   await expect(page.locator('#storyTitle')).toHaveText(next);
+  }else{
+   const final=page.locator('#storyNext');
+   await expect(final).toHaveText('回主選單 →');
+   await final.tap();
+   await expect(page.locator('#home')).toBeVisible();
+   await expect(page.locator('#homeChanganProgress')).toHaveText('八王之亂外傳：長安西行 6 / 6 關');
+   await expect(page.locator('#homeProgress')).toHaveText('英雄演義・全篇通關');
+   await expect(continueStory).toContainText('重玩');
+  }
   return progress;
  }
  async function checkReload(next,progress){
