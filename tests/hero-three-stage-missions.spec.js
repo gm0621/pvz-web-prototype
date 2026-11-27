@@ -82,7 +82,8 @@ for(const stage of stages)test(`stage ${stage.level} clears and replays from an 
   await page.locator('#battleSpeed').selectOption('2');
   let sent=0,escorted=0,retreated=false,forward=false,paused=false,sawFinalDefense=false;
   let departure=0;
-  const warnings=new Set(),litRoutes=new Set();
+  const warnings=new Set(),litRoutes=new Set(),spawnedRoutes=new Set();
+  const waveText=page.locator('#waveText');
   const positions=['上','下','中'];
   const cart=page.locator('#supplyCart');
   const lead=maicheng?page.locator('#units .ally').filter({has:page.getByText(/^關羽(?: · 駐守)?$/)}):page.locator('#units .ally[data-lane="1"]').first();
@@ -125,12 +126,17 @@ for(const stage of stages)test(`stage ${stage.level} clears and replays from an 
     await expect(objective).toContainText('糧車停下，派友軍回這一路護送');
     expect(await objective.evaluate(p=>p.scrollHeight<=p.clientHeight)).toBe(true);
     await expect(page.locator('#missionObjective')).toContainText(/\d+% · 糧車停下/);
+    const details=page.locator('#missionObjective');
+    const stoppedText=await details.textContent();
     await advance(2100);
     expect(await distance(cart)).toBe(waiting);
+    await expect(details).toHaveText(stoppedText);
+    await expect(result).toBeHidden();
     await expect(objective).toContainText(`軍糧 ${sent-1}／3 批`);
     await command(unit,road===2?'down':'up');
     await expect(objective).toContainText('糧車前進中');
     expect(await distance(cart)).toBe(waiting);
+    await expect(details).toHaveText(stoppedText.replace('糧車停下，派友軍回這一路護送','糧車前進中'));
     await advance(500);
     expect(await distance(cart)).toBeGreaterThan(waiting);
     escorted++;
@@ -148,6 +154,14 @@ for(const stage of stages)test(`stage ${stage.level} clears and replays from an 
       await expect(highlighted).toHaveAttribute('data-lane',String(expected));
       await expect(highlighted).toContainText('來敵');
       litRoutes.add(Number(wave[1]));
+     }
+    }
+    if(defense&&spawnedRoutes.size<3){
+     const count=Number((await waveText.textContent()).match(/ (\d+) \/ \d+$/)?.[1]);
+     const firstInWave=[1,5,9].indexOf(count);
+     if(firstInWave>=0&&!spawnedRoutes.has(firstInWave)){
+      await expect(page.locator('#units .enemy').last()).toHaveAttribute('data-lane',String([0,2,1][firstInWave]));
+      spawnedRoutes.add(firstInWave);
      }
     }
     if(!paused&&warnings.has('2'+positions[1])){
@@ -179,7 +193,7 @@ for(const stage of stages)test(`stage ${stage.level} clears and replays from an 
     await expect(result).toBeHidden();
     await expect(objective).toContainText(maicheng?'1 隊友軍尚未回到左側 · 等關羽回到左側':'隊友軍尚未回到左側');
     if(!maicheng){
-     await expect(page.locator('#waveText')).toContainText(/ (9|1[0-2]) \/ 12$/);
+     await expect(waveText).toHaveText(/ 9 \/ 12$/);
      const id=await lead.getAttribute('data-id');
      const straggler=page.locator(`#units .ally[data-id="${id}"]`);
      await command(straggler,'hold');
@@ -218,11 +232,17 @@ for(const stage of stages)test(`stage ${stage.level} clears and replays from an 
   if(defense){
    expect(sawFinalDefense).toBe(true);
    expect([...litRoutes]).toEqual([1,2,3]);
+   expect([...spawnedRoutes]).toEqual([0,1,2]);
    await expect(page.locator('#missionObjective')).toHaveText('三波已守住 · 敵軍已清退');
    await expect(page.locator('#units .enemy')).toHaveCount(0);
    await expect(page.locator('#waveText')).toContainText('已全數出現');
   }
-  if(withdrawal)expect(retreated).toBe(true);
+  if(withdrawal){
+   expect(retreated).toBe(true);
+   const survivors=await page.locator('#units .ally').evaluateAll(units=>units.map(unit=>parseFloat(unit.style.left)));
+   expect(survivors.length).toBeGreaterThan(0);
+   expect(Math.max(...survivors)).toBeLessThanOrEqual(18);
+  }
  }
 
  async function finish({level,title,ending,next},reward,coins){
