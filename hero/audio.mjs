@@ -5,10 +5,13 @@ import {STAGES,chapterInfo} from './story.mjs?v=yuesui-wukou-taoxi-1';
 // Recorded interludes, stage scores and chapter codas share one switchable music bus.
 let context,musicBus,sfxBus,scoreBus,timer=null,step=0,enabled=false,sfx=true,revision=0,scene=0,recordedMode='home',chapterEnding=false,pageInactive=false,backgroundPaused=false;
 const recordedTracks=new Map(),recordedSources=[];
+const sceneLevels={home:.42,prepare:.23,duel:.25,camp:.27,victory:.23};
+let cachedRecording,decodedPlayback,rewindTrack=false,musicPlaying=false,fading=false;
+
 let battlePaused=false,effectsOutput,combatBus,skillBus,previewOutput,effectsEpoch=0;
 let warningUntil=0,skillUntil=0;
 const audioBlocked=()=>battlePaused||backgroundPaused||isBackground();
-const musicLevel=()=>recordedMode==='home'?.42:recordedMode?.36:.40;
+const musicLevel=()=>sceneLevels[recordedMode]??(recordedMode?.36:.40);
 function mixLevel(param,base,warning,skill,now){
  param.cancelScheduledValues(now);
  if(warningUntil>now){param.setTargetAtTime(base*warning,now,.012);now=warningUntil}
@@ -17,7 +20,7 @@ function mixLevel(param,base,warning,skill,now){
 }
 function updateMix(){
  const now=context.currentTime;
- if(enabled&&!audioBlocked())mixLevel(musicBus.gain,musicLevel(),.22,.50,now);
+ if(enabled&&musicPlaying&&!fading&&!audioBlocked())mixLevel(musicBus.gain,musicLevel(),.22,.50,now);
  if(effectsOutput){
   mixLevel(combatBus.gain,1,.20,.48,now);
   mixLevel(skillBus.gain,1,.70,1,now);
@@ -83,7 +86,15 @@ export function setMusicMode(mode,level=scene+1){
  const ending=mode==='victory'&&info.number===info.count;
  const nextMode=mode!=='battle'&&!ending&&RECORDED_THEMES[mode]?mode:null;
  const changed=nextMode!==recordedMode||next!==scene||ending!==chapterEnding;
- recordedMode=nextMode;chapterEnding=ending;scene=next;if(!changed)return;step=0;battlePressure=0;if(enabled)void setMusic(true);
+ if(!changed)return;
+ recordedMode=nextMode;
+ chapterEnding=ending;
+ scene=next;
+ rewindTrack=true;
+ step=0;
+ battlePressure=0;
+ stopEffects();
+ if(enabled)return setMusic(true,true);
 }
 export function setMusicScene(level){setMusicMode(null,level)}
 export function setMusicHome(){setMusicMode('home',1)}
@@ -110,6 +121,15 @@ function beginScore(){
 }
 function isBackground(){return document.hidden||pageInactive}
 function silencePlayback(){
+ fading=false;
+ musicPlaying=false;
+ if(decodedPlayback){
+  const {track,source,started,offset}=decodedPlayback;
+  track.currentTime=(offset+context.currentTime-started)%source.buffer.duration;
+  source.stop();
+  source.disconnect();
+  decodedPlayback=null;
+ }
  for(const track of document.querySelectorAll('audio[data-music-mode]'))track.pause();
  if(timer){clearInterval(timer);timer=null}
  if(scoreBus){scoreBus.disconnect();scoreBus=null}
@@ -122,8 +142,36 @@ function pauseBackgroundAudio(){
  if(sfxBus)sfxBus.gain.value=0;
  if(context)void context.suspend().catch(()=>{});
 }
-export async function setMusic(on){
- enabled=!!on;const request=++revision;silencePlayback();
+async function decodeRecording(track){
+ if(!context.decodeAudioData)return null;
+ if(cachedRecording?.track===track)return cachedRecording.pending;
+ const url=track.currentSrc||track.querySelector('source')?.src;
+ if(!url)return null;
+ const request={track};
+ cachedRecording=request;
+ request.pending=(async()=>{
+  try{
+   const response=await fetch(url);
+   if(response.ok)return await context.decodeAudioData(await response.arrayBuffer());
+  }catch{/* The score remains available if the recording is unreachable. */}
+  if(cachedRecording===request)cachedRecording=null;
+  return null;
+ })();
+ return request.pending;
+}
+
+export async function setMusic(on,transition=false){
+ enabled=!!on;
+ const request=++revision;
+ if(enabled&&transition&&musicPlaying&&!audioBlocked()&&context.state==='running'){
+  fading=true;
+  const now=context.currentTime;
+  musicBus.gain.cancelScheduledValues(now);
+  musicBus.gain.setTargetAtTime(0,now,.009);
+  await new Promise(resolve=>setTimeout(resolve,55));
+  if(request!==revision)return enabled;
+ }
+ silencePlayback();
  if(!enabled)return false;
  // Keep the preference, but never start media or fallback music in background.
  if(audioBlocked())return enabled;
@@ -132,16 +180,36 @@ export async function setMusic(on){
   if(isBackground()||backgroundPaused){pauseBackgroundAudio();return enabled}
   if(!enabled||request!==revision||battlePaused)return enabled;
   musicBus.connect(context.destination);sfxBus.gain.value=sfx?.7:0;
-  updateMix();
   const track=recordedTracks.get(recordedMode);
   if(track){
+   if(rewindTrack)track.currentTime=0;
+   rewindTrack=false;
    let recorded=true;try{await track.play()}catch{recorded=false}
    if(isBackground()||backgroundPaused){pauseBackgroundAudio();return enabled}
    if(!enabled||request!==revision||battlePaused){if(!enabled||battlePaused||track!==recordedTracks.get(recordedMode))track.pause();return enabled}
-   if(!recorded)beginScore();
-  }else beginScore();
+   if(recorded){musicPlaying=true;updateMix()}
+   else{
+    track.pause();
+    const buffer=await decodeRecording(track);
+    if(request!==revision||!enabled||audioBlocked())return enabled;
+    musicPlaying=true;
+    updateMix();
+    if(buffer){
+     const source=context.createBufferSource();
+     const offset=track.currentTime%buffer.duration;
+     source.buffer=buffer;
+     source.loop=true;
+     source.connect(musicBus);
+     source.start(0,offset);
+     decodedPlayback={track,source,offset,started:context.currentTime};
+    }else beginScore();
+   }
+  }else{musicPlaying=true;updateMix();beginScore()}
   return enabled;
- }catch{if(request===revision&&!isBackground()&&!backgroundPaused)enabled=false;return enabled}
+ }catch{
+  if(request===revision&&!audioBlocked()){enabled=false;silencePlayback()}
+  return enabled;
+ }
 }
 export function musicOn(){return enabled}
 export function setSfx(on){
@@ -221,8 +289,10 @@ export async function hitSound(kind='slash'){
   return soundRecipe(kind,effectsOutput);
  }
  if(kind.startsWith('skill-')||kind.startsWith('master-')||skillKinds.has(kind)){
-  skillUntil=Math.max(skillUntil,now+.42);
-  updateMix();
+  if(!chapterEnding&&(!recordedMode||recordedMode==='duel')){
+   skillUntil=Math.max(skillUntil,now+.42);
+   updateMix();
+  }
   return soundRecipe(kind,skillBus);
  }
  return soundRecipe(kind,combatBus);
@@ -292,10 +362,14 @@ function soundRecipe(kind,bus){
  noise(bus,.22,.75,2400);tone(bus,900,.2,.34,'triangle',180);tone(bus,150,.18,.3,'sine',60);return true;
 }
 // iOS backgrounding/navigation can emit pagehide separately from visibilitychange.
-// Foregrounding alone stays silent; the existing pointer/key unlock path resumes.
-document.addEventListener('visibilitychange',()=>{if(document.hidden)pauseBackgroundAudio()});
+// A live fight still requires Continue. Post-battle screens can restore their own track.
+function resumePostBattleAudio(){
+ if(enabled&&backgroundPaused&&!isBackground()&&!battlePaused&&
+    (recordedMode==='camp'||recordedMode==='victory'||chapterEnding))void unlockAudio();
+}
+document.addEventListener('visibilitychange',()=>{if(document.hidden)pauseBackgroundAudio();else resumePostBattleAudio()});
 window.addEventListener('pagehide',()=>{pageInactive=true;pauseBackgroundAudio()});
-window.addEventListener('pageshow',()=>{pageInactive=false});
+window.addEventListener('pageshow',()=>{pageInactive=false;resumePostBattleAudio()});
 document.addEventListener('freeze',pauseBackgroundAudio);
 
 export function createSoundPreview(){

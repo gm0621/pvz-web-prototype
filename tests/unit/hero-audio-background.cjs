@@ -4,7 +4,7 @@ let serial=0;
 async function setup(t){
  const old={document:global.document,window:global.window,AudioContext:global.AudioContext,setInterval:global.setInterval,clearInterval:global.clearInterval};
  const docEvents=new Map(),winEvents=new Map();
- const tracks=['home','battle'].map(mode=>({dataset:{musicMode:mode},paused:true,plays:0,pause(){this.paused=true},async play(){this.plays++;this.paused=false;if(this.pending)await this.pending}}));
+ const tracks=['home','battle','duel','victory','camp'].map(mode=>({dataset:{musicMode:mode},paused:true,plays:0,currentTime:0,starts:[],pause(){this.paused=true},async play(){this.plays++;this.starts.push(this.currentTime);this.paused=false;if(this.pending)await this.pending}}));
  const param=()=>({
   value:0,targets:[],
   setValueAtTime(v){this.value=v},
@@ -99,23 +99,24 @@ test('the stage score adds percussion under pressure and the coda keeps a distin
 
 test('warning keeps its level while skill and ordinary combat duck and recover',async t=>{
  const f=await setup(t);
+ f.audio.setMusicMode('battle',40);
  await f.audio.setMusic(true);
- const before=f.ctx.gains.length;
+ const before=f.ctx.gains.length,effectsBefore=f.ctx.effects.length;
  await f.audio.hitSound('arrow');
  await f.audio.hitSound('enemy-arrow');
- assert.equal(f.ctx.effects.length,1);
+ assert.equal(f.ctx.effects.length,effectsBefore+1);
  const [effects,combat,skill]=f.ctx.gains.slice(before);
  await f.audio.hitSound('master-caocao');
- assert.equal(f.ctx.gains[0].gain.value,.42*.50);
+ assert.equal(f.ctx.gains[0].gain.value,.40*.50);
  assert.equal(combat.gain.value,.48);
  f.ctx.currentTime=.05;
  await f.audio.hitSound('warning-wave');
  assert.equal(effects.gain.value,1);
  assert.equal(effects.gain.targets.length,0);
- assert.equal(f.ctx.gains[0].gain.value,.42*.22);
+ assert.equal(f.ctx.gains[0].gain.value,.40*.22);
  assert.equal(combat.gain.value,.20);
  assert.equal(skill.gain.value,.70);
- assert.equal(f.ctx.gains[0].gain.targets.at(-1)[0],.42);
+ assert.equal(f.ctx.gains[0].gain.targets.at(-1)[0],.40);
  assert.equal(combat.gain.targets.at(-1)[0],1);
  await f.audio.setMusic(false);
  await f.audio.hitSound('warning-fire');
@@ -144,4 +145,39 @@ test('pausing a battle drops ongoing effects and stays quiet through foreground 
  assert.equal(f.timers.size,1);
  assert.equal(await f.audio.hitSound('arrow'),true);
  assert.equal(effects.connected,false);
+});
+
+test('replayed scenes start over while foregrounding preserves the current recording position',async t=>{
+ const f=await setup(t);
+ const victory=f.tracks[3],camp=f.tracks[4];
+ f.audio.setMusicMode('victory',3);
+ await f.audio.setMusic(true);
+ victory.currentTime=7;
+ f.hide();
+ f.show();
+ await new Promise(resolve=>setImmediate(resolve));
+ assert.deepEqual(victory.starts,[0,7]);
+ await f.audio.setMusicMode('camp',3);
+ assert.equal(victory.paused,true);
+ assert.equal(camp.paused,false);
+ await f.audio.setMusicMode('victory',3);
+ assert.equal(camp.paused,true);
+ assert.deepEqual(victory.starts,[0,7,0]);
+});
+
+test('rapid scene changes discard the obsolete recording and stop the spent combat sounds',async t=>{
+ const f=await setup(t);
+ f.audio.setMusicMode('duel',3);
+ await f.audio.setMusic(true);
+ const before=f.ctx.gains.length;
+ await f.audio.hitSound('warning-wave');
+ const effects=f.ctx.gains[before];
+ const stale=f.audio.setMusicMode('victory',3);
+ const latest=f.audio.setMusicMode('camp',3);
+ assert.equal(effects.connected,false);
+ await Promise.all([stale,latest]);
+ assert.deepEqual(f.tracks.map(track=>track.plays),[0,0,1,0,1]);
+ assert.equal(f.tracks[2].paused,true);
+ assert.equal(f.tracks[4].paused,false);
+ assert.equal(f.ctx.gains[0].gain.value,.27);
 });

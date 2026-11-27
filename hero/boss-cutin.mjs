@@ -1,7 +1,7 @@
 import {paintPortrait} from './factions.mjs?v=yuesui-wukou-taoxi-1';
 import {bossProfile,laneLabel} from './engine.mjs?v=hero-audio-mix-2';
 import {battleBossPortrait} from './characters.mjs?v=yuesui-wukou-taoxi-1';
-import {hitSound} from './audio.mjs?v=hero-battle-mix-1';
+import {hitSound} from './audio.mjs?v=hero-scene-music-1';
 const seen=new WeakMap();
 const label=(root,selector,text)=>{const node=root.querySelector(selector);if(node.textContent!==text)node.textContent=text};
 const clamp=n=>Math.max(0,Math.min(1,n));

@@ -2,7 +2,7 @@ const {test,expect}=require('@playwright/test');
 
 const team=['caocao','xiahoudun','caohong','caoren','xiahouyuan'];
 const entry=process.env.HERO_TEST_ENTRY||'/hero/';
-const audioModule='audio.mjs?v=hero-battle-mix-1';
+const audioModule='audio.mjs?v=hero-scene-music-1';
 
 for(const [level,lanes] of [[40,4],[62,5]]){
  test(`${lanes} lanes keep warning, skill and arrows distinct through pause and foregrounding`,async({page,hasTouch})=>{
@@ -180,5 +180,19 @@ for(const [level,lanes] of [[40,4],[62,5]]){
   await expect.poll(battleTime).toBeGreaterThan(backgroundTime);
   await expect.poll(sample).toBeGreaterThan(.01);
   expect((await status()).source).toBe('stage-synth');
+  if(level===62){
+   await page.evaluate(()=>{
+    const b=window.testBattle;
+    b.enemies.forEach(enemy=>enemy.hp=0);
+    b.nextSpawn=Infinity;
+    b.bossSpawned=true;
+   });
+   await expect(page.locator('#result')).toBeVisible();
+   await expect(page.locator('#result')).toHaveAttribute('data-outcome','victory');
+   await expect.poll(()=>page.locator('audio[data-music-mode=victory]').evaluate(el=>el.currentTime)).toBeGreaterThan(.15);
+   await expect.poll(()=>page.evaluate(()=>window.mixTest.gains[0].gain.value)).toBeGreaterThan(.19);
+   expect(await page.evaluate(()=>window.mixTest.gains[0].gain.value)).toBeLessThanOrEqual(.24);
+   expect(await page.locator('audio:not([data-music-mode=victory])').evaluateAll(tracks=>tracks.every(el=>el.paused))).toBe(true);
+  }
  });
 }

@@ -3,7 +3,7 @@ import {mountFinale} from './finale-view.mjs?v=yuesui-wukou-taoxi-1';
 import {supplyLeg} from './history-missions.mjs?v=yuesui-wukou-taoxi-1';
 import {recordBattleVictory} from './battle-records.mjs?v=yuesui-wukou-taoxi-1';
 import {GATE_MAX,hasGate,channelHazard,channelName,siegeLane,hasFireRoutes,fireLaneState,pointCompleted,OUTPOST_SECONDS,outpostLane,hasDirectedWaves,passLane,PASS_WAVE_SIZE} from './field-missions.mjs?v=yuesui-wukou-taoxi-1';
-import {mountExperienceView} from './experience-view.mjs?v=hero-battle-mix-1';
+import {mountExperienceView} from './experience-view.mjs?v=hero-scene-music-1';
 import {preloadBattleAssets,battleAssetsReady,prepareBattleAssets} from './battle-assets.mjs?v=images-2';
 import {mountBattleFocus} from './battle-focus.mjs?v=yuesui-wukou-taoxi-1';
 import {advanceAutoSkills} from './auto-skills.mjs?v=battle-focus-1';
@@ -12,28 +12,28 @@ import {mountSkillIntro} from './skill-intro.mjs?v=yuesui-wukou-taoxi-1';
 import {beginReading,installStoryReader} from './story-reader.mjs?v=yuesui-wukou-taoxi-1';
 import {shortPages} from './story-pages.mjs?v=passive-feedback-1';
 import {configureRoster,configurePeachRoster,configureSunRoster,awardExperience,SLOTS,ALL_GENERALS as GENERALS} from './roster.mjs?v=yuesui-wukou-taoxi-1';
-import {openDeployment,mountActiveSkills} from './roster-view.mjs?v=hero-battle-mix-1';
+import {openDeployment,mountActiveSkills} from './roster-view.mjs?v=hero-scene-music-1';
 import {castActive,lanesFor,laneLabel} from './engine.mjs?v=hero-audio-mix-2';
-import {mountSkillGuide} from './skill-guide.mjs?v=hero-battle-mix-1';
+import {mountSkillGuide} from './skill-guide.mjs?v=hero-scene-music-1';
 import {battleBossPortrait,renderPeople,STORY_PEOPLE} from './characters.mjs?v=yuesui-wukou-taoxi-1';
 import {factionFor,stageFactionTitle,enemyPortrait,paintPortrait} from './factions.mjs?v=yuesui-wukou-taoxi-1';
 import {mountHistoryLesson} from './history-view.mjs?v=yuesui-wukou-taoxi-1';
-import {renderSkillCutin} from './skill-cutin.mjs?v=hero-battle-mix-1';
-import {renderMasterCutin} from './master-cutin.mjs?v=hero-battle-mix-1';
-import {renderBossCutin} from './boss-cutin.mjs?v=hero-battle-mix-1';
+import {renderSkillCutin} from './skill-cutin.mjs?v=hero-scene-music-1';
+import {renderMasterCutin} from './master-cutin.mjs?v=hero-scene-music-1';
+import {renderBossCutin} from './boss-cutin.mjs?v=hero-scene-music-1';
 import {mountBattleKeys} from './battle-keys.mjs?v=battle-focus-1';
 import {mountJourney} from './journey-view.mjs?v=yuesui-wukou-taoxi-1';
-import {renderMission} from './chapter-mission-view.mjs?v=hero-battle-mix-1';
+import {renderMission} from './chapter-mission-view.mjs?v=hero-scene-music-1';
 import {mountCampaignMap} from './campaign-map.mjs?v=yuesui-wukou-taoxi-1';
 import {advanceBattleFrame,normalizeBattleSpeed} from './battle-speed.mjs?v=hero-audio-mix-2';
 import {mountNovel} from './novel.mjs?v=yuesui-wukou-taoxi-1';
-import {mountCamp} from './camp-view.mjs?v=hero-battle-mix-1';
+import {mountCamp} from './camp-view.mjs?v=hero-scene-music-1';
 import {rewardVictory,useSupply,weaponsForLevel} from './campaign.mjs?v=yuesui-wukou-taoxi-1';
 import {createFirstGuide} from './first-guide.mjs?v=passive-feedback-1';
 import {mountStoryTask} from './story-play.mjs?v=yuesui-wukou-taoxi-1';
 import {CHAPTER_BACKGROUNDS,STAGE_LEADS} from './prologue.mjs?v=yuesui-wukou-taoxi-1';
-import {setMusic,setMusicMode,setMusicHome,musicTheme,musicOn,setSfx,unlockAudio,hitSound,setBattleMusicPressure,preloadCombatSounds,setBattleAudioPaused} from './audio.mjs?v=hero-battle-mix-1';
-import {renderDuel} from './duel-view.mjs?v=hero-battle-mix-1';
+import {setMusic,setMusicMode,setMusicHome,musicTheme,musicOn,setSfx,unlockAudio,hitSound,setBattleMusicPressure,preloadCombatSounds,setBattleAudioPaused} from './audio.mjs?v=hero-scene-music-1';
+import {renderDuel} from './duel-view.mjs?v=hero-scene-music-1';
 import {chapterInfo,enemyArt,HEROES as BASE_HEROES,heroesForLevel,STAGES,ENEMY_ART,SHIELD_ART,FEATURES,heroDescription} from './story.mjs?v=yuesui-wukou-taoxi-1';
 import {bossProfile,LANE_CAPACITY,laneCount,ENEMY_SWING,enemyAttackFrame,skipDuelEntrance,positionHero,commandHero,moveHero,BOSS_SKILLS,SAVE_KEY,normalizeProgress,createBattle,deploy,canDeploy,attackFrame,SWING} from './engine.mjs?v=hero-audio-mix-2';
 
@@ -334,7 +334,7 @@ function renderBattle(){
  renderActiveSkills();renderUnits();renderEffects();syncPause();const skill=battle.skillNotice&&battle.time<battle.skillNotice.until?battle.skillNotice:null;$('skillBanner').hidden=!skill;if(skill){$('skillBanner').textContent=skill.text;$('skillBanner').dataset.hero=skill.key}
  if(battle.duel&&!duelShown){const d=battle.duel;setMusicMode('duel',battle.level);syncMusicButton();$('duelTitle').textContent=`${HEROES[d.heroKey].short}${d.partnerKey?' ＋ '+HEROES[d.partnerKey].short:''} 對 ${d.bossName}`;$('duelHero').src=HEROES[d.heroKey].asset;$('duelHero').alt=HEROES[d.heroKey].name;$('duelEnemy').src=enemyArt(d.bossName);$('duelDialog').showModal();duelShown=true}
  if(battle.duel)renderDuel(battle);
- if(!battle.duel&&duelShown){$('duelDialog').close();duelShown=false;setMusicMode('battle',battle.level);syncMusicButton()}
+ if(!battle.duel&&duelShown){$('duelDialog').close();duelShown=false;if(!battle.over){setMusicMode('battle',battle.level);syncMusicButton()}}
  battleFocus.update(battle);
  if(battle.over&&!resultShown)showResult();else if(screen==='battle')skillIntro.check();
 }
