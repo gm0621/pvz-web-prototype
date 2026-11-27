@@ -90,6 +90,7 @@ for(const stage of stages)test(`stage ${stage.level} clears and replays from an 
   await tap('#storySkip');
   if(bonusButton&&!sun)await tap('#deploymentStart');
   await expect(page.locator('#battle')).toBeVisible({timeout:30000});
+  if(sun)await expect(page.locator('#cards [data-hero=zhangfei]')).toContainText('黃蓋');
   await expect(page.locator('#field')).toHaveAttribute('data-terrain',terrain);
   await expect(lanes).toHaveCount(3);
   await page.locator('#battleSpeed').selectOption('2');
@@ -274,15 +275,26 @@ for(const stage of stages)test(`stage ${stage.level} clears and replays from an 
   }
  }
 
- async function finish({level,title,ending,next},reward,coins){
+ async function finish({level,title,ending,next},reward,coins,wuRank){
   await expect(page.locator('#resultEarned')).toHaveText(reward);
   const progress=await save();
-  expect(progress).toMatchObject({completed:level,coins,weapons:{guanyu:2},armyWeapons:{cao:{liubei:1},...(sun?{sun:{zhangfei:2}}:{})},inventory:{grain:2},battleRecords:{20:80,[level]:expect.any(Number)}});
+  expect(progress).toMatchObject({completed:level,coins,weapons:{guanyu:2},armyWeapons:{cao:{liubei:1},...(sun?{sun:{zhangfei:wuRank}}:{})},inventory:{grain:2},battleRecords:{20:80,[level]:expect.any(Number)}});
   await advance(4200);
   while(await skillIntro.isVisible())await tap('#skillIntroContinue');
   await tap('#resultNext');
   await expect(page.locator('#campTitle')).toContainText(title);
   await expect(page.locator('#campCoins')).toHaveText(String(coins));
+  if(sun){
+   await tap('[data-shop=weapons]');
+   const huanggai=page.locator('#shopGoods .goods-card').filter({hasText:'黃蓋・兵器整備'});
+   await expect(huanggai).toContainText(`已強化 ${wuRank} / 3`);
+   if(wuRank===2){
+    await huanggai.getByRole('button',{name:'購買 · 180 軍資'}).tap();
+    await expect(huanggai).toContainText('已強化 3 / 3');
+    await expect(page.locator('#campCoins')).toHaveText('50');
+   }else await expect(huanggai.getByRole('button',{name:'已滿'})).toBeDisabled();
+   await tap('#campShopBack');
+  }
   await tap('#campContinue');
   const storyLine=page.locator('#storyLine');
   const pages=Number((await page.locator('#storyCount').textContent()).split('/')[1]);
@@ -304,7 +316,17 @@ for(const stage of stages)test(`stage ${stage.level} clears and replays from an 
    await expect(page.locator('#homeProgress')).toHaveText('英雄演義・全篇通關');
    await expect(continueStory).toContainText('重玩');
   }
-  return progress;
+  if(!sun)return progress;
+  const afterCamp=await save();
+  expect(afterCamp).toMatchObject({completed:143,coins:50,weapons:{guanyu:2},armyWeapons:{cao:{liubei:1},sun:{zhangfei:3}},inventory:{grain:2}});
+  await tap('#storySkip');
+  const deployment=page.locator('#deployment');
+  await expect(deployment).toBeVisible();
+  const caoCao=deployment.locator('article').filter({has:page.getByAltText('曹操',{exact:true})});
+  await expect(caoCao).toContainText('兵器 1/3');
+  await expect(deployment.getByAltText('黃蓋',{exact:true})).toHaveCount(0);
+  expect(await save()).toEqual(afterCamp);
+  return afterCamp;
  }
  async function checkReload(next,progress){
   await page.reload();
@@ -315,13 +337,13 @@ for(const stage of stages)test(`stage ${stage.level} clears and replays from an 
 
  await continueStory.tap();
  await play(stage);
- const first=await finish(stage,'+80',230);
+ const first=await finish(stage,'+80',230,2);
  await checkReload(next,first);
  await tap('#chapterPicker > summary');
  await tap(`#chapterTabs [data-chapter="${chapter}"]`);
  await tap(`#chapterDots [data-level="${level}"]`);
  await play(stage);
- const replay=await finish(stage,'+0',230);
+ const replay=await finish(stage,'+0',sun?50:230,3);
  expect(replay.battleRecords[level]).toBeLessThanOrEqual(first.battleRecords[level]);
  await checkReload(next,replay);
  expect(errors).toEqual([]);
