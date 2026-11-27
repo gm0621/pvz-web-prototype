@@ -8,7 +8,7 @@
 
 ## Obsidian 尚未同步時，從這裡接手
 
-1. **確認版本。** 在剛拉下來的 `main` 執行 `git status --short --branch`、`git log -1 --oneline`。`git log` 顯示目前 checkout 的提交。正式遊戲版本另看下方最新一筆含「已發布」及 Pages 工作的功能紀錄。截至 2026-11-27，最新已驗證的正式遊戲版本為 `b70574a`（主篇 142 關，《西晉後日談》18 關，《洛陽風雲》6 關，《長安西行》6 關）。 [正式遊戲](https://gm0621.github.io/pvz-web-prototype/hero/?v=b70574a) · [人物圖鑑](https://gm0621.github.io/pvz-web-prototype/hero/people.html?v=b70574a) · [發布紀錄](https://github.com/gm0621/pvz-web-prototype/actions/runs/45928019664)
+1. **確認版本。** 在剛拉下來的 `main` 執行 `git status --short --branch`、`git log -1 --oneline`。`git log` 顯示目前 checkout 的提交。正式遊戲版本另看下方最新一筆含「已發布」及 Pages 工作的功能紀錄。截至 2026-11-27，最新已驗證的正式遊戲版本為 `fbd8f2b`（主篇 142 關，《西晉後日談》18 關，《洛陽風雲》6 關，《長安西行》6 關）。 [正式遊戲](https://gm0621.github.io/pvz-web-prototype/hero/?v=fbd8f2b) · [人物圖鑑](https://gm0621.github.io/pvz-web-prototype/hero/people.html?v=fbd8f2b) · [發布紀錄](https://github.com/gm0621/pvz-web-prototype/actions/runs/45929448597)
 2. **安裝並做基本驗證。** 在專案根目錄用 Node.js 20 以上與 npm。執行下列指令可驗證引擎、桌面滑鼠／鍵盤及手機平板觸控。更多測試和本機預覽見 [開發指南](DEVELOPMENT.md)。Playwright 會啟動 4174 埠的測試服務，先關閉佔用該埠的手動預覽。
 3. **開工前看目前進度。** 先讀 [AGENTS.md](../AGENTS.md) 的「重要約束」及下方與任務相關的紀錄。英雄演義是獨立的 `/hero/` 遊戲，關卡上限見 `hero/campaign-config.mjs`。正式存檔 `heroLegendProgress_v1` 與本機、線上跳關測試的存檔分開。跨電腦時瀏覽器存檔和未提交的檔案需另外移轉。保留滑鼠、鍵盤與觸控操作，也要保留首勝軍資、重玩及暫停的既有規則。 [跳關工具和存檔說明](hero-local-testing.md)
 4. **繼續當次工作。** 依使用者的新需求從最新 `main` 開分支，保留原工作區修改。完成後把變更、實際測試結果、版本與注意事項記在本檔。Obsidian 未同步時註明待補，能讀取後再更新。正式發布依當次授權。
@@ -19,6 +19,13 @@ npx playwright install chromium webkit
 npm run test:hero:engine
 npx playwright test --config=playwright.hero-input.config.js
 ```
+
+## 2026-11-27 漢中、沓中、孫皓入洛玩法複查
+
+- 已發布 `fbd8f2b`。正式站手機 Chromium（320px、390px）6 項、平板 WebKit（820×1180）3 項完整觸控流程通過，核對 50 份發布資源。正式站另外通過 6 項暫時／持續圖片失敗的恢復測試。 [正式遊戲](https://gm0621.github.io/pvz-web-prototype/hero/?v=fbd8f2b) · [人物圖鑑](https://gm0621.github.io/pvz-web-prototype/hero/people.html?v=fbd8f2b) · [發布紀錄](https://github.com/gm0621/pvz-web-prototype/actions/runs/45929448597)
+- 曾在正式站 320px 孫皓入洛遇到戰場圖片載入失敗。戰場準備畫面現在會自動補載一次失敗的圖片，仍失敗時保留「重試載入」和「返回」。第 109 關漢中整軍驗證上、下、中路亮起與實際出兵一致，餘兵數同步遞減，清完才結算。第 122 關沓中脫身確認第三波第一隊到場方可撤離，故意留一隊在前方時結算與存檔不變，全員退回左側才過關。第 143 關孫皓入洛逐批驗證護衛離開時糧車位置與百分比停住、回到同路後續走；在營地把黃蓋兵器從 2 級升到 3 級，重整和重玩後仍保存，曹軍與蜀軍兵器維持原數值。下一關太康裁兵可進入曹軍選將。
+- 三關均從舊格式存檔驗證首勝、暫停恢復、原劇情、營地、下一關、重整和重玩。舊兵器、物資和個人最佳保留，首勝軍資只發一次。
+- 本機 433 項引擎測試、9 項觸控流程及 6 項圖片失敗重試測試通過。裝置使用瀏覽器模擬觸控；快取版 `hanzhong-sunhao-tazhong-2`，觸控指令 `npx playwright test --config=playwright.hero-hanzhong-sunhao-tazhong.config.js`。
 
 ## 2026-11-27 漢中分波守備、孫皓入洛護糧與沓中撤離
 
