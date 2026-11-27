@@ -1,5 +1,5 @@
-import {HISTORICAL_STAGES} from './history-stages.mjs?v=yingyin-heqiao-huainan-1';
-import {paintPortrait} from './factions.mjs?v=yingyin-heqiao-huainan-1';
+import {HISTORICAL_STAGES} from './history-stages.mjs?v=jushui-changan-luoyang-1';
+import {paintPortrait} from './factions.mjs?v=jushui-changan-luoyang-1';
 import {THIRD_CHAPTER} from './chapter-three.mjs?v=passive-feedback-1';
 // History and novel adaptation are deliberately separated in the introduction.
 export const CHAPTER_BACKGROUNDS={

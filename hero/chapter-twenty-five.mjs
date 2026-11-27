@@ -64,9 +64,9 @@ const stages=[
  {
   name:'洛陽再變',year:291,origin:'luoyangStreets',place:'luoyangGate',shift:true,factionLabel:'洛陽撤離隊',campBanner:'護',
   leader:'司馬亮',guest:'司馬衷',opponent:'司馬瑋',mapOpponentRole:'楚王起兵',historyCast:['司馬亮','衛瓘','司馬瑋','賈南風','司馬衷'],
-  mission:'withdraw',scene:'enemy-camp',enemyArmy:'城中亂兵',enemyCount:12,successTitle:'撤離隊平安返回',
+  mission:'withdraw',coverWaves:true,scene:'enemy-camp',enemyArmy:'城中亂兵',enemyCount:12,successTitle:'撤離隊平安返回',
   history:'291 年夏，賈皇后假借皇命，讓楚王司馬瑋對付司馬亮和衛瓘。兩人被殺後，朝廷又以擅自殺害大臣之罪處死司馬瑋。這是八王之亂的早期事件。',
-  briefing:'至少保住一隊友軍。等「全軍撤離」亮起再按下，讓所有存活的友軍回到左側。',
+  briefing:'哪一路亮起，就派友軍去擋。第三波追兵出現後按「全軍撤離」。至少保住一隊，讓所有還在場的友軍回到左側。',
   ending:'司馬亮與衛瓘遇害，楚王司馬瑋隨後也被處死。洛陽暫時平靜下來，宗王之間的爭權仍未結束。',
   camp:'平安回來的人先休息。把失散的名字記清楚，也讓城裡的人知道去哪裡找家人。',
   question:'楚王司馬瑋殺害兩位輔政大臣後，結果如何？',choices:['司馬瑋不久也被處死','司馬瑋成了新的皇帝','東吳重新建立'],refs:[huiDi,jia,princes,weiGuan,tongjian]
@@ -79,6 +79,7 @@ export const TWENTY_FIFTH_CHAPTER=stages.map((stage,index)=>({
  leaderName:stage.leader,opponentName:stage.opponent,mapOpponent:stage.mapOpponent??!!stage.opponent,matchupLabel:stage.matchupLabel,mapOpponentRole:stage.mapOpponentRole,mapStationRole:stage.mapStationRole,
  scene:`./assets/scenes/${stage.scene}.jpg`,mission:stage.mission,missionTitle:stage.missionTitle,missionSites:stage.missionSites,
  successTitle:stage.successTitle,successRibbon:'戰 事 記 錄 ・ 回 營 整 備',
+ ...(stage.coverWaves?{coverWaves:true}:{}),
  ...(stage.mission==='withdraw'?{retreatKeys:[]}:{}),
  noBoss:true,bossName:stage.enemyArmy,bossHp:0,enemyArmy:stage.enemyArmy,enemyCount:stage.enemyCount??0,interval:3.8,
  lead:stage.history,history:stage.history,adaptation,note:adaptation,bossTip:stage.briefing,

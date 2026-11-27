@@ -17,7 +17,7 @@ test('the princes campaign extends stage 154 saves and preserves the historical 
  assert.equal(rewardVictory(progress,154),0);
  assert.equal(chapter.length,6);
  assert.deepEqual(chapter.map(stage=>stage.year),Array(6).fill(301));
- assert.deepEqual(chapter.map(stage=>stage.mission),['dispatch','pass-defense','withdraw','holdout','dispatch','restoration']);
+ assert.deepEqual(chapter.map(stage=>stage.mission),['dispatch','pass-defense','withdraw','pass-defense','dispatch','restoration']);
  assert.equal(chapter[2].coverWaves,true);
  for(const [index,stage] of chapter.entries()){
   const level=155+index;

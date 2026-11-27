@@ -66,6 +66,17 @@ test('stage 142 continues through the early Rebellion of the Eight Princes and k
    await tap('#missionQuickAction');
   }
  }
+ async function queueRetreatWave(){
+  await expect(page.locator('#missionChoices [data-action=retreat]')).toBeDisabled();
+  // The chapter regression queues the first enemy of wave three.
+  await page.evaluate(()=>{
+   const battle=window.chapterBattle;
+   battle.spawned=8;
+   battle.bossSpawned=false;
+   battle.nextSpawn=battle.time+1;
+  });
+  await advance(1000);
+ }
  async function withdraw(){
   await advance(4400);
   await tap('#cards [data-hero=archer]');
@@ -79,11 +90,11 @@ test('stage 142 continues through the early Rebellion of the Eight Princes and k
    await advance(3300);
   }
   await tap('#commandDrawerClose');
-  await advance(4100);
+  await queueRetreatWave();
   await expect(page.locator('#missionQuickAction')).toHaveText('全軍撤離');
   await tap('#missionQuickAction');
   await advance(200);
-  await expect(page.locator('#missionQuick')).toContainText('1 名友軍尚未回到左側');
+  await expect(page.locator('#missionQuick')).toContainText('1 隊友軍尚未回到左側');
   await expect(page.locator('#result')).toBeHidden();
   await tap('#pauseBtn');
   const frozen=await snapshot();
@@ -368,7 +379,7 @@ test('stage 142 continues through the early Rebellion of the Eight Princes and k
  expect(await readSave()).toMatchObject(cleared);
  await choose(25,148);
  await controlledBattle(stages[5]);
- await advance(16000);
+ await queueRetreatWave();
  await expect(page.locator('#missionQuickAction')).toHaveText('全軍撤離');
  await tap('#missionQuickAction');
  await advance(500);

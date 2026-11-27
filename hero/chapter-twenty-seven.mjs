@@ -40,9 +40,9 @@ const stages=[
  {
   name:'湨水反擊',year:301,origin:'jinHuangqiao',place:'jinJushui',shift:false,factionLabel:'成都王反擊隊',campBanner:'成',
   leader:'司馬穎',guest:'盧志',opponent:'孫會',mapOpponentRole:'退敗一方',historyCast:['司馬穎','盧志','孫會','司馬倫'],
-  mission:'holdout',missionTitle:'湨水渡路守備',scene:'enemy-camp',enemyArmy:'趙王守兵',enemyCount:12,successTitle:'湨水渡路守住',
+  mission:'pass-defense',missionTitle:'湨水渡路守備',scene:'enemy-camp',enemyArmy:'趙王守兵',enemyCount:12,successTitle:'湨水渡路守住',
   history:'黃橋得勝後，孫會等人各自領兵，彼此不聽號令。司馬穎整軍後在湨水大敗對方。孫會等人丟下部隊向南逃走，成都王的軍隊趁勝渡過黃河。',
-  briefing:'派友軍照應各路，守住渡路累積 24 秒，並等敵軍全數出場後清退。',
+  briefing:'哪一路亮起，就派友軍去守。擋住上路、下路、中路三波，保住防線，再清完剩下的敵兵。',
   ending:'成都王在湨水得勝並渡河。趙王軍失利的消息傳到洛陽，宮裡也有了變化。',
   camp:'前一隊先回報哪條路已經通了，後一隊再走。讓後面的人知道該往哪裡渡河。',
   question:'湨水一戰後，哪一方趁勝渡過黃河？',choices:['成都王司馬穎','趙王司馬倫','許昌的傳令隊'],refs:[chengdu,chronicle]

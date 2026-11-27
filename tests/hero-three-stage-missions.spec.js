@@ -13,7 +13,10 @@ const stages=[
  {level:157,kind:'withdrawal',chapter:27,title:'黃橋收兵',terrain:'pass-defense',ending:'成都王前鋒吃了敗仗',next:'湨水反擊',resultTitle:'黃橋散兵撤回',bonusButton:'homeExtra',bonusClears:15},
  {level:153,kind:'withdrawal',chapter:26,title:'淮南王起兵',terrain:'pass-defense',ending:'淮南王司馬允敗亡',next:'趙王篡位',resultTitle:'撤離隊平安返回',bonusButton:'homeExtra',bonusClears:11},
  {level:156,kind:'defense',chapter:27,title:'潁陰守營',terrain:'pass-defense',ending:'齊王在潁陰反擊，張泓暫退',next:'黃橋收兵',resultTitle:'潁陰防線守住',bonusButton:'homeExtra',bonusClears:14},
- {level:169,kind:'supply',stops:['出城路口','河畔驛站','河橋營地'],chapter:29,title:'河橋護駕',terrain:'',ending:'兩軍將在蕩陰相遇',next:'蕩陰撤離',resultTitle:'河橋補給送達',bonusButton:'homeChangan',bonusClears:3,peaceful:true}
+ {level:169,kind:'supply',stops:['出城路口','河畔驛站','河橋營地'],chapter:29,title:'河橋護駕',terrain:'',ending:'兩軍將在蕩陰相遇',next:'蕩陰撤離',resultTitle:'河橋補給送達',bonusButton:'homeChangan',bonusClears:3,peaceful:true},
+ {level:148,kind:'withdrawal',chapter:25,title:'洛陽再變',terrain:'pass-defense',ending:'司馬亮與衛瓘遇害，楚王司馬瑋隨後也被處死',next:'賈后掌權',resultTitle:'撤離隊平安返回',bonusButton:'homeExtra',bonusClears:6},
+ {level:158,kind:'defense',chapter:27,title:'湨水反擊',terrain:'pass-defense',ending:'成都王在湨水得勝並渡河',next:'惠帝復位',resultTitle:'湨水渡路守住',bonusButton:'homeExtra',bonusClears:16},
+ {level:172,kind:'supply',stops:['西行路口','途中驛站','長安城門'],chapter:29,title:'長安西行',terrain:'',ending:'張方把晉惠帝和司馬穎從洛陽帶往長安',resultTitle:'西行補給送達',bonusButton:'homeChangan',bonusClears:6,peaceful:true}
 ];
 
 for(const stage of stages)test(`stage ${stage.level} clears and replays from an old save on touch`,async({page})=>{
@@ -278,8 +281,10 @@ for(const stage of stages)test(`stage ${stage.level} clears and replays from an 
    story+=await storyLine.textContent();
   }
   expect(story).toContain(ending);
+  if(!next)await expect(page.locator('#storySkip')).toHaveText('回主選單');
   await tap('#storySkip');
-  await expect(page.locator('#storyTitle')).toHaveText(next);
+  if(next)await expect(page.locator('#storyTitle')).toHaveText(next);
+  else await expect(page.locator('#home')).toBeVisible();
   return progress;
  }
  async function checkReload(next,progress){

@@ -7,7 +7,7 @@ const stages=[
  {name:'河橋護駕',route:'洛陽宮城 → 河橋',leader:'司馬衷',opponent:'司馬越',guest:'嵇紹',supply:true,stops:['出城路口','河畔驛站','河橋營地'],end:'兩軍將在蕩陰相遇'},
  {name:'蕩陰撤離',route:'河橋 → 蕩陰',leader:'司馬衷',opponent:'石超',guest:'司馬越',withdraw:true,end:'嵇紹護駕遇害，惠帝後來被帶往鄴城'},
  {name:'鄴城返洛',route:'鄴城 → 洛陽',leader:'司馬衷',opponent:'王浚',guest:'司馬穎',end:'張方掌控朝政'},
- {name:'長安西行',route:'洛陽 → 長安',leader:'司馬衷',opponent:'張方',guest:'司馬衷',supply:true,end:'張方把晉惠帝和司馬穎從洛陽帶往長安'}
+ {name:'長安西行',route:'洛陽 → 長安',leader:'司馬衷',opponent:'張方',guest:'司馬衷',supply:true,stops:['西行路口','途中驛站','長安城門'],end:'張方把晉惠帝和司馬穎從洛陽帶往長安'}
 ];
 
 test('166 returns home and Changan plays through on touch with original enemies and resources',async({page})=>{

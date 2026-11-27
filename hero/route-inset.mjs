@@ -1,4 +1,4 @@
-import {mapPersonSvg} from './characters.mjs?v=yingyin-heqiao-huainan-1';
+import {mapPersonSvg} from './characters.mjs?v=jushui-changan-luoyang-1';
 
 const standardHeight=304,dualHeight=374;
 

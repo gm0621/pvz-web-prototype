@@ -38,6 +38,7 @@ test('the Taikang chapter extends the previous save through the early palace cri
  assert.match(chapter[0].victory,/受封歸命侯/);
  assert.match(chapter[2].victory,/司馬衷即位/);
  assert.match(chapter[3].victory,/楊駿被殺/);
+ assert.equal(chapter[5].coverWaves,true);
  assert.match(chapter[5].victory,/司馬亮與衛瓘遇害.*司馬瑋隨後也被處死/);
  assert.match(campaignMapSvg(145),/route-inset-opponent-role[^>]*>輔政<\/text>/);
  const portraits=new Set();
@@ -79,8 +80,10 @@ test('Taikang objectives finish normally with combat confined to the two palace 
     stepBattle(battle,.1);
    }
    assert.equal(battle.won,true,JSON.stringify({level,seed,mission:battle.mission}));
-   assert.equal(battle.spawned,combat?12:0);
-   if(level===148)assert.equal(battle.mission.ordered,true);
+   if(level===148){
+    assert.ok(battle.spawned>=9&&battle.spawned<=12);
+    assert.equal(battle.mission.ordered,true);
+   }else assert.equal(battle.spawned,combat?12:0);
   }
  }
 });

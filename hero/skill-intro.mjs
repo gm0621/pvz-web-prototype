@@ -1,5 +1,5 @@
-import {ALL_GENERALS,learningLevels,nextLesson,activeText} from './roster.mjs?v=yingyin-heqiao-huainan-1';
-import {paintPortrait} from './factions.mjs?v=yingyin-heqiao-huainan-1';
+import {ALL_GENERALS,learningLevels,nextLesson,activeText} from './roster.mjs?v=jushui-changan-luoyang-1';
+import {paintPortrait} from './factions.mjs?v=jushui-changan-luoyang-1';
 // One small lesson at a time. Reading freezes the same battle clock as Pause.
 export function mountSkillIntro({getBattle,getProgress,save,setPaused}){
  const dialog=document.createElement('dialog');dialog.id='skillIntro';dialog.setAttribute('aria-labelledby','skillIntroTitle');

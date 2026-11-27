@@ -1,7 +1,7 @@
-import {ALL_GENERALS as GENERALS} from './roster.mjs?v=yingyin-heqiao-huainan-1';
-import {skillSummary} from './roster-view.mjs?v=yingyin-heqiao-huainan-1';
-import {PEOPLE,searchPeople} from './people-data.mjs?v=yingyin-heqiao-huainan-1';
-import {paintPortrait} from './factions.mjs?v=yingyin-heqiao-huainan-1';
+import {ALL_GENERALS as GENERALS} from './roster.mjs?v=jushui-changan-luoyang-1';
+import {skillSummary} from './roster-view.mjs?v=jushui-changan-luoyang-1';
+import {PEOPLE,searchPeople} from './people-data.mjs?v=jushui-changan-luoyang-1';
+import {paintPortrait} from './factions.mjs?v=jushui-changan-luoyang-1';
 const $=id=>document.getElementById(id);let kind='all';
 const node=(tag,text,className)=>{const e=document.createElement(tag);if(text)e.textContent=text;if(className)e.className=className;return e};
 function render(){

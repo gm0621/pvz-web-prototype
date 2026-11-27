@@ -1,4 +1,4 @@
-import {lateJinChapter} from './late-jin-chapter.mjs?v=yingyin-heqiao-huainan-1';
+import {lateJinChapter} from './late-jin-chapter.mjs?v=jushui-changan-luoyang-1';
 
 const source=(title,path)=>({title,url:'https://zh.wikisource.org/zh-hant/'+path});
 const hui=source('《晉書》・惠帝紀','晉書/卷004');
@@ -62,9 +62,9 @@ export const TWENTY_NINTH_CHAPTER=lateJinChapter(29,[
  {
   name:'長安西行',year:304,origin:'luoyang',place:'jinChangan',shift:true,factionLabel:'西行補給隊',campBanner:'糧',
   leader:'司馬衷',guest:'司馬衷',opponent:'張方',mapLeaderRole:'被迫向西',mapOpponentRole:'挾車駕西行',historyCast:['司馬衷','張方','司馬穎','司馬顒'],
-  mission:'supply',scene:'supply-road',enemyArmy:'西行補給',successTitle:'西行補給送達',
+  mission:'supply',supplyStops:['西行路口','途中驛站','長安城門'],scene:'supply-road',enemyArmy:'西行補給',successTitle:'西行補給送達',
   history:'張方帶兵進宮，迫使晉惠帝離開洛陽。車駕一路向西，到了河間王司馬顒控制的長安。晉惠帝仍是皇帝，卻無法自行決定留在哪裡。',
-  briefing:'派友軍照應三批補給，讓路上的隨行人員有糧可用。',
+  briefing:'派友軍守住亮起的路，再按「發送糧車」。護衛離開時糧車會停，回到這一路就繼續。三批補給送到就過關。',
   ending:'隨行人員收到補給。史書記載，張方把晉惠帝和司馬穎從洛陽帶往長安。惠帝到了長安，宗王間的爭鬥仍未結束。',
   camp:'路遠又辛苦，先讓同行的人吃飽。把到達的人逐一記下，還在路上的也要留心。',
   question:'張方迫使晉惠帝離開洛陽後，車駕去了哪裡？',choices:['長安','鄴城','建業'],refs:[hui,tongjian,zhang]
