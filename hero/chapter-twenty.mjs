@@ -56,9 +56,9 @@ const stages=[
  {
   name:'洮西收兵',year:255,origin:'taoxi',via:['didao'],place:'zhongti',leader:'姜維',guest:'夏侯霸',opponent:'王經',mapOpponent:false,
   historyCast:['姜維','夏侯霸','王經','陳泰'],matchupLabel:'王經敗退到狄道・陳泰解圍',
-  mission:'withdraw',scene:'mountain-front',enemyArmy:'魏軍追兵',
+  mission:'withdraw',coverWaves:true,scene:'mountain-front',enemyArmy:'魏軍追兵',
   history:'姜維和夏侯霸出兵狄道，在洮西擊敗魏將王經。王經退入狄道，姜維圍城。後來陳泰帶兵救援，蜀軍從狄道退到鍾題駐守。',
-  briefing:'這關從狄道退軍時開始。接應完成後按「全軍撤離」，讓所有存活的武將和士兵回到左側。至少要有一隊平安撤回。',
+  briefing:'哪一路亮起，就派友軍去擋。第三波追兵出現後按「全軍撤離」。至少保住一隊，讓所有還在場的武將和士兵回到左側。',
   ending:'陳泰解了狄道之圍，姜維退駐鍾題。蜀軍在洮西取得勝仗，狄道仍由魏軍守住。',
   camp:'上一次走到這一帶，我還在魏軍。這次跟大家回蜀營，先把路上的隊友都點清楚。',
   question:'魏軍解了狄道之圍後，姜維退到哪裡駐守？',choices:['鍾題','東吳','成都城內'],refs:[jiangWei,chen,ruler]

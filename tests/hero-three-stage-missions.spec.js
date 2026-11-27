@@ -37,7 +37,10 @@ const stages=[
  {level:134,kind:'withdrawal',chapter:23,title:'成都亂起',terrain:'pass-defense',ending:'鍾會和姜維在成都兵變中身亡',next:'安樂公入洛',resultTitle:'護送隊平安撤回',campGuest:'胡烈'},
  {level:18,kind:'supply',stops:['酸棗營外','糧道驛站','聯軍營地'],chapter:4,title:'酸棗會盟',terrain:'',ending:'三批糧食到營了',resultText:'接下來的汴水之戰',next:'汴水撤軍',nextMission:'等待敵將出場',nextWithRoster:true,selectArmy:true},
  {level:89,kind:'defense',chapter:16,title:'白帝託孤',terrain:'pass-defense',ending:'劉備在永安去世',next:'劉禪即位',campGuest:'李嚴'},
- {level:117,kind:'withdrawal',chapter:20,title:'南安糧盡',terrain:'pass-defense',ending:'南安仍在魏國手中',next:'洮西收兵',resultTitle:'全軍撤回',campGuest:'姜維'}
+ {level:117,kind:'withdrawal',chapter:20,title:'南安糧盡',terrain:'pass-defense',ending:'南安仍在魏國手中',next:'洮西收兵',resultTitle:'全軍撤回',campGuest:'姜維'},
+ {level:85,kind:'supply',stops:['巫縣營地','沿江驛站','秭歸營地'],chapter:15,title:'巫口進兵',terrain:'',ending:'吳班、馮習到達秭歸',next:'猇亭對峙',campGuest:'馮習'},
+ {level:93,kind:'defense',chapter:16,title:'南征越巂',terrain:'pass-defense',ending:'越巂戰事告一段落',next:'南中收兵',campGuest:'諸葛亮'},
+ {level:118,kind:'withdrawal',chapter:20,title:'洮西收兵',terrain:'pass-defense',ending:'姜維退駐鍾題',next:'段谷撤兵',resultTitle:'全軍撤回',campGuest:'夏侯霸',chapterEnd:'第二十章尾聲',nextChapter:'第二十一章'}
 ];
 
 test('stage 71 opens from home with an old save before and after reload',async({page})=>{

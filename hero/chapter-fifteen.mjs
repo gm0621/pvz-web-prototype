@@ -24,9 +24,9 @@ const stages=[
  },
  {
   name:'巫口進兵',year:221,place:'zigui',origin:'wuxian',leader:'吳班',opponent:'陸遜',shift:true,mapOpponent:false,
-  matchupLabel:'吳軍前線部署・劇情人物',mission:'supply',scene:'supply-road',enemyArmy:'守道敵軍',
+  matchupLabel:'吳軍前線部署・劇情人物',mission:'supply',supplyStops:['巫縣營地','沿江驛站','秭歸營地'],scene:'supply-road',enemyArmy:'守道敵軍',
   history:'章武元年七月，劉備出兵伐吳。吳班、馮習自巫縣進擊，打退李異等吳軍，抵達秭歸。陸遜也參與這一帶的防守部署。',
-  briefing:'各路都要有人接應。等糧車備妥，分三批發送，再清退餘兵。',
+  briefing:'派友軍守住亮起的路，再按「發送糧車」。護衛離開時糧車會停，回到原路就繼續。三批糧車都送到，再清完剩下的敵兵。',
   ending:'吳班、馮習到達秭歸。接下來，劉備的隊伍還要沿江向東。',
   guest:'馮習',camp:'這趟先照應糧車。人和糧都到齊了，才能再往前走。',
   question:'吳班、馮習從巫縣進軍後，駐軍在哪裡？',choices:['秭歸','成都','樊城'],refs:[liu,lu]

@@ -1,7 +1,7 @@
-import {ALL_GENERALS as GENERALS} from './roster.mjs?v=baidi-suanzhao-nanan-1';
-import {skillSummary} from './roster-view.mjs?v=baidi-suanzhao-nanan-1';
-import {PEOPLE,searchPeople} from './people-data.mjs?v=baidi-suanzhao-nanan-1';
-import {paintPortrait} from './factions.mjs?v=baidi-suanzhao-nanan-1';
+import {ALL_GENERALS as GENERALS} from './roster.mjs?v=yuesui-wukou-taoxi-1';
+import {skillSummary} from './roster-view.mjs?v=yuesui-wukou-taoxi-1';
+import {PEOPLE,searchPeople} from './people-data.mjs?v=yuesui-wukou-taoxi-1';
+import {paintPortrait} from './factions.mjs?v=yuesui-wukou-taoxi-1';
 const $=id=>document.getElementById(id);let kind='all';
 const node=(tag,text,className)=>{const e=document.createElement(tag);if(text)e.textContent=text;if(className)e.className=className;return e};
 function render(){

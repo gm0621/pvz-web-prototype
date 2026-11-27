@@ -43,9 +43,9 @@ const stages=[
  },
  {
   name:'南征越巂',historyCast:['諸葛亮', '高定', '李恢'],year:225,place:'yuesui',origin:'chengdu',leader:'諸葛亮',guest:'諸葛亮',opponent:'高定',
-  matchupLabel:'越巂地方首領・戰區示意',mission:'holdout',missionTitle:'越巂山道接應',scene:'mountain-front',enemyArmy:'越巂守隊',
+  matchupLabel:'越巂地方首領・戰區示意',mission:'pass-defense',missionTitle:'越巂山道守備',scene:'mountain-front',enemyArmy:'越巂守隊',
   history:'225 年春，諸葛亮出兵南中，主軍從越巂進入，擊敗高定。這次行動有幾條路線，李恢與馬忠也各自帶隊，朝不同郡縣前進。',
-  briefing:'山道各路都要有人接應。每路有人且敵人未逼近，才會累計 24 秒接應時間。',
+  briefing:'哪一路亮起，就派友軍去守。依序擋住上路、下路、中路三波，再清完剩下的敵兵。',
   ending:'越巂戰事告一段落。蜀軍分路進入南中，各隊仍須互通消息和照應補給。',
   camp:'這是一場分路行動。一隊走得快，其他隊還在後頭時，也要記得彼此照應。',
   question:'諸葛亮的主軍從哪裡進入南中？',choices:['越巂','樊城','下邳'],refs:[laterRuler,zhuge,chronicle]

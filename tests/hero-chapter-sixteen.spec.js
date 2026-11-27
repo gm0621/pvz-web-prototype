@@ -5,7 +5,7 @@ const stages=[
  {name:'劉禪即位',route:'成都',leader:'劉禪',guest:'劉禪',kind:'dispatch',year:223},
  {name:'使吳修好',route:'成都 → 武昌（吳都）',leader:'鄧芝',guest:'鄧芝',opponent:'孫權',onMap:true,host:true,kind:'dispatch',year:223},
  {name:'務農息民',route:'成都',leader:'諸葛亮',guest:'劉禪',kind:'restoration',year:224},
- {name:'南征越巂',route:'成都 → 越巂',leader:'諸葛亮',guest:'諸葛亮',opponent:'高定',onMap:true,kind:'holdout',year:225},
+ {name:'南征越巂',route:'成都 → 越巂',leader:'諸葛亮',guest:'諸葛亮',opponent:'高定',onMap:true,kind:'pass-defense',year:225},
  {name:'南中收兵',route:'越巂 → 滇池一帶',leader:'諸葛亮',guest:'李恢',opponent:'孟獲',kind:'supply',year:225}
 ];
 const places=['永安（白帝一帶）','成都','武昌（吳都）','成都','越巂','滇池一帶'];
