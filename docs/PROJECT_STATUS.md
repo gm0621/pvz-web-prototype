@@ -20,6 +20,15 @@ npm run test:hero:engine
 npx playwright test --config=playwright.hero-input.config.js
 ```
 
+## 2026-11-27 馬鳴閣道、漢中歸劉、箕谷玩法複查
+
+- 回歸測試提交 `74a33e9` 已完成 Pages 部署。正式遊戲沿用 `5d7b557`。正式站手機 Chromium（320px、390px）6 項、平板 WebKit（820×1180）3 項完整觸控流程通過，核對 51 份遊戲資源。 [正式遊戲](https://gm0621.github.io/pvz-web-prototype/hero/?v=5d7b557) · [回歸測試部署](https://github.com/gm0621/pvz-web-prototype/actions/runs/45935809017)
+- 第 74 關從選將介面選五路，三波分別在第 1、5、3 路預警，首隊實際出兵位置一致。確認餘兵數逐步下降，清完才結算，重玩亦同。
+- 第 76 關逐批測試護衛離開停車，回到原路後糧車從相同位置與百分比繼續。回營後經第十三章尾聲進入第十四章第一關「沔陽傳令」；重整後從首頁繼續故事也會進同一關。
+- 第 98 關第八隊到場時仍鎖住撤離，第三波第一隊出場才開放。刻意留一隊在前方時不結算或寫入過關存檔，最後一隊回到左側才過關。
+- 三關從舊格式存檔驗證暫停恢復、營地、下一關、重整與重玩。兵器、物資和個人最佳保留，首勝軍資只發一次。
+- 本機 434 項引擎測試及 9 項觸控測試通過。裝置使用瀏覽器模擬觸控。快取版 `maming-hanzhong-jigu-1`，觸控指令 `npx playwright test --config=playwright.hero-maming-hanzhong-jigu.config.js`。
+
 ## 2026-11-27 馬鳴閣道分波守備、漢中分段護糧與箕谷撤離
 
 - 已發布 `5d7b557`。正式站手機 Chromium（320px、390px）6 項、平板 WebKit（820×1180）3 項完整觸控流程通過，核對 51 份發布資源。 [正式遊戲](https://gm0621.github.io/pvz-web-prototype/hero/?v=5d7b557) · [人物圖鑑](https://gm0621.github.io/pvz-web-prototype/hero/people.html?v=5d7b557) · [發布紀錄](https://github.com/gm0621/pvz-web-prototype/actions/runs/45934879722)
