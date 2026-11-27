@@ -72,3 +72,21 @@ test('all 172 stages and 29 chapter codas have distinct musical scores',async t=
  assert.equal(new Set(audio.CHAPTER_THEMES.map(t=>JSON.stringify(t.notes))).size,29);
  audio.setMusicMode('victory',17);assert.equal(audio.audioStatus().source,'victory-recording');
 });
+
+
+test('the stage score adds percussion under pressure and the coda keeps a distinct quiet arrangement',async t=>{
+ const {audio}=await setup(t);
+ const {playScorePulse}=await import('../../hero/battle-score.mjs');
+ const sounds=(theme,step,pressure)=>{
+  const events=[];
+  const voices=Object.fromEntries(['tone','noise','pluck'].map(name=>[name,(...args)=>events.push([name,...args])]));
+  playScorePulse(theme,step,pressure,voices);
+  return events;
+ };
+ const theme=audio.THEMES[16],calm=audio.CHAPTER_THEMES[3];
+ const ordinary=sounds(theme,3,0),urgent=sounds(theme,3,2);
+ assert.ok(urgent.length>ordinary.length);
+ assert.ok(urgent.some(([name,,volume,frequency])=>name==='noise'&&frequency===2900&&volume>0));
+ assert.ok(sounds(theme,0,0).some(([name])=>name==='noise'));
+ assert.ok(sounds(calm,0,2).every(([name])=>name!=='noise'));
+});

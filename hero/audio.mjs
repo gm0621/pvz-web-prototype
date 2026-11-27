@@ -1,17 +1,20 @@
+import {playScorePulse} from './battle-score.mjs?v=hero-score-1';
 import {skillPresentation} from './skill-presentation.mjs?v=passive-feedback-1';
 import {MASTER_STYLES} from './master-style.mjs?v=passive-feedback-1';
 import {STAGES,chapterInfo} from './story.mjs?v=yuesui-wukou-taoxi-1';
 // Recorded interludes, stage scores and chapter codas share one switchable music bus.
-let context,musicBus,sfxBus,timer=null,step=0,enabled=false,sfx=true,revision=0,scene=0,recordedMode='home',chapterEnding=false,pageInactive=false,backgroundPaused=false;
+let context,musicBus,sfxBus,scoreBus,timer=null,step=0,enabled=false,sfx=true,revision=0,scene=0,recordedMode='home',chapterEnding=false,pageInactive=false,backgroundPaused=false;
 const recordedTracks=new Map(),recordedSources=[];
+let battlePressure=0;
+export function setBattleMusicPressure(value){battlePressure=Math.max(0,Math.min(2,value))}
 export const RECORDED_THEMES={
  home:{name:'桃園歡宴',instrument:'笛、琵琶與揚琴'},
  story:{name:'桃園說書',instrument:'輕笛與撥弦'},
- prepare:{name:'整軍出發',instrument:'琵琶與輕鼓'},
+ prepare:{name:'整軍出發',instrument:'笛聲、撥弦與輕鼓'},
  battle:{name:'晴野行軍',instrument:'明亮笛聲、琵琶與輕鼓'},
- duel:{name:'陣前爭鋒',instrument:'急鼓、號角與快撥弦'},
+ duel:{name:'陣前爭鋒',instrument:'急鼓、笛聲與快撥弦'},
  camp:{name:'軍帳小聚',instrument:'木魚與撥弦'},
- victory:{name:'凱歌同樂',instrument:'揚琴與節慶鼓'}
+ victory:{name:'凱歌同樂',instrument:'笛聲、撥弦與節慶鼓'}
 };
 export const MENU_THEME=RECORDED_THEMES.home;
 const MOTIFS=[
@@ -30,7 +33,7 @@ const MOTIFS=[
 // melodic phrase, register and pulse. Chapter codas are slower and drum-free.
 export const THEMES=STAGES.map((stage,i)=>{
  const info=chapterInfo(i+1),base=MOTIFS[i%MOTIFS.length],shift=(info.chapter-1)%5,rotation=(info.number-1)*2;
- return {...base,name:`${stage.name}・行軍`,root:base.root+shift,beat:base.beat+info.chapter*3,
+ return {...base,name:`${stage.name}・行軍`,root:base.root+shift,beat:Math.round(base.beat*.95)+info.chapter*2,retreat:['withdraw','decoy'].includes(stage.mission),
   notes:base.notes.map((_,n)=>{const note=base.notes[(n+rotation)%16];return n===14?(note??0)+info.chapter:note})};
 });
 export const CHAPTER_THEMES=Array.from({length:chapterInfo(STAGES.length).chapter},(_,i)=>{
@@ -38,7 +41,6 @@ export const CHAPTER_THEMES=Array.from({length:chapterInfo(STAGES.length).chapte
  notes:[0,4,7,null,9,7,4,null,2,4,7,9+i,7,4,0,null]};
 });
 function synthTheme(){return chapterEnding?CHAPTER_THEMES[chapterInfo(scene+1).chapter-1]:THEMES[scene]}
-const hz=n=>440*2**((n-69)/12);
 export function musicTheme(){return RECORDED_THEMES[recordedMode]||synthTheme()}
 export function audioStatus(){return {backgroundPaused,state:context?.state||'locked',music:enabled,sfx,theme:musicTheme().name,source:recordedMode?`${recordedMode}-recording`:chapterEnding?'chapter-synth':'stage-synth'}}
 export function setMusicMode(mode,level=scene+1){
@@ -46,37 +48,36 @@ export function setMusicMode(mode,level=scene+1){
  const ending=mode==='victory'&&info.number===info.count;
  const nextMode=mode!=='battle'&&!ending&&RECORDED_THEMES[mode]?mode:null;
  const changed=nextMode!==recordedMode||next!==scene||ending!==chapterEnding;
- recordedMode=nextMode;chapterEnding=ending;scene=next;if(!changed)return;step=0;if(enabled)void setMusic(true);
+ recordedMode=nextMode;chapterEnding=ending;scene=next;if(!changed)return;step=0;battlePressure=0;if(enabled)void setMusic(true);
 }
 export function setMusicScene(level){setMusicMode(null,level)}
 export function setMusicHome(){setMusicMode('home',1)}
 function init(){if(!context){context=new AudioContext();musicBus=context.createGain();sfxBus=context.createGain();musicBus.gain.value=0;musicBus.connect(context.destination);sfxBus.gain.value=sfx?.7:0;const limiter=context.createDynamicsCompressor();limiter.threshold.value=-10;limiter.knee.value=12;limiter.ratio.value=6;limiter.attack.value=.003;limiter.release.value=.15;sfxBus.connect(limiter);limiter.connect(context.destination);for(const track of document.querySelectorAll('audio[data-music-mode]')){recordedTracks.set(track.dataset.musicMode,track);const source=context.createMediaElementSource(track);source.connect(musicBus);recordedSources.push(source)}}return context}
-function tone(bus,freq,duration,volume,type='sine',slide=0,attack=.006){const c=init(),o=c.createOscillator(),g=c.createGain(),t=c.currentTime;o.type=type;o.frequency.setValueAtTime(freq,t);if(slide)o.frequency.exponentialRampToValueAtTime(slide,t+duration);g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(volume,t+attack);g.gain.exponentialRampToValueAtTime(.0001,t+duration);o.connect(g);g.connect(bus);o.start();o.stop(t+duration);o.onended=()=>{o.disconnect();g.disconnect()}}
+function tone(bus,freq,duration,volume,type='sine',slide=0,attack=.006,delay=0){const c=init(),o=c.createOscillator(),g=c.createGain(),t=c.currentTime+delay;o.type=type;o.frequency.setValueAtTime(freq,t);if(slide)o.frequency.exponentialRampToValueAtTime(slide,t+duration);g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(volume,t+attack);g.gain.exponentialRampToValueAtTime(.0001,t+duration);o.connect(g);g.connect(bus);o.start(t);o.stop(t+duration);o.onended=()=>{o.disconnect();g.disconnect()}}
 function noise(bus,duration,volume,freq=1800){const c=init(),buffer=c.createBuffer(1,Math.ceil(c.sampleRate*duration),c.sampleRate),data=buffer.getChannelData(0);for(let i=0;i<data.length;i++)data[i]=(Math.random()*2-1)*Math.min(1,i/200)*Math.exp(-6*i/data.length);const source=c.createBufferSource(),filter=c.createBiquadFilter(),gain=c.createGain();source.buffer=buffer;filter.type='bandpass';filter.frequency.value=freq;filter.Q.value=.6;gain.gain.value=volume;source.connect(filter);filter.connect(gain);gain.connect(bus);source.start();source.onended=()=>{source.disconnect();filter.disconnect();gain.disconnect()}}
-function pluck(freq,volume=.32){const c=init(),buffer=c.createBuffer(1,Math.ceil(c.sampleRate*2.2),c.sampleRate),data=buffer.getChannelData(0),period=Math.max(2,Math.round(c.sampleRate/freq));for(let i=0;i<data.length;i++)data[i]=i<period?(Math.random()*2-1)*volume:.496*(data[i-period]+data[i-period+1]);const source=c.createBufferSource();source.buffer=buffer;source.connect(musicBus);source.start();source.onended=()=>source.disconnect()}
-function tick(){
- if(!enabled||isBackground()||backgroundPaused)return;
- const theme=synthTheme(),pulse=step%16,phrase=Math.floor(step/16)%4,note=theme.notes[pulse],root=hz(theme.root-12);
- if(theme.calm){
-  if(note!==null)pluck(hz(theme.root+note),.16);
-  if(pulse%4===0){tone(musicBus,root,.95,.045,'sine');tone(musicBus,root*1.5,.8,.025,'triangle')}
-  step++;return;
+function pluck(bus,freq,volume=.32){const c=init(),buffer=c.createBuffer(1,Math.ceil(c.sampleRate*2.2),c.sampleRate),data=buffer.getChannelData(0),period=Math.max(2,Math.round(c.sampleRate/freq));for(let i=0;i<data.length;i++)data[i]=i<period?(Math.random()*2-1)*volume:.496*(data[i-period]+data[i-period+1]);const source=c.createBufferSource();source.buffer=buffer;source.connect(bus);source.start();source.onended=()=>source.disconnect()}
+function beginScore(){
+ scoreBus=context.createGain();
+ scoreBus.connect(musicBus);
+ const bus=scoreBus;
+ const voices={
+  tone:(...args)=>tone(bus,...args),
+  pluck:(...args)=>pluck(bus,...args),
+  noise:(...args)=>noise(bus,...args)
+ };
+ const theme=synthTheme();
+ function tick(){
+  if(!enabled||isBackground()||backgroundPaused||bus!==scoreBus)return;
+  playScorePulse(theme,step++,battlePressure,voices);
  }
- // Eighth-note pulse: low marching ostinato, alternating drum hands and a bar-end fill.
- if(note!==null)pluck(hz(theme.root+note+(phrase===3?-12:0)),phrase%2?.28:.18);
- tone(musicBus,root*([0,4,8,12].includes(pulse)?1:1.5),.19,.085,'triangle');
- if(pulse%2===0){tone(musicBus,pulse%8===0?105:145,.36,pulse%8===0?.48:.27,'sine',42);noise(musicBus,.09,.14,680)}
- if(pulse%4===2){noise(musicBus,.12,.15,1500);tone(musicBus,220,.1,.1,'triangle',100)}
- if(pulse>=13&&phrase%2===1){tone(musicBus,165+25*(pulse%2),.12,.16,'sine',65);noise(musicBus,.06,.08,900)}
- // Short horn answers leave space for weapon sounds; each stage has its own melody.
- if(note!==null&&pulse%4===0&&phrase%2===0){tone(musicBus,hz(theme.root+note),.42,.09,'triangle',0,.035);tone(musicBus,hz(theme.root+note-12),.4,.045,'sawtooth',0,.04)}
- if(pulse===0){noise(musicBus,.65,.1,3800);tone(musicBus,root,.75,.07)}
- step++;
+ tick();
+ timer=setInterval(tick,theme.beat);
 }
 function isBackground(){return document.hidden||pageInactive}
 function silencePlayback(){
  for(const track of document.querySelectorAll('audio[data-music-mode]'))track.pause();
  if(timer){clearInterval(timer);timer=null}
+ if(scoreBus){scoreBus.disconnect();scoreBus=null}
  if(musicBus){musicBus.disconnect();musicBus.gain.cancelScheduledValues(context.currentTime);musicBus.gain.setValueAtTime(0,context.currentTime)}
 }
 function pauseBackgroundAudio(){
@@ -93,14 +94,14 @@ export async function setMusic(on){
   if(isBackground()||backgroundPaused){pauseBackgroundAudio();return enabled}
   if(!enabled||request!==revision)return enabled;
   musicBus.connect(context.destination);sfxBus.gain.value=sfx?.7:0;
-  musicBus.gain.setValueAtTime(recordedMode==='home'?.42:recordedMode?.36:.32,context.currentTime);
+  musicBus.gain.setValueAtTime(recordedMode==='home'?.42:recordedMode?.36:.40,context.currentTime);
   const track=recordedTracks.get(recordedMode);
   if(track){
    let recorded=true;try{await track.play()}catch{recorded=false}
    if(isBackground()||backgroundPaused){pauseBackgroundAudio();return enabled}
    if(!enabled||request!==revision){if(!enabled||track!==recordedTracks.get(recordedMode))track.pause();return enabled}
-   if(!recorded){tick();timer=setInterval(tick,synthTheme().beat)}
-  }else{tick();timer=setInterval(tick,synthTheme().beat)}
+   if(!recorded)beginScore();
+  }else beginScore();
   return enabled;
  }catch{if(request===revision&&!isBackground()&&!backgroundPaused)enabled=false;return enabled}
 }
@@ -113,18 +114,91 @@ export async function unlockAudio(){
   await init().resume();
   if(isBackground()||request!==revision){if(isBackground())pauseBackgroundAudio();return false}
   const restore=backgroundPaused;backgroundPaused=false;sfxBus.gain.value=sfx?.7:0;
+  if(sfx)void preloadCombatSounds();
   if(restore&&enabled)await setMusic(true);
   return !isBackground()&&!backgroundPaused&&context.state==='running';
  }catch{return false}
 }
+const combatSounds={
+ swing:{clip:'swing',gain:.53,rate:1.06},
+ 'enemy-swing':{clip:'swing',gain:.33,rate:.88},
+ slash:{clip:'impact',gain:.73,rate:1},
+ 'enemy-slash':{clip:'impact',gain:.53,rate:.91},
+ hero:{clip:'impact',gain:.77,rate:1},
+ enemy:{clip:'impact',gain:.58,rate:.89},
+ arrow:{clip:'bow',gain:.62,rate:1},
+ 'enemy-arrow':{clip:'bow',gain:.43,rate:.94},
+ block:{clip:'parry',gain:.69,rate:1},
+ finish:{clip:'impact',gain:.85,rate:.74},
+ cleave:{clip:'impact',gain:.81,rate:.83}
+};
+const combatBuffers=new Map();
+let combatLoad;
+export function preloadCombatSounds(){
+ const audio=init();
+ if(!audio.decodeAudioData)return Promise.resolve();
+ combatLoad??=Promise.all(['swing','impact','bow','parry'].map(async clip=>{
+  try{
+   const response=await fetch(new URL(`./assets/audio/combat/${clip}.wav`,import.meta.url));
+   if(response.ok)combatBuffers.set(clip,await audio.decodeAudioData(await response.arrayBuffer()));
+  }catch{/* The game can still play a quiet cue without the recording. */}
+ }));
+ return combatLoad;
+}
+const cooldowns={swing:.13,'enemy-swing':.17,slash:.115,'enemy-slash':.16,arrow:.12,'enemy-arrow':.16,block:.1,deploy:.1,fire:.25,rock:.18,hook:.18};
+const lastSound=new Map();
 export async function hitSound(kind='slash'){
  if(!sfx||isBackground()||backgroundPaused)return false;
  // Retry browser audio unlocking instead of silently discarding the first strike.
  if(init().state!=='running'&&!await unlockAudio())return false;
  if(!sfx||isBackground()||backgroundPaused)return false;
+ const cooldown=cooldowns[kind];
+ if(cooldown&&context.currentTime-(lastSound.get(kind)??-Infinity)<cooldown)return true;
+ if(cooldown)lastSound.set(kind,context.currentTime);
  return soundRecipe(kind,sfxBus);
 }
 function soundRecipe(kind,bus){
+ const combat=combatSounds[kind];
+ if(combat){
+  const buffer=combatBuffers.get(combat.clip);
+  if(buffer){
+   const source=context.createBufferSource(),gain=context.createGain();
+   source.buffer=buffer;
+   source.playbackRate.value=combat.rate;
+   gain.gain.value=combat.gain;
+   source.connect(gain);gain.connect(bus);
+   source.start();
+   source.onended=()=>{source.disconnect();gain.disconnect()};
+  }else{
+   noise(bus,.12,combat.gain*.75,combat.clip==='swing'?1600:combat.clip==='impact'?900:2700);
+  }
+  return true;
+ }
+ if(kind==='deploy'){
+  tone(bus,126,.2,.29,'sine',65);noise(bus,.085,.21,920);
+  tone(bus,370,.16,.12,'triangle',0,.014,.045);
+  tone(bus,555,.18,.08,'sine',0,.017,.10);
+  return true;
+ }
+ if(kind==='warning-wave'){
+  tone(bus,108,.32,.39,'sine',48);
+  tone(bus,415,.40,.22,'triangle',0,.016,.045);
+  tone(bus,622,.52,.21,'triangle',0,.016,.17);
+  noise(bus,.28,.16,1760);
+  return true;
+ }
+ if(kind==='hook'){
+  noise(bus,.21,.30,2900);
+  for(const delay of [0,.08,.16])tone(bus,1450,.15,.13,'triangle',390,.013,delay);
+  return true;
+ }
+ if(kind==='fire'||kind==='rock'){
+  const fire=kind==='fire';
+  noise(bus,fire?.55:.28,fire?.38:.54,fire?1150:710);
+  tone(bus,fire?137:104,.36,.36,'sine',44,.018);
+  if(!fire)tone(bus,950,.18,.13,'triangle',310,.012,.06);
+  return true;
+ }
  if(kind==='experience'){tone(bus,523,.28,.09,'sine',784);tone(bus,1046,.3,.05);return true}
  if(kind==='level-up'){for(const f of [523,659,784,1046])tone(bus,f,.85,.12,'sine',f*1.01,.03);tone(bus,196,.4,.14,'triangle',392);return true}
  const early=/^skill-([a-z]+)-([01])$/.exec(kind),small=early&&skillPresentation(early[1],Number(early[2]));
@@ -145,10 +219,7 @@ function soundRecipe(kind,bus){
  if(kind==='heal'){for(const f of [523,659,784])tone(bus,f,.9,.13);return true}
  if(kind==='oath'){for(const f of [196,294,392,587])tone(bus,f,1.3,.16);noise(bus,.7,.35,1200);tone(bus,110,.7,.6,'sine',35);return true}
  if(kind==='roar'||kind==='boss'){noise(bus,.65,.8,kind==='boss'?350:600);tone(bus,150,.65,.55,'sawtooth',45);tone(bus,80,.8,.6);return true}
- if(kind==='arrow'){noise(bus,.18,.6,3300);tone(bus,950,.16,.3,'triangle',250);return true}
- if(kind==='block'){noise(bus,.12,.5,4000);for(const f of [1600,2310,3490])tone(bus,f,.45,.2,'sine');return true}
- if(kind==='finish'||kind==='cleave'){noise(bus,.45,.9,1500);tone(bus,1500,.35,.4,'triangle',120);tone(bus,110,.7,.7,'sine',35);return true}
- noise(bus,.22,.75,kind==='enemy-slash'||kind==='enemy'?1200:2400);tone(bus,900,.2,.34,'triangle',180);tone(bus,150,.18,.3,'sine',60);return true;
+ noise(bus,.22,.75,2400);tone(bus,900,.2,.34,'triangle',180);tone(bus,150,.18,.3,'sine',60);return true;
 }
 // iOS backgrounding/navigation can emit pagehide separately from visibilitychange.
 // Foregrounding alone stays silent; the existing pointer/key unlock path resumes.
