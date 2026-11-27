@@ -28,6 +28,26 @@ const stages=[
  {level:123,kind:'defense',chapter:21,title:'漢壽會師',terrain:'pass-defense',ending:'退下來的蜀軍會合',next:'劍閣守關'}
 ];
 
+test('stage 71 opens from home with an old save before and after reload',async({page})=>{
+ const errors=[];
+ page.on('pageerror',error=>errors.push(error.message));
+ page.on('response',response=>{
+  if(response.status()>=400&&response.request().resourceType()==='script')errors.push(`${response.status()} ${response.url()}`);
+ });
+ await page.addInitScript(key=>{
+  if(!localStorage.getItem(key))localStorage.setItem(key,JSON.stringify({completed:70,coins:150,inventory:{grain:2}}));
+ },saveKey);
+ await page.goto('/hero/');
+ for(const reload of [false,true]){
+  if(reload)await page.reload();
+  await expect(page.locator('#homeProgress')).toHaveText('已完成 70 / 142 關 · 下一站：宕渠收兵',{timeout:12000});
+  await page.locator('#startBtn').tap();
+  await expect(page.locator('#storyTitle')).toHaveText('宕渠收兵');
+  await expect(page.locator('#storyChapter')).toContainText('第十三章');
+ }
+ expect(errors).toEqual([]);
+});
+
 for(const stage of stages)test(`stage ${stage.level} clears and replays from an old save on touch`,async({page})=>{
  test.setTimeout(420000);
  const {level,chapter,next,kind,bonusButton,bonusClears,stops,peaceful,sun,selectArmy}=stage;
@@ -113,6 +133,7 @@ for(const stage of stages)test(`stage ${stage.level} clears and replays from an 
   const cart=page.locator('#supplyCart');
   const lead=maicheng?page.locator('#units .ally').filter({has:page.getByText(/^關羽(?: · 駐守)?$/)}):page.locator('#units .ally[data-lane="1"]').first();
   const distance=unit=>unit.evaluate(node=>parseFloat(node.style.left));
+  const cargoSave=cargo?await save():null;
   if(cargo){
    await expect(objective).toContainText(stops[0]);
    await expect(quick).toHaveText('查看任務');
@@ -124,6 +145,8 @@ for(const stage of stages)test(`stage ${stage.level} clears and replays from an 
     await expect(lanes.nth(sent)).toHaveAttribute('data-supply-route','true');
     await expect(objective).toContainText(`軍糧 ${sent}／3 批`);
     await expect(objective).toContainText(stops[sent]);
+    await expect(result).toBeHidden();
+    expect(await save()).toEqual(cargoSave);
     await quick.tap();
     sent++;
     await expect(cart).toBeVisible();

@@ -74,3 +74,27 @@ test('stage 100 keeps a travelling cart at the same position when its road is bl
  assert.equal(battle.mission.delivered,1);
  assert.deepEqual(supplyLeg(battle),{lane:1,name:'山路驛站',progress:0});
 });
+
+test('stage 100 still waits for remaining enemies after the third cart arrives',async()=>{
+ const {createBattle,deploy,stepBattle}=await import('../../hero/engine.mjs');
+ const {historyAction,stepHistoryMission}=await import('../../hero/history-missions.mjs');
+ const battle=createBattle(100);
+ battle.spawned=11;
+ battle.nextSpawn=0;
+ stepBattle(battle,.1);
+ battle.nextSpawn=battle.time;
+ stepBattle(battle,.1);
+ assert.ok(battle.bossSpawned);
+ const [enemy]=battle.enemies;
+ enemy.lane=0;
+ battle.mission.delivered=2;
+ assert.ok(deploy(battle,'liubei',2));
+ assert.ok(historyAction(battle,'supply'));
+ stepHistoryMission(battle,8);
+ assert.equal(battle.mission.delivered,3);
+ stepBattle(battle,.1);
+ assert.equal(battle.over,false);
+ enemy.hp=0;
+ stepBattle(battle,.1);
+ assert.ok(battle.won);
+});
