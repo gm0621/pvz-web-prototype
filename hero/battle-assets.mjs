@@ -6,8 +6,14 @@ export function preloadBattleAssets(urls){
   const entry={ready:false};images.set(url,entry);
   entry.promise=new Promise(resolve=>{
    const img=new Image();img.decoding='async';img.fetchPriority='low';
+   let settled=false;
    const timer=setTimeout(()=>finish(false),20000);
-   function finish(ok){clearTimeout(timer);img.onload=null;img.onerror=null;entry.ready=ok;if(!ok)images.delete(url);resolve(ok)}
+   function finish(ok){
+    if(settled)return;
+    settled=true;clearTimeout(timer);img.onload=null;img.onerror=null;entry.ready=ok;
+    if(!ok)images.delete(url);
+    resolve(ok);
+   }
    img.onload=()=>img.decode().then(()=>finish(true),()=>finish(false));img.onerror=()=>finish(false);img.src=url;
   });return entry.promise;
  })).then(results=>results.every(Boolean));
@@ -21,6 +27,18 @@ export function prepareBattleAssets(urls,onReady){
  document.body.append(dialog);pending=dialog;const status=dialog.querySelector('p'),retry=dialog.querySelector('.gold-button');
  function close(){if(pending!==dialog)return;pending=null;dialog.close();dialog.remove()}
  dialog.querySelector('.quiet-button').onclick=close;dialog.oncancel=event=>{event.preventDefault();close()};
- async function load(){retry.hidden=true;status.textContent='正在載入本關圖片，準備好就出發。';const ok=await preloadBattleAssets(urls);if(pending!==dialog)return;if(ok){close();onReady()}else{status.textContent='部分圖片未能載入，請重試；本場戰鬥尚未開始。';retry.hidden=false}}
+ async function load(){
+  retry.hidden=true;
+  status.textContent='正在載入本關圖片，準備好就出發。';
+  let ok=await preloadBattleAssets(urls);
+  if(pending!==dialog)return;
+  if(!ok){
+   status.textContent='部分圖片載入失敗，正在重試。';
+   ok=await preloadBattleAssets(urls);
+   if(pending!==dialog)return;
+  }
+  if(ok){close();onReady()}
+  else{status.textContent='部分圖片未能載入，請重試；本場戰鬥尚未開始。';retry.hidden=false}
+ }
  retry.onclick=load;dialog.showModal();void load();
 }

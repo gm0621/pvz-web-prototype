@@ -1,7 +1,7 @@
-import {HISTORICAL_STAGES} from './history-stages.mjs?v=hanzhong-sunhao-tazhong-1';
-import {missionText} from './chapter-missions.mjs?v=hanzhong-sunhao-tazhong-1';
-import {retreatPartyNames,retreatPartyLabel,retreatRallyHint,supplyReady,coverWaveText,historyMissionText} from './history-missions.mjs?v=hanzhong-sunhao-tazhong-1';
-import {hasFireRoutes,hasGate,hasOutposts,canRepairGate} from './field-missions.mjs?v=hanzhong-sunhao-tazhong-1';
+import {HISTORICAL_STAGES} from './history-stages.mjs?v=hanzhong-sunhao-tazhong-2';
+import {missionText} from './chapter-missions.mjs?v=hanzhong-sunhao-tazhong-2';
+import {retreatPartyNames,retreatPartyLabel,retreatRallyHint,supplyReady,coverWaveText,historyMissionText} from './history-missions.mjs?v=hanzhong-sunhao-tazhong-2';
+import {hasFireRoutes,hasGate,hasOutposts,canRepairGate} from './field-missions.mjs?v=hanzhong-sunhao-tazhong-2';
 const names=['上','中','下'];
 export function missionQuickState(b){
  const m=b.mission;if(!m)return null;

@@ -36,6 +36,22 @@ test('home cover keeps one clear entry and a collapsed accessible chapter catalo
 test('home loads responsive cover only; battle sheets start after entering story',async({page},info)=>{
  const urls=[];page.on('request',r=>{if(r.resourceType()==='image')urls.push(r.url())});await page.goto('/hero/');await expect(page.locator('#startBtn')).toBeVisible();await page.locator('.home-art img').evaluateAll(imgs=>Promise.all(imgs.map(i=>i.decode())));expect(urls.filter(u=>u.includes('/assets/attacks/'))).toEqual([]);expect(urls.filter(u=>/assets\/(liubei.png|guanyu.webp|zhangfei.png|scenes\/peach-garden.jpg)/.test(u))).toEqual([]);const cover=await page.locator('.home-art img').evaluateAll(xs=>xs.map(x=>({src:x.currentSrc,width:x.naturalWidth})));expect(cover.every(x=>x.src.includes('/assets/home/')&&x.width>0)).toBe(true);await page.screenshot({path:info.outputPath('optimized-home.png'),fullPage:true});await page.locator('#startBtn').click();await expect.poll(()=>urls.filter(u=>u.includes('/assets/attacks/')).length).toBeGreaterThanOrEqual(4);
 });
+test('battle image load recovers automatically after a temporary failure',async({page})=>{
+ let attempts=0;
+ await page.route('**/assets/attacks/liubei.png',async route=>{
+  if(++attempts===1){
+   await page.locator('#battleLoading').waitFor({state:'visible'});
+   await route.abort();
+  }else await route.continue();
+ });
+ await page.goto('/hero/');
+ await page.locator('#startBtn').click();
+ await page.locator('#storySkip').click();
+ await expect(page.locator('#battle')).toBeVisible();
+ await expect(page.locator('#battleLoading')).toHaveCount(0);
+ expect(attempts).toBe(2);
+});
+
 test('failed battle image can retry or cancel without starting combat',async({page})=>{
  await page.route('**/assets/attacks/liubei.png',route=>route.abort());await page.goto('/hero/');await page.locator('#startBtn').click();await page.locator('#storySkip').click();await expect(page.locator('#battleLoading')).toBeVisible();await expect(page.locator('#battleLoading')).toContainText('部分圖片未能載入');await expect(page.locator('#battle')).not.toBeVisible();await page.locator('#battleLoading .quiet-button').click();await expect(page.locator('#battleLoading')).toHaveCount(0);await page.unroute('**/assets/attacks/liubei.png');await page.locator('#storySkip').click();await expect(page.locator('#battle')).toBeVisible();
 });

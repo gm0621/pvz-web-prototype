@@ -1,4 +1,4 @@
-import {mapPersonSvg} from './characters.mjs?v=hanzhong-sunhao-tazhong-1';
+import {mapPersonSvg} from './characters.mjs?v=hanzhong-sunhao-tazhong-2';
 
 const standardHeight=304,dualHeight=374;
 
