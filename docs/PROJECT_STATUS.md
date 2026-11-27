@@ -8,7 +8,7 @@
 
 ## Obsidian 尚未同步時，從這裡接手
 
-1. **確認版本。** 在剛拉下來的 `main` 執行 `git status --short --branch`、`git log -1 --oneline`。`git log` 顯示目前 checkout 的提交。正式遊戲版本另看下方最新一筆含「已發布」及 Pages 工作的功能紀錄。截至 2026-11-27，最新已驗證的正式遊戲版本為 `2e4b011`（主篇 142 關，《西晉後日談》18 關，《洛陽風雲》6 關，《長安西行》6 關）。 [正式遊戲](https://gm0621.github.io/pvz-web-prototype/hero/?v=2e4b011) · [人物圖鑑](https://gm0621.github.io/pvz-web-prototype/hero/people.html?v=2e4b011) · [發布紀錄](https://github.com/gm0621/pvz-web-prototype/actions/runs/45970295787)
+1. **確認版本。** 在剛拉下來的 `main` 執行 `git status --short --branch`、`git log -1 --oneline`。`git log` 顯示目前 checkout 的提交。正式遊戲版本另看下方最新一筆含「已發布」及 Pages 工作的功能紀錄。截至 2026-11-27，最新已驗證的正式遊戲版本為 `99ddf95`（主篇 142 關，《西晉後日談》18 關，《洛陽風雲》6 關，《長安西行》6 關）。 [正式遊戲](https://gm0621.github.io/pvz-web-prototype/hero/?v=99ddf95) · [人物圖鑑](https://gm0621.github.io/pvz-web-prototype/hero/people.html?v=99ddf95) · [發布紀錄](https://github.com/gm0621/pvz-web-prototype/actions/runs/45974346232)
 2. **安裝並做基本驗證。** 在專案根目錄用 Node.js 20 以上與 npm。執行下列指令可驗證引擎、桌面滑鼠／鍵盤及手機平板觸控。更多測試和本機預覽見 [開發指南](DEVELOPMENT.md)。Playwright 會啟動 4174 埠的測試服務，先關閉佔用該埠的手動預覽。
 3. **開工前看目前進度。** 先讀 [AGENTS.md](../AGENTS.md) 的「重要約束」及下方與任務相關的紀錄。英雄演義是獨立的 `/hero/` 遊戲，關卡上限見 `hero/campaign-config.mjs`。正式存檔 `heroLegendProgress_v1` 與本機、線上跳關測試的存檔分開。跨電腦時瀏覽器存檔和未提交的檔案需另外移轉。保留滑鼠、鍵盤與觸控操作，也要保留首勝軍資、重玩及暫停的既有規則。 [跳關工具和存檔說明](hero-local-testing.md)
 4. **繼續當次工作。** 依使用者的新需求從最新 `main` 開分支，保留原工作區修改。完成後把變更、實際測試結果、版本與注意事項記在本檔。Obsidian 未同步時註明待補，能讀取後再更新。正式發布依當次授權。
@@ -19,6 +19,13 @@ npx playwright install chromium webkit
 npm run test:hero:engine
 npx playwright test --config=playwright.hero-input.config.js
 ```
+
+## 2026-11-27 音樂與音效開關保存
+
+- 已發布 `99ddf95`，快取 `hero-audio-settings-1`。 [正式遊戲](https://gm0621.github.io/pvz-web-prototype/hero/?v=99ddf95) · [發布紀錄](https://github.com/gm0621/pvz-web-prototype/actions/runs/45974346232)
+- 音樂與音效各自保存在本機瀏覽器的 `heroLegendAudio_v1`。重整立即顯示開關狀態，已開啟的音樂在首次操作後播放。停用音效會取消等候中的試聽，戰鬥從背景回來仍須按「繼續」。
+- 本機 443 項引擎／音訊單元測試、320px 手機 2 項開關測試通過。音訊回歸首輪 69 項有 5 項未通過，已校正觸控與滑鼠解鎖事件、章末淡入的取樣條件，相關 18 項複驗通過。正式站 12 項開關與四／五路音訊流程通過，19 份發布資源比對一致。使用 390×844 Chromium、390×844 WebKit 手機與 820×1180 WebKit 平板模擬。以受控戰局驗證第 2 關「糧道遇襲」的重玩及營地接第 3 關「大興山迎敵」。兩種單開設定分別測重整、背景恢復、音訊各自輸出與戰場「更多」面板。實機聽感待確認。
+- 重跑指令 `npx playwright test --config=playwright.hero-dispatch-supply.config.js tests/hero-audio.spec.js --project=small-phone --project=webkit-phone --project=webkit-tablet --grep 'independent audio setting'`。
 
 ## 2026-11-27 三個番外末關配樂複查
 
