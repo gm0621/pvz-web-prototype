@@ -15,7 +15,8 @@ test('the Eastern Palace chapter keeps prior saves and the historical sequence',
  assert.equal(chapter.length,6);
  assert.deepEqual(chapter.map(s=>s.year),[291,299,300,300,300,301]);
  assert.deepEqual(chapter.map(s=>s.faction),Array(6).fill('cao'));
- assert.deepEqual(chapter.map(s=>s.mission),['restoration','dispatch','supply','holdout','withdraw','dispatch']);
+ assert.deepEqual(chapter.map(s=>s.mission),['restoration','dispatch','supply','pass-defense','withdraw','dispatch']);
+ assert.deepEqual(chapter[2].supplyStops,['出城路口','路上驛站','許昌城門']);
  for(const [index,stage] of chapter.entries()){
   const level=149+index;
   assert.deepEqual(chapterInfo(level),{chapter:26,number:index+1,count:6,title:'東宮風雲'});
@@ -54,7 +55,7 @@ test('the Eastern Palace chapter keeps prior saves and the historical sequence',
  assert.equal(portraits.size,6);
 });
 
-test('Eastern Palace missions finish normally with combat confined to Luoyang holdout and withdrawal',async()=>{
+test('Eastern Palace missions finish normally with combat confined to Luoyang defense and withdrawal',async()=>{
  const {normalizeProgress,createBattle,deploy,stepBattle,castActive}=await import('../../hero/engine.mjs');
  const {SLOTS,configureRoster}=await import('../../hero/roster.mjs');
  const {historyAction}=await import('../../hero/history-missions.mjs');

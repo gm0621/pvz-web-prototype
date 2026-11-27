@@ -1,4 +1,4 @@
-import {mapPersonSvg} from './characters.mjs?v=yang-fu-tang-2';
+import {mapPersonSvg} from './characters.mjs?v=xuchang-jia-huangqiao-1';
 
 const standardHeight=304,dualHeight=374;
 

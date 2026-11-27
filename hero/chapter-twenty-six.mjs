@@ -34,9 +34,9 @@ const stages=[
  {
   name:'許昌幽居',year:300,origin:'luoyang',place:'jinXuchang',shift:true,factionLabel:'許昌隨行隊',campBanner:'行',
   leader:'司馬遹',guest:'司馬衷',mapLeaderRole:'赴許昌幽居',historyCast:['司馬遹','賈南風'],
-  mission:'supply',scene:'supply-road',enemyArmy:'許昌隨行補給',successTitle:'隨行補給送達',
+  mission:'supply',supplyStops:['出城路口','路上驛站','許昌城門'],scene:'supply-road',enemyArmy:'許昌隨行補給',successTitle:'隨行補給送達',
   history:'300 年，已失去太子身分的司馬遹被送到許昌，關在城內一處宮院。他後來在許昌被賈皇后派來的人殺害。朝廷中反對賈皇后的人，因這件事採取了行動。',
-  briefing:'讓每一路都有友軍接應。備車完成後按「發送糧車」，送出三批路上補給。',
+  briefing:'派友軍守住亮起的路，再按「發送糧車」。護衛離開時糧車會停，回到這一路就繼續。三批都送到就過關。',
   ending:'司馬遹在許昌遇害。消息傳回洛陽，趙王準備動手廢掉賈皇后。',
   camp:'隨行隊先在驛站整隊，點查剩下的糧袋，再把遠方傳來的消息交給大家。',
   question:'司馬遹被廢後，在哪裡遭到幽禁？',choices:['許昌','建業','襄陽'],refs:[prince,jia,hui,era]
@@ -44,9 +44,9 @@ const stages=[
  {
   name:'賈后被廢',year:300,origin:'luoyangPalace',place:'jinJinyong',shift:true,factionLabel:'洛陽護送隊',campBanner:'護',
   leader:'司馬倫',guest:'孫秀',opponent:'賈南風',mapOpponentRole:'被廢皇后',historyCast:['司馬倫','孫秀','賈南風','張華','裴頠'],
-  mission:'holdout',missionTitle:'洛陽護送守備',scene:'enemy-camp',enemyArmy:'城中亂兵',enemyCount:12,successTitle:'護送守備完成',
+  mission:'pass-defense',missionTitle:'洛陽護送守備',scene:'enemy-camp',enemyArmy:'城中亂兵',enemyCount:12,successTitle:'護送守備完成',
   history:'司馬遹死後，趙王司馬倫和謀士孫秀發動政變。賈南風被廢，後來在金墉城被賜死，張華、裴頠等大臣也在這次政變中被殺。',
-  briefing:'各路都要有友軍照應。累積守備 24 秒後，清退場上的亂兵。',
+  briefing:'哪一路亮起，就派友軍去守。擋住上路、下路、中路三波，保住防線，再清完剩下的敵兵。',
   ending:'賈南風被廢，張華與裴頠遇害。司馬倫與孫秀掌握政局。',
   camp:'把走散的隊伍找到，先通報哪些路還能走，讓大家不必留在混亂的街上。',
   question:'賈南風被廢後，掌握朝政的是誰？',choices:['司馬倫和孫秀','東吳舊臣','許昌的守門人'],refs:[hui,jia,zhao,era]
@@ -79,6 +79,7 @@ export const TWENTY_SIXTH_CHAPTER=stages.map((stage,index)=>({
  leaderName:stage.leader,opponentName:stage.opponent,mapOpponent:stage.mapOpponent??!!stage.opponent,matchupLabel:stage.matchupLabel,mapOpponentRole:stage.mapOpponentRole,mapStationRole:stage.mapStationRole,mapLeaderRole:stage.mapLeaderRole,
  scene:`./assets/scenes/${stage.scene}.jpg`,mission:stage.mission,missionTitle:stage.missionTitle,missionSites:stage.missionSites,
  successTitle:stage.successTitle,successRibbon:'戰 事 記 錄 ・ 回 營 整 備',
+ ...(stage.supplyStops?{supplyStops:stage.supplyStops}:{}),
  ...(stage.mission==='withdraw'?{retreatKeys:[]}:{}),
  noBoss:true,bossName:stage.enemyArmy,bossHp:0,enemyArmy:stage.enemyArmy,enemyCount:stage.enemyCount??0,interval:3.8,
  lead:stage.history,history:stage.history,adaptation,note:adaptation,bossTip:stage.briefing,

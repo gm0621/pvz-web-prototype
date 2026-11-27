@@ -4,7 +4,7 @@ const stages=[
  {name:'賈后掌權',year:291,route:'洛陽宮城',leader:'賈南風',guest:'張華',opponent:'張華',role:'處理朝政',station:'議事地',faction:'洛陽朝廷',kind:'restoration',sites:['奏章','官籍','驛書'],outcome:'賈南風掌權'},
  {name:'東宮廢立',year:299,route:'洛陽東宮',leader:'司馬遹',guest:'裴頠',opponent:'賈南風',role:'主張廢立',station:'東宮',leaderRole:'被廢太子',faction:'東宮傳令隊',banner:'東',kind:'dispatch',outcome:'司馬遹失去太子身分'},
  {name:'許昌幽居',year:300,route:'洛陽 → 許昌',leader:'司馬遹',guest:'司馬衷',leaderRole:'赴許昌幽居',faction:'許昌隨行隊',banner:'行',kind:'supply',outcome:'司馬遹在許昌遇害'},
- {name:'賈后被廢',year:300,route:'洛陽宮城 → 金墉城',leader:'司馬倫',guest:'孫秀',opponent:'賈南風',role:'被廢皇后',faction:'洛陽護送隊',banner:'護',waves:true,kind:'holdout',outcome:'賈南風被廢，張華與裴頠遇害'},
+ {name:'賈后被廢',year:300,route:'洛陽宮城 → 金墉城',leader:'司馬倫',guest:'孫秀',opponent:'賈南風',role:'被廢皇后',faction:'洛陽護送隊',banner:'護',waves:true,kind:'pass-defense',outcome:'賈南風被廢，張華與裴頠遇害'},
  {name:'淮南王起兵',year:300,route:'洛陽街巷 → 洛陽城門',leader:'司馬允',guest:'司馬衷',opponent:'司馬倫',role:'掌權一方',faction:'洛陽撤離隊',banner:'護',waves:true,kind:'withdraw',outcome:'淮南王司馬允敗亡'},
  {name:'趙王篡位',year:301,route:'洛陽宮城 → 金墉城',leader:'司馬衷',guest:'司馬衷',opponent:'司馬倫',role:'篡取皇位',leaderRole:'被迫遷居',faction:'洛陽傳訊隊',kind:'dispatch',outcome:'趙王司馬倫篡位'}
 ];
@@ -47,7 +47,7 @@ test('stage 148 continues through the usurpation of the Prince of Zhao and keeps
   // Only enemy waves and starting food are sandboxed. Mission and save paths run through UI.
   await page.evaluate(kind=>{
    const battle=window.chapterBattle;
-   battle.bossSpawned=kind!=='holdout';
+   battle.bossSpawned=kind!=='pass-defense';
    battle.nextSpawn=Infinity;
    battle.food=300;
   },kind);
@@ -55,13 +55,6 @@ test('stage 148 continues through the usurpation of the Prince of Zhao and keeps
    await tap(`#cards [data-hero=${key}]`);
    await page.locator('.lane').nth(lane).tap({position:{x:40,y:25}});
    await advance(200);
-  }
- }
- async function sendCarts(){
-  for(let batch=0;batch<3;batch++){
-   await advance(7600);
-   await expect(page.locator('#missionQuickAction')).toHaveText('發送糧車');
-   await tap('#missionQuickAction');
   }
  }
  async function withdraw(){
@@ -220,34 +213,16 @@ test('stage 148 continues through the usurpation of the Prince of Zhao and keeps
 
   if(level===154)await page.evaluate(()=>window.blockSave=true);
   if(stage.kind==='supply'){
-   await advance(2500);
-   await tap('#pauseBtn');
-   const prepping=await snapshot();
-   expect(prepping.mission.charge).toBeGreaterThan(0);
-   expect(prepping.mission.charge).toBeLessThan(10);
-   await advance(650);
-   expect(await snapshot()).toEqual(prepping);
-   await expect(page.locator('#missionQuick')).toContainText('已暫停，保留進度');
-   await expect(page.locator('#missionQuickAction')).toBeDisabled();
-   await tap('#pauseBtn');
-   await advance(5100);
-   await expect(page.locator('#missionQuickAction')).toHaveText('發送糧車');
-   const guardId=await page.evaluate(()=>String(window.chapterBattle.allies.find(u=>u.key==='zhangfei').id));
-   await page.locator('#unitSelect').selectOption(guardId);
-   await tap('#commandDrawerButton');
-   await tap('#orders [data-order="up"]');
-   await tap('#commandDrawerClose');
-   await expect(page.locator('#missionQuick')).toContainText('下路缺接應');
-   await tap('#missionQuickAction');
-   await expect(page.locator('#missionChoices [data-action=supply]')).toBeDisabled();
-   expect((await snapshot()).mission).toMatchObject({charge:10,delivered:0});
-   await tap('#missionDrawerClose');
-   await tap('#cards [data-hero=archer]');
-   await page.locator('.lane').nth(2).tap({position:{x:40,y:25}});
-   await advance(100);
-   await expect(page.locator('#missionQuickAction')).toHaveText('發送糧車');
-   await sendCarts();
-   await expect(page.locator('#missionQuick')).toContainText('軍糧 3／3');
+   const cart=page.locator('#supplyCart');
+   const quick=page.locator('#missionQuickAction');
+   for(const [batch,stop] of ['出城路口','路上驛站','許昌城門'].entries()){
+    await expect(page.locator('#missionObjective')).toContainText(stop);
+    await expect(quick).toHaveText('發送糧車');
+    await quick.tap();
+    await expect(cart).toContainText(`糧車 ${batch+1}／3`);
+    await advance(6500);
+   }
+   await expect(page.locator('#missionObjective')).toContainText('軍糧 3／3 批');
   }
   else if(stage.kind==='restoration'){
    await tap('#missionDrawerButton');
@@ -268,20 +243,15 @@ test('stage 148 continues through the usurpation of the Prince of Zhao and keeps
     await advance(6700);
     await expect(option).toBeDisabled();
    }
-  }else if(stage.kind==='holdout'){
-   await advance(4500);
+  }else if(stage.kind==='pass-defense'){
    await expect(page.locator('#missionQuick')).toContainText('洛陽護送守備');
+   await expect(page.locator('#missionQuick')).toContainText('第 1／3 波 · 上路來敵');
    await tap('#pauseBtn');
    const frozen=await snapshot();
-   expect(frozen.mission.hold).toBeGreaterThan(0);
-   expect(frozen.mission.hold).toBeLessThan(24);
    await advance(1000);
    expect(await snapshot()).toEqual(frozen);
-   await tap('#pauseBtn');
-   await advance(18500);
-   expect((await snapshot()).mission).toMatchObject({hold:24,done:true});
-   await expect(page.locator('#result')).toBeHidden();
-   await expect(page.locator('#missionQuick')).toContainText('清退後續敵軍');
+   await tap('#resumeBtn');
+   // This chapter regression queues the final enemy. The touch mission suite runs all three waves.
    await page.evaluate(()=>{
     const battle=window.chapterBattle;
     battle.spawned=11;
@@ -289,6 +259,7 @@ test('stage 148 continues through the usurpation of the Prince of Zhao and keeps
    });
    await advance(3300);
    await expect(page.locator('#waveText')).toHaveText('城中亂兵已全數出現');
+   await expect(page.locator('#missionQuick')).toContainText('清退剩下的 1 名敵兵');
    await expect(page.locator('#result')).toBeHidden();
    await advance(31000);
   }else if(stage.kind==='withdraw'){

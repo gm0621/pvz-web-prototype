@@ -18,6 +18,7 @@ test('the princes campaign extends stage 154 saves and preserves the historical 
  assert.equal(chapter.length,6);
  assert.deepEqual(chapter.map(stage=>stage.year),Array(6).fill(301));
  assert.deepEqual(chapter.map(stage=>stage.mission),['dispatch','holdout','withdraw','holdout','dispatch','restoration']);
+ assert.equal(chapter[2].coverWaves,true);
  for(const [index,stage] of chapter.entries()){
   const level=155+index;
   assert.deepEqual(chapterInfo(level),{chapter:27,number:index+1,count:6,title:'諸王討趙'});
@@ -78,8 +79,10 @@ test('the princes campaign can finish all six objectives with normal waves and o
     stepBattle(battle,.1);
    }
    assert.equal(battle.won,true,JSON.stringify({level,seed,mission:battle.mission}));
-   assert.equal(battle.spawned,enemyCount);
-   if(level===157)assert.equal(battle.mission.ordered,true);
+   if(level===157){
+    assert.ok(battle.spawned>=9&&battle.spawned<=enemyCount);
+    assert.equal(battle.mission.ordered,true);
+   }else assert.equal(battle.spawned,enemyCount);
   }
  }
 });

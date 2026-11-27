@@ -30,9 +30,9 @@ const stages=[
  {
   name:'黃橋收兵',year:301,origin:'ye',place:'jinHuangqiao',shift:true,factionLabel:'成都王收兵隊',campBanner:'成',
   leader:'司馬穎',guest:'盧志',opponent:'孫會',mapOpponentRole:'趙王前線將領',historyCast:['司馬穎','盧志','孫會','孫秀'],
-  mission:'withdraw',scene:'enemy-camp',enemyArmy:'孫會軍',enemyCount:12,successTitle:'黃橋散兵撤回',
+  mission:'withdraw',coverWaves:true,scene:'enemy-camp',enemyArmy:'孫會軍',enemyCount:12,successTitle:'黃橋散兵撤回',
   history:'司馬穎的前鋒到黃橋，被趙王部下孫會、士猗與許超打敗。司馬穎本想退守朝歌，盧志和王彥勸他重整兵力，再找機會出戰。',
-  briefing:'等「全軍撤離」亮起後按下，保住至少一隊友軍，讓所有在場友軍撤回左側。',
+  briefing:'看亮起的路，派友軍擋追兵。第三波一到就能按「全軍撤離」。至少保住一隊，讓所有還在場的友軍回到左側。',
   ending:'黃橋一戰，成都王前鋒吃了敗仗。司馬穎聽取盧志、王彥的建議整隊，準備反擊。',
   camp:'大家先按原來的隊伍報到。有人走散就登記名字，別急著把守衛全叫去找人。',
   question:'黃橋一戰過後，司馬穎採用了什麼建議？',choices:['重整兵力，再找機會出戰','立即返回成都','推舉孫會當皇帝'],refs:[chengdu,chronicle]
@@ -75,6 +75,7 @@ export const TWENTY_SEVENTH_CHAPTER=stages.map((stage,index)=>({
  leaderName:stage.leader,opponentName:stage.opponent,mapOpponent:stage.mapOpponent??!!stage.opponent,matchupLabel:stage.matchupLabel,mapOpponentRole:stage.mapOpponentRole,mapStationRole:stage.mapStationRole,mapLeaderRole:stage.mapLeaderRole,mapMessenger:stage.mapMessenger,
  scene:`./assets/scenes/${stage.scene}.jpg`,mission:stage.mission,missionTitle:stage.missionTitle,missionSites:stage.missionSites,
  successTitle:stage.successTitle,successRibbon:'戰 事 記 錄 ・ 回 營 整 備',
+ ...(stage.coverWaves?{coverWaves:true}:{}),
  ...(stage.mission==='withdraw'?{retreatKeys:[]}:{}),
  noBoss:true,bossName:stage.enemyArmy,bossHp:0,enemyArmy:stage.enemyArmy,enemyCount:stage.enemyCount??0,interval:3.8,
  lead:stage.history,history:stage.history,adaptation,note:adaptation,bossTip:stage.briefing,

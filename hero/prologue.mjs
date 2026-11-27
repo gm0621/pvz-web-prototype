@@ -1,5 +1,5 @@
-import {HISTORICAL_STAGES} from './history-stages.mjs?v=yang-fu-tang-2';
-import {paintPortrait} from './factions.mjs?v=yang-fu-tang-2';
+import {HISTORICAL_STAGES} from './history-stages.mjs?v=xuchang-jia-huangqiao-1';
+import {paintPortrait} from './factions.mjs?v=xuchang-jia-huangqiao-1';
 import {THIRD_CHAPTER} from './chapter-three.mjs?v=passive-feedback-1';
 // History and novel adaptation are deliberately separated in the introduction.
 export const CHAPTER_BACKGROUNDS={

@@ -5,14 +5,17 @@ const stages=[
  {level:138,kind:'defense',chapter:24,title:'西陵守圍',terrain:'pass-defense',ending:'陸抗拿回西陵，晉軍撤退',next:'襄陽交印',resultTitle:'西陵守備完成'},
  {level:121,kind:'supply',stops:['山口','谷道','沓中營地'],chapter:21,title:'侯和退屯',terrain:'',ending:'姜維在侯和失利後留駐沓中',next:'沓中脫身'},
  {level:82,kind:'withdrawal',chapter:14,title:'麥城出走',terrain:'pass-defense',ending:'關羽、關平出走途中被潘璋部下馬忠擒獲',next:'成都即位',resultTitle:'離開麥城'},
- {level:146,kind:'defense',chapter:25,title:'楊駿之變',terrain:'pass-defense',ending:'楊駿被殺',next:'汝南王入朝',resultTitle:'街巷守備完成',bonusButton:'homeExtra'},
+ {level:146,kind:'defense',chapter:25,title:'楊駿之變',terrain:'pass-defense',ending:'楊駿被殺',next:'汝南王入朝',resultTitle:'街巷守備完成',bonusButton:'homeExtra',bonusClears:4},
  {level:110,kind:'supply',stops:['山路口','接應站','涪縣營地'],chapter:19,title:'涪城轉運',terrain:'',ending:'補給送到涪縣',next:'興勢守關'},
- {level:170,kind:'withdrawal',chapter:29,title:'蕩陰撤離',terrain:'pass-defense',ending:'嵇紹護駕遇害，惠帝後來被帶往鄴城',next:'鄴城返洛',resultTitle:'接應隊撤回',bonusButton:'homeChangan'}
+ {level:170,kind:'withdrawal',chapter:29,title:'蕩陰撤離',terrain:'pass-defense',ending:'嵇紹護駕遇害，惠帝後來被帶往鄴城',next:'鄴城返洛',resultTitle:'接應隊撤回',bonusButton:'homeChangan',bonusClears:4},
+ {level:151,kind:'supply',stops:['出城路口','路上驛站','許昌城門'],chapter:26,title:'許昌幽居',terrain:'',ending:'司馬遹在許昌遇害',next:'賈后被廢',resultTitle:'隨行補給送達',bonusButton:'homeExtra',bonusClears:9,peaceful:true},
+ {level:152,kind:'defense',chapter:26,title:'賈后被廢',terrain:'pass-defense',ending:'賈南風被廢，張華與裴頠遇害',next:'淮南王起兵',resultTitle:'護送守備完成',bonusButton:'homeExtra',bonusClears:10},
+ {level:157,kind:'withdrawal',chapter:27,title:'黃橋收兵',terrain:'pass-defense',ending:'成都王前鋒吃了敗仗',next:'湨水反擊',resultTitle:'黃橋散兵撤回',bonusButton:'homeExtra',bonusClears:15}
 ];
 
 for(const stage of stages)test(`stage ${stage.level} clears and replays from an old save on touch`,async({page})=>{
  test.setTimeout(420000);
- const {level,chapter,next,kind,bonusButton,stops}=stage;
+ const {level,chapter,next,kind,bonusButton,bonusClears,stops,peaceful}=stage;
  const cargo=kind==='supply',defense=kind==='defense',withdrawal=kind==='withdrawal',maicheng=level===82;
  const errors=[];
  page.on('pageerror',error=>errors.push(error.message));
@@ -175,7 +178,7 @@ for(const stage of stages)test(`stage ${stage.level} clears and replays from an 
     await quick.tap();
     await expect(result).toBeHidden();
     await expect(objective).toContainText(maicheng?'1 隊友軍尚未回到左側 · 等關羽回到左側':'隊友軍尚未回到左側');
-    if(level===170){
+    if(!maicheng){
      await expect(page.locator('#waveText')).toContainText(/ (9|1[0-2]) \/ 12$/);
      const id=await lead.getAttribute('data-id');
      const straggler=page.locator(`#units .ally[data-id="${id}"]`);
@@ -208,7 +211,8 @@ for(const stage of stages)test(`stage ${stage.level} clears and replays from an 
   if(cargo){
    expect(sent).toBe(3);
    expect(escorted).toBe(3);
-   await expect(page.locator('#waveText')).toContainText('已全數出現');
+   if(peaceful)await expect(page.locator('#units .enemy')).toHaveCount(0);
+   else await expect(page.locator('#waveText')).toContainText('已全數出現');
    await expect(page.locator('#missionObjective')).toContainText('軍糧 3／3 批');
   }else expect([...warnings]).toEqual(positions.map((name,i)=>i+1+name));
   if(defense){
@@ -245,7 +249,7 @@ for(const stage of stages)test(`stage ${stage.level} clears and replays from an 
  }
  async function checkReload(next,progress){
   await page.reload();
-  if(bonusButton)await expect(page.locator(`#${bonusButton}Progress`)).toContainText('4 /');
+  if(bonusButton)await expect(page.locator(`#${bonusButton}Progress`)).toContainText(`${bonusClears} /`);
   else await expect(page.locator('#homeProgress')).toContainText(next);
   expect(await save()).toEqual(progress);
  }
