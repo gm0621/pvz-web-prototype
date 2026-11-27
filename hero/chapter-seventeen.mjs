@@ -16,9 +16,9 @@ const stages=[
  },
  {
   name:'隴右響應',year:228,place:'tianshui',origin:'qishan',leader:'諸葛亮',guest:'姜維',
-  historyCast:['諸葛亮','姜維'],mission:'holdout',missionTitle:'隴右接應',scene:'mountain-front',enemyArmy:'沿途魏軍',
+  historyCast:['諸葛亮','姜維'],mission:'pass-defense',missionTitle:'隴右守備',scene:'mountain-front',enemyArmy:'沿途魏軍',
   history:'228 年春，諸葛亮出兵祁山。南安、天水、安定三郡響應蜀軍。天水官員姜維在局勢變動中投奔諸葛亮，後來隨軍回到漢中。史書對他投奔的細節有不同記載。',
-  briefing:'照應三路，守住接應路線共 24 秒，再清退餘兵。',
+  briefing:'哪一路亮起，就派友軍去守。依序擋住上路、下路、中路三波，再清完剩下的敵兵。',
   ending:'蜀軍在隴右獲得響應。魏國派兵反擊，響應的三郡沒有長期留在蜀軍手中。',
   camp:'我是天水人。遇到這場變局，我得選一條自己願意走的路。',
   question:'哪一位天水官員在這次北伐投奔諸葛亮？',choices:['姜維','一名吳國使者','一名成都守軍'],refs:[zhuge,jiang]

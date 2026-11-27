@@ -52,9 +52,9 @@ const stages=[
  },
  {
   name:'南中收兵',historyCast:['諸葛亮', '李恢', '孟獲'],year:225,place:'dianchi',origin:'yuesui',leader:'諸葛亮',guest:'李恢',opponent:'孟獲',mapOpponent:false,
-  matchupLabel:'南中地方首領・史書注引記載',mission:'supply',scene:'supply-road',enemyArmy:'山道餘兵',
+  matchupLabel:'南中地方首領・史書注引記載',mission:'supply',supplyStops:['越巂營地','山路驛站','滇池營地'],scene:'supply-road',enemyArmy:'山道餘兵',
   history:'李恢從另一條路進軍，曾在史書稱為昆明的地方受圍，突圍後繼續南下。史書記南中四郡平定，部分地區重新劃設。《三國志》正文只簡記南中平定，裴松之注引《漢晉春秋》另載諸葛亮「七擒孟獲」的說法。',
-  briefing:'讓三路各有友軍接應，將三批糧車送到營地，再清退餘兵。',
+  briefing:'派友軍守住亮起的路，再按「發送糧車」。護衛離開時糧車會停，回到這一路就繼續。三批糧車都送到，再清完剩下的敵兵。',
   ending:'南中四郡平定。225 年十二月，諸葛亮回到成都。南征的故事在這裡告一段落。',
   camp:'我們從不同的路來。打完仗還得整理糧食和地方事務，好讓大家能重新過日子。',
   question:'南征後，諸葛亮在哪裡結束這趟行程？',choices:['成都','永安','武昌'],refs:[laterRuler,zhuge,liHui,chronicle]
@@ -66,6 +66,7 @@ export const SIXTEENTH_CHAPTER=stages.map((stage,index)=>({
  mapPlace:stage.place,originPlace:stage.origin,viaPlaces:[],viewpointShift:!!stage.shift,
  historyCast:stage.historyCast,leaderName:stage.leader,opponentName:stage.opponent,mapOpponent:stage.mapOpponent??!!stage.opponent,diplomaticMeeting:stage.diplomaticMeeting,matchupLabel:stage.matchupLabel,
  scene:`./assets/scenes/${stage.scene}.jpg`,mission:stage.mission,missionTitle:stage.missionTitle,missionSites:stage.missionSites,
+ ...(stage.supplyStops?{supplyStops:stage.supplyStops}:{}),
  noBoss:true,bossName:stage.enemyArmy,bossHp:0,enemyArmy:stage.enemyArmy,enemyCount:12,interval:3.8,
  lead:stage.history,history:stage.history,adaptation,note:adaptation,
  novel:[['說書人',stage.history],[stage.guest,stage.camp]],

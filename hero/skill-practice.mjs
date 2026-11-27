@@ -1,6 +1,6 @@
-import {archerArtwork} from './factions.mjs?v=maming-hanzhong-jigu-1';
-import {createBattle,deploy,castActive,damageAlly} from './engine.mjs?v=maming-hanzhong-jigu-1';
-import {ALL_GENERALS,PEACH_GENERALS,SUN_GENERALS,rosterFor,growthState,LEVEL_XP} from './roster.mjs?v=maming-hanzhong-jigu-1';
+import {archerArtwork} from './factions.mjs?v=longyou-nanzhong-mumen-1';
+import {createBattle,deploy,castActive,damageAlly} from './engine.mjs?v=longyou-nanzhong-mumen-1';
+import {ALL_GENERALS,PEACH_GENERALS,SUN_GENERALS,rosterFor,growthState,LEVEL_XP} from './roster.mjs?v=longyou-nanzhong-mumen-1';
 import {PEACH_HEROES} from './hero-base.mjs?v=passive-feedback-1';
 // A disposable battle. No campaign, storage, rewards, timers or normal wave stepping.
 export function createPractice(id,index,level){

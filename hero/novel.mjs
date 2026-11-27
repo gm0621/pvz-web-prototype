@@ -1,7 +1,7 @@
 import {shortPages} from './story-pages.mjs?v=passive-feedback-1';
-import {renderPeople,STORY_PEOPLE} from './characters.mjs?v=maming-hanzhong-jigu-1';
-import {HISTORICAL_STAGES} from './history-stages.mjs?v=maming-hanzhong-jigu-1';
-import {paintPortrait} from './factions.mjs?v=maming-hanzhong-jigu-1';
+import {renderPeople,STORY_PEOPLE} from './characters.mjs?v=longyou-nanzhong-mumen-1';
+import {HISTORICAL_STAGES} from './history-stages.mjs?v=longyou-nanzhong-mumen-1';
+import {paintPortrait} from './factions.mjs?v=longyou-nanzhong-mumen-1';
 import {THIRD_CHAPTER} from './chapter-three.mjs?v=passive-feedback-1';
 // Original child-friendly narration around the existing Romance chapter-one sequence.
 export const NOVEL_PAGES=[

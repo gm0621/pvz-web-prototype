@@ -2,7 +2,7 @@ const {test,expect}=require('@playwright/test');
 const saveKey='heroLegendProgress_v1';
 const stages=[
  {name:'漢中出師',route:'成都 → 沔陽',leader:'諸葛亮',guest:'諸葛亮',kind:'dispatch',year:227},
- {name:'隴右響應',route:'祁山 → 天水一帶',leader:'諸葛亮',guest:'姜維',kind:'holdout',year:228},
+ {name:'隴右響應',route:'祁山 → 天水一帶',leader:'諸葛亮',guest:'姜維',kind:'pass-defense',year:228},
  {name:'街亭撤離',route:'祁山 → 街亭一帶',leader:'馬謖',guest:'王平',opponent:'張郃',onMap:true,kind:'withdraw',year:228},
  {name:'箕谷收兵',route:'箕谷一帶 → 南鄭',leader:'趙雲',guest:'鄧芝',opponent:'曹真',kind:'withdraw',year:228},
  {name:'陳倉糧盡',route:'散關 → 陳倉',leader:'諸葛亮',guest:'諸葛亮',opponent:'郝昭',onMap:true,kind:'withdraw',year:228},
@@ -45,12 +45,11 @@ test('chapter seventeen preserves the southern campaign save and completes all s
   for(const [lane,key] of ['liubei','guanyu','zhangfei'].entries())await deploy(key,lane);
  }
 
- async function sendCarts({segmented=false}={}){
+ async function sendCarts(){
   for(let batch=0;batch<3;batch++){
-   if(!segmented)await advance(7600);
    await expect(page.locator('#missionQuickAction')).toHaveText('發送糧車');
    await tap('#missionQuickAction');
-   if(segmented)await advance(6200);
+   await advance(6200);
   }
  }
 
@@ -115,12 +114,12 @@ test('chapter seventeen preserves the southern campaign save and completes all s
   await advance(100);
 
   // Control enemy waves in the browser. The engine suite uses ordinary combat waves.
-  await page.evaluate(()=>{
+  await page.evaluate(directed=>{
    const battle=window.chapterBattle;
-   battle.bossSpawned=true;
+   battle.bossSpawned=!directed;
    battle.nextSpawn=Infinity;
    battle.food=300;
-  });
+  },stage.kind==='pass-defense');
   if(index!==2)await deployTeam();
   if(index===5)await page.evaluate(()=>window.blockSave=true);
   if(stage.kind==='withdraw'){
@@ -160,9 +159,21 @@ test('chapter seventeen preserves the southern campaign save and completes all s
    }
    await advance(3600);
    await expect(page.locator('#resultText')).toContainText(index===2?'街亭仍由魏軍取勝':index===3?'趙雲與鄧芝收兵回漢中':'陳倉未被攻下');
+  }else if(stage.kind==='pass-defense'){
+   await expect(page.locator('#missionQuick')).toContainText('第 1／3 波 · 上路來敵');
+   await page.evaluate(()=>{
+    const battle=window.chapterBattle;
+    battle.spawned=11;
+    battle.nextSpawn=battle.time+2;
+   });
+   await advance(100);
+   await expect(page.locator('#missionQuick')).toContainText('第 3／3 波 · 中路來敵');
+   await expect(page.locator('.lane').nth(1)).toHaveAttribute('data-threat','true');
+   await advance(31000);
+   await expect(page.locator('#missionObjective')).toHaveText('三波已守住 · 敵軍已清退');
   }else if(stage.kind==='supply'){
    await expect(page.locator('#missionQuick')).toContainText('上路武都營地');
-   await sendCarts({segmented:true});
+   await sendCarts();
   }else await advance(18500);
 
   await advance(300);
@@ -211,7 +222,7 @@ test('chapter seventeen preserves the southern campaign save and completes all s
   battle.food=300;
  });
  await deployTeam();
- await sendCarts({segmented:true});
+ await sendCarts();
  await advance(300);
  await expect(page.locator('#resultEarned')).toHaveText('+0');
  expect(await readSave()).toMatchObject({completed:100,coins:605,weapons:{guanyu:2},inventory:{grain:2,herb:1}});

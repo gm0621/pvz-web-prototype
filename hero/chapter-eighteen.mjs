@@ -27,9 +27,9 @@ const stages=[
  {
   name:'木門收兵',year:231,origin:'qishan',place:'mumen',leader:'諸葛亮',guest:'諸葛亮',opponent:'張郃',
   historyCast:['諸葛亮','張郃'],matchupLabel:'魏軍追將・在木門中箭身亡',
-  mission:'withdraw',scene:'mountain-front',enemyArmy:'魏軍追兵',
+  mission:'withdraw',coverWaves:true,scene:'mountain-front',enemyArmy:'魏軍追兵',
   history:'諸葛亮因糧運不繼而退兵。魏將張郃追到木門，和蜀軍交戰時中箭身亡。',
-  briefing:'等退路接應完成，再按「全軍撤離」。至少帶一隊友軍回到左側，讓在場所有友軍都撤到安全處。',
+  briefing:'哪一路亮起，就派友軍去擋。第三波追兵出現後按「全軍撤離」。至少保住一隊，讓所有還在場的友軍回到左側。',
   ending:'蜀軍收兵回去。張郃在木門中箭身亡，祁山一帶仍由魏方掌握。',
   camp:'回營先清點人數。張郃的消息傳來了，我們也該把隊伍帶回漢中休整。',
   question:'哪位魏將追到木門，後來中箭身亡？',choices:['張郃','曹真','郝昭'],refs:[zhang,zhuge]
