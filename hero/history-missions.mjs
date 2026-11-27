@@ -1,6 +1,6 @@
-import {HISTORICAL_STAGES} from './history-stages.mjs?v=yang-fu-tang-1';
-import {FACTIONS,factionFor} from './factions.mjs?v=yang-fu-tang-1';
-import {OUTPOSTS,RAID_POINTS,OUTPOST_SECONDS,outpostLane,pointCompleted,nextOutpost,canIgniteRaid,igniteRaid,stepOutposts,selectOutpost,passWave,passLane,thirdWaveStarted,hasFireRoutes,canClearFire,clearFireLane,GATE_MAX,hasGate,hasOutposts,channelHazard,channelName,fleetChannel,fleetStatus,canRepairGate,repairGate,selectFleetChannel,siegeLane,stepFleet} from './field-missions.mjs?v=yang-fu-tang-1';
+import {HISTORICAL_STAGES} from './history-stages.mjs?v=yang-fu-tang-2';
+import {FACTIONS,factionFor} from './factions.mjs?v=yang-fu-tang-2';
+import {OUTPOSTS,RAID_POINTS,OUTPOST_SECONDS,outpostLane,pointCompleted,nextOutpost,canIgniteRaid,igniteRaid,stepOutposts,selectOutpost,passWave,passLane,thirdWaveStarted,hasFireRoutes,canClearFire,clearFireLane,GATE_MAX,hasGate,hasOutposts,channelHazard,channelName,fleetChannel,fleetStatus,canRepairGate,repairGate,selectFleetChannel,siegeLane,stepFleet} from './field-missions.mjs?v=yang-fu-tang-2';
 import {PEACH_HEROES} from './hero-base.mjs?v=passive-feedback-1';
 const defaultRetreatSlots=['liubei','zhangfei'];
 const retreatSlots=battle=>HISTORICAL_STAGES[battle.level-17]?.retreatKeys||defaultRetreatSlots;
@@ -119,7 +119,7 @@ export const extracted=b=>['withdraw','decoy'].includes(b.mission?.kind)&&b.miss
 export function coverWaveText(b){
  return thirdWaveStarted(b)?'第 3 波已到，可撤離':`第 ${passWave(b)}／3 波 · ${routeName(b,passLane(b))}路來敵`;
 }
-export function historyMissionText(b){const fronts=['','','','三','四','五'][b.laneTotal||3];const m=b.mission,stage=HISTORICAL_STAGES[b.level-17],opponent=stage.bossName,holdTitle=stage.missionTitle||'鄄城接應';
+export function historyMissionText(b,{compact=false}={}){const fronts=['','','','三','四','五'][b.laneTotal||3];const m=b.mission,stage=HISTORICAL_STAGES[b.level-17],opponent=stage.bossName,holdTitle=stage.missionTitle||'鄄城接應';
  if(m.kind==='fire-raid'){
   const lit=m.positions.filter((_,index)=>pointCompleted(m,index)).length;
   const goal=m.done?'兩處已點火，擊退淳于瓊和餘兵':b.paused?'已暫停':'派友軍守住糧屯所在路，再按點火';
@@ -165,10 +165,12 @@ export function historyMissionText(b){const fronts=['','','','三','四','五'][
  }
  if(m.stops){
   const {lane,name,progress}=supplyLeg(b);
-  const header=`軍糧 ${m.delivered}／${m.stops.length} 批 · ${routeName(b,lane)}路${name}`;
+  const count=`軍糧 ${m.delivered}／${m.stops.length} 批`;
+  const header=`${count} · ${routeName(b,lane)}路${name}`;
   if(b.paused)return `${header} ${Math.floor(progress*100)}% · 已暫停`;
   const instruction=!guarded(b,lane)?`派友軍${m.inTransit?'回':'到'}這一路護送`:blocked(b,lane)?'清退擋路的敵兵':'';
   if(!m.inTransit)return `${header} · ${instruction||'按「發送糧車」'}`;
+  if(compact&&instruction)return `糧車停下，${instruction} · ${count}`;
   return `${header} ${Math.floor(progress*100)}% · ${instruction?'糧車停下，'+instruction:'糧車前進中'}`;
  }
  if(m.kind==='supply'){

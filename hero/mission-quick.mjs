@@ -1,7 +1,7 @@
-import {HISTORICAL_STAGES} from './history-stages.mjs?v=yang-fu-tang-1';
-import {missionText} from './chapter-missions.mjs?v=yang-fu-tang-1';
-import {retreatPartyNames,retreatPartyLabel,retreatRallyHint,supplyReady,coverWaveText} from './history-missions.mjs?v=yang-fu-tang-1';
-import {hasFireRoutes,hasGate,hasOutposts,canRepairGate} from './field-missions.mjs?v=yang-fu-tang-1';
+import {HISTORICAL_STAGES} from './history-stages.mjs?v=yang-fu-tang-2';
+import {missionText} from './chapter-missions.mjs?v=yang-fu-tang-2';
+import {retreatPartyNames,retreatPartyLabel,retreatRallyHint,supplyReady,coverWaveText,historyMissionText} from './history-missions.mjs?v=yang-fu-tang-2';
+import {hasFireRoutes,hasGate,hasOutposts,canRepairGate} from './field-missions.mjs?v=yang-fu-tang-2';
 const names=['上','中','下'];
 export function missionQuickState(b){
  const m=b.mission;if(!m)return null;
@@ -18,7 +18,7 @@ export function missionQuickState(b){
  if(m.stops){
   const ready=supplyReady(b);
   return {heading:'分段運糧 · 護送三批',doneHeading:stage.enemyCount?'三批軍糧送達 · 清退餘兵':'三批軍糧送達',
-   text:missionText(b),button:ready?'發送糧車':'查看任務',action:ready?'supply':undefined};
+   text:historyMissionText(b,{compact:true}),button:ready?'發送糧車':'查看任務',action:ready?'supply':undefined};
  }
  if(m.kind==='supply'){
   const cleared=stage?.enemyCount!==0&&b.bossSpawned&&!b.enemies.some(e=>e.hp>0),prefix=`軍糧 ${m.delivered}／3`;

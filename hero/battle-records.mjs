@@ -1,4 +1,4 @@
-import {CAMPAIGN_LENGTH} from './campaign-config.mjs?v=yang-fu-tang-1';
+import {CAMPAIGN_LENGTH} from './campaign-config.mjs?v=yang-fu-tang-2';
 
 function recordRule(level){
  switch(level){

@@ -1,7 +1,7 @@
 import {ADVANCED_GROWTH,growthBonuses,learningLevels} from './skill-growth.mjs?v=passive-feedback-1';
 export {growthBonuses,learningLevels,activeText} from './skill-growth.mjs?v=passive-feedback-1';
 import {PEACH_HEROES} from './hero-base.mjs?v=passive-feedback-1';
-import {FACTIONS,BLANK_PORTRAIT,ARCHER_ATLAS} from './factions.mjs?v=yang-fu-tang-1';
+import {FACTIONS,BLANK_PORTRAIT,ARCHER_ATLAS} from './factions.mjs?v=yang-fu-tang-2';
 export const SLOTS=['liubei','guanyu','zhangfei','hero4','hero5'];
 export const DEFAULT_TEAM=['caocao','xiahoudun','caohong'];
 const skill=(id,name,text,mp,cooldown,level=1)=>({id,name,text,mp,cooldown,level});
