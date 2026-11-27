@@ -38,6 +38,7 @@ test('the Taikang chapter extends the previous save through the early palace cri
  assert.match(chapter[0].victory,/受封歸命侯/);
  assert.match(chapter[2].victory,/司馬衷即位/);
  assert.match(chapter[3].victory,/楊駿被殺/);
+ assert.deepEqual(chapter[0].supplyStops,['石頭城外','途中驛站','洛陽城門']);
  assert.equal(chapter[5].coverWaves,true);
  assert.match(chapter[5].victory,/司馬亮與衛瓘遇害.*司馬瑋隨後也被處死/);
  assert.match(campaignMapSvg(145),/route-inset-opponent-role[^>]*>輔政<\/text>/);

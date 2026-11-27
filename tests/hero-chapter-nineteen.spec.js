@@ -3,7 +3,7 @@ const saveKey='heroLegendProgress_v1';
 const stages=[
  {name:'棧道爭路',route:'斜谷 → 南谷口一帶',leader:'楊儀',guest:'王平',opponent:'魏延',marker:true,kind:'dispatch',year:234,outcome:'蜀軍內部的爭端'},
  {name:'成都接任',route:'成都',leader:'蔣琬',guest:'蔣琬',kind:'restoration',year:234,outcome:'蔣琬接下朝廷事務'},
- {name:'漢中整軍',route:'成都 → 沔陽',leader:'蔣琬',guest:'姜維',kind:'holdout',year:238,outcome:'漢中的隊伍整備完成'},
+ {name:'漢中整軍',route:'成都 → 沔陽',leader:'蔣琬',guest:'姜維',kind:'pass-defense',year:238,outcome:'漢中的隊伍整備完成'},
  {name:'涪城轉運',route:'沔陽 → 涪縣',leader:'蔣琬',guest:'費禕',kind:'supply',year:243,outcome:'補給送到涪縣'},
  {name:'興勢守關',route:'南鄭 → 興勢一帶',leader:'王平',guest:'王平',opponent:'曹爽',marker:true,kind:'pass-defense',year:244,outcome:'興勢仍由蜀軍守住'},
  {name:'援軍解圍',route:'成都 → 興勢一帶',leader:'費禕',guest:'費禕',opponent:'曹爽',kind:'dispatch',year:244,outcome:'曹爽率魏軍退去'}
@@ -112,7 +112,7 @@ test('stage 106 continues through Xingshi and keeps campaign saves on touch scre
   await expect(page.locator('.history-sources a').first()).toBeVisible();
   await expect(page.locator('.history-sources a').first()).toHaveAttribute('href',/wikisource/);
   await tap('#storyDetails header button');
-  await controlledBattle(level===111);
+  await controlledBattle(stage.kind==='pass-defense');
 
   await tap('#battleMenuButton');
   await tap('#battleMapButton');
@@ -172,7 +172,7 @@ test('stage 106 continues through Xingshi and keeps campaign saves on touch scre
     }
     await advance(6200);
    }
-  }else if(level===111){
+  }else if(stage.kind==='pass-defense'){
    await expect(page.locator('#missionQuick')).toContainText('第 1／3 波 · 上路來敵');
    await tap('#pauseBtn');
    const frozen=await snapshot();

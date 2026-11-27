@@ -1,6 +1,6 @@
-import {stageFactionTitle,paintPortrait} from './factions.mjs?v=jushui-changan-luoyang-1';
-import {STORY_PEOPLE} from './characters.mjs?v=jushui-changan-luoyang-1';
-import {TWENTY_NINTH_CHAPTER} from './chapter-twenty-nine.mjs?v=jushui-changan-luoyang-1';
+import {stageFactionTitle,paintPortrait} from './factions.mjs?v=hanzhong-sunhao-tazhong-1';
+import {STORY_PEOPLE} from './characters.mjs?v=hanzhong-sunhao-tazhong-1';
+import {TWENTY_NINTH_CHAPTER} from './chapter-twenty-nine.mjs?v=hanzhong-sunhao-tazhong-1';
 
 export function mountHistoryLesson(stage,heroes){
  let root=document.getElementById('historyLesson');if(!root){root=document.createElement('details');root.id='historyLesson';document.getElementById('storyPrologue').prepend(root)}root.hidden=!stage.year;if(!stage.year)return;root.open=false;

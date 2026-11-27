@@ -12,7 +12,7 @@ test('Xingshi extends the Wuzhang campaign save with six distinct narrated stage
  let progress=normalizeProgress({completed:106,coins:150,weapons:{guanyu:2},inventory:{grain:2},heroGrowth:{caoren:{weapon:2}}});
  assert.equal(rewardVictory(progress,106),0);
  assert.deepEqual(STAGES.slice(106,112).map(stage=>stage.year),[234,234,238,243,244,244]);
- assert.deepEqual(STAGES.slice(106,112).map(stage=>stage.mission),['dispatch','restoration','holdout','supply','pass-defense','dispatch']);
+ assert.deepEqual(STAGES.slice(106,112).map(stage=>stage.mission),['dispatch','restoration','pass-defense','supply','pass-defense','dispatch']);
  assert.deepEqual(STAGES[109].supplyStops,['山路口','接應站','涪縣營地']);
  for(let level=107;level<=112;level++){
   const stage=STAGES[level-1];

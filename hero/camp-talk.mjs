@@ -1,5 +1,5 @@
-import {HISTORICAL_STAGES} from './history-stages.mjs?v=jushui-changan-luoyang-1';
-import {paintPortrait} from './factions.mjs?v=jushui-changan-luoyang-1';
+import {HISTORICAL_STAGES} from './history-stages.mjs?v=hanzhong-sunhao-tazhong-1';
+import {paintPortrait} from './factions.mjs?v=hanzhong-sunhao-tazhong-1';
 import {THIRD_CHAPTER} from './chapter-three.mjs?v=passive-feedback-1';
 // Original camp conversations, inspired by the story; not historical quotations.
 const GUAN=[

@@ -61,7 +61,7 @@ test('stage 118 continues through Jiange and keeps campaign saves on touch scree
    await advance(200);
   }
  }
- async function withdraw(){
+ async function withdraw(cover){
   await advance(4400);
   await tap('#cards [data-hero=archer]');
   await page.locator('.lane').first().tap({position:{x:40,y:25}});
@@ -74,11 +74,20 @@ test('stage 118 continues through Jiange and keeps campaign saves on touch scree
    await advance(3300);
   }
   await tap('#commandDrawerClose');
-  await advance(4100);
+  if(cover){
+   await expect(page.locator('#missionChoices [data-action=retreat]')).toBeDisabled();
+   await page.evaluate(()=>{
+    const battle=window.chapterBattle;
+    battle.spawned=8;
+    battle.bossSpawned=false;
+    battle.nextSpawn=battle.time+1;
+   });
+   await advance(1000);
+  }else await advance(4100);
   await expect(page.locator('#missionQuickAction')).toHaveText('全軍撤離');
   await tap('#missionQuickAction');
   await advance(200);
-  await expect(page.locator('#missionQuick')).toContainText('1 名友軍尚未回到左側');
+  await expect(page.locator('#missionQuick')).toContainText(`1 ${cover?'隊':'名'}友軍尚未回到左側`);
   await expect(page.locator('#result')).toBeHidden();
   await tap('#pauseBtn');
   const frozen=await snapshot();
@@ -220,7 +229,7 @@ test('stage 118 continues through Jiange and keeps campaign saves on touch scree
    await expect(page.locator('#result')).toBeHidden();
    await advance(31000);
   }else if(stage.kind==='withdraw'){
-   await withdraw();
+   await withdraw(level===122);
   }else if(level===123){
    await tap('#missionDrawerButton');
    await tap('#missionChoices [data-action=route]:first-child');

@@ -38,9 +38,9 @@ const stages=[
  {
   name:'沓中脫身',year:263,origin:'tazhong',place:'yinping',leader:'姜維',guest:'廖化',opponent:'鄧艾',mapOpponent:false,
   historyCast:['姜維','廖化','鄧艾','鍾會'],matchupLabel:'鄧艾進逼沓中・鍾會另由漢中進軍',
-  mission:'withdraw',scene:'mountain-front',enemyArmy:'魏軍追兵',
+  mission:'withdraw',coverWaves:true,scene:'mountain-front',enemyArmy:'魏軍追兵',
   history:'魏軍分道進攻。鄧艾在沓中牽制姜維，鍾會另率軍進入漢中。姜維回撤時遇上追兵，又聽說陰平橋頭被魏軍堵住，便改道牽動守兵，再趁空隙返回橋頭。',
-  briefing:retreat,
+  briefing:'哪一路亮起，就派友軍去擋。第三波追兵出現後按「全軍撤離」。至少保住一隊，讓所有還在場的友軍回到左側。',
   ending:'姜維趕過陰平橋頭，魏軍沒能及時攔住。廖化奉命救援，之後陪姜維退往劍閣方向。',
   camp:'橋過去了，還得數清楚有幾隊跟上。等後隊到齊，我們再往會合的地方走。',
   question:'鄧艾進逼沓中時，哪位魏將另率軍進入漢中？',choices:['鍾會','蜀軍援將','東吳的守將'],refs:[jiangWei,dengAi,zhongHui,liaoHua]
@@ -73,6 +73,7 @@ export const TWENTY_FIRST_CHAPTER=stages.map((stage,index)=>({
  leaderName:stage.leader,opponentName:stage.opponent,mapOpponent:stage.mapOpponent??!!stage.opponent,matchupLabel:stage.matchupLabel,
  scene:`./assets/scenes/${stage.scene}.jpg`,mission:stage.mission,missionTitle:stage.missionTitle,missionSites:stage.missionSites,
  ...(stage.supplyStops?{supplyStops:stage.supplyStops}:{}),
+ ...(stage.coverWaves?{coverWaves:true}:{}),
  ...(stage.mission==='withdraw'?{retreatKeys:[],successTitle:'全軍撤回'}:{}),
  noBoss:true,bossName:stage.enemyArmy,bossHp:0,enemyArmy:stage.enemyArmy,enemyCount:12,interval:3.8,
  lead:stage.history,history:stage.history,adaptation,note:adaptation,bossTip:stage.briefing,

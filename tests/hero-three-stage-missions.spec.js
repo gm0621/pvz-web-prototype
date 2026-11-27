@@ -16,22 +16,25 @@ const stages=[
  {level:169,kind:'supply',stops:['出城路口','河畔驛站','河橋營地'],chapter:29,title:'河橋護駕',terrain:'',ending:'兩軍將在蕩陰相遇',next:'蕩陰撤離',resultTitle:'河橋補給送達',bonusButton:'homeChangan',bonusClears:3,peaceful:true},
  {level:148,kind:'withdrawal',chapter:25,title:'洛陽再變',terrain:'pass-defense',ending:'司馬亮與衛瓘遇害，楚王司馬瑋隨後也被處死',next:'賈后掌權',resultTitle:'撤離隊平安返回',bonusButton:'homeExtra',bonusClears:6},
  {level:158,kind:'defense',chapter:27,title:'湨水反擊',terrain:'pass-defense',ending:'成都王在湨水得勝並渡河',next:'惠帝復位',resultTitle:'湨水渡路守住',bonusButton:'homeExtra',bonusClears:16},
- {level:172,kind:'supply',stops:['西行路口','途中驛站','長安城門'],chapter:29,title:'長安西行',terrain:'',ending:'張方把晉惠帝和司馬穎從洛陽帶往長安',resultTitle:'西行補給送達',bonusButton:'homeChangan',bonusClears:6,peaceful:true}
+ {level:172,kind:'supply',stops:['西行路口','途中驛站','長安城門'],chapter:29,title:'長安西行',terrain:'',ending:'張方把晉惠帝和司馬穎從洛陽帶往長安',resultTitle:'西行補給送達',bonusButton:'homeChangan',bonusClears:6,peaceful:true},
+ {level:109,kind:'defense',chapter:19,title:'漢中整軍',terrain:'pass-defense',ending:'漢中的隊伍整備完成',next:'涪城轉運'},
+ {level:122,kind:'withdrawal',chapter:21,title:'沓中脫身',terrain:'pass-defense',ending:'姜維趕過陰平橋頭',next:'漢壽會師',resultTitle:'全軍撤回'},
+ {level:143,kind:'supply',stops:['石頭城外','途中驛站','洛陽城門'],chapter:25,title:'孫皓入洛',terrain:'',ending:'孫皓到了洛陽，受封歸命侯',next:'太康裁兵',resultTitle:'隨行補給送達',bonusButton:'homeExtra',bonusClears:1,peaceful:true,sun:true}
 ];
 
 for(const stage of stages)test(`stage ${stage.level} clears and replays from an old save on touch`,async({page})=>{
  test.setTimeout(420000);
- const {level,chapter,next,kind,bonusButton,bonusClears,stops,peaceful}=stage;
+ const {level,chapter,next,kind,bonusButton,bonusClears,stops,peaceful,sun}=stage;
  const cargo=kind==='supply',defense=kind==='defense',withdrawal=kind==='withdrawal',maicheng=level===82;
  const errors=[];
  page.on('pageerror',error=>errors.push(error.message));
- await page.addInitScript(({level,saveKey})=>{
+ await page.addInitScript(({level,saveKey,sun})=>{
   if(!localStorage.getItem(saveKey))localStorage.setItem(saveKey,JSON.stringify({
-   completed:level-1,coins:150,weapons:{guanyu:2},armyWeapons:{cao:{liubei:1}},inventory:{grain:2},battleRecords:{20:80},
+   completed:level-1,coins:150,weapons:{guanyu:2},armyWeapons:{cao:{liubei:1},...(sun?{sun:{zhangfei:2}}:{})},inventory:{grain:2},battleRecords:{20:80},
    skillSeen:['sunjian','chengpu','huanggai','liubei','guanyu','zhangfei','caocao','xiahoudun','caohong'].flatMap(id=>[1,3,5,7,10].map(level=>id+':'+level))
   }));
   Element.prototype.requestFullscreen=undefined;
- },{level,saveKey});
+ },{level,saveKey,sun});
  await page.clock.install({time:new Date('2026-11-27T00:00:00Z')});
  await page.goto('/hero/');
  const continueStory=page.locator(bonusButton?`#${bonusButton}`:'#startBtn');
@@ -85,7 +88,7 @@ for(const stage of stages)test(`stage ${stage.level} clears and replays from an 
  async function play({level,title,terrain,ending,resultTitle}){
   await expect(page.locator('#storyTitle')).toHaveText(title);
   await tap('#storySkip');
-  if(bonusButton)await tap('#deploymentStart');
+  if(bonusButton&&!sun)await tap('#deploymentStart');
   await expect(page.locator('#battle')).toBeVisible({timeout:30000});
   await expect(page.locator('#field')).toHaveAttribute('data-terrain',terrain);
   await expect(lanes).toHaveCount(3);
@@ -274,7 +277,7 @@ for(const stage of stages)test(`stage ${stage.level} clears and replays from an 
  async function finish({level,title,ending,next},reward,coins){
   await expect(page.locator('#resultEarned')).toHaveText(reward);
   const progress=await save();
-  expect(progress).toMatchObject({completed:level,coins,weapons:{guanyu:2},armyWeapons:{cao:{liubei:1}},inventory:{grain:2},battleRecords:{20:80,[level]:expect.any(Number)}});
+  expect(progress).toMatchObject({completed:level,coins,weapons:{guanyu:2},armyWeapons:{cao:{liubei:1},...(sun?{sun:{zhangfei:2}}:{})},inventory:{grain:2},battleRecords:{20:80,[level]:expect.any(Number)}});
   await advance(4200);
   while(await skillIntro.isVisible())await tap('#skillIntroContinue');
   await tap('#resultNext');

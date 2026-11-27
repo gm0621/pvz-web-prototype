@@ -1,7 +1,7 @@
 import {skillPresentation,skillArtwork} from './skill-presentation.mjs?v=passive-feedback-1';
-import {ALL_GENERALS} from './roster.mjs?v=jushui-changan-luoyang-1';
-import {paintPortrait} from './factions.mjs?v=jushui-changan-luoyang-1';
-import {hitSound} from './audio.mjs?v=jushui-changan-luoyang-1';
+import {ALL_GENERALS} from './roster.mjs?v=hanzhong-sunhao-tazhong-1';
+import {paintPortrait} from './factions.mjs?v=hanzhong-sunhao-tazhong-1';
+import {hitSound} from './audio.mjs?v=hanzhong-sunhao-tazhong-1';
 const seen=new WeakMap();
 export function renderSkillCutin(b){
  let root=document.getElementById('skillCutin'),fx=document.getElementById('skillBurst');

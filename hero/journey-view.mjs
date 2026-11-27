@@ -1,6 +1,6 @@
-import {stageFactionTitle} from './factions.mjs?v=jushui-changan-luoyang-1';
-import {stagePeople,mapPersonSvg,renderMatchup} from './characters.mjs?v=jushui-changan-luoyang-1';
-import {campaignMapSvg,includeSecondaryRoute,journeyRoute,MAP_PLACES,routeThrough} from './campaign-map.mjs?v=jushui-changan-luoyang-1';
+import {stageFactionTitle} from './factions.mjs?v=hanzhong-sunhao-tazhong-1';
+import {stagePeople,mapPersonSvg,renderMatchup} from './characters.mjs?v=hanzhong-sunhao-tazhong-1';
+import {campaignMapSvg,includeSecondaryRoute,journeyRoute,MAP_PLACES,routeThrough} from './campaign-map.mjs?v=hanzhong-sunhao-tazhong-1';
 let cancelJourney=()=>{};
 export function mountJourney(level,stage){
  cancelJourney();let root=document.getElementById('journeyIntro');

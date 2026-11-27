@@ -14,9 +14,9 @@ const stages=[
  {
   name:'孫皓入洛',year:280,origin:'shitou',place:'luoyang',shift:true,wu:true,campBanner:'行',factionLabel:'孫皓隨行隊',
   leader:'孫皓',guest:'孫皓',opponent:'司馬炎',mapOpponentRole:'接見',historyCast:['孫皓','司馬炎'],
-  mission:'supply',scene:'supply-road',enemyArmy:'隨行補給',successTitle:'隨行補給送達',
+  mission:'supply',supplyStops:['石頭城外','途中驛站','洛陽城門'],scene:'supply-road',enemyArmy:'隨行補給',successTitle:'隨行補給送達',
   history:'石頭城受降後，孫皓被送往西晉的都城洛陽。司馬炎封他為歸命侯，後來在朝會上接見他。東吳的皇帝從此成了西晉的臣屬。',
-  briefing:'各路都派友軍接應。備車完成後按「發送糧車」，共送三批隨行補給。',
+  briefing:'派友軍守住亮起的路，再按「發送糧車」。護衛離開時糧車會停，回到這一路就繼續。三批補給送到就過關。',
   ending:'孫皓到了洛陽，受封歸命侯。西晉開始處理統一後各州郡的事務。',
   camp:'先把同行的人安頓下來。堆在車上的行囊要一件一件點清，免得有人找不到自己的東西。',
   question:'孫皓到洛陽後受封為什麼？',choices:['歸命侯','新的皇帝','洛陽守將'],refs:[wuDi,sunHao]
@@ -79,6 +79,7 @@ export const TWENTY_FIFTH_CHAPTER=stages.map((stage,index)=>({
  leaderName:stage.leader,opponentName:stage.opponent,mapOpponent:stage.mapOpponent??!!stage.opponent,matchupLabel:stage.matchupLabel,mapOpponentRole:stage.mapOpponentRole,mapStationRole:stage.mapStationRole,
  scene:`./assets/scenes/${stage.scene}.jpg`,mission:stage.mission,missionTitle:stage.missionTitle,missionSites:stage.missionSites,
  successTitle:stage.successTitle,successRibbon:'戰 事 記 錄 ・ 回 營 整 備',
+ ...(stage.supplyStops?{supplyStops:stage.supplyStops}:{}),
  ...(stage.coverWaves?{coverWaves:true}:{}),
  ...(stage.mission==='withdraw'?{retreatKeys:[]}:{}),
  noBoss:true,bossName:stage.enemyArmy,bossHp:0,enemyArmy:stage.enemyArmy,enemyCount:stage.enemyCount??0,interval:3.8,

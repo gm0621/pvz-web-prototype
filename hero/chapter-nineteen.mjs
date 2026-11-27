@@ -25,9 +25,9 @@ const stages=[
  },
  {
   name:'漢中整軍',year:238,origin:'chengdu',place:'mianyang',leader:'蔣琬',guest:'姜維',
-  historyCast:['蔣琬','姜維','王平'],mission:'holdout',missionTitle:'漢中布防',scene:'mountain-front',enemyArmy:'沿道游兵',
+  historyCast:['蔣琬','姜維','王平'],mission:'pass-defense',missionTitle:'漢中布防',scene:'mountain-front',enemyArmy:'沿道游兵',
   history:'238 年，蔣琬奉命進駐漢中沔陽，姜維隨行。王平在漢中任前護軍，協助蔣琬處理營中事務。次年，蔣琬升任大司馬。',
-  briefing:'讓三路各有友軍接應，安全時累計守備 24 秒，再清退餘兵。',
+  briefing:'哪一路亮起，就派友軍去守。擋住上路、下路、中路三波，保住防線，再清完剩下的敵兵。',
   ending:'漢中的隊伍整備完成。蔣琬駐在沔陽，蜀軍仍在觀察魏軍的動向。',
   camp:'我第一次到漢中是跟著諸葛丞相。這一回，換我幫忙熟悉路線、照應各營。',
   question:'蔣琬在 238 年率軍前往哪裡駐守？',choices:['漢中','洛陽','武昌'],refs:[jiang,jiangWei,wang,ruler]
