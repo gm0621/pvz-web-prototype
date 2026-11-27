@@ -20,6 +20,13 @@ npm run test:hero:engine
 npx playwright test --config=playwright.hero-input.config.js
 ```
 
+## 2026-11-27 段谷、芒水、遷洛玩法複查
+
+- 回歸測試提交 `d4d5b53` 已合併並完成 Pages 部署。遊戲資源沿用 `96ea285`；段谷額外以 5 個全新平板 WebKit 工作階段驗證首頁首次開啟與重整後可進入。正式站手機 Chromium（320px、390px）6 項、平板 WebKit（820×1180）3 項觸控流程通過，核對 51 份遊戲資源。 [正式遊戲](https://gm0621.github.io/pvz-web-prototype/hero/?v=96ea285) · [人物圖鑑](https://gm0621.github.io/pvz-web-prototype/hero/people.html?v=96ea285) · [回歸測試部署](https://github.com/gm0621/pvz-web-prototype/actions/runs/45931257385)
+- 第 119 關段谷撤兵確認第八隊到場時仍鎖住撤離，第三波第一隊出現才開放。刻意讓一隊在前方駐守、其餘隊伍退回左側時，結算與存檔不變；全員回左側才過關。第 120 關芒水相持上、下、中路預警與實際出兵一致，餘兵數隨清場下降，清完才結算。第 135 關安樂公入洛逐批測試移出和移回護衛，確認原路線、糧車位置、百分比與存檔正確，第三批送達才結算。
+- 三關均從舊格式存檔驗證首勝、暫停恢復、原劇情、營地、下一關、重整和重玩。舊兵器、物資和個人最佳保留，首勝軍資只發一次。
+- 本機 433 項引擎測試及 9 項觸控流程通過。裝置使用瀏覽器模擬觸控；快取版 `mangshui-qianluo-duangu-1`，觸控指令 `npx playwright test --config=playwright.hero-mangshui-qianluo-duangu.config.js`。
+
 ## 2026-11-27 芒水分波守備、遷洛分段護糧與段谷撤離
 
 - 已發布 `96ea285`。正式站手機 Chromium（320px、390px）6 項、平板 WebKit（820×1180）3 項完整觸控流程通過，核對 51 份發布資源。段谷平板首輪首頁未進入關卡，獨立重跑通過。 [正式遊戲](https://gm0621.github.io/pvz-web-prototype/hero/?v=96ea285) · [人物圖鑑](https://gm0621.github.io/pvz-web-prototype/hero/people.html?v=96ea285) · [發布紀錄](https://github.com/gm0621/pvz-web-prototype/actions/runs/45930458975)
