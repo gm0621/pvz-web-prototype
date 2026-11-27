@@ -31,6 +31,9 @@ for(const stage of stages)test(`stage ${stage.level} clears and replays from an 
  const cargo=kind==='supply',defense=kind==='defense',withdrawal=kind==='withdrawal',maicheng=level===82;
  const errors=[];
  page.on('pageerror',error=>errors.push(error.message));
+ page.on('requestfailed',request=>{
+  if(request.resourceType()==='script')errors.push(`${request.url()}: ${request.failure()?.errorText}`);
+ });
  await page.addInitScript(({level,saveKey,sun})=>{
   if(!localStorage.getItem(saveKey))localStorage.setItem(saveKey,JSON.stringify({
    completed:level-1,coins:150,weapons:{guanyu:2},armyWeapons:{cao:{liubei:1},...(sun?{sun:{zhangfei:2}}:{})},inventory:{grain:2},battleRecords:{20:80},
@@ -42,6 +45,7 @@ for(const stage of stages)test(`stage ${stage.level} clears and replays from an 
  await page.goto('/hero/');
  const continueStory=page.locator(bonusButton?`#${bonusButton}`:'#startBtn');
  if(bonusButton)await expect(page.locator(`#${bonusButton}Progress`)).toContainText(`${bonusClears-1} /`);
+ else await expect(page.locator('#homeProgress'),`Saved stage on home screen. Script errors: ${errors.join('; ')}`).toContainText(`下一站：${stage.title}`,{timeout:12000});
  await expect(continueStory).toBeVisible();
  await expect(continueStory).toBeEnabled();
  await page.clock.pauseAt(await page.evaluate(()=>Date.now()+650));
@@ -142,6 +146,7 @@ for(const stage of stages)test(`stage ${stage.level} clears and replays from an 
     await expect(escort).toHaveCount(0);
     const waiting=await distance(cart);
     expect(waiting).toBeGreaterThan(departure);
+    await expect(lanes.nth(road)).toHaveAttribute('data-supply-route','true');
     await expect(objective).toContainText('糧車停下，派友軍回這一路護送');
     expect(await objective.evaluate(p=>p.scrollHeight<=p.clientHeight)).toBe(true);
     await expect(page.locator('#missionObjective')).toContainText(/\d+% · 糧車停下/);
@@ -232,6 +237,9 @@ for(const stage of stages)test(`stage ${stage.level} clears and replays from an 
      expect(heldAhead).toBeGreaterThan(18);
      await advance(2000);
      expect(await distance(straggler)).toBe(heldAhead);
+     const returned=await page.locator(`#units .ally:not([data-id="${id}"])`).evaluateAll(units=>units.map(unit=>parseFloat(unit.style.left)));
+     expect(returned.length).toBeGreaterThan(0);
+     expect(Math.max(...returned)).toBeLessThanOrEqual(18);
      await expect(result).toBeHidden();
      await expect(objective).toContainText('1 隊友軍尚未回到左側');
      expect(await save()).toEqual(beforeRetreat);
