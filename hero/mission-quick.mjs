@@ -1,7 +1,7 @@
-import {HISTORICAL_STAGES} from './history-stages.mjs?v=xiling-houhe-maicheng-2';
-import {missionText} from './chapter-missions.mjs?v=xiling-houhe-maicheng-2';
-import {retreatPartyNames,retreatPartyLabel,retreatRallyHint,supplyReady,coverWaveText} from './history-missions.mjs?v=xiling-houhe-maicheng-2';
-import {hasFireRoutes,hasGate,hasOutposts,canRepairGate} from './field-missions.mjs?v=xiling-houhe-maicheng-2';
+import {HISTORICAL_STAGES} from './history-stages.mjs?v=yang-fu-tang-1';
+import {missionText} from './chapter-missions.mjs?v=yang-fu-tang-1';
+import {retreatPartyNames,retreatPartyLabel,retreatRallyHint,supplyReady,coverWaveText} from './history-missions.mjs?v=yang-fu-tang-1';
+import {hasFireRoutes,hasGate,hasOutposts,canRepairGate} from './field-missions.mjs?v=yang-fu-tang-1';
 const names=['上','中','下'];
 export function missionQuickState(b){
  const m=b.mission;if(!m)return null;
@@ -11,7 +11,7 @@ export function missionQuickState(b){
   const relief=stage?.outpostSites;
   return {heading:stage?.outpostHeading||(relief?'解圍戰 · 拿下兩處據點':'攻城戰 · 拿下城外據點'),doneHeading:relief?'兩處已拿下 · 繼續作戰':undefined,text:missionText(b),button:m.done?'查看任務':'選擇據點'};
  }
- if(m.kind==='pass-defense')return {heading:'守關戰 · 擋住三波',text:missionText(b),button:'查看任務'};
+ if(m.kind==='pass-defense')return {heading:`${stage?.missionTitle||'守關戰'} · 擋住三波`,text:missionText(b),button:'查看任務'};
  if(m.kind==='naval')return {heading:m.cargoRuns?'水路運糧 · 護送三批':'水戰 · 護送主船',doneHeading:m.cargoRuns?(stage.enemyCount?'三批軍糧已送到 · 清退餘船':'三批軍糧已送達'):'主船已靠岸 · 清退餘船',text:missionText(b),button:m.done?'查看任務':'改走航道'};
  if(m.kind==='siege')return {heading:'守城戰 · 守住城門',text:missionText(b),button:'修補城門',action:'repair'};
  if(!['supply','withdraw','decoy'].includes(m.kind))return {text:missionText(b),button:m.done?'查看目標':'進行任務'};

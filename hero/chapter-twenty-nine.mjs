@@ -1,4 +1,4 @@
-import {lateJinChapter} from './late-jin-chapter.mjs?v=xiling-houhe-maicheng-2';
+import {lateJinChapter} from './late-jin-chapter.mjs?v=yang-fu-tang-1';
 
 const source=(title,path)=>({title,url:'https://zh.wikisource.org/zh-hant/'+path});
 const hui=source('《晉書》・惠帝紀','晉書/卷004');
@@ -42,9 +42,9 @@ export const TWENTY_NINTH_CHAPTER=lateJinChapter(29,[
  {
   name:'蕩陰撤離',year:304,origin:'jinRiverBridge',place:'jinTangyin',shift:true,factionLabel:'蕩陰撤離隊',campBanner:'護',
   leader:'司馬衷',guest:'司馬越',opponent:'石超',mapLeaderRole:'北上至蕩陰',mapOpponentRole:'鄴軍迎戰',historyCast:['司馬衷','司馬越','嵇紹','石超','司馬穎'],
-  mission:'withdraw',scene:'enemy-camp',enemyArmy:'鄴軍追兵',enemyCount:12,successTitle:'接應隊撤回',
+  mission:'withdraw',coverWaves:true,scene:'enemy-camp',enemyArmy:'鄴軍追兵',enemyCount:12,successTitle:'接應隊撤回',
   history:'石超在蕩陰打敗北上的軍隊。嵇紹守在晉惠帝身邊，最後遇害。晉惠帝受了傷，戰後被司馬穎一方帶到鄴城。',
-  briefing:'等「全軍撤離」亮起後下令。保住至少一隊，讓所有存活的友軍撤回左側。',
+  briefing:'看亮起的路，派友軍擋追兵。第三波一到就能按「全軍撤離」。至少保住一隊，讓所有還在場的友軍回到左側。',
   ending:'接應隊帶著撤回的人回營。史書記載，晉惠帝在蕩陰受傷，嵇紹護駕遇害，惠帝後來被帶往鄴城。',
   camp:'先點清回來的人。未到的人另記在名冊上，讓下一隊知道要找誰。',
   question:'蕩陰敗戰後，晉惠帝被帶到哪裡？',choices:['鄴城','長安','建業'],refs:[hui,tongjian,jiShao]

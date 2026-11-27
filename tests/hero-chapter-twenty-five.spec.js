@@ -4,7 +4,7 @@ const stages=[
  {name:'孫皓入洛',year:280,route:'石頭城 → 洛陽',leader:'孫皓',guest:'孫皓',opponent:'司馬炎',role:'接見',wu:true,faction:'孫皓隨行隊',banner:'行',kind:'supply',outcome:'孫皓到了洛陽，受封歸命侯'},
  {name:'太康裁兵',year:280,route:'洛陽',leader:'司馬炎',guest:'司馬炎',station:'議事地',kind:'restoration',sites:['軍籍','歸鄉文書','州郡簿'],outcome:'各州郡的地方軍力重新調整'},
  {name:'惠帝即位',year:290,route:'洛陽宮城',leader:'司馬衷',guest:'司馬衷',opponent:'楊駿',role:'輔政',station:'即位地',kind:'dispatch',outcome:'司馬衷即位，朝廷由楊駿輔政'},
- {name:'楊駿之變',year:291,route:'洛陽宮城 → 洛陽街巷',leader:'司馬瑋',guest:'賈南風',opponent:'楊駿',role:'被罷黜',faction:'洛陽護送隊',banner:'護',waves:true,kind:'holdout',outcome:'楊駿被殺'},
+ {name:'楊駿之變',year:291,route:'洛陽宮城 → 洛陽街巷',leader:'司馬瑋',guest:'賈南風',opponent:'楊駿',role:'被罷黜',faction:'洛陽護送隊',banner:'護',waves:true,kind:'pass-defense',outcome:'楊駿被殺'},
  {name:'汝南王入朝',year:291,route:'許昌 → 洛陽',leader:'司馬亮',guest:'衛瓘',opponent:'衛瓘',role:'共輔政',kind:'restoration',sites:['印信','公文','名冊'],outcome:'汝南王司馬亮與衛瓘共同輔政'},
  {name:'洛陽再變',year:291,route:'洛陽街巷 → 洛陽城門',leader:'司馬亮',guest:'司馬衷',opponent:'司馬瑋',role:'楚王起兵',faction:'洛陽撤離隊',banner:'護',waves:true,kind:'withdraw',outcome:'司馬亮與衛瓘遇害'}
 ];
@@ -52,7 +52,7 @@ test('stage 142 continues through the early Rebellion of the Eight Princes and k
    battle.bossSpawned=!waitForWaves;
    battle.nextSpawn=Infinity;
    battle.food=300;
-  },kind==='holdout');
+  },kind==='pass-defense');
   for(const [lane,key] of ['liubei','guanyu','zhangfei'].entries()){
    await tap(`#cards [data-hero=${key}]`);
    await page.locator('.lane').nth(lane).tap({position:{x:40,y:25}});
@@ -271,20 +271,15 @@ test('stage 142 continues through the early Rebellion of the Eight Princes and k
     await advance(6700);
     await expect(option).toBeDisabled();
    }
-  }else if(stage.kind==='holdout'){
-   await advance(4500);
+  }else if(stage.kind==='pass-defense'){
    await expect(page.locator('#missionQuick')).toContainText('街巷守備');
+   await expect(page.locator('#missionQuick')).toContainText('第 1／3 波 · 上路來敵');
    await tap('#pauseBtn');
    const frozen=await snapshot();
-   expect(frozen.mission.hold).toBeGreaterThan(0);
-   expect(frozen.mission.hold).toBeLessThan(24);
    await advance(1000);
    expect(await snapshot()).toEqual(frozen);
-   await tap('#pauseBtn');
-   await advance(18500);
-   expect((await snapshot()).mission).toMatchObject({hold:24,done:true});
-   await expect(page.locator('#result')).toBeHidden();
-   await expect(page.locator('#missionQuick')).toContainText('清退後續敵軍');
+   await tap('#resumeBtn');
+   // This chapter regression queues the final enemy. The touch mission suite runs all three waves.
    await page.evaluate(()=>{
     const battle=window.chapterBattle;
     battle.spawned=11;
@@ -292,6 +287,7 @@ test('stage 142 continues through the early Rebellion of the Eight Princes and k
    });
    await advance(3300);
    await expect(page.locator('#waveText')).toHaveText('城中亂兵已全數出現');
+   await expect(page.locator('#missionQuick')).toContainText('清退剩下的 1 名敵兵');
    await expect(page.locator('#result')).toBeHidden();
    await advance(31000);
   }else if(stage.kind==='withdraw'){

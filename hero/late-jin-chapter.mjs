@@ -7,6 +7,7 @@ export function lateJinChapter(chapter,stages){
   scene:`./assets/scenes/${stage.scene}.jpg`,mission:stage.mission,missionTitle:stage.missionTitle,missionSites:stage.missionSites,
   successTitle:stage.successTitle,successRibbon:'戰 事 記 錄 ・ 回 營 整 備',
   ...(stage.gateHold?{gateHold:stage.gateHold}:{}),
+  ...(stage.coverWaves?{coverWaves:true}:{}),
   ...(stage.mission==='withdraw'?{retreatKeys:[]}:{}),
   noBoss:true,bossName:stage.enemyArmy,bossHp:0,enemyArmy:stage.enemyArmy,enemyCount:stage.enemyCount??0,interval:3.8,
   lead:stage.history,history:stage.history,adaptation,note:adaptation,bossTip:stage.briefing,

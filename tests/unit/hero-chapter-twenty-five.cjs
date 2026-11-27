@@ -15,7 +15,7 @@ test('the Taikang chapter extends the previous save through the early palace cri
  assert.equal(chapter.length,6);
  assert.deepEqual(chapter.map(s=>s.year),[280,280,290,291,291,291]);
  assert.deepEqual(chapter.map(s=>s.faction),['sun','cao','cao','cao','cao','cao']);
- assert.deepEqual(chapter.map(s=>s.mission),['supply','restoration','dispatch','holdout','restoration','withdraw']);
+ assert.deepEqual(chapter.map(s=>s.mission),['supply','restoration','dispatch','pass-defense','restoration','withdraw']);
  for(const [index,stage] of chapter.entries()){
   const level=143+index;
   assert.deepEqual(chapterInfo(level),{chapter:25,number:index+1,count:6,title:'太康之後'});

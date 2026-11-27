@@ -34,9 +34,9 @@ const stages=[
  },
  {
   name:'涪城轉運',year:243,origin:'mianyang',place:'fu',leader:'蔣琬',guest:'費禕',
-  historyCast:['蔣琬','費禕','王平'],mission:'supply',scene:'supply-road',enemyArmy:'山路游兵',
+  historyCast:['蔣琬','費禕','王平'],mission:'supply',supplyStops:['山路口','接應站','涪縣營地'],scene:'supply-road',enemyArmy:'山路游兵',
   history:'243 年，蔣琬離開漢中，移駐涪縣。涪可以聯絡成都與漢中，便於互相支援。同年費禕升任大將軍，王平統領漢中守軍。',
-  briefing:'各路保持安全，送出三批軍糧。若某一路失去接應，補回友軍再發車。',
+  briefing:'派友軍守住亮起的路，再按「發送糧車」。護衛離開時糧車會停，回來就繼續。送到三批糧，再清完剩下的敵兵。',
   ending:'補給送到涪縣。蜀軍在後方備好人手，王平繼續守在漢中。',
   camp:'把糧補到中途的營地，前面缺糧時就能快些送到。涪是兩地之間的一個接應點。',
   question:'蔣琬移駐涪縣後，誰統領漢中守軍？',choices:['王平','成都的使者','來攻的魏軍主帥'],refs:[ruler,jiang,fei,wang]
@@ -68,6 +68,7 @@ export const NINETEENTH_CHAPTER=stages.map((stage,index)=>({
  mapPlace:stage.place,originPlace:stage.origin,viaPlaces:[],viewpointShift:!!stage.shift,historyCast:stage.historyCast,
  leaderName:stage.leader,opponentName:stage.opponent,mapOpponent:stage.mapOpponent??!!stage.opponent,matchupLabel:stage.matchupLabel,
  scene:`./assets/scenes/${stage.scene}.jpg`,mission:stage.mission,missionTitle:stage.missionTitle,missionSites:stage.missionSites,
+ ...(stage.supplyStops?{supplyStops:stage.supplyStops}:{}),
  noBoss:true,bossName:stage.enemyArmy,bossHp:0,enemyArmy:stage.enemyArmy,enemyCount:12,interval:3.8,
  lead:stage.history,history:stage.history,adaptation,note:adaptation,bossTip:stage.briefing,
  novel:[['說書人',stage.history],[stage.guest,stage.camp]],

@@ -2,20 +2,24 @@ const {test,expect}=require('@playwright/test');
 
 const saveKey='heroLegendProgress_v1';
 const stages=[
- {level:138,chapter:24,title:'西陵守圍',terrain:'pass-defense',ending:'陸抗拿回西陵，晉軍撤退',next:'襄陽交印',resultTitle:'西陵守備完成'},
- {level:121,chapter:21,title:'侯和退屯',terrain:'',ending:'姜維在侯和失利後留駐沓中',next:'沓中脫身'},
- {level:82,chapter:14,title:'麥城出走',terrain:'pass-defense',ending:'關羽、關平出走途中被潘璋部下馬忠擒獲',next:'成都即位',resultTitle:'離開麥城'}
+ {level:138,kind:'defense',chapter:24,title:'西陵守圍',terrain:'pass-defense',ending:'陸抗拿回西陵，晉軍撤退',next:'襄陽交印',resultTitle:'西陵守備完成'},
+ {level:121,kind:'supply',stops:['山口','谷道','沓中營地'],chapter:21,title:'侯和退屯',terrain:'',ending:'姜維在侯和失利後留駐沓中',next:'沓中脫身'},
+ {level:82,kind:'withdrawal',chapter:14,title:'麥城出走',terrain:'pass-defense',ending:'關羽、關平出走途中被潘璋部下馬忠擒獲',next:'成都即位',resultTitle:'離開麥城'},
+ {level:146,kind:'defense',chapter:25,title:'楊駿之變',terrain:'pass-defense',ending:'楊駿被殺',next:'汝南王入朝',resultTitle:'街巷守備完成',bonusButton:'homeExtra'},
+ {level:110,kind:'supply',stops:['山路口','接應站','涪縣營地'],chapter:19,title:'涪城轉運',terrain:'',ending:'補給送到涪縣',next:'興勢守關'},
+ {level:170,kind:'withdrawal',chapter:29,title:'蕩陰撤離',terrain:'pass-defense',ending:'嵇紹護駕遇害，惠帝後來被帶往鄴城',next:'鄴城返洛',resultTitle:'接應隊撤回',bonusButton:'homeChangan'}
 ];
 
 for(const stage of stages)test(`stage ${stage.level} clears and replays from an old save on touch`,async({page})=>{
- test.setTimeout(300000);
- const {level,chapter,next}=stage;
+ test.setTimeout(420000);
+ const {level,chapter,next,kind,bonusButton,stops}=stage;
+ const cargo=kind==='supply',defense=kind==='defense',withdrawal=kind==='withdrawal',maicheng=level===82;
  const errors=[];
  page.on('pageerror',error=>errors.push(error.message));
  await page.addInitScript(({level,saveKey})=>{
   if(!localStorage.getItem(saveKey))localStorage.setItem(saveKey,JSON.stringify({
    completed:level-1,coins:150,weapons:{guanyu:2},armyWeapons:{cao:{liubei:1}},inventory:{grain:2},battleRecords:{20:80},
-   skillSeen:['sunjian','chengpu','huanggai','liubei','guanyu','zhangfei'].flatMap(id=>[1,3,5,7,10].map(level=>id+':'+level))
+   skillSeen:['sunjian','chengpu','huanggai','liubei','guanyu','zhangfei','caocao','xiahoudun','caohong'].flatMap(id=>[1,3,5,7,10].map(level=>id+':'+level))
   }));
   Element.prototype.requestFullscreen=undefined;
  },{level,saveKey});
@@ -39,14 +43,14 @@ for(const stage of stages)test(`stage ${stage.level} clears and replays from an 
   await advance(100);
  }
  async function reinforce(escorted){
-  const formation=level===82?[0,1,2]:[1,0,2];
+  const formation=withdrawal?[0,1,2]:[1,0,2];
   for(const [slot,key] of ['liubei','guanyu','zhangfei'].entries()){
    const card=page.locator(`#cards [data-hero=${key}]`),archer=page.locator('#cards [data-hero=archer]');
    const road=lanes.nth(formation[slot]),width=await road.evaluate(node=>node.clientWidth);
    const status=await card.locator('.card-status').textContent();
    // Keep one escort on each untested cargo route and a free slot for the lane swap.
-   const archerAllowed=level!==82&&(level!==121||formation[slot]<escorted);
-   const capacity=level===121&&escorted<3?/^1/:/^[12]/;
+   const archerAllowed=!maicheng&&(!cargo||formation[slot]<escorted);
+   const capacity=cargo&&escorted<3?/^1/:/^[12]/;
    if(status==='可出戰'){
     await card.tap();
     await road.tap({position:{x:width*.6,y:25}});
@@ -68,34 +72,35 @@ for(const stage of stages)test(`stage ${stage.level} clears and replays from an 
  async function play({level,title,terrain,ending,resultTitle}){
   await expect(page.locator('#storyTitle')).toHaveText(title);
   await tap('#storySkip');
+  if(bonusButton)await tap('#deploymentStart');
   await expect(page.locator('#battle')).toBeVisible({timeout:30000});
   await expect(page.locator('#field')).toHaveAttribute('data-terrain',terrain);
   await expect(lanes).toHaveCount(3);
   await page.locator('#battleSpeed').selectOption('2');
   let sent=0,escorted=0,retreated=false,forward=false,paused=false,sawFinalDefense=false;
-  const warnings=new Set(),litRoutes=new Set(),sites=['山口','谷道','沓中營地'];
+  const warnings=new Set(),litRoutes=new Set();
   const positions=['上','下','中'];
   const cart=page.locator('#supplyCart');
-  const guanYu=page.locator('#units .ally').filter({has:page.getByText(/^關羽(?: · 駐守)?$/)});
+  const lead=maicheng?page.locator('#units .ally').filter({has:page.getByText(/^關羽(?: · 駐守)?$/)}):page.locator('#units .ally[data-lane="1"]').first();
   const distance=unit=>unit.evaluate(node=>parseFloat(node.style.left));
-  if(level===121){
-   await expect(objective).toContainText('山口');
+  if(cargo){
+   await expect(objective).toContainText(stops[0]);
    await expect(quick).toHaveText('查看任務');
   }
-  if(level===82)await expect(buttons('retreat')).toBeDisabled();
+  if(withdrawal)await expect(buttons('retreat')).toBeDisabled();
   for(let i=0;i<135&&!await result.isVisible();i++){
    const text=await objective.textContent();
-   if(level===121&&await quick.textContent()==='發送糧車'){
+   if(cargo&&await quick.textContent()==='發送糧車'){
     await expect(lanes.nth(sent)).toHaveAttribute('data-supply-route','true');
     await expect(objective).toContainText(`軍糧 ${sent}／3 批`);
-    await expect(objective).toContainText(sites[sent]);
+    await expect(objective).toContainText(stops[sent]);
     await quick.tap();
     sent++;
     await expect(cart).toBeVisible();
     await expect(cart).toContainText(`糧車 ${sent}／3`);
     await expect(quick).toHaveText('查看任務');
    }
-   if(level===121&&sent>escorted&&text.includes('糧車前進中')){
+   if(cargo&&sent>escorted&&text.includes('糧車前進中')){
     if(!paused){
      await pause();
      const frozen=await distance(cart);
@@ -123,13 +128,13 @@ for(const stage of stages)test(`stage ${stage.level} clears and replays from an 
     expect(await distance(cart)).toBeGreaterThan(waiting);
     escorted++;
    }
-   if(level!==121){
+   if(!cargo){
     const wave=text.match(/第 (\d)／3 波 · (.+?)路來敵/);
     if(wave&&!warnings.has(wave[1]+wave[2])){
-     if(level===82)await expect(buttons('retreat')).toBeDisabled();
+     if(withdrawal)await expect(buttons('retreat')).toBeDisabled();
      warnings.add(wave[1]+wave[2]);
     }
-    if(level===138&&wave){
+    if(defense&&wave&&!litRoutes.has(Number(wave[1]))){
      const highlighted=page.locator('.lane[data-threat=true]');
      if(await highlighted.count()){
       const expected=[0,2,1][Number(wave[1])-1];
@@ -147,24 +152,24 @@ for(const stage of stages)test(`stage ${stage.level} clears and replays from an 
      paused=true;
     }
    }
-   if(level===138&&text.includes('三波已出場')){
+   if(defense&&!sawFinalDefense&&text.includes('三波已出場')){
     await expect(result).toBeHidden();
     await expect(objective).toContainText(/清退剩下的 [1-9]\d* 名敵兵/);
     expect(await page.locator('#units .enemy').count()).toBeGreaterThan(0);
     sawFinalDefense=true;
    }
-   if(level===82&&!forward&&i>=7){
-    await command(guanYu,'forward');
+   if(withdrawal&&!forward&&i>=7){
+    await command(lead,'forward');
     forward=true;
    }
-   if(level===82&&!retreated&&await quick.textContent()==='全軍撤離'){
+   if(withdrawal&&!retreated&&await quick.textContent()==='全軍撤離'){
     await expect(objective).toContainText('第 3 波已到');
-    await expect(objective).toContainText('帶關羽與友軍撤回左側');
+    await expect(objective).toContainText(maicheng?'帶關羽與友軍撤回左側':'帶友軍撤回左側');
     expect(await page.locator('#units .enemy').count()).toBeGreaterThan(0);
-    expect(await distance(guanYu)).toBeGreaterThan(18);
+    expect(await distance(lead)).toBeGreaterThan(18);
     await quick.tap();
     await expect(result).toBeHidden();
-    await expect(objective).toContainText('1 隊友軍尚未回到左側 · 等關羽回到左側');
+    await expect(objective).toContainText(maicheng?'1 隊友軍尚未回到左側 · 等關羽回到左側':'隊友軍尚未回到左側');
     const allyPositions=()=>page.locator('#units .ally').evaluateAll(units=>units.map(unit=>unit.style.left));
     await pause();
     const held=await allyPositions();
@@ -181,19 +186,19 @@ for(const stage of stages)test(`stage ${stage.level} clears and replays from an 
   if(resultTitle)await expect(page.locator('#resultTitle')).toHaveText(resultTitle);
   await expect(page.locator('#resultText')).toContainText(ending);
   expect(paused).toBe(true);
-  if(level===121){
+  if(cargo){
    expect(sent).toBe(3);
    expect(escorted).toBe(3);
    await expect(page.locator('#waveText')).toContainText('已全數出現');
    await expect(page.locator('#missionObjective')).toContainText('軍糧 3／3 批');
   }else expect([...warnings]).toEqual(positions.map((name,i)=>i+1+name));
-  if(level===138){
+  if(defense){
    expect(sawFinalDefense).toBe(true);
    expect([...litRoutes]).toEqual([1,2,3]);
    await expect(page.locator('#missionObjective')).toHaveText('三波已守住 · 敵軍已清退');
    await expect(page.locator('#waveText')).toContainText('已全數出現');
   }
-  if(level===82)expect(retreated).toBe(true);
+  if(withdrawal)expect(retreated).toBe(true);
  }
 
  async function finish({level,title,ending,next},reward,coins){
@@ -220,11 +225,12 @@ for(const stage of stages)test(`stage ${stage.level} clears and replays from an 
  }
  async function checkReload(next,progress){
   await page.reload();
-  await expect(page.locator('#homeProgress')).toContainText(next);
+  if(bonusButton)await expect(page.locator(`#${bonusButton}Progress`)).toContainText('4 /');
+  else await expect(page.locator('#homeProgress')).toContainText(next);
   expect(await save()).toEqual(progress);
  }
 
- await tap('#startBtn');
+ await tap(bonusButton?`#${bonusButton}`:'#startBtn');
  await play(stage);
  const first=await finish(stage,'+80',230);
  await checkReload(next,first);

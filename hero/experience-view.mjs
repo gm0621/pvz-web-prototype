@@ -1,7 +1,7 @@
-import {ALL_GENERALS,growthHint} from './roster.mjs?v=xiling-houhe-maicheng-2';
-import {paintPortrait} from './factions.mjs?v=xiling-houhe-maicheng-2';
-import {hitSound} from './audio.mjs?v=xiling-houhe-maicheng-2';
-import {EXPERIENCE_DURATION,experienceFrame} from './experience-progress.mjs?v=xiling-houhe-maicheng-2';
+import {ALL_GENERALS,growthHint} from './roster.mjs?v=yang-fu-tang-1';
+import {paintPortrait} from './factions.mjs?v=yang-fu-tang-1';
+import {hitSound} from './audio.mjs?v=yang-fu-tang-1';
+import {EXPERIENCE_DURATION,experienceFrame} from './experience-progress.mjs?v=yang-fu-tang-1';
 export function mountExperienceView(){
  const root=document.createElement('section');root.id='resultExperience';root.setAttribute('aria-label','武將成長');document.getElementById('resultText').after(root);
  let frame=0,active=false,elapsed=0,last=0,levelSound=false,callback,rows=[],pageAway=false;

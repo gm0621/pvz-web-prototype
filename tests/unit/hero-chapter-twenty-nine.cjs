@@ -39,6 +39,7 @@ test('the Changan side story preserves the main ending and extends a stage 166 s
  assert.equal(progress.armyWeapons.cao.guanyu,1);
  assert.equal(progress.inventory.grain,2);
  assert.match(campaignMapSvg(168),/map-messenger[\s\S]*<title>傳詔使者<\/title>/);
+ assert.equal(chapter[3].coverWaves,true);
  assert.match(chapter[3].victory,/嵇紹護駕遇害，惠帝後來被帶往鄴城/);
  assert.match(chapter[5].victory,/張方把晉惠帝和司馬穎從洛陽帶往長安/);
  const actual=searchPeople('王浚').filter(p=>['王浚','王濬'].includes(p.name)).map(p=>[p.name,p.levels]);

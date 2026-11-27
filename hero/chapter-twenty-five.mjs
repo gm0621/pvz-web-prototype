@@ -44,9 +44,9 @@ const stages=[
  {
   name:'楊駿之變',year:291,origin:'luoyangPalace',place:'luoyangStreets',shift:true,factionLabel:'洛陽護送隊',campBanner:'護',
   leader:'司馬瑋',guest:'賈南風',opponent:'楊駿',mapOpponentRole:'被罷黜',historyCast:['賈南風','司馬瑋','楊駿'],
-  mission:'holdout',missionTitle:'街巷守備',scene:'enemy-camp',enemyArmy:'城中亂兵',enemyCount:12,successTitle:'街巷守備完成',
+  mission:'pass-defense',missionTitle:'街巷守備',scene:'enemy-camp',enemyArmy:'城中亂兵',enemyCount:12,successTitle:'街巷守備完成',
   history:'291 年春，賈皇后聯合楚王司馬瑋等人發動政變。原本輔政的楊駿遭誅，洛陽朝廷的權力重新分配。',
-  briefing:'每一路都派友軍照應，累積守備 24 秒，再清退場上的亂兵。',
+  briefing:'看哪一路亮起，就派友軍去守。擋住上路、下路、中路三波，保住防線，清完剩下的敵兵就過關。',
   ending:'楊駿被殺，朝廷召汝南王司馬亮入洛陽。這次政變揭開了晉室宗王連番爭權的序幕。',
   camp:'街巷暫時能通行了，請先確認各處的消息，再讓等候的人回去。',
   question:'291 年春，在政變中失去權力的是誰？',choices:['楊駿','剛剛入洛的使者','東吳的最後一位皇帝'],refs:[huiDi,yangJun,jia,tongjian]
