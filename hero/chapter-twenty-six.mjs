@@ -54,9 +54,9 @@ const stages=[
  {
   name:'淮南王起兵',year:300,origin:'luoyangStreets',place:'luoyangGate',shift:true,factionLabel:'洛陽撤離隊',campBanner:'護',
   leader:'司馬允',guest:'司馬衷',opponent:'司馬倫',mapOpponentRole:'掌權一方',historyCast:['司馬允','司馬倫','孫秀'],
-  mission:'withdraw',scene:'enemy-camp',enemyArmy:'城中亂兵',enemyCount:12,successTitle:'撤離隊平安返回',
+  mission:'withdraw',coverWaves:true,scene:'enemy-camp',enemyArmy:'城中亂兵',enemyCount:12,successTitle:'撤離隊平安返回',
   history:'淮南王司馬允反對司馬倫掌權，在洛陽起兵。交戰先有進展，後來司馬允被殺，政變以司馬倫一方得勢告終。',
-  briefing:'至少保住一隊友軍。等「全軍撤離」亮起再按下，讓所有存活的友軍回到左側。',
+  briefing:'看哪一路亮起，就派友軍去擋。第三波追兵出現後，按「全軍撤離」。至少保住一隊，讓所有還在場的友軍回到左側。',
   ending:'淮南王司馬允敗亡。趙王控制洛陽，朝廷內的爭權還沒有結束。',
   camp:'安全撤回的人先去休息。把姓名記下來，免得城裡的人還在四處找家人。',
   question:'誰曾在洛陽起兵反對司馬倫掌權？',choices:['淮南王司馬允','許昌的使者','早先的東吳皇帝'],refs:[hui,huainan,zhao,era]
@@ -80,6 +80,7 @@ export const TWENTY_SIXTH_CHAPTER=stages.map((stage,index)=>({
  scene:`./assets/scenes/${stage.scene}.jpg`,mission:stage.mission,missionTitle:stage.missionTitle,missionSites:stage.missionSites,
  successTitle:stage.successTitle,successRibbon:'戰 事 記 錄 ・ 回 營 整 備',
  ...(stage.supplyStops?{supplyStops:stage.supplyStops}:{}),
+ ...(stage.coverWaves?{coverWaves:true}:{}),
  ...(stage.mission==='withdraw'?{retreatKeys:[]}:{}),
  noBoss:true,bossName:stage.enemyArmy,bossHp:0,enemyArmy:stage.enemyArmy,enemyCount:stage.enemyCount??0,interval:3.8,
  lead:stage.history,history:stage.history,adaptation,note:adaptation,bossTip:stage.briefing,

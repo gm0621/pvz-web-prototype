@@ -4,7 +4,7 @@ const saveKey='heroLegendProgress_v1';
 const stages=[
  {name:'洛陽清點',route:'洛陽宮城',leader:'司馬穎',opponent:'司馬衷',guest:'司馬穎',sites:['傷員名冊','糧冊','公文'],end:'回到自己原先駐守的鄴城'},
  {name:'鄴城傳詔',route:'鄴城 → 洛陽宮城',leader:'司馬穎',opponent:'羊獻容',guest:'司馬覃',messenger:'傳詔',end:'準備奉惠帝北上'},
- {name:'河橋護駕',route:'洛陽宮城 → 河橋',leader:'司馬衷',opponent:'司馬越',guest:'嵇紹',supply:true,end:'兩軍將在蕩陰相遇'},
+ {name:'河橋護駕',route:'洛陽宮城 → 河橋',leader:'司馬衷',opponent:'司馬越',guest:'嵇紹',supply:true,stops:['出城路口','河畔驛站','河橋營地'],end:'兩軍將在蕩陰相遇'},
  {name:'蕩陰撤離',route:'河橋 → 蕩陰',leader:'司馬衷',opponent:'石超',guest:'司馬越',withdraw:true,end:'嵇紹護駕遇害，惠帝後來被帶往鄴城'},
  {name:'鄴城返洛',route:'鄴城 → 洛陽',leader:'司馬衷',opponent:'王浚',guest:'司馬穎',end:'張方掌控朝政'},
  {name:'長安西行',route:'洛陽 → 長安',leader:'司馬衷',opponent:'張方',guest:'司馬衷',supply:true,end:'張方把晉惠帝和司馬穎從洛陽帶往長安'}
@@ -115,7 +115,12 @@ test('166 returns home and Changan plays through on touch with original enemies 
      await tap('#pauseBtn');
      await advance(100);
     }
+    if(stage.stops)await expect(page.locator('#missionObjective')).toContainText(stage.stops[batch]);
     await quick.tap();
+   }
+   if(stage.stops){
+    for(let step=0;step<10&&!await result.isVisible();step++)await advance(1000);
+    await expect(page.locator('#missionObjective')).toContainText('軍糧 3／3 批');
    }
   }else{
    await advance(1200);

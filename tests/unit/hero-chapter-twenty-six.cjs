@@ -16,6 +16,7 @@ test('the Eastern Palace chapter keeps prior saves and the historical sequence',
  assert.deepEqual(chapter.map(s=>s.year),[291,299,300,300,300,301]);
  assert.deepEqual(chapter.map(s=>s.faction),Array(6).fill('cao'));
  assert.deepEqual(chapter.map(s=>s.mission),['restoration','dispatch','supply','pass-defense','withdraw','dispatch']);
+ assert.equal(chapter[4].coverWaves,true);
  assert.deepEqual(chapter[2].supplyStops,['出城路口','路上驛站','許昌城門']);
  for(const [index,stage] of chapter.entries()){
   const level=149+index;
@@ -80,8 +81,10 @@ test('Eastern Palace missions finish normally with combat confined to Luoyang de
     stepBattle(battle,.1);
    }
    assert.equal(battle.won,true,JSON.stringify({level,seed,mission:battle.mission}));
-   assert.equal(battle.spawned,combat?12:0);
-   if(level===153)assert.equal(battle.mission.ordered,true);
+   if(level===153){
+    assert.ok(battle.spawned>=9&&battle.spawned<=12);
+    assert.equal(battle.mission.ordered,true);
+   }else assert.equal(battle.spawned,combat?12:0);
   }
  }
 });

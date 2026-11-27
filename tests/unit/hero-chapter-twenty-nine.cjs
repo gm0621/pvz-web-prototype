@@ -18,6 +18,7 @@ test('the Changan side story preserves the main ending and extends a stage 166 s
   ['jinRiverBridge','jinTangyin'],['ye','luoyang'],['luoyang','jinChangan']
  ];
  assert.deepEqual(chapter.map(stage=>stage.mission),['restoration','dispatch','supply','withdraw','dispatch','supply']);
+ assert.deepEqual(chapter[2].supplyStops,['出城路口','河畔驛站','河橋營地']);
  let progress=normalizeProgress({completed:166,coins:150,weapons:{guanyu:2},armyWeapons:{cao:{guanyu:1}},inventory:{grain:2}});
  assert.equal(rewardVictory(progress,166),0);
  assert.equal(rewardVictory(progress,173),0);

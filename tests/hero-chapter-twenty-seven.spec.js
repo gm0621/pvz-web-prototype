@@ -2,7 +2,7 @@ const {test,expect}=require('@playwright/test');
 const saveKey='heroLegendProgress_v1';
 const stages=[
  {name:'許昌傳檄',route:'許昌 → 鄴城',leader:'司馬冏',guest:'司馬穎',opponent:'司馬穎',role:'起兵響應',leaderRole:'發出檄文',messenger:true,faction:'齊王傳令隊',banner:'齊',kind:'dispatch',outcome:'司馬冏從許昌傳檄'},
- {name:'潁陰守營',route:'許昌 → 潁陰',leader:'司馬冏',guest:'司馬冏',opponent:'張泓',role:'趙王將領',faction:'齊王守營隊',banner:'齊',waves:true,kind:'holdout',enemy:'張泓軍',hold:'潁陰守營',outcome:'齊王在潁陰反擊，張泓暫退'},
+ {name:'潁陰守營',route:'許昌 → 潁陰',leader:'司馬冏',guest:'司馬冏',opponent:'張泓',role:'趙王將領',faction:'齊王守營隊',banner:'齊',waves:true,kind:'pass-defense',enemy:'張泓軍',hold:'潁陰守營',outcome:'齊王在潁陰反擊，張泓暫退'},
  {name:'黃橋收兵',route:'鄴城 → 黃橋',leader:'司馬穎',guest:'盧志',opponent:'孫會',role:'趙王前線將領',faction:'成都王收兵隊',banner:'成',waves:true,kind:'withdraw',outcome:'成都王前鋒吃了敗仗'},
  {name:'湨水反擊',route:'黃橋 → 湨水',leader:'司馬穎',guest:'盧志',opponent:'孫會',role:'退敗一方',faction:'成都王反擊隊',banner:'成',waves:true,kind:'holdout',enemy:'趙王守兵',hold:'湨水渡路守備',outcome:'成都王在湨水得勝並渡河'},
  {name:'惠帝復位',route:'金墉城 → 洛陽宮城',leader:'司馬衷',guest:'王輿',opponent:'王輿',role:'發兵迎回惠帝',leaderRole:'回宮復位',faction:'洛陽迎駕隊',banner:'晉',kind:'dispatch',outcome:'司馬衷回到洛陽宮城並復位'},
@@ -47,7 +47,7 @@ test('stage 154 unlocks the campaign to restore Emperor Hui and keeps campaign s
   // Only enemy waves and starting food are sandboxed. Mission and save paths run through UI.
   await page.evaluate(kind=>{
    const battle=window.chapterBattle;
-   battle.bossSpawned=kind!=='holdout';
+   battle.bossSpawned=!['holdout','pass-defense'].includes(kind);
    battle.nextSpawn=Infinity;
    battle.food=300;
   },kind);
@@ -251,6 +251,25 @@ test('stage 154 unlocks the campaign to restore Emperor Hui and keeps campaign s
   if(level===160)await page.evaluate(()=>window.blockSave=true);
   if(stage.kind==='restoration'){
    await restore(stage.sites);
+  }else if(stage.kind==='pass-defense'){
+   await expect(page.locator('#missionQuick')).toContainText(stage.hold);
+   await expect(page.locator('#missionQuick')).toContainText('第 1／3 波 · 上路來敵');
+   await tap('#pauseBtn');
+   const frozen=await snapshot();
+   await advance(1000);
+   expect(await snapshot()).toEqual(frozen);
+   await tap('#resumeBtn');
+   // This chapter regression queues the final enemy. The touch mission suite runs all three waves.
+   await page.evaluate(()=>{
+    const battle=window.chapterBattle;
+    battle.spawned=11;
+    battle.nextSpawn=battle.time;
+   });
+   await advance(3300);
+   await expect(page.locator('#waveText')).toHaveText(stage.enemy+'已全數出現');
+   await expect(page.locator('#missionQuick')).toContainText('清退剩下的 1 名敵兵');
+   await expect(page.locator('#result')).toBeHidden();
+   await advance(31000);
   }else if(stage.kind==='holdout'){
    await advance(4500);
    await expect(page.locator('#missionQuick')).toContainText(stage.hold);

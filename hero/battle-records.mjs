@@ -1,4 +1,4 @@
-import {CAMPAIGN_LENGTH} from './campaign-config.mjs?v=xuchang-jia-huangqiao-1';
+import {CAMPAIGN_LENGTH} from './campaign-config.mjs?v=yingyin-heqiao-huainan-1';
 
 function recordRule(level){
  switch(level){

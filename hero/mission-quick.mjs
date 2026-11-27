@@ -1,7 +1,7 @@
-import {HISTORICAL_STAGES} from './history-stages.mjs?v=xuchang-jia-huangqiao-1';
-import {missionText} from './chapter-missions.mjs?v=xuchang-jia-huangqiao-1';
-import {retreatPartyNames,retreatPartyLabel,retreatRallyHint,supplyReady,coverWaveText,historyMissionText} from './history-missions.mjs?v=xuchang-jia-huangqiao-1';
-import {hasFireRoutes,hasGate,hasOutposts,canRepairGate} from './field-missions.mjs?v=xuchang-jia-huangqiao-1';
+import {HISTORICAL_STAGES} from './history-stages.mjs?v=yingyin-heqiao-huainan-1';
+import {missionText} from './chapter-missions.mjs?v=yingyin-heqiao-huainan-1';
+import {retreatPartyNames,retreatPartyLabel,retreatRallyHint,supplyReady,coverWaveText,historyMissionText} from './history-missions.mjs?v=yingyin-heqiao-huainan-1';
+import {hasFireRoutes,hasGate,hasOutposts,canRepairGate} from './field-missions.mjs?v=yingyin-heqiao-huainan-1';
 const names=['上','中','下'];
 export function missionQuickState(b){
  const m=b.mission;if(!m)return null;

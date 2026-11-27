@@ -10,7 +10,10 @@ const stages=[
  {level:170,kind:'withdrawal',chapter:29,title:'蕩陰撤離',terrain:'pass-defense',ending:'嵇紹護駕遇害，惠帝後來被帶往鄴城',next:'鄴城返洛',resultTitle:'接應隊撤回',bonusButton:'homeChangan',bonusClears:4},
  {level:151,kind:'supply',stops:['出城路口','路上驛站','許昌城門'],chapter:26,title:'許昌幽居',terrain:'',ending:'司馬遹在許昌遇害',next:'賈后被廢',resultTitle:'隨行補給送達',bonusButton:'homeExtra',bonusClears:9,peaceful:true},
  {level:152,kind:'defense',chapter:26,title:'賈后被廢',terrain:'pass-defense',ending:'賈南風被廢，張華與裴頠遇害',next:'淮南王起兵',resultTitle:'護送守備完成',bonusButton:'homeExtra',bonusClears:10},
- {level:157,kind:'withdrawal',chapter:27,title:'黃橋收兵',terrain:'pass-defense',ending:'成都王前鋒吃了敗仗',next:'湨水反擊',resultTitle:'黃橋散兵撤回',bonusButton:'homeExtra',bonusClears:15}
+ {level:157,kind:'withdrawal',chapter:27,title:'黃橋收兵',terrain:'pass-defense',ending:'成都王前鋒吃了敗仗',next:'湨水反擊',resultTitle:'黃橋散兵撤回',bonusButton:'homeExtra',bonusClears:15},
+ {level:153,kind:'withdrawal',chapter:26,title:'淮南王起兵',terrain:'pass-defense',ending:'淮南王司馬允敗亡',next:'趙王篡位',resultTitle:'撤離隊平安返回',bonusButton:'homeExtra',bonusClears:11},
+ {level:156,kind:'defense',chapter:27,title:'潁陰守營',terrain:'pass-defense',ending:'齊王在潁陰反擊，張泓暫退',next:'黃橋收兵',resultTitle:'潁陰防線守住',bonusButton:'homeExtra',bonusClears:14},
+ {level:169,kind:'supply',stops:['出城路口','河畔驛站','河橋營地'],chapter:29,title:'河橋護駕',terrain:'',ending:'兩軍將在蕩陰相遇',next:'蕩陰撤離',resultTitle:'河橋補給送達',bonusButton:'homeChangan',bonusClears:3,peaceful:true}
 ];
 
 for(const stage of stages)test(`stage ${stage.level} clears and replays from an old save on touch`,async({page})=>{

@@ -20,9 +20,9 @@ const stages=[
  {
   name:'潁陰守營',year:301,origin:'jinXuchang',place:'jinYingyin',shift:false,factionLabel:'齊王守營隊',campBanner:'齊',
   leader:'司馬冏',guest:'司馬冏',opponent:'張泓',mapOpponentRole:'趙王將領',historyCast:['司馬冏','張泓','司馬倫'],
-  mission:'holdout',missionTitle:'潁陰守營',scene:'enemy-camp',enemyArmy:'張泓軍',enemyCount:12,successTitle:'潁陰防線守住',
+  mission:'pass-defense',missionTitle:'潁陰守營',scene:'enemy-camp',enemyArmy:'張泓軍',enemyCount:12,successTitle:'潁陰防線守住',
   history:'司馬倫派張泓等將領迎戰。張泓先在陽翟一帶打勝幾仗，又逼近齊王駐守的潁陰。齊王反擊，打敗張泓派出的部分將領，張泓暫時退兵。',
-  briefing:'派友軍照應各路。累積守備 24 秒，並等敵軍全數出場後清退。',
+  briefing:'哪一路亮起，就派友軍去守。擋住上路、下路、中路三波，保住防線，再清完剩下的敵兵。',
   ending:'齊王在潁陰反擊，張泓暫退。張泓的隊伍仍在，雙方的戰事尚未結束。',
   camp:'把每條路的守衛名單拿來。剛從前線下來的人先休息，輪到下一隊接手。',
   question:'誰替趙王出兵攻打齊王？',choices:['張泓','許昌縣令','宮門守衛'],refs:[qi,chronicle]

@@ -1,4 +1,4 @@
-import {lateJinChapter} from './late-jin-chapter.mjs?v=xuchang-jia-huangqiao-1';
+import {lateJinChapter} from './late-jin-chapter.mjs?v=yingyin-heqiao-huainan-1';
 
 const source=(title,path)=>({title,url:'https://zh.wikisource.org/zh-hant/'+path});
 const hui=source('《晉書》・惠帝紀','晉書/卷004');
@@ -32,9 +32,9 @@ export const TWENTY_NINTH_CHAPTER=lateJinChapter(29,[
  {
   name:'河橋護駕',year:304,origin:'luoyangPalace',place:'jinRiverBridge',shift:true,factionLabel:'北上補給隊',campBanner:'糧',
   leader:'司馬衷',guest:'嵇紹',opponent:'司馬越',mapLeaderRole:'惠帝北上',mapOpponentRole:'奉帝北上',historyCast:['司馬衷','司馬越','嵇紹','司馬穎'],
-  mission:'supply',scene:'supply-road',enemyArmy:'北上補給',successTitle:'河橋補給送達',
+  mission:'supply',supplyStops:['出城路口','河畔驛站','河橋營地'],scene:'supply-road',enemyArmy:'北上補給',successTitle:'河橋補給送達',
   history:'司馬越等人奉晉惠帝離開洛陽，北上討伐司馬穎。嵇紹是跟在惠帝身邊的侍中，負責在皇帝身邊辦事，也隨隊北上。',
-  briefing:'派友軍照應運糧路線，把三批補給送到河橋一帶，為北上的隊伍補充糧食。',
+  briefing:'派友軍守住亮起的路，再按「發送糧車」。護衛離開時糧車會停，回到這一路就繼續。三批補給送到就過關。',
   ending:'北上的隊伍繼續往鄴城方向走。司馬穎派出石超迎戰，兩軍將在蕩陰相遇。',
   camp:'走遠路前先把糧袋分好。隊伍在哪一路，就把補給送到那一路。',
   question:'誰奉晉惠帝北上討伐司馬穎？',choices:['司馬越等人','建業的船隊','黃河的渡工'],refs:[hui,tongjian,jiShao]

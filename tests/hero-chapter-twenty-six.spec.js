@@ -70,11 +70,19 @@ test('stage 148 continues through the usurpation of the Prince of Zhao and keeps
    await advance(3300);
   }
   await tap('#commandDrawerClose');
-  await advance(4100);
+  await expect(page.locator('#missionChoices [data-action=retreat]')).toBeDisabled();
+  // The chapter regression queues the first enemy of wave three.
+  await page.evaluate(()=>{
+   const battle=window.chapterBattle;
+   battle.spawned=8;
+   battle.bossSpawned=false;
+   battle.nextSpawn=battle.time+1;
+  });
+  await advance(1000);
   await expect(page.locator('#missionQuickAction')).toHaveText('全軍撤離');
   await tap('#missionQuickAction');
   await advance(200);
-  await expect(page.locator('#missionQuick')).toContainText('1 名友軍尚未回到左側');
+  await expect(page.locator('#missionQuick')).toContainText('1 隊友軍尚未回到左側');
   await expect(page.locator('#result')).toBeHidden();
   await tap('#pauseBtn');
   const frozen=await snapshot();
@@ -83,7 +91,7 @@ test('stage 148 continues through the usurpation of the Prince of Zhao and keeps
   await advance(550);
   expect(await snapshot()).toEqual(frozen);
   expect(await position()).toBe(before);
-  await expect(page.locator('#missionQuick p')).toHaveText('已暫停，保留進度 · 1 名友軍尚未回到左側');
+  await expect(page.locator('#missionQuick p')).toHaveText('已暫停，保留進度 · 1 隊友軍尚未回到左側');
   await expect(page.locator('#missionObjective')).toContainText('已暫停，保留進度');
   await expect(page.locator('#missionQuickAction')).toBeDisabled();
   await tap('#pauseBtn');

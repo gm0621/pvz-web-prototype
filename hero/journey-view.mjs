@@ -1,6 +1,6 @@
-import {stageFactionTitle} from './factions.mjs?v=xuchang-jia-huangqiao-1';
-import {stagePeople,mapPersonSvg,renderMatchup} from './characters.mjs?v=xuchang-jia-huangqiao-1';
-import {campaignMapSvg,includeSecondaryRoute,journeyRoute,MAP_PLACES,routeThrough} from './campaign-map.mjs?v=xuchang-jia-huangqiao-1';
+import {stageFactionTitle} from './factions.mjs?v=yingyin-heqiao-huainan-1';
+import {stagePeople,mapPersonSvg,renderMatchup} from './characters.mjs?v=yingyin-heqiao-huainan-1';
+import {campaignMapSvg,includeSecondaryRoute,journeyRoute,MAP_PLACES,routeThrough} from './campaign-map.mjs?v=yingyin-heqiao-huainan-1';
 let cancelJourney=()=>{};
 export function mountJourney(level,stage){
  cancelJourney();let root=document.getElementById('journeyIntro');

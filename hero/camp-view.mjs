@@ -1,14 +1,14 @@
-import {CHAPTER_NUMERALS,MAIN_STORY_END} from './campaign-config.mjs?v=xuchang-jia-huangqiao-1';
-import {campGrowthCard} from './camp-growth.mjs?v=xuchang-jia-huangqiao-1';
-import {PEACH_GENERALS,SUN_GENERALS,SLOTS,heroLevel} from './roster.mjs?v=xuchang-jia-huangqiao-1';
-import {skillSummary} from './roster-view.mjs?v=xuchang-jia-huangqiao-1';
-import {renderHeroCamp} from './roster-view.mjs?v=xuchang-jia-huangqiao-1';
-import {STORY_PEOPLE,renderPeople} from './characters.mjs?v=xuchang-jia-huangqiao-1';
-import {STAGES,chapterInfo} from './story.mjs?v=xuchang-jia-huangqiao-1';
-import {factionFor,paintPortrait} from './factions.mjs?v=xuchang-jia-huangqiao-1';
-import {campConversation} from './camp-talk.mjs?v=xuchang-jia-huangqiao-1';
-import {GOODS,purchase,weaponsForLevel} from './campaign.mjs?v=xuchang-jia-huangqiao-1';
-import {CAMP_LINES} from './novel.mjs?v=xuchang-jia-huangqiao-1';
+import {CHAPTER_NUMERALS,MAIN_STORY_END} from './campaign-config.mjs?v=yingyin-heqiao-huainan-1';
+import {campGrowthCard} from './camp-growth.mjs?v=yingyin-heqiao-huainan-1';
+import {PEACH_GENERALS,SUN_GENERALS,SLOTS,heroLevel} from './roster.mjs?v=yingyin-heqiao-huainan-1';
+import {skillSummary} from './roster-view.mjs?v=yingyin-heqiao-huainan-1';
+import {renderHeroCamp} from './roster-view.mjs?v=yingyin-heqiao-huainan-1';
+import {STORY_PEOPLE,renderPeople} from './characters.mjs?v=yingyin-heqiao-huainan-1';
+import {STAGES,chapterInfo} from './story.mjs?v=yingyin-heqiao-huainan-1';
+import {factionFor,paintPortrait} from './factions.mjs?v=yingyin-heqiao-huainan-1';
+import {campConversation} from './camp-talk.mjs?v=yingyin-heqiao-huainan-1';
+import {GOODS,purchase,weaponsForLevel} from './campaign.mjs?v=yingyin-heqiao-huainan-1';
+import {CAMP_LINES} from './novel.mjs?v=yingyin-heqiao-huainan-1';
 export function mountCamp({progress,level,heroes,stage,onSave,onContinue,won=true,fromFinale=false}){
  const $=id=>document.getElementById(id);let shop='items';
  let people=$('campTalkPeople');if(!people){people=document.createElement('aside');people.id='campTalkPeople';people.className='story-people';people.setAttribute('aria-label','對話提及人物');$('campTalkText').after(people)}people.hidden=true;

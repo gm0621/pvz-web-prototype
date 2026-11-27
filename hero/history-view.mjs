@@ -1,6 +1,6 @@
-import {stageFactionTitle,paintPortrait} from './factions.mjs?v=xuchang-jia-huangqiao-1';
-import {STORY_PEOPLE} from './characters.mjs?v=xuchang-jia-huangqiao-1';
-import {TWENTY_NINTH_CHAPTER} from './chapter-twenty-nine.mjs?v=xuchang-jia-huangqiao-1';
+import {stageFactionTitle,paintPortrait} from './factions.mjs?v=yingyin-heqiao-huainan-1';
+import {STORY_PEOPLE} from './characters.mjs?v=yingyin-heqiao-huainan-1';
+import {TWENTY_NINTH_CHAPTER} from './chapter-twenty-nine.mjs?v=yingyin-heqiao-huainan-1';
 
 export function mountHistoryLesson(stage,heroes){
  let root=document.getElementById('historyLesson');if(!root){root=document.createElement('details');root.id='historyLesson';document.getElementById('storyPrologue').prepend(root)}root.hidden=!stage.year;if(!stage.year)return;root.open=false;
