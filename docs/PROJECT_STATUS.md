@@ -20,6 +20,15 @@ npm run test:hero:engine
 npx playwright test --config=playwright.hero-input.config.js
 ```
 
+## 2026-11-27 酸棗、白帝、南安玩法複查
+
+- 回歸測試提交 `5ebee71` 已完成 Pages 部署。正式遊戲沿用 `0ade896`。正式站手機 Chromium（320px、390px）6 項、平板 WebKit（820×1180）3 項完整觸控流程通過，核對 52 份遊戲資源。 [正式遊戲](https://gm0621.github.io/pvz-web-prototype/hero/?v=0ade896) · [回歸測試部署](https://github.com/gm0621/pvz-web-prototype/actions/runs/45961232873)
+- 第 18 關三批糧車逐批測試。護衛離開時位置與百分比凍結，回到原路後從原進度續行，前兩批交付沒有寫入過關存檔。三批送達且清完餘兵才結算，回營後能完成曹操軍選將並實際進入第 19 關「汴水撤軍」。重整後從首頁繼續也接到第 19 關，進入下一關不會提前寫入通關進度。
+- 第 89 關上、下、中路依序預警，三波十二隊都從正確路線出現。餘兵數隨清場下降，清完才結算。營地可與李嚴對話，接到劉禪即位。
+- 第 117 關第八隊到場時仍鎖住撤離，第三波第一隊出場才開放。只留一隊在前方時不結算也不寫入過關存檔，最後一隊回到左側才過關，再接洮西收兵。
+- 三關從舊格式存檔驗證暫停恢復、營地、下一關、重整及重玩。兵器、物資及個人最佳保留，首勝軍資只發一次。
+- 本機 434 項引擎測試及 9 項觸控測試通過。使用瀏覽器模擬觸控。快取版 `baidi-suanzhao-nanan-1`，觸控指令 `npx playwright test --config=playwright.hero-baidi-suanzhao-nanan.config.js`。
+
 ## 2026-11-27 白帝分波守備、酸棗分段護糧與南安撤離
 
 - 已發布 `0ade896`。正式站手機 Chromium（320px、390px）6 項、平板 WebKit（820×1180）3 項完整觸控流程通過，核對 52 份發布資源。 [正式遊戲](https://gm0621.github.io/pvz-web-prototype/hero/?v=0ade896) · [人物圖鑑](https://gm0621.github.io/pvz-web-prototype/hero/people.html?v=0ade896) · [發布紀錄](https://github.com/gm0621/pvz-web-prototype/actions/runs/45959787493)
