@@ -19,6 +19,7 @@ async function open(page,completed){
   HTMLMediaElement.prototype.play=function(){
    if(this.dataset.musicMode)probe.starts.push({
     mode:this.dataset.musicMode,
+    at:this.currentTime,
     others:[...document.querySelectorAll('audio')].filter(node=>node!==this&&!node.paused).map(node=>node.dataset.musicMode)
    });
    return original.call(this);
@@ -48,7 +49,7 @@ async function open(page,completed){
  },{completed,key});
  await page.route('**/hero/engine.mjs?*',async route=>{
   const response=await route.fetch();
-  await route.fulfill({response,body:(await response.text()).replace('return {level,mission:','return window.finaleBattle={level,mission:')});
+  await route.fulfill({response,body:(await response.text()).replace('return {level,mission:','window.finaleDeploy=deploy;return window.finaleBattle={level,mission:')});
  });
  await page.goto(entry);
  await page.locator('#musicBtn').tap();
@@ -72,8 +73,8 @@ async function signal(page){
   return peak;
  });
 }
-async function coda(page){
- await expect.poll(async()=>(await audio(page)).theme).toBe(ending);
+async function coda(page,theme=ending){
+ await expect.poll(async()=>(await audio(page)).theme).toBe(theme);
  await expect.poll(()=>active(page)).toEqual([]);
  await expect.poll(()=>signal(page)).toBeGreaterThan(.008);
 }
@@ -176,5 +177,86 @@ for(const bonus of bonuses){
   }
   await bonusBattle(page,bonus);
   expect(await saved(page)).toMatchObject({completed:bonus.completed,coins:100,inventory:{grain:2}});
+ });
+}
+
+for(const stage of [
+ {level:160,chapter:27,title:'齊王輔政',theme:'諸王討趙・章末',button:'#homeExtra',next:bonuses[1]},
+ {level:166,chapter:28,title:'洛陽圍城',theme:'洛陽風雲・章末',button:'#homeLuoyang',next:bonuses[2]},
+ {level:172,chapter:29,title:'長安西行',theme:'長安西行・章末',button:'#homeChangan'}
+]){
+ test(`bonus finale ${stage.level} switches from battle to epilogue, menu and replay`,async({page})=>{
+  await open(page,stage.level-1);
+  if(stage.next)await expect(page.locator(stage.next.button)).toBeDisabled();
+  await tap(page,stage.button);
+
+  async function enterAndSettle(reward){
+   await expect(page.locator('#storyTitle')).toHaveText(stage.title);
+   await recording(page,'story',.26);
+   await tap(page,'#storySkip');
+   await recording(page,'prepare',.26);
+   await tap(page,'#deploymentStart');
+   await expect(page.locator('#battle')).toBeVisible({timeout:45000});
+   await expect.poll(async()=>(await audio(page)).theme).toBe(stage.title+'・行軍');
+   await expect.poll(()=>active(page)).toEqual([]);
+   await expect.poll(()=>signal(page)).toBeGreaterThan(.008);
+   // Bring each mission to its final condition and let the real engine award the result.
+   await page.evaluate(()=>{
+    const b=window.finaleBattle,m=b.mission;
+    b.enemies.length=0;
+    b.bossSpawned=true;
+    b.nextSpawn=Infinity;
+    if(m.kind==='restoration')m.sites=[8,8,8];
+    if(m.kind==='withdraw'){
+     window.finaleDeploy(b,'liubei',0);
+     b.time=m.withdrawAt;
+     m.ordered=true;
+    }
+    if(m.kind==='supply'){m.delivered=m.stops.length;m.done=true;}
+   });
+   await expect(page.locator('#result')).toHaveAttribute('data-outcome','victory');
+   await expect(page.locator('#resultEarned')).toHaveText(reward);
+   await coda(page,stage.theme);
+   expect(await signal(page)).toBeLessThan(.26);
+  }
+  async function epilogueToMenu(readAll){
+   await tap(page,'#resultNext');
+   await expect(page.locator('#campTitle')).toContainText(stage.title);
+   await recording(page,'camp',.29);
+   await tap(page,'#campContinue');
+   await expect(page.locator('#storyChapter')).toContainText('戰後');
+   await coda(page,stage.theme);
+   if(readAll){
+    const next=page.locator('#storyNext');
+    const pages=Number((await page.locator('#storyCount').textContent()).split('/')[1]);
+    for(let i=1;i<pages;i++)await next.tap();
+    await expect(next).toContainText('回主選單');
+    await next.tap();
+   }else await tap(page,'#storySkip');
+   await expect(page.locator('#home')).toBeVisible();
+   await recording(page,'home',.345);
+   expect(await page.evaluate(()=>window.finaleAudio.gains.some(g=>g.value===.34&&g.time===.25))).toBe(true);
+  }
+
+  await enterAndSettle('+80');
+  await epilogueToMenu(true);
+  if(stage.next){
+   await expect(page.locator(stage.next.button)).toBeEnabled();
+   await tap(page,stage.next.button);
+   await expect(page.locator('#storyTitle')).toHaveText(stage.next.stage);
+   await recording(page,'story',.26);
+   await tap(page,'#story [data-home]');
+   await recording(page,'home',.345);
+  }
+  await tap(page,stage.button);
+  await tap(page,`#chapterTabs [data-chapter="${stage.chapter}"]`);
+  await tap(page,`#chapterDots [data-level="${stage.level}"]`);
+  await enterAndSettle('+0');
+  await epilogueToMenu(false);
+  expect(await saved(page)).toMatchObject({completed:stage.level,coins:180,weapons:{guanyu:2},inventory:{grain:2}});
+  const starts=await page.evaluate(()=>window.finaleAudio.starts);
+  expect(starts.filter(s=>['home','camp','story','prepare'].includes(s.mode)).every(s=>s.at<.05)).toBe(true);
+  expect(starts.some(s=>s.mode==='victory')).toBe(false);
+  await noOverlaps(page);
  });
 }
