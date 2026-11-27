@@ -19,7 +19,7 @@ test('recorded scene themes follow home, story, preparation, battle, duel, camp 
  await page.locator('#startBtn').click();
  await expect(page.locator('#story')).toBeVisible();
  await expect(page.locator('#musicBtn')).toContainText('桃園說書');
- expect(await page.evaluate(()=>document.getElementById('menuBgm').paused)).toBe(true);
+ await expect.poll(()=>page.evaluate(()=>document.getElementById('menuBgm').paused)).toBe(true);
  await expect.poll(()=>page.locator('audio[data-music-mode="story"]').evaluate(el=>!el.paused)).toBe(true);
  for(let turn=0;turn<8&&await page.locator('#storyPrologue').isVisible();turn++){
   await page.locator('#storyNext').click();
@@ -97,6 +97,7 @@ test('battle arrangement produces audio and its output becomes silent when music
  await page.addInitScript(()=>{window.battleBuses=[];const make=AudioContext.prototype.createGain;AudioContext.prototype.createGain=function(){window.battleContext=this;const g=make.call(this);window.battleBuses.push(g);return g}});
  const press=selector=>hasTouch?page.locator(selector).tap():page.locator(selector).click();
  await page.goto('/hero/');await press('#musicBtn');await expect(page.locator('#musicBtn')).toHaveAttribute('aria-pressed','true');await press('#startBtn');await press('#storySkip');await expect(page.locator('#battle')).toBeVisible();
+ await expect.poll(()=>page.locator('audio[data-music-mode]').evaluateAll(tracks=>tracks.every(track=>track.paused))).toBe(true);
  const output=await page.evaluate(async()=>{const a=await import('/hero/audio.mjs?v=hero-scene-music-1'),ctx=window.battleContext,analyser=ctx.createAnalyser();analyser.fftSize=2048;window.battleBuses[0].connect(analyser);const sample=async()=>{let peak=0;for(let i=0;i<8;i++){await new Promise(r=>setTimeout(r,80));const wave=new Float32Array(analyser.fftSize);analyser.getFloatTimeDomainData(wave);peak=Math.max(peak,...wave.map(Math.abs))}return peak};const playing=await sample();await a.setMusic(false);const muted=await sample();return {playing,muted}});
  expect(output.playing).toBeGreaterThan(.005);expect(output.muted).toBeLessThan(.001);
 });
