@@ -32,9 +32,9 @@ const stages=[
  {level:94,kind:'supply',stops:['越巂營地','山路驛站','滇池營地'],chapter:16,title:'南中收兵',terrain:'',ending:'諸葛亮回到成都',next:'漢中出師',chapterEnd:'第十六章尾聲',nextChapter:'第十七章'},
  {level:96,kind:'defense',chapter:17,title:'隴右響應',terrain:'pass-defense',ending:'蜀軍在隴右獲得響應',next:'街亭撤離'},
  {level:103,kind:'withdrawal',chapter:18,title:'木門收兵',terrain:'pass-defense',ending:'張郃在木門中箭身亡',next:'斜谷再出',resultTitle:'全軍撤回'},
- {level:88,kind:'supply',stops:['秭歸營地','山路驛站','永安營地'],chapter:15,title:'白帝收兵',terrain:'',ending:'劉備留在永安安頓軍隊',next:'白帝託孤',chapterEnd:'第十五章尾聲',nextChapter:'第十六章'},
- {level:101,kind:'defense',chapter:18,title:'雨阻漢中',terrain:'pass-defense',ending:'魏軍因大雨與道路中斷撤回',next:'祁山運糧'},
- {level:134,kind:'withdrawal',chapter:23,title:'成都亂起',terrain:'pass-defense',ending:'鍾會和姜維在成都兵變中身亡',next:'安樂公入洛',resultTitle:'護送隊平安撤回'}
+ {level:88,kind:'supply',stops:['秭歸營地','山路驛站','永安營地'],chapter:15,title:'白帝收兵',terrain:'',ending:'劉備留在永安安頓軍隊',next:'白帝託孤',chapterEnd:'第十五章尾聲',nextChapter:'第十六章',nextMission:'永安驛道接應',campGuest:'劉備'},
+ {level:101,kind:'defense',chapter:18,title:'雨阻漢中',terrain:'pass-defense',ending:'魏軍因大雨與道路中斷撤回',next:'祁山運糧',campGuest:'李嚴'},
+ {level:134,kind:'withdrawal',chapter:23,title:'成都亂起',terrain:'pass-defense',ending:'鍾會和姜維在成都兵變中身亡',next:'安樂公入洛',resultTitle:'護送隊平安撤回',campGuest:'胡烈'}
 ];
 
 test('stage 71 opens from home with an old save before and after reload',async({page})=>{
@@ -303,8 +303,8 @@ for(const stage of stages)test(`stage ${stage.level} clears and replays from an 
   if(cargo){
    expect(sent).toBe(3);
    expect(escorted).toBe(3);
-   if(peaceful)await expect(page.locator('#units .enemy')).toHaveCount(0);
-   else await expect(page.locator('#waveText')).toContainText('已全數出現');
+   await expect(page.locator('#units .enemy')).toHaveCount(0);
+   if(!peaceful)await expect(page.locator('#waveText')).toContainText('已全數出現');
    await expect(page.locator('#missionObjective')).toContainText('軍糧 3／3 批');
   }else expect([...warnings]).toEqual(positions.map((name,i)=>i+1+name));
   if(defense){
@@ -325,7 +325,7 @@ for(const stage of stages)test(`stage ${stage.level} clears and replays from an 
   }
  }
 
- async function finish({level,title,ending,next,chapterEnd,nextChapter},reward,coins,wuRank){
+ async function finish({level,title,ending,next,chapterEnd,nextChapter,campGuest},reward,coins,wuRank){
   await expect(page.locator('#resultEarned')).toHaveText(reward);
   const progress=await save();
   expect(progress).toMatchObject({completed:level,coins,weapons:{guanyu:2},armyWeapons:{cao:{liubei:1},...(sun?{sun:{zhangfei:wuRank}}:{})},inventory:{grain:2},battleRecords:{20:80,[level]:expect.any(Number)}});
@@ -334,6 +334,14 @@ for(const stage of stages)test(`stage ${stage.level} clears and replays from an 
   await tap('#resultNext');
   await expect(page.locator('#campTitle')).toContainText(title);
   await expect(page.locator('#campCoins')).toHaveText(String(coins));
+  if(campGuest){
+   await tap('#camp [data-talk=guanyu]');
+   await expect(page.locator('#campTalkName')).toHaveText(campGuest);
+   await expect(page.locator('#campTalkPortrait')).toHaveAttribute('alt',campGuest);
+   await expect(page.locator('#campTalkText')).not.toBeEmpty();
+   await tap('#campTalkNext');
+   await expect(page.locator('#campTalk')).toBeHidden();
+  }
   if(sun){
    await tap('[data-shop=weapons]');
    const huanggai=page.locator('#shopGoods .goods-card').filter({hasText:'黃蓋・兵器整備'});
@@ -393,6 +401,13 @@ for(const stage of stages)test(`stage ${stage.level} clears and replays from an 
  await continueStory.tap();
  await play(stage);
  const first=await finish(stage,'+80',230,2);
+ if(stage.nextMission){
+  await tap('#storySkip');
+  await expect(page.locator('#battle')).toBeVisible({timeout:30000});
+  await expect(page.locator('#battleTitle')).toContainText(next);
+  await expect(objective).toContainText(stage.nextMission);
+  expect(await save()).toEqual(first);
+ }
  await checkReload(next,first);
  if(stage.nextChapter){
   await continueStory.tap();
