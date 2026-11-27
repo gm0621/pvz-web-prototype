@@ -1,7 +1,7 @@
-import {ALL_GENERALS as GENERALS} from './roster.mjs?v=hanzhong-sunhao-tazhong-2';
-import {skillSummary} from './roster-view.mjs?v=hanzhong-sunhao-tazhong-2';
-import {PEOPLE,searchPeople} from './people-data.mjs?v=hanzhong-sunhao-tazhong-2';
-import {paintPortrait} from './factions.mjs?v=hanzhong-sunhao-tazhong-2';
+import {ALL_GENERALS as GENERALS} from './roster.mjs?v=mangshui-qianluo-duangu-1';
+import {skillSummary} from './roster-view.mjs?v=mangshui-qianluo-duangu-1';
+import {PEOPLE,searchPeople} from './people-data.mjs?v=mangshui-qianluo-duangu-1';
+import {paintPortrait} from './factions.mjs?v=mangshui-qianluo-duangu-1';
 const $=id=>document.getElementById(id);let kind='all';
 const node=(tag,text,className)=>{const e=document.createElement(tag);if(text)e.textContent=text;if(className)e.className=className;return e};
 function render(){

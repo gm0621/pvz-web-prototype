@@ -13,6 +13,7 @@ test('the six post-surrender stages preserve the previous chapter save and histo
  let progress=normalizeProgress({completed:130,coins:150,weapons:{guanyu:2},armyWeapons:{cao:{guanyu:1}},inventory:{grain:2}});
  assert.equal(rewardVictory(progress,130),0);
  assert.equal(chapter.length,6);
+ assert.deepEqual(chapter[4].supplyStops,['成都城外','途中驛站','洛陽城門']);
  assert.deepEqual(chapter.map(s=>s.year),[263,264,264,264,264,265]);
  assert.deepEqual(chapter.map(s=>s.mission),['dispatch','restoration','dispatch','withdraw','supply','restoration']);
  for(const [index,stage] of chapter.entries()){

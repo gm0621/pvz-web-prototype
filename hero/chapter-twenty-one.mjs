@@ -2,13 +2,13 @@ const source=(volume,name,section=name)=>({title:`《三國志》・${name}傳`,
 const ruler=source(33,'後主','後主_劉禪'),jiangWei=source(44,'姜維');
 const dengAi=source(28,'鄧艾'),zhongHui=source(28,'鍾會'),zhangYi=source(45,'張翼'),liaoHua=source(45,'廖化');
 const adaptation='行軍圖是歷史區域與方向示意。三路任務、營地對話和可出戰隊伍為遊戲改編，史實人物請看歷史小檔案。';
-const retreat='等接應完成後按「全軍撤離」。至少保住一隊友軍，場上存活的武將和士兵都要撤回左側。';
+const retreat='哪一路亮起，就派友軍去擋。第三波追兵出現後按「全軍撤離」。至少保住一隊，讓所有還在場的友軍回到左側。';
 
 const stages=[
  {
   name:'段谷撤兵',year:256,origin:'zhongti',place:'duangu',leader:'姜維',guest:'姜維',opponent:'鄧艾',
   historyCast:['姜維','鄧艾'],matchupLabel:'魏將鄧艾・在段谷擊敗蜀軍',
-  mission:'withdraw',scene:'mountain-front',enemyArmy:'魏軍追兵',
+  mission:'withdraw',coverWaves:true,scene:'mountain-front',enemyArmy:'魏軍追兵',
   history:'從狄道撤兵後，姜維隔年再度出兵，原本約了另一支蜀軍在上邽會合。援軍未到，鄧艾在段谷擊敗姜維，蜀軍有許多人傷亡。',
   briefing:retreat,
   ending:'蜀軍在段谷戰敗。姜維把散開的隊伍撤回，自請降官，仍繼續負責軍務。',
@@ -18,9 +18,9 @@ const stages=[
  {
   name:'芒水相持',year:257,origin:'luogu',place:'mangshui',leader:'姜維',guest:'姜維',opponent:'鄧艾',mapOpponent:false,shift:true,
   historyCast:['姜維','鄧艾'],matchupLabel:'魏將鄧艾・魏軍在長城一帶築營',
-  mission:'holdout',missionTitle:'芒水守營',scene:'mountain-front',enemyArmy:'沿路游兵',
+  mission:'pass-defense',missionTitle:'芒水守營',scene:'mountain-front',enemyArmy:'沿路游兵',
   history:'魏軍有一部分調往東邊平亂，姜維趁機經駱谷北上，在芒水靠山扎營。鄧艾等魏將靠近渭水守住營壘，姜維多次邀戰，魏軍始終不出。',
-  briefing:'派友軍照應三路，安全時累計守營 24 秒，再清退餘兵。',
+  briefing:'哪一路亮起，就派友軍去守。擋住上路、下路、中路三波，保住防線，再清完剩下的敵兵。',
   ending:'兩軍在芒水一帶相持。次年姜維得知魏國已平定東邊的叛軍，便撤回成都。',
   camp:'前面還守得很嚴。先讓大家輪替休息，就算等上一段時間，三路也得有人照應。',
   question:'姜維在芒水遇到魏軍堅守，後來怎麼做？',choices:['得知魏國平亂後撤回成都','攻下魏國都城','投奔東吳'],refs:[jiangWei,dengAi,ruler]
@@ -40,7 +40,7 @@ const stages=[
   historyCast:['姜維','廖化','鄧艾','鍾會'],matchupLabel:'鄧艾進逼沓中・鍾會另由漢中進軍',
   mission:'withdraw',coverWaves:true,scene:'mountain-front',enemyArmy:'魏軍追兵',
   history:'魏軍分道進攻。鄧艾在沓中牽制姜維，鍾會另率軍進入漢中。姜維回撤時遇上追兵，又聽說陰平橋頭被魏軍堵住，便改道牽動守兵，再趁空隙返回橋頭。',
-  briefing:'哪一路亮起，就派友軍去擋。第三波追兵出現後按「全軍撤離」。至少保住一隊，讓所有還在場的友軍回到左側。',
+  briefing:retreat,
   ending:'姜維趕過陰平橋頭，魏軍沒能及時攔住。廖化奉命救援，之後陪姜維退往劍閣方向。',
   camp:'橋過去了，還得數清楚有幾隊跟上。等後隊到齊，我們再往會合的地方走。',
   question:'鄧艾進逼沓中時，哪位魏將另率軍進入漢中？',choices:['鍾會','蜀軍援將','東吳的守將'],refs:[jiangWei,dengAi,zhongHui,liaoHua]

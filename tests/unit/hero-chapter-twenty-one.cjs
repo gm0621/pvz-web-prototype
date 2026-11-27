@@ -14,7 +14,7 @@ test('Jiange extends a finished Di Dao save with six historical routes and disti
  assert.equal(rewardVictory(progress,118),0);
  const chapter=STAGES.slice(118,124);
  assert.deepEqual(chapter.map(stage=>stage.year),[256,257,262,263,263,263]);
- assert.deepEqual(chapter.map(stage=>stage.mission),['withdraw','holdout','supply','withdraw','dispatch','pass-defense']);
+ assert.deepEqual(chapter.map(stage=>stage.mission),['withdraw','pass-defense','supply','withdraw','dispatch','pass-defense']);
  for(const [i,stage] of chapter.entries()){
   const level=119+i;
   assert.deepEqual(chapterInfo(level),{chapter:21,number:i+1,count:6,title:'劍閣守關'});
@@ -35,6 +35,7 @@ test('Jiange extends a finished Di Dao save with six historical routes and disti
  assert.equal(progress.inventory.grain,2);
  assert.equal(progress.heroGrowth.caoren.weapon,2);
  assert.equal(rewardVictory(progress,173),0);
+ assert.equal(chapter[0].coverWaves,true);
  assert.equal(chapter[3].coverWaves,true);
  assert.match(chapter[0].victory,/段谷戰敗/);
  assert.match(chapter[2].victory,/侯和失利.*留駐沓中/);

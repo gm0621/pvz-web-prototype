@@ -1,11 +1,11 @@
-import {paintPortrait} from './factions.mjs?v=hanzhong-sunhao-tazhong-2';
-import {renderTeamDuel} from './team-duel-view.mjs?v=hanzhong-sunhao-tazhong-2';
+import {paintPortrait} from './factions.mjs?v=mangshui-qianluo-duangu-1';
+import {renderTeamDuel} from './team-duel-view.mjs?v=mangshui-qianluo-duangu-1';
 import {renderDuelCinematic} from './duel-cinematic.mjs?v=passive-feedback-1';
 import {duelPattern} from './duel-patterns.mjs?v=passive-feedback-1';
-import {renderDuelEntrance} from './duel-entrance.mjs?v=hanzhong-sunhao-tazhong-2';
-import {HEROES,enemyArt,STAGES} from './story.mjs?v=hanzhong-sunhao-tazhong-2';
-import {hitSound} from './audio.mjs?v=hanzhong-sunhao-tazhong-2';
-import {duelBeats,duelBeat} from './engine.mjs?v=hanzhong-sunhao-tazhong-2';
+import {renderDuelEntrance} from './duel-entrance.mjs?v=mangshui-qianluo-duangu-1';
+import {HEROES,enemyArt,STAGES} from './story.mjs?v=mangshui-qianluo-duangu-1';
+import {hitSound} from './audio.mjs?v=mangshui-qianluo-duangu-1';
+import {duelBeats,duelBeat} from './engine.mjs?v=mangshui-qianluo-duangu-1';
 export function renderDuel(b){
  const d=b.duel,dialog=document.getElementById('duelDialog');if(!d)return;
  dialog.dataset.team=String(d.format==='two-v-one');

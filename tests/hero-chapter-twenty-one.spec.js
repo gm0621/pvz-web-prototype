@@ -1,10 +1,10 @@
 const {test,expect}=require('@playwright/test');
 const saveKey='heroLegendProgress_v1';
 const stages=[
- {name:'段谷撤兵',route:'鍾題 → 段谷',leader:'姜維',guest:'姜維',opponent:'鄧艾',marker:true,kind:'withdraw',year:256,outcome:'蜀軍在段谷戰敗'},
- {name:'芒水相持',route:'駱谷 → 芒水一帶',leader:'姜維',guest:'姜維',opponent:'鄧艾',kind:'holdout',year:257,outcome:'兩軍在芒水一帶相持'},
+ {name:'段谷撤兵',route:'鍾題 → 段谷',leader:'姜維',guest:'姜維',opponent:'鄧艾',marker:true,kind:'withdraw',cover:true,year:256,outcome:'蜀軍在段谷戰敗'},
+ {name:'芒水相持',route:'駱谷 → 芒水一帶',leader:'姜維',guest:'姜維',opponent:'鄧艾',kind:'pass-defense',year:257,outcome:'兩軍在芒水一帶相持'},
  {name:'侯和退屯',route:'侯和 → 沓中',leader:'姜維',guest:'姜維',opponent:'鄧艾',kind:'supply',year:262,outcome:'姜維在侯和失利後留駐沓中'},
- {name:'沓中脫身',route:'沓中 → 陰平',leader:'姜維',guest:'廖化',opponent:'鄧艾',kind:'withdraw',year:263,outcome:'姜維趕過陰平橋頭'},
+ {name:'沓中脫身',route:'沓中 → 陰平',leader:'姜維',guest:'廖化',opponent:'鄧艾',kind:'withdraw',cover:true,year:263,outcome:'姜維趕過陰平橋頭'},
  {name:'漢壽會師',route:'陰平 → 漢壽',leader:'姜維',guest:'張翼',opponent:'鍾會',kind:'dispatch',year:263,outcome:'退下來的蜀軍會合'},
  {name:'劍閣守關',route:'漢壽 → 劍閣',leader:'姜維',guest:'張翼',opponent:'鍾會',marker:true,kind:'pass-defense',year:263,outcome:'劍閣擋住了鍾會'}
 ];
@@ -182,7 +182,7 @@ test('stage 118 continues through Jiange and keeps campaign saves on touch scree
   await expect(page.locator('.history-sources a').first()).toBeVisible();
   await expect(page.locator('.history-sources a').first()).toHaveAttribute('href',/wikisource/);
   await tap('#storyDetails header button');
-  await controlledBattle(level===124);
+  await controlledBattle(stage.kind==='pass-defense');
 
   await tap('#battleMenuButton');
   await tap('#battleMapButton');
@@ -215,7 +215,7 @@ test('stage 118 continues through Jiange and keeps campaign saves on touch scree
     expect((await snapshot()).mission.delivered).toBe(lane+1);
    }
   }
-  else if(level===124){
+  else if(stage.kind==='pass-defense'){
    await expect(page.locator('#missionQuick')).toContainText('第 1／3 波 · 上路來敵');
    await tap('#pauseBtn');
    const frozen=await snapshot();
@@ -229,7 +229,7 @@ test('stage 118 continues through Jiange and keeps campaign saves on touch scree
    await expect(page.locator('#result')).toBeHidden();
    await advance(31000);
   }else if(stage.kind==='withdraw'){
-   await withdraw(level===122);
+   await withdraw(stage.cover);
   }else if(level===123){
    await tap('#missionDrawerButton');
    await tap('#missionChoices [data-action=route]:first-child');

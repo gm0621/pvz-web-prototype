@@ -1,4 +1,4 @@
-import {CAMPAIGN_LENGTH} from './campaign-config.mjs?v=hanzhong-sunhao-tazhong-2';
+import {CAMPAIGN_LENGTH} from './campaign-config.mjs?v=mangshui-qianluo-duangu-1';
 
 function recordRule(level){
  switch(level){

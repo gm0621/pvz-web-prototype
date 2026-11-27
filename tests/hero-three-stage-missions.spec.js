@@ -19,7 +19,10 @@ const stages=[
  {level:172,kind:'supply',stops:['西行路口','途中驛站','長安城門'],chapter:29,title:'長安西行',terrain:'',ending:'張方把晉惠帝和司馬穎從洛陽帶往長安',resultTitle:'西行補給送達',bonusButton:'homeChangan',bonusClears:6,peaceful:true},
  {level:109,kind:'defense',chapter:19,title:'漢中整軍',terrain:'pass-defense',ending:'漢中的隊伍整備完成',next:'涪城轉運'},
  {level:122,kind:'withdrawal',chapter:21,title:'沓中脫身',terrain:'pass-defense',ending:'姜維趕過陰平橋頭',next:'漢壽會師',resultTitle:'全軍撤回'},
- {level:143,kind:'supply',stops:['石頭城外','途中驛站','洛陽城門'],chapter:25,title:'孫皓入洛',terrain:'',ending:'孫皓到了洛陽，受封歸命侯',next:'太康裁兵',resultTitle:'隨行補給送達',bonusButton:'homeExtra',bonusClears:1,peaceful:true,sun:true}
+ {level:143,kind:'supply',stops:['石頭城外','途中驛站','洛陽城門'],chapter:25,title:'孫皓入洛',terrain:'',ending:'孫皓到了洛陽，受封歸命侯',next:'太康裁兵',resultTitle:'隨行補給送達',bonusButton:'homeExtra',bonusClears:1,peaceful:true,sun:true},
+ {level:119,kind:'withdrawal',chapter:21,title:'段谷撤兵',terrain:'pass-defense',ending:'蜀軍在段谷戰敗',next:'芒水相持',resultTitle:'全軍撤回'},
+ {level:120,kind:'defense',chapter:21,title:'芒水相持',terrain:'pass-defense',ending:'兩軍在芒水一帶相持',next:'侯和退屯'},
+ {level:135,kind:'supply',stops:['成都城外','途中驛站','洛陽城門'],chapter:23,title:'安樂公入洛',terrain:'',ending:'劉禪到洛陽後受封安樂公',next:'洛陽建晉',resultTitle:'隨行補給送達',peaceful:true}
 ];
 
 for(const stage of stages)test(`stage ${stage.level} clears and replays from an old save on touch`,async({page})=>{

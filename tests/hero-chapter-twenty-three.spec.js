@@ -59,13 +59,6 @@ test('stage 130 continues through the end of Wei and keeps campaign saves on tou
    await advance(200);
   }
  }
- async function sendCarts(){
-  for(let batch=0;batch<3;batch++){
-   await advance(7600);
-   await expect(page.locator('#missionQuickAction')).toHaveText('發送糧車');
-   await tap('#missionQuickAction');
-  }
- }
  async function withdraw(){
   await advance(4400);
   await tap('#cards [data-hero=archer]');
@@ -215,33 +208,16 @@ test('stage 130 continues through the end of Wei and keeps campaign saves on tou
 
   if(level===136)await page.evaluate(()=>window.blockSave=true);
   if(stage.kind==='supply'){
-   await advance(2500);
-   await tap('#pauseBtn');
-   const prepping=await snapshot();
-   expect(prepping.mission.charge).toBeGreaterThan(0);
-   expect(prepping.mission.charge).toBeLessThan(10);
-   await advance(650);
-   expect(await snapshot()).toEqual(prepping);
-   await expect(page.locator('#missionQuickAction')).toBeDisabled();
-   await tap('#pauseBtn');
-   await advance(5100);
-   await expect(page.locator('#missionQuickAction')).toHaveText('發送糧車');
-   const guardId=await page.evaluate(()=>String(window.chapterBattle.allies.find(u=>u.key==='zhangfei').id));
-   await page.locator('#unitSelect').selectOption(guardId);
-   await tap('#commandDrawerButton');
-   await tap('#orders [data-order="up"]');
-   await tap('#commandDrawerClose');
-   await expect(page.locator('#missionQuick')).toContainText('下路缺接應');
-   await tap('#missionQuickAction');
-   await expect(page.locator('#missionChoices [data-action=supply]')).toBeDisabled();
-   expect((await snapshot()).mission).toMatchObject({charge:10,delivered:0});
-   await tap('#missionDrawerClose');
-   await tap('#cards [data-hero=archer]');
-   await page.locator('.lane').nth(2).tap({position:{x:40,y:25}});
-   await advance(100);
-   await expect(page.locator('#missionQuickAction')).toHaveText('發送糧車');
-   await sendCarts();
-   await expect(page.locator('#missionQuick')).toContainText('軍糧 3／3');
+   const cart=page.locator('#supplyCart');
+   const quick=page.locator('#missionQuickAction');
+   for(const [batch,stop] of ['成都城外','途中驛站','洛陽城門'].entries()){
+    await expect(page.locator('#missionObjective')).toContainText(stop);
+    await expect(quick).toHaveText('發送糧車');
+    await quick.tap();
+    await expect(cart).toContainText(`糧車 ${batch+1}／3`);
+    await advance(6500);
+   }
+   await expect(page.locator('#missionObjective')).toContainText('軍糧 3／3 批');
   }
   else if(stage.kind==='restoration'){
    await tap('#missionDrawerButton');

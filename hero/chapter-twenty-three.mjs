@@ -53,9 +53,9 @@ const stages=[
  {
   name:'安樂公入洛',campBanner:'行',year:264,origin:'chengdu',place:'luoyang',shift:true,factionLabel:'安樂公隨行隊',
   leader:'劉禪',guest:'郤正',historyCast:['劉禪','郤正'],
-  mission:'supply',scene:'supply-road',enemyArmy:'遷居補給',successTitle:'隨行補給送達',
+  mission:'supply',supplyStops:['成都城外','途中驛站','洛陽城門'],scene:'supply-road',enemyArmy:'遷居補給',successTitle:'隨行補給送達',
   history:'魏廷讓劉禪一家遷往洛陽，封他為安樂公。熟悉典章的蜀漢舊臣郤正跟他同行，幫他適應新的生活。',
-  briefing:'每一路都安排友軍接應。備車完成後按「發送糧車」，共送三批路上補給。',
+  briefing:'派友軍守住亮起的路，再按「發送糧車」。護衛離開時糧車會停，回到這一路就繼續。三批補給送到就過關。',
   ending:'劉禪到洛陽後受封安樂公。郤正也到了洛陽，協助劉禪處理禮節。',
   camp:'換了地方，連拜見人的禮節也不同。先安頓同行的人，明天我再慢慢說給你聽。',
   question:'哪位蜀漢舊臣跟隨劉禪來到洛陽？',choices:['郤正','劍閣的守軍','東吳的使者'],refs:[ruler,xiZheng,tongjian]
@@ -78,6 +78,7 @@ export const TWENTY_THIRD_CHAPTER=stages.map((stage,index)=>({
  leaderName:stage.leader,opponentName:stage.opponent,mapOpponent:stage.mapOpponent??!!stage.opponent,matchupLabel:stage.matchupLabel,mapOpponentRole:stage.mapOpponentRole,mapStationRole:stage.mapStationRole,
  scene:`./assets/scenes/${stage.scene}.jpg`,mission:stage.mission,missionTitle:stage.missionTitle,missionSites:stage.missionSites,
  successTitle:stage.successTitle,successRibbon:'戰 事 記 錄 ・ 回 營 整 備',
+ ...(stage.supplyStops?{supplyStops:stage.supplyStops}:{}),
  ...(stage.mission==='withdraw'?{retreatKeys:[]}:{}),
  noBoss:true,bossName:stage.enemyArmy,bossHp:0,enemyArmy:stage.enemyArmy,enemyCount:stage.enemyCount??0,interval:3.8,
  lead:stage.history,history:stage.history,adaptation,note:adaptation,bossTip:stage.briefing,
