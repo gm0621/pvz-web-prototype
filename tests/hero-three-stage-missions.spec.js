@@ -35,7 +35,7 @@ const stages=[
  {level:88,kind:'supply',stops:['秭歸營地','山路驛站','永安營地'],chapter:15,title:'白帝收兵',terrain:'',ending:'劉備留在永安安頓軍隊',next:'白帝託孤',chapterEnd:'第十五章尾聲',nextChapter:'第十六章',nextMission:'永安驛道守備',campGuest:'劉備'},
  {level:101,kind:'defense',chapter:18,title:'雨阻漢中',terrain:'pass-defense',ending:'魏軍因大雨與道路中斷撤回',next:'祁山運糧',campGuest:'李嚴'},
  {level:134,kind:'withdrawal',chapter:23,title:'成都亂起',terrain:'pass-defense',ending:'鍾會和姜維在成都兵變中身亡',next:'安樂公入洛',resultTitle:'護送隊平安撤回',campGuest:'胡烈'},
- {level:18,kind:'supply',stops:['酸棗營外','糧道驛站','聯軍營地'],chapter:4,title:'酸棗會盟',terrain:'',ending:'三批糧食到營了',resultText:'接下來的汴水之戰',next:'汴水撤軍',selectArmy:true},
+ {level:18,kind:'supply',stops:['酸棗營外','糧道驛站','聯軍營地'],chapter:4,title:'酸棗會盟',terrain:'',ending:'三批糧食到營了',resultText:'接下來的汴水之戰',next:'汴水撤軍',nextMission:'等待敵將出場',nextWithRoster:true,selectArmy:true},
  {level:89,kind:'defense',chapter:16,title:'白帝託孤',terrain:'pass-defense',ending:'劉備在永安去世',next:'劉禪即位',campGuest:'李嚴'},
  {level:117,kind:'withdrawal',chapter:20,title:'南安糧盡',terrain:'pass-defense',ending:'南安仍在魏國手中',next:'洮西收兵',resultTitle:'全軍撤回',campGuest:'姜維'}
 ];
@@ -407,16 +407,20 @@ for(const stage of stages)test(`stage ${stage.level} clears and replays from an 
  const first=await finish(stage,'+80',230,2);
  if(stage.nextMission){
   await tap('#storySkip');
+  if(stage.nextWithRoster){
+   await expect(page.locator('#deployment')).toBeVisible();
+   await tap('#deploymentStart');
+  }
   await expect(page.locator('#battle')).toBeVisible({timeout:30000});
   await expect(page.locator('#battleTitle')).toContainText(next);
   await expect(page.locator('#missionQuick')).toContainText(stage.nextMission);
   expect(await save()).toEqual(first);
  }
  await checkReload(next,first);
- if(stage.nextChapter){
+ if(stage.nextChapter||stage.nextWithRoster){
   await continueStory.tap();
   await expect(page.locator('#storyTitle')).toHaveText(next);
-  await expect(page.locator('#storyChapter')).toContainText(`${stage.nextChapter} · 第 1 / 6 關 · 戰前`);
+  if(stage.nextChapter)await expect(page.locator('#storyChapter')).toContainText(`${stage.nextChapter} · 第 1 / 6 關 · 戰前`);
   await tap('#story [data-home]');
  }
  await tap('#chapterPicker > summary');
