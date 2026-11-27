@@ -19,7 +19,7 @@ for(const stage of stages)test(`stage ${stage.level} clears and replays from an 
   }));
   Element.prototype.requestFullscreen=undefined;
  },{level,saveKey});
- await page.clock.install();
+ await page.clock.install({time:new Date('2026-11-27T00:00:00Z')});
  await page.goto('/hero/');
  await page.clock.pauseAt(await page.evaluate(()=>Date.now()+650));
  const tap=css=>page.locator(css).tap();
@@ -38,16 +38,19 @@ for(const stage of stages)test(`stage ${stage.level} clears and replays from an 
   await tap('#resumeBtn');
   await advance(100);
  }
- async function reinforce(heroesOnly){
+ async function reinforce(escorted){
   const formation=level===82?[0,1,2]:[1,0,2];
   for(const [slot,key] of ['liubei','guanyu','zhangfei'].entries()){
    const card=page.locator(`#cards [data-hero=${key}]`),archer=page.locator('#cards [data-hero=archer]');
    const road=lanes.nth(formation[slot]),width=await road.evaluate(node=>node.clientWidth);
    const status=await card.locator('.card-status').textContent();
+   // Keep one escort on each untested cargo route and a free slot for the lane swap.
+   const archerAllowed=level!==82&&(level!==121||formation[slot]<escorted);
+   const capacity=level===121&&escorted<3?/^1/:/^[12]/;
    if(status==='可出戰'){
     await card.tap();
     await road.tap({position:{x:width*.6,y:25}});
-   }else if(!heroesOnly&&status==='出戰中'&&await archer.locator('.card-status').textContent()==='可增援'&&/^[12]/.test(await road.locator('.lane-capacity').textContent())){
+   }else if(archerAllowed&&status==='出戰中'&&await archer.locator('.card-status').textContent()==='可增援'&&capacity.test(await road.locator('.lane-capacity').textContent())){
     await archer.tap();
     await road.tap({position:{x:width*.6,y:25}});
    }
@@ -170,7 +173,7 @@ for(const stage of stages)test(`stage ${stage.level} clears and replays from an 
     await resume();
     retreated=true;
    }
-   if(!retreated)await reinforce(level===82||level===121&&escorted<3);
+   if(!retreated)await reinforce(escorted);
    await advance(1000);
   }
   await expect(result).toBeVisible();
