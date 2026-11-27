@@ -8,7 +8,7 @@
 
 ## Obsidian 尚未同步時，從這裡接手
 
-1. **確認版本。** 在剛拉下來的 `main` 執行 `git status --short --branch`、`git log -1 --oneline`。`git log` 顯示目前 checkout 的提交。正式遊戲版本另看下方最新一筆含「已發布」及 Pages 工作的功能紀錄。截至 2026-11-27，最新已驗證的正式遊戲版本為 `9a38088`（主篇 142 關，《西晉後日談》18 關，《洛陽風雲》6 關，《長安西行》6 關）。 [正式遊戲](https://gm0621.github.io/pvz-web-prototype/hero/?v=9a38088) · [人物圖鑑](https://gm0621.github.io/pvz-web-prototype/hero/people.html?v=9a38088) · [發布紀錄](https://github.com/gm0621/pvz-web-prototype/actions/runs/45963102939)
+1. **確認版本。** 在剛拉下來的 `main` 執行 `git status --short --branch`、`git log -1 --oneline`。`git log` 顯示目前 checkout 的提交。正式遊戲版本另看下方最新一筆含「已發布」及 Pages 工作的功能紀錄。截至 2026-11-27，最新已驗證的正式遊戲版本為 `10ef97e`（主篇 142 關，《西晉後日談》18 關，《洛陽風雲》6 關，《長安西行》6 關）。 [正式遊戲](https://gm0621.github.io/pvz-web-prototype/hero/?v=10ef97e) · [人物圖鑑](https://gm0621.github.io/pvz-web-prototype/hero/people.html?v=10ef97e) · [發布紀錄](https://github.com/gm0621/pvz-web-prototype/actions/runs/45965885704)
 2. **安裝並做基本驗證。** 在專案根目錄用 Node.js 20 以上與 npm。執行下列指令可驗證引擎、桌面滑鼠／鍵盤及手機平板觸控。更多測試和本機預覽見 [開發指南](DEVELOPMENT.md)。Playwright 會啟動 4174 埠的測試服務，先關閉佔用該埠的手動預覽。
 3. **開工前看目前進度。** 先讀 [AGENTS.md](../AGENTS.md) 的「重要約束」及下方與任務相關的紀錄。英雄演義是獨立的 `/hero/` 遊戲，關卡上限見 `hero/campaign-config.mjs`。正式存檔 `heroLegendProgress_v1` 與本機、線上跳關測試的存檔分開。跨電腦時瀏覽器存檔和未提交的檔案需另外移轉。保留滑鼠、鍵盤與觸控操作，也要保留首勝軍資、重玩及暫停的既有規則。 [跳關工具和存檔說明](hero-local-testing.md)
 4. **繼續當次工作。** 依使用者的新需求從最新 `main` 開分支，保留原工作區修改。完成後把變更、實際測試結果、版本與注意事項記在本檔。Obsidian 未同步時註明待補，能讀取後再更新。正式發布依當次授權。
@@ -22,10 +22,11 @@ npx playwright test --config=playwright.hero-input.config.js
 
 ## 2026-11-27 配樂與實錄戰鬥音效
 
-- 本機分支 `codex/hero-music-and-effects`，功能提交 `3f61ed1`，快取 `hero-audio-mix-1`，本機預覽中。正式遊戲最新功能發布仍為 `9a38088`。
+- 已發布 `10ef97e`，包含音訊功能提交 `3f61ed1` 與格擋音效修正，快取 `hero-audio-mix-2`。核對 31 份正式站前端資源。 [正式遊戲](https://gm0621.github.io/pvz-web-prototype/hero/?v=10ef97e) · [人物圖鑑](https://gm0621.github.io/pvz-web-prototype/hero/people.html?v=10ef97e) · [發布紀錄](https://github.com/gm0621/pvz-web-prototype/actions/runs/45965885704)
 - 戰前、單挑與一般勝利各有原創配樂。172 關戰鬥依各關旋律加入八小節編曲，敵軍聚集、來襲或敵將蓄力時增加戰鼓。29 個章末使用較舒緩的收尾。場景轉換停止上一段配樂，音樂與音效可各自關閉。
 - 揮刀、近戰命中、格擋、射箭改用四種 CC0 實錄。揮刀在武器動作開始時播放，命中聲只跟隨成功命中，射箭使用放弦聲。新增出兵及來敵提示，密集的普通攻擊限制重複播放。 [錄音來源](../hero/assets/audio/combat/CREDITS.md)
-- 435 項引擎與音訊單元測試、27 項手機／平板瀏覽器音訊測試通過。另用 390px Chromium、820×1180 WebKit 的受控戰局，確認實際部署後依序觸發揮刀、命中、放弦三段錄音。瀏覽器檢查音訊輸出、靜音、切換和音訊暫停恢復。尚待實機聽感及正式站驗證。
+- 修正普通箭矢命中也播放金屬格擋聲的問題。依護盾是否實際吸收傷害，播放箭矢命中或格擋，敵方近戰命中也依吸收結果選擇音效。
+- 本機 436 項引擎與音訊單元測試、9 項針對戰鬥音效與結算配樂的瀏覽器測試通過。正式站 36 項音訊測試通過，使用 390×844 的 Chromium 手機、390×844 的 WebKit 手機及 820×1180 的 WebKit 平板模擬觸控。第 2 關驗證揮刀先於命中、射箭放弦、未格擋的箭矢命中、護盾吸收後的格擋聲及一般勝利曲。第 3 關確認進入單挑後配樂實際播放。第 6 關完成結算，確認切到章末曲且其他配樂停止。另檢查戰前曲、獨立靜音和音訊暫停恢復。初跑三項 WebKit 測試等候戰場圖片超過 10 秒，延長等候並逐項重測通過。音效及結算以受控戰局驗證，實機聽感待測。
 - 可用 `node tests/support/static-server.js` 啟動本機預覽，在遊戲主選單開啟「音樂」並點「試聽音效」。回歸指令 `npx playwright test --config=playwright.hero-dispatch-supply.config.js tests/hero-audio.spec.js --project=small-phone --project=webkit-phone --project=webkit-tablet`。重製三首場景配樂使用 `tools/compose-hero-interludes.py`，需要 Python、NumPy 與 afconvert 或 ffmpeg。播放時直接使用專案內的音檔。
 
 ## 2026-11-27 越巂分波守備、巫口分段護糧與洮西撤離
