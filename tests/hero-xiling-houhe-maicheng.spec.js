@@ -39,7 +39,7 @@ for(const stage of stages)test(`stage ${stage.level} clears and replays from an 
   await advance(100);
  }
  async function reinforce(heroesOnly){
-  const formation=[1,0,2];
+  const formation=level===82?[0,1,2]:[1,0,2];
   for(const [slot,key] of ['liubei','guanyu','zhangfei'].entries()){
    const card=page.locator(`#cards [data-hero=${key}]`),archer=page.locator('#cards [data-hero=archer]');
    const road=lanes.nth(formation[slot]),width=await road.evaluate(node=>node.clientWidth);
@@ -73,6 +73,8 @@ for(const stage of stages)test(`stage ${stage.level} clears and replays from an 
   const warnings=new Set(),litRoutes=new Set(),sites=['山口','谷道','沓中營地'];
   const positions=['上','下','中'];
   const cart=page.locator('#supplyCart');
+  const guanYu=page.locator('#units .ally').filter({has:page.getByText(/^關羽(?: · 駐守)?$/)});
+  const distance=unit=>unit.evaluate(node=>parseFloat(node.style.left));
   if(level===121){
    await expect(objective).toContainText('山口');
    await expect(quick).toHaveText('查看任務');
@@ -90,30 +92,33 @@ for(const stage of stages)test(`stage ${stage.level} clears and replays from an 
     await expect(cart).toContainText(`糧車 ${sent}／3`);
     await expect(quick).toHaveText('查看任務');
    }
-   if(level===121&&!escorted&&sent===1&&text.includes('糧車前進中')){
-    await pause();
-    const position=()=>cart.evaluate(node=>parseFloat(node.style.left));
-    const frozen=await position();
-    await advance(1800);
-    expect(await position()).toBe(frozen);
-    await resume();
-    const escort=page.locator('#units .ally[data-lane="0"]');
+   if(level===121&&sent>escorted&&text.includes('糧車前進中')){
+    if(!paused){
+     await pause();
+     const frozen=await distance(cart);
+     await advance(1800);
+     expect(await distance(cart)).toBe(frozen);
+     await resume();
+     paused=true;
+    }
+    const road=sent-1;
+    const escort=page.locator(`#units .ally[data-lane="${road}"]`);
     await expect(escort).toHaveCount(1);
     const id=await escort.getAttribute('data-id');
     const unit=page.locator(`#units .ally[data-id="${id}"]`);
-    await command(unit,'down');
-    const waiting=await position();
+    await command(unit,road===2?'up':'down');
+    const waiting=await distance(cart);
+    expect(waiting).toBeGreaterThan(0);
     await expect(objective).toContainText('糧車停下，派友軍回這一路護送');
     await advance(2100);
-    expect(await position()).toBe(waiting);
+    expect(await distance(cart)).toBe(waiting);
     await expect(objective).toContainText(`軍糧 ${sent-1}／3 批`);
-    await command(unit,'up');
+    await command(unit,road===2?'down':'up');
     await expect(objective).toContainText('糧車前進中');
-    expect(await position()).toBe(waiting);
+    expect(await distance(cart)).toBe(waiting);
     await advance(500);
-    expect(await position()).toBeGreaterThan(waiting);
+    expect(await distance(cart)).toBeGreaterThan(waiting);
     escorted++;
-    paused=true;
    }
    if(level!==121){
     const wave=text.match(/第 (\d)／3 波 · (.+?)路來敵/);
@@ -146,16 +151,17 @@ for(const stage of stages)test(`stage ${stage.level} clears and replays from an 
     sawFinalDefense=true;
    }
    if(level===82&&!forward&&i>=7){
-    await command(page.locator('#units .ally[data-lane="1"]').first(),'forward');
+    await command(guanYu,'forward');
     forward=true;
    }
    if(level===82&&!retreated&&await quick.textContent()==='全軍撤離'){
     await expect(objective).toContainText('第 3 波已到');
     await expect(objective).toContainText('帶關羽與友軍撤回左側');
     expect(await page.locator('#units .enemy').count()).toBeGreaterThan(0);
+    expect(await distance(guanYu)).toBeGreaterThan(18);
     await quick.tap();
     await expect(result).toBeHidden();
-    await expect(objective).toContainText('隊友軍尚未回到左側');
+    await expect(objective).toContainText('1 隊友軍尚未回到左側 · 等關羽回到左側');
     const allyPositions=()=>page.locator('#units .ally').evaluateAll(units=>units.map(unit=>unit.style.left));
     await pause();
     const held=await allyPositions();
@@ -164,7 +170,7 @@ for(const stage of stages)test(`stage ${stage.level} clears and replays from an 
     await resume();
     retreated=true;
    }
-   if(!retreated)await reinforce(level===121&&!escorted);
+   if(!retreated)await reinforce(level===82||level===121&&escorted<3);
    await advance(1000);
   }
   await expect(result).toBeVisible();
@@ -174,7 +180,7 @@ for(const stage of stages)test(`stage ${stage.level} clears and replays from an 
   expect(paused).toBe(true);
   if(level===121){
    expect(sent).toBe(3);
-   expect(escorted).toBe(1);
+   expect(escorted).toBe(3);
    await expect(page.locator('#waveText')).toContainText('已全數出現');
    await expect(page.locator('#missionObjective')).toContainText('軍糧 3／3 批');
   }else expect([...warnings]).toEqual(positions.map((name,i)=>i+1+name));

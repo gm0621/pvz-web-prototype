@@ -44,7 +44,7 @@ test('Xiangfan chapter preserves saved equipment, geography, historical outcomes
 
 test('Maicheng retreat can finish with Guan Yu and living escorts but still requires the retreat order',async()=>{
  const {createBattle,deploy,stepBattle}=await import('../../hero/engine.mjs');
- const {historyAction}=await import('../../hero/history-missions.mjs');
+ const {historyAction,historyMissionText}=await import('../../hero/history-missions.mjs');
  const {missionQuickState}=await import('../../hero/mission-quick.mjs');
  const battle=createBattle(82,42);
  battle.spawned=8;
@@ -62,6 +62,13 @@ test('Maicheng retreat can finish with Guan Yu and living escorts but still requ
  assert.equal(battle.won,false);
  assert.match(missionQuickState(battle).text,/請召回關羽/);
  assert.ok(deploy(battle,'guanyu',1));
+ const guanyu=battle.allies.find(unit=>unit.key==='guanyu');
+ guanyu.x=.3;
+ stepBattle(battle,.1);
+ assert.equal(battle.won,false);
+ assert.match(missionQuickState(battle).text,/1 隊友軍尚未回到左側 · 等關羽回到左側/);
+ assert.match(historyMissionText(battle),/等關羽回到左側/);
+ assert.ok(historyAction(battle,'retreat'));
  for(let i=0;i<20&&!battle.over;i++)stepBattle(battle,.1);
  assert.equal(battle.won,true);
 });

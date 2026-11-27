@@ -1,13 +1,21 @@
-import {HISTORICAL_STAGES} from './history-stages.mjs?v=xiling-houhe-maicheng-1';
-import {FACTIONS,factionFor} from './factions.mjs?v=xiling-houhe-maicheng-1';
-import {OUTPOSTS,RAID_POINTS,OUTPOST_SECONDS,outpostLane,pointCompleted,nextOutpost,canIgniteRaid,igniteRaid,stepOutposts,selectOutpost,passWave,passLane,thirdWaveStarted,hasFireRoutes,canClearFire,clearFireLane,GATE_MAX,hasGate,hasOutposts,channelHazard,channelName,fleetChannel,fleetStatus,canRepairGate,repairGate,selectFleetChannel,siegeLane,stepFleet} from './field-missions.mjs?v=xiling-houhe-maicheng-1';
+import {HISTORICAL_STAGES} from './history-stages.mjs?v=xiling-houhe-maicheng-2';
+import {FACTIONS,factionFor} from './factions.mjs?v=xiling-houhe-maicheng-2';
+import {OUTPOSTS,RAID_POINTS,OUTPOST_SECONDS,outpostLane,pointCompleted,nextOutpost,canIgniteRaid,igniteRaid,stepOutposts,selectOutpost,passWave,passLane,thirdWaveStarted,hasFireRoutes,canClearFire,clearFireLane,GATE_MAX,hasGate,hasOutposts,channelHazard,channelName,fleetChannel,fleetStatus,canRepairGate,repairGate,selectFleetChannel,siegeLane,stepFleet} from './field-missions.mjs?v=xiling-houhe-maicheng-2';
 import {PEACH_HEROES} from './hero-base.mjs?v=passive-feedback-1';
 const defaultRetreatSlots=['liubei','zhangfei'];
 const retreatSlots=battle=>HISTORICAL_STAGES[battle.level-17]?.retreatKeys||defaultRetreatSlots;
+const retreatRoster=battle=>battle.roster||FACTIONS[factionFor(battle.level)]?.heroes||PEACH_HEROES;
 const aliveInSlot=(battle,key)=>battle.allies.some(unit=>unit.key===key&&unit.hp>0);
 export function retreatPartyNames(battle,{missingOnly=false}={}){
- const roster=battle.roster||FACTIONS[factionFor(battle.level)]?.heroes||PEACH_HEROES;
+ const roster=retreatRoster(battle);
  return retreatSlots(battle).filter(key=>!missingOnly||!aliveInSlot(battle,key)).map(key=>roster[key].name);
+}
+export function retreatRallyHint(battle){
+ const required=HISTORICAL_STAGES[battle.level-17]?.retreatKeys;
+ if(!required?.length)return '';
+ const ahead=battle.allies.filter(unit=>unit.hp>0&&unit.x>.18&&required.includes(unit.key));
+ const roster=retreatRoster(battle);
+ return ahead.length?' · 等'+ahead.map(unit=>roster[unit.key].name).join('、')+'回到左側':'';
 }
 export function retreatPartyLabel(battle,escorts='在場友軍'){
  const names=retreatPartyNames(battle);
@@ -177,7 +185,7 @@ export function historyMissionText(b){const fronts=['','','','三','四','五'][
   if(missing.length)return `${missing.join('、')}尚未在場，請整備後召回，再帶隊撤離${stage.noBoss?'':` · ${opponent}無須擊倒`}${paused}`;
   if(!b.allies.some(u=>u.hp>0))return '請先召回至少一隊友軍，再撤回左側'+paused;
   const remaining=b.allies.filter(u=>u.hp>0&&u.x>.18).length;
-  return (remaining?`${b.paused?'':'撤離中：'}尚有 ${remaining} ${hasFireRoutes(m)||hasGate(m)||hasOutposts(m)||m.coverWaves?'隊':'名'}友軍未回到左側 · 所有在場友軍都需撤回`:'隊伍已撤回左側，確認全員平安')+paused;
+  return (remaining?`${b.paused?'':'撤離中：'}尚有 ${remaining} ${hasFireRoutes(m)||hasGate(m)||hasOutposts(m)||m.coverWaves?'隊':'名'}友軍未回到左側 · 所有在場友軍都需撤回${retreatRallyHint(b)}`:'隊伍已撤回左側，確認全員平安')+paused;
  }
  if(['withdraw','decoy'].includes(m.kind)){
   const status=hasGate(m)&&b.time<m.withdrawAt?`守住城門，還有 ${Math.ceil(m.withdrawAt-b.time)} 秒 · 修補剩 ${m.repairs} 次`:m.coverWaves?coverWaveText(b):m.withdrawAt===null?(stage.noBoss?`守住${fronts}路，等待後隊接應`:`守住${fronts}路，等${opponent}出陣`):b.time<m.withdrawAt?`${hasOutposts(m)?'兩處已拿下，掩護後隊':'接應尚需'} ${Math.ceil(m.withdrawAt-b.time)} 秒`:'接應完成，按全軍撤離';

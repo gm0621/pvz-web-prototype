@@ -1,4 +1,4 @@
-import {CAMPAIGN_LENGTH} from './campaign-config.mjs?v=xiling-houhe-maicheng-1';
+import {CAMPAIGN_LENGTH} from './campaign-config.mjs?v=xiling-houhe-maicheng-2';
 
 function recordRule(level){
  switch(level){
