@@ -8,7 +8,7 @@
 
 ## Obsidian 尚未同步時，從這裡接手
 
-1. **確認版本。** 在剛拉下來的 `main` 執行 `git status --short --branch`、`git log -1 --oneline`。`git log` 顯示目前 checkout 的提交。正式遊戲版本另看下方最新一筆含「已發布」及 Pages 工作的功能紀錄。截至 2026-11-27，最新已驗證的正式遊戲版本為 `10ef97e`（主篇 142 關，《西晉後日談》18 關，《洛陽風雲》6 關，《長安西行》6 關）。 [正式遊戲](https://gm0621.github.io/pvz-web-prototype/hero/?v=10ef97e) · [人物圖鑑](https://gm0621.github.io/pvz-web-prototype/hero/people.html?v=10ef97e) · [發布紀錄](https://github.com/gm0621/pvz-web-prototype/actions/runs/45965885704)
+1. **確認版本。** 在剛拉下來的 `main` 執行 `git status --short --branch`、`git log -1 --oneline`。`git log` 顯示目前 checkout 的提交。正式遊戲版本另看下方最新一筆含「已發布」及 Pages 工作的功能紀錄。截至 2026-11-27，最新已驗證的正式遊戲版本為 `0a49671`（主篇 142 關，《西晉後日談》18 關，《洛陽風雲》6 關，《長安西行》6 關）。 [正式遊戲](https://gm0621.github.io/pvz-web-prototype/hero/?v=0a49671) · [人物圖鑑](https://gm0621.github.io/pvz-web-prototype/hero/people.html?v=0a49671) · [發布紀錄](https://github.com/gm0621/pvz-web-prototype/actions/runs/45967177135)
 2. **安裝並做基本驗證。** 在專案根目錄用 Node.js 20 以上與 npm。執行下列指令可驗證引擎、桌面滑鼠／鍵盤及手機平板觸控。更多測試和本機預覽見 [開發指南](DEVELOPMENT.md)。Playwright 會啟動 4174 埠的測試服務，先關閉佔用該埠的手動預覽。
 3. **開工前看目前進度。** 先讀 [AGENTS.md](../AGENTS.md) 的「重要約束」及下方與任務相關的紀錄。英雄演義是獨立的 `/hero/` 遊戲，關卡上限見 `hero/campaign-config.mjs`。正式存檔 `heroLegendProgress_v1` 與本機、線上跳關測試的存檔分開。跨電腦時瀏覽器存檔和未提交的檔案需另外移轉。保留滑鼠、鍵盤與觸控操作，也要保留首勝軍資、重玩及暫停的既有規則。 [跳關工具和存檔說明](hero-local-testing.md)
 4. **繼續當次工作。** 依使用者的新需求從最新 `main` 開分支，保留原工作區修改。完成後把變更、實際測試結果、版本與注意事項記在本檔。Obsidian 未同步時註明待補，能讀取後再更新。正式發布依當次授權。
@@ -19,6 +19,14 @@ npx playwright install chromium webkit
 npm run test:hero:engine
 npx playwright test --config=playwright.hero-input.config.js
 ```
+
+## 2026-11-27 四／五路混戰音訊
+
+- 已發布 `0a49671`，快取 `hero-battle-mix-1`。 [正式遊戲](https://gm0621.github.io/pvz-web-prototype/hero/?v=0a49671) · [人物圖鑑](https://gm0621.github.io/pvz-web-prototype/hero/people.html?v=0a49671) · [發布紀錄](https://github.com/gm0621/pvz-web-prototype/actions/runs/45967177135)
+- 敵軍預警優先，武將技能各自播放，配樂與普通戰鬥聲在預警或技能期間短暫降低，再平順回到原音量。敵我放弦共用短間隔，連射不會疊成一團。
+- 手動暫停或切到背景立即停止戰鬥配樂與進行中的音效。回到前景須按「繼續」，音樂接續，已播放的音效不會補播。音樂與音效開關依原設定，技能展示可單獨試聽。
+- 本機 438 項引擎／音訊測試、39 項手機及平板模擬瀏覽器測試通過，含技能試聽與敵將預警回歸。正式站 33 項瀏覽器測試及 19 份發布資源比對通過。第 40 關四路用敵將蓄力、第 62 關五路用來敵波次驗證。兩關均以受控戰局讓弓兵連射與曹操奧義同時遇到預警，核對混音輸出和音量恢復，並驗證手動暫停、切到背景、回前景維持暫停及按「繼續」後恢復。一項 WebKit 手機的單挑回歸測試因等候戰場圖超時，單獨重測通過。裝置設定為 390×844 Chromium 手機、390×844 WebKit 手機與 820×1180 WebKit 平板。切換前景以瀏覽器事件模擬，實機聽感待確認。
+- 重跑四／五路驗證可使用 `npx playwright test --config=playwright.hero-dispatch-supply.config.js tests/hero-battle-audio-mix.spec.js --project=small-phone --project=webkit-phone --project=webkit-tablet`。
 
 ## 2026-11-27 配樂與實錄戰鬥音效
 
