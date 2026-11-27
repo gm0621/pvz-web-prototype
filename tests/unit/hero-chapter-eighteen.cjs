@@ -13,7 +13,7 @@ test('the Wuzhang chapter extends chapter seventeen saves and keeps its missions
  let progress=normalizeProgress({completed:100,coins:150,weapons:{guanyu:2},inventory:{grain:2},heroGrowth:{caoren:{weapon:2}}});
  assert.equal(rewardVictory(progress,100),0);
  assert.deepEqual(STAGES.slice(100,106).map(s=>s.year),[230,231,231,234,234,234]);
- assert.deepEqual(STAGES.slice(100,106).map(s=>s.mission),['holdout','supply','withdraw','dispatch','restoration','withdraw']);
+ assert.deepEqual(STAGES.slice(100,106).map(s=>s.mission),['pass-defense','supply','withdraw','dispatch','restoration','withdraw']);
  for(let level=101;level<=106;level++){
   const stage=STAGES[level-1];
   assert.deepEqual(chapterInfo(level),{chapter:18,number:level-100,count:6,title:'五丈原秋風'});

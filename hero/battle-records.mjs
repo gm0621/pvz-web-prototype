@@ -1,4 +1,4 @@
-import {CAMPAIGN_LENGTH} from './campaign-config.mjs?v=longyou-nanzhong-mumen-1';
+import {CAMPAIGN_LENGTH} from './campaign-config.mjs?v=hanzhong-baidi-chengdu-1';
 
 function recordRule(level){
  switch(level){

@@ -54,6 +54,7 @@ test('all post-surrender missions finish with normal waves, and only the uprisin
  const {normalizeProgress,createBattle,deploy,stepBattle,castActive}=await import('../../hero/engine.mjs');
  const {SLOTS,configureRoster,configurePeachRoster}=await import('../../hero/roster.mjs');
  const {historyAction}=await import('../../hero/history-missions.mjs');
+ const {thirdWaveStarted}=await import('../../hero/field-missions.mjs');
  const {heroesForLevel}=await import('../../hero/story.mjs');
  for(const level of [131,132,133,134,135,136]){
   const seeds=level===134?[1,42,2026]:[42];
@@ -78,8 +79,10 @@ test('all post-surrender missions finish with normal waves, and only the uprisin
     stepBattle(battle,.1);
    }
    assert.equal(battle.won,true,JSON.stringify({level,seed,mission:battle.mission}));
-   assert.equal(battle.spawned,level===134?12:0);
-   if(level===134)assert.equal(battle.mission.ordered,true);
+   if(level===134){
+    assert.ok(thirdWaveStarted(battle));
+    assert.equal(battle.mission.ordered,true);
+   }else assert.equal(battle.spawned,0);
   }
  }
 });

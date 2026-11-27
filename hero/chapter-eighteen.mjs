@@ -7,9 +7,9 @@ const stages=[
  {
   name:'雨阻漢中',year:230,origin:'jiangzhou',place:'nanzheng',leader:'李嚴',guest:'李嚴',opponent:'曹真',
   historyCast:['李嚴','曹真','諸葛亮'],mapOpponent:false,matchupLabel:'魏軍統帥・在秦嶺谷道遇雨',shift:true,
-  mission:'holdout',missionTitle:'漢中接應',scene:'mountain-front',enemyArmy:'山道魏軍',
+  mission:'pass-defense',missionTitle:'漢中守備',scene:'mountain-front',enemyArmy:'山道魏軍',
   history:'武都、陰平易手後，230 年曹真率魏軍分道伐蜀。諸葛亮調李嚴帶兵赴漢中。魏軍遇到連日大雨，山中棧道斷絕，奉命退兵。',
-  briefing:'照應三路共 24 秒，再清退餘兵。這一回在漢中迎接援軍。',
+  briefing:'哪一路亮起，就派友軍去守。依序擋住上路、下路、中路三波，再清完剩下的敵兵。',
   ending:'魏軍因大雨與道路中斷撤回。蜀軍在漢中整備，隔年再次出兵祁山。',
   camp:'棧道像掛在山壁上的小橋。大雨一來，連送一袋米都不容易。',
   question:'曹真率領的魏軍為什麼退兵？',choices:['大雨沖斷棧道','攻下漢中','收到蜀漢的降書'],refs:[cao,li,ruler]

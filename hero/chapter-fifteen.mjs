@@ -52,9 +52,9 @@ const stages=[
  },
  {
   name:'白帝收兵',year:222,place:'yongan',origin:'zigui',leader:'劉備',opponent:'孫權',mapOpponent:false,
-  matchupLabel:'遣使請和・戰後消息',mission:'supply',scene:'supply-road',enemyArmy:'沿途追兵',
+  matchupLabel:'遣使請和・戰後消息',mission:'supply',supplyStops:['秭歸營地','山路驛站','永安營地'],scene:'supply-road',enemyArmy:'沿途追兵',
   history:'劉備從秭歸撤到魚復，將魚復改名永安，留在白帝一帶。黃權在江北，因歸路被截而率部降魏。後來孫權遣使請和，劉備同意。',
-  briefing:'讓各路友軍接應，把三批軍糧送到永安營地。',
+  briefing:'派友軍守住亮起的路，再按「發送糧車」。護衛離開時糧車會停，回到這一路就繼續。三批糧車都送到，再清完剩下的敵兵。',
   ending:'劉備留在永安安頓軍隊。孫權派人請和，劉備接受了。故事停在夷陵戰後。',
   guest:'劉備',camp:'先讓傷兵歇息，讓大家吃上飯。使者帶來了和談消息。',
   question:'劉備撤到魚復後，把這個地方改名為什麼？',choices:['永安','建業','許都'],refs:[liu,huang,chronicle]
@@ -67,6 +67,7 @@ export const FIFTEENTH_CHAPTER=stages.map((stage,index)=>{
   name,year,chapter:15,number:index+1,faction:'shu',place:name,mapPlace:place,originPlace:origin,viaPlaces:[],viewpointShift:shift,
   scene:`./assets/scenes/${scene}.jpg`,mission,missionTitle,enemyArmy,enemyCount:12,interval:3.8,
   noBoss:!commander,bossName:commander||enemyArmy,bossHp:commander?580:0,
+  ...(stage.supplyStops?{supplyStops:stage.supplyStops}:{}),
   ...(commander?{skillType:'fire',skillName:'火路追擊',bossTitle:'追兵軍官・遊戲改編'}:{}),
   retreatKeys,successTitle,leaderName:leader,opponentName:opponent,mapOpponent,mapLeader,mapReportRegion,matchupLabel,
   lead:history,history,adaptation,note:adaptation,novel:[['說書人',history],[guest,camp]],

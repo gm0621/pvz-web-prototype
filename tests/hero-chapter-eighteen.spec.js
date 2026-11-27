@@ -1,7 +1,7 @@
 const {test,expect}=require('@playwright/test');
 const saveKey='heroLegendProgress_v1';
 const stages=[
- {name:'雨阻漢中',route:'江州 → 南鄭',leader:'李嚴',guest:'李嚴',opponent:'曹真',kind:'holdout',year:230,outcome:'魏軍因大雨與道路中斷撤回'},
+ {name:'雨阻漢中',route:'江州 → 南鄭',leader:'李嚴',guest:'李嚴',opponent:'曹真',kind:'pass-defense',year:230,outcome:'魏軍因大雨與道路中斷撤回'},
  {name:'祁山運糧',route:'沔陽 → 祁山',leader:'諸葛亮',guest:'李嚴',opponent:'司馬懿',marker:true,kind:'supply',year:231,outcome:'諸葛亮最後撤兵'},
  {name:'木門收兵',route:'祁山 → 木門一帶',leader:'諸葛亮',guest:'諸葛亮',opponent:'張郃',marker:true,kind:'withdraw',year:231,outcome:'張郃在木門中箭身亡'},
  {name:'斜谷再出',route:'沔陽 → 斜谷 → 五丈原',leader:'諸葛亮',guest:'諸葛亮',opponent:'司馬懿',kind:'dispatch',year:234,outcome:'兩軍開始長期對峙'},
@@ -33,19 +33,19 @@ test('completed chapter seventeen saves continue through Wuzhang Plains on touch
  const tap=selector=>page.locator(selector).tap();
  const advance=ms=>page.clock.runFor(ms);
  const readSave=()=>page.evaluate(key=>JSON.parse(localStorage.getItem(key)),saveKey);
- async function controlledBattle(){
+ async function controlledBattle({directed=false}={}){
   await tap('#storySkip');
   await expect(page.locator('#battle')).toBeVisible({timeout:25000});
   await expect(page.locator('#battleTitle')).toContainText('蜀漢軍');
   expect(await page.evaluate(()=>window.chapterBattle.weapons.guanyu)).toBe(2);
   await page.locator('#battleSpeed').selectOption('2');
   // Only enemy waves and starting food are sandboxed. Mission and save paths run through UI.
-  await page.evaluate(()=>{
+  await page.evaluate(directed=>{
    const battle=window.chapterBattle;
-   battle.bossSpawned=true;
+   battle.bossSpawned=!directed;
    battle.nextSpawn=Infinity;
    battle.food=300;
-  });
+  },directed);
   for(const [lane,key] of ['liubei','guanyu','zhangfei'].entries()){
    await tap(`#cards [data-hero=${key}]`);
    await page.locator('.lane').nth(lane).tap({position:{x:40,y:25}});
@@ -117,7 +117,7 @@ test('completed chapter seventeen saves continue through Wuzhang Plains on touch
   await expect(page.locator('.history-sources a').first()).toBeVisible();
   await expect(page.locator('.history-sources a').first()).toHaveAttribute('href',/wikisource/);
   await tap('#storyDetails header button');
-  await controlledBattle();
+  await controlledBattle({directed:stage.kind==='pass-defense'});
 
   await tap('#battleMenuButton');
   await tap('#battleMapButton');
@@ -138,7 +138,19 @@ test('completed chapter seventeen saves continue through Wuzhang Plains on touch
 
   if(level===106)await page.evaluate(()=>window.blockSave=true);
   if(stage.kind==='withdraw')await withdraw();
-  else if(stage.kind==='supply'){
+  else if(stage.kind==='pass-defense'){
+   await expect(page.locator('#missionQuick')).toContainText('第 1／3 波 · 上路來敵');
+   await page.evaluate(()=>{
+    const battle=window.chapterBattle;
+    battle.spawned=11;
+    battle.nextSpawn=battle.time+2;
+   });
+   await advance(100);
+   await expect(page.locator('#missionQuick')).toContainText('第 3／3 波 · 中路來敵');
+   await expect(page.locator('.lane').nth(1)).toHaveAttribute('data-threat','true');
+   await advance(31000);
+   await expect(page.locator('#missionObjective')).toHaveText('三波已守住 · 敵軍已清退');
+  }else if(stage.kind==='supply'){
    for(const [lane,name] of ['山口','棧道','前營'].entries()){
     await expect(page.locator('.lane[data-supply-route=true]')).toHaveAttribute('data-lane',String(lane));
     await expect(page.locator('#missionQuick')).toContainText(name);

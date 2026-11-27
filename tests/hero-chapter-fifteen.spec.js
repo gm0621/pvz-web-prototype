@@ -60,11 +60,12 @@ test('chapter fifteen carries a completed Xiangfan save through the retreat to Y
   while(await page.locator('#skillIntro[open]').isVisible())await tap('#skillIntroContinue');
   await tap('#resultNext');
  };
- const supply=async()=>{
+ const supply=async({segmented=false}={})=>{
   for(let cart=0;cart<3;cart++){
-   await advance(7600);
+   if(!segmented)await advance(7600);
    await expect(page.locator('#missionQuickAction')).toHaveText('發送糧車');
    await tap('#missionQuickAction');
+   if(segmented)await advance(6200);
   }
  };
 
@@ -79,9 +80,12 @@ test('chapter fifteen carries a completed Xiangfan save through the retreat to Y
  await page.locator('#battleSpeed').selectOption('2');
  await suppressWaves();
  await deploy('guanyu',1);
- await advance(14000);
+ await page.evaluate(()=>window.chapterBattle.spawned=9);
+ await advance(100);
+ await expect(page.locator('#missionQuickAction')).toHaveText('全軍撤離');
  await tap('#missionQuickAction');
  await advance(300);
+ await expect(page.locator('#result')).toHaveAttribute('data-outcome','victory');
  await expect(page.locator('#resultEarned')).toHaveText('+0');
  await toCamp();
  await expect(page.locator('#campContinue')).toContainText('第十四章尾聲');
@@ -196,15 +200,15 @@ test('chapter fifteen carries a completed Xiangfan save through the retreat to Y
   }else{
    await suppressWaves();
    if(index===5){
-    await deploy('liubei',0);
-    await deploy('guanyu',1);
-    await advance(6500);
-    await expect(page.locator('#missionQuick')).toContainText('下路缺接應');
+    await deploy('liubei',1);
+    await deploy('guanyu',2);
+    await expect(page.locator('#missionQuick')).toContainText('上路秭歸營地 · 派友軍到這一路護送');
+    await expect(page.locator('#missionQuickAction')).toHaveText('查看任務');
     expect(await page.evaluate(()=>window.chapterBattle.mission.charge)).toBe(0);
-    await deploy('zhangfei',2);
+    await deploy('zhangfei',0);
    }else for(const [lane,key] of ['liubei','guanyu','zhangfei'].entries())await deploy(key,lane);
    if(index===5)await page.evaluate(()=>window.blockSave=true);
-   if(stage.goal==='supply')await supply();
+   if(stage.goal==='supply')await supply({segmented:index===5});
    else await advance(18500);
   }
   await advance(100);
@@ -256,7 +260,7 @@ test('chapter fifteen carries a completed Xiangfan save through the retreat to Y
  await expect(page.locator('#campTitle')).toHaveText('重整行裝，再來一次');
  await tap('[data-talk=zhangfei]');
  await expect(page.locator('#campTalkPortrait')).toHaveAttribute('alt','劉備');
- await expect(page.locator('#campTalkText')).toContainText('三批軍糧');
+ await expect(page.locator('#campTalkText')).toContainText('三批糧車');
  await tap('#campTalkNext');
  await tap('#campContinue');
  if(await page.locator('#story').isVisible())await tap('#storySkip');
@@ -264,7 +268,7 @@ test('chapter fifteen carries a completed Xiangfan save through the retreat to Y
  await page.locator('#battleSpeed').selectOption('2');
  await suppressWaves();
  for(const [lane,key] of ['liubei','guanyu','zhangfei'].entries())await deploy(key,lane);
- await supply();
+ await supply({segmented:true});
  await advance(300);
  await expect(page.locator('#resultEarned')).toHaveText('+0');
  expect(await save()).toMatchObject({completed:88,coins:555,weapons:{guanyu:2},inventory:{grain:2,herb:1}});

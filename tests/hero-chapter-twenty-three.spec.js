@@ -72,11 +72,15 @@ test('stage 130 continues through the end of Wei and keeps campaign saves on tou
    await advance(3300);
   }
   await tap('#commandDrawerClose');
-  await advance(4100);
+  await page.evaluate(()=>window.chapterBattle.spawned=8);
+  await advance(100);
+  await expect(page.locator('#missionQuickAction')).toHaveText('查看任務');
+  await page.evaluate(()=>window.chapterBattle.spawned=9);
+  await advance(100);
   await expect(page.locator('#missionQuickAction')).toHaveText('全軍撤離');
   await tap('#missionQuickAction');
   await advance(200);
-  await expect(page.locator('#missionQuick')).toContainText('1 名友軍尚未回到左側');
+  await expect(page.locator('#missionQuick')).toContainText('1 隊友軍尚未回到左側');
   await expect(page.locator('#result')).toBeHidden();
   await tap('#pauseBtn');
   const frozen=await snapshot();

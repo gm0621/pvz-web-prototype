@@ -1,8 +1,8 @@
 import {LEARNING_LEVELS} from './skill-growth.mjs?v=passive-feedback-1';
-import {growthState,selectedTeam,DEFAULT_TEAM,ALL_GENERALS} from './roster.mjs?v=longyou-nanzhong-mumen-1';
-import {factionFor} from './factions.mjs?v=longyou-nanzhong-mumen-1';
-import {normalizeBattleRecords} from './battle-records.mjs?v=longyou-nanzhong-mumen-1';
-import {CAMPAIGN_LENGTH} from './campaign-config.mjs?v=longyou-nanzhong-mumen-1';
+import {growthState,selectedTeam,DEFAULT_TEAM,ALL_GENERALS} from './roster.mjs?v=hanzhong-baidi-chengdu-1';
+import {factionFor} from './factions.mjs?v=hanzhong-baidi-chengdu-1';
+import {normalizeBattleRecords} from './battle-records.mjs?v=hanzhong-baidi-chengdu-1';
+import {CAMPAIGN_LENGTH} from './campaign-config.mjs?v=hanzhong-baidi-chengdu-1';
 // Local campaign economy, independent of the original zombie game's account/store.
 export const GOODS={
  herb:{name:'行軍藥包',shop:'items',price:25,icon:'✚',description:'戰鬥中使用，所有在場友軍回復 60 生命。'},

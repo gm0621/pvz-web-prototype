@@ -43,9 +43,9 @@ const stages=[
  {
   name:'成都亂起',campBanner:'護',year:264,origin:'chengduOffice',place:'chengduStreets',shift:true,factionLabel:'成都護送隊',
   leader:'衛瓘',guest:'胡烈',opponent:'鍾會',mapOpponentRole:'兵變',historyCast:['衛瓘','鍾會','姜維','胡烈','鄧艾'],
-  mission:'withdraw',scene:'mountain-front',enemyArmy:'混亂中的兵卒',enemyCount:12,successTitle:'護送隊平安撤回',
+  mission:'withdraw',coverWaves:true,scene:'mountain-front',enemyArmy:'混亂中的兵卒',enemyCount:12,successTitle:'護送隊平安撤回',
   history:'魏兵在成都反擊，鍾會和姜維都死在兵變中。裴松之引述的史料提到姜維曾想趁亂恢復蜀漢，事情最後沒有成功。鄧艾後來也在押送途中被殺。',
-  briefing:'等「全軍撤離」亮起再按下。至少保住一隊，讓所有存活的友軍回到左側。',
+  briefing:'哪一路亮起，就派友軍去擋。第三波追兵出現後按「全軍撤離」。至少保住一隊，讓所有還在場的友軍回到左側。',
   ending:'鍾會和姜維在成都兵變中身亡，蜀漢沒有復國。兵變過後，成都重新由魏朝派員接管。',
   camp:'先把撤回來的人安頓好。城門外還有人不知道家人在哪裡，讓大家慢慢查問。',
   question:'鍾會和姜維最後怎麼了？',choices:['兩人都在成都兵變中身亡','一起返回劍閣','成功恢復蜀漢'],refs:[zhongHui,jiangWei,dengAi,tongjian]
@@ -79,7 +79,7 @@ export const TWENTY_THIRD_CHAPTER=stages.map((stage,index)=>({
  scene:`./assets/scenes/${stage.scene}.jpg`,mission:stage.mission,missionTitle:stage.missionTitle,missionSites:stage.missionSites,
  successTitle:stage.successTitle,successRibbon:'戰 事 記 錄 ・ 回 營 整 備',
  ...(stage.supplyStops?{supplyStops:stage.supplyStops}:{}),
- ...(stage.mission==='withdraw'?{retreatKeys:[]}:{}),
+ ...(stage.mission==='withdraw'?{coverWaves:stage.coverWaves,retreatKeys:[]}:{}),
  noBoss:true,bossName:stage.enemyArmy,bossHp:0,enemyArmy:stage.enemyArmy,enemyCount:stage.enemyCount??0,interval:3.8,
  lead:stage.history,history:stage.history,adaptation,note:adaptation,bossTip:stage.briefing,
  novel:[['說書人',stage.history],[stage.leader,stage.briefing]],

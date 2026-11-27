@@ -31,7 +31,10 @@ const stages=[
  {level:98,kind:'withdrawal',chapter:17,title:'箕谷收兵',terrain:'pass-defense',ending:'趙雲與鄧芝收兵回漢中',next:'陳倉糧盡',resultTitle:'全軍撤回'},
  {level:94,kind:'supply',stops:['越巂營地','山路驛站','滇池營地'],chapter:16,title:'南中收兵',terrain:'',ending:'諸葛亮回到成都',next:'漢中出師',chapterEnd:'第十六章尾聲',nextChapter:'第十七章'},
  {level:96,kind:'defense',chapter:17,title:'隴右響應',terrain:'pass-defense',ending:'蜀軍在隴右獲得響應',next:'街亭撤離'},
- {level:103,kind:'withdrawal',chapter:18,title:'木門收兵',terrain:'pass-defense',ending:'張郃在木門中箭身亡',next:'斜谷再出',resultTitle:'全軍撤回'}
+ {level:103,kind:'withdrawal',chapter:18,title:'木門收兵',terrain:'pass-defense',ending:'張郃在木門中箭身亡',next:'斜谷再出',resultTitle:'全軍撤回'},
+ {level:88,kind:'supply',stops:['秭歸營地','山路驛站','永安營地'],chapter:15,title:'白帝收兵',terrain:'',ending:'劉備留在永安安頓軍隊',next:'白帝託孤',chapterEnd:'第十五章尾聲',nextChapter:'第十六章'},
+ {level:101,kind:'defense',chapter:18,title:'雨阻漢中',terrain:'pass-defense',ending:'魏軍因大雨與道路中斷撤回',next:'祁山運糧'},
+ {level:134,kind:'withdrawal',chapter:23,title:'成都亂起',terrain:'pass-defense',ending:'鍾會和姜維在成都兵變中身亡',next:'安樂公入洛',resultTitle:'護送隊平安撤回'}
 ];
 
 test('stage 71 opens from home with an old save before and after reload',async({page})=>{

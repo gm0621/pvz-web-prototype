@@ -56,12 +56,11 @@ test('chapter sixteen continues a White Emperor save and completes the southern 
    battle.food=300;
   },cleared);
  }
- async function supply({segmented=false}={}){
+ async function supply(){
   for(let batch=0;batch<3;batch++){
-   if(!segmented)await advance(7600);
    await expect(page.locator('#missionQuickAction')).toHaveText('發送糧車');
    await tap('#missionQuickAction');
-   if(segmented)await advance(6200);
+   await advance(6200);
   }
  }
  async function openCamp(){
@@ -209,7 +208,7 @@ test('chapter sixteen continues a White Emperor save and completes the southern 
    await expect(page.locator('#missionMessage')).toHaveText('水渠已整備完成。');
    await tap('#missionChoices [data-action=site]:nth-child(3)');
    await advance(6200);
-  }else if(stage.kind==='supply')await supply({segmented:true});
+  }else if(stage.kind==='supply')await supply();
   else await advance(18500);
 
   await advance(300);
@@ -258,7 +257,7 @@ test('chapter sixteen continues a White Emperor save and completes the southern 
  await page.locator('#battleSpeed').selectOption('2');
  await arrangeWaves();
  for(const [lane,key] of ['liubei','guanyu','zhangfei'].entries())await deploy(key,lane);
- await supply({segmented:true});
+ await supply();
  await advance(300);
  await expect(page.locator('#resultEarned')).toHaveText('+0');
  expect(await readSave()).toMatchObject({completed:94,coins:605,weapons:{guanyu:2},inventory:{herb:1,grain:2}});

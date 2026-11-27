@@ -1,11 +1,11 @@
-import {GENERALS} from './roster.mjs?v=longyou-nanzhong-mumen-1';
-import {NOVEL_PAGES,CAMP_LINES} from './novel.mjs?v=longyou-nanzhong-mumen-1';
-import {campConversation} from './camp-talk.mjs?v=longyou-nanzhong-mumen-1';
-import {STORY_TASKS} from './story-play.mjs?v=longyou-nanzhong-mumen-1';
-import {CHAPTER_BACKGROUNDS,STAGE_LEADS} from './prologue.mjs?v=longyou-nanzhong-mumen-1';
-import {STORY_PEOPLE,hasPersonMention} from './characters.mjs?v=longyou-nanzhong-mumen-1';
-import {HEROES,STAGES,chapterInfo,enemyArt,heroesForLevel} from './story.mjs?v=longyou-nanzhong-mumen-1';
-import {FACTIONS,enemyPortrait} from './factions.mjs?v=longyou-nanzhong-mumen-1';
+import {GENERALS} from './roster.mjs?v=hanzhong-baidi-chengdu-1';
+import {NOVEL_PAGES,CAMP_LINES} from './novel.mjs?v=hanzhong-baidi-chengdu-1';
+import {campConversation} from './camp-talk.mjs?v=hanzhong-baidi-chengdu-1';
+import {STORY_TASKS} from './story-play.mjs?v=hanzhong-baidi-chengdu-1';
+import {CHAPTER_BACKGROUNDS,STAGE_LEADS} from './prologue.mjs?v=hanzhong-baidi-chengdu-1';
+import {STORY_PEOPLE,hasPersonMention} from './characters.mjs?v=hanzhong-baidi-chengdu-1';
+import {HEROES,STAGES,chapterInfo,enemyArt,heroesForLevel} from './story.mjs?v=hanzhong-baidi-chengdu-1';
+import {FACTIONS,enemyPortrait} from './factions.mjs?v=hanzhong-baidi-chengdu-1';
 // Child-friendly summaries; comparisons are memory aids, not historical quotations.
 const bios=[
  ['羊獻容','史實人物','在皇宮裡屢次遭到廢立的皇后','她是晉惠帝的皇后。司馬穎掌權後，她被廢去皇后身分。後來宮中局勢再變，她又數次被扶回皇后的位置。','酒紅宮衣、抬起的眉心和向旁看的眼睛，像在留意宮中的消息。','事蹟見《晉書・惠羊后》。'],

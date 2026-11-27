@@ -1,5 +1,5 @@
-import {ALL_GENERALS,learningLevels,nextLesson,activeText} from './roster.mjs?v=longyou-nanzhong-mumen-1';
-import {paintPortrait} from './factions.mjs?v=longyou-nanzhong-mumen-1';
+import {ALL_GENERALS,learningLevels,nextLesson,activeText} from './roster.mjs?v=hanzhong-baidi-chengdu-1';
+import {paintPortrait} from './factions.mjs?v=hanzhong-baidi-chengdu-1';
 // One small lesson at a time. Reading freezes the same battle clock as Pause.
 export function mountSkillIntro({getBattle,getProgress,save,setPaused}){
  const dialog=document.createElement('dialog');dialog.id='skillIntro';dialog.setAttribute('aria-labelledby','skillIntroTitle');
