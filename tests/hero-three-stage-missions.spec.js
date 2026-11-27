@@ -31,6 +31,10 @@ for(const stage of stages)test(`stage ${stage.level} clears and replays from an 
  },{level,saveKey});
  await page.clock.install({time:new Date('2026-11-27T00:00:00Z')});
  await page.goto('/hero/');
+ const continueStory=page.locator(bonusButton?`#${bonusButton}`:'#startBtn');
+ if(bonusButton)await expect(page.locator(`#${bonusButton}Progress`)).toContainText(`${bonusClears-1} /`);
+ await expect(continueStory).toBeVisible();
+ await expect(continueStory).toBeEnabled();
  await page.clock.pauseAt(await page.evaluate(()=>Date.now()+650));
  const tap=css=>page.locator(css).tap();
  const advance=ms=>page.clock.runFor(ms);
@@ -124,6 +128,7 @@ for(const stage of stages)test(`stage ${stage.level} clears and replays from an 
     const id=await escort.getAttribute('data-id');
     const unit=page.locator(`#units .ally[data-id="${id}"]`);
     await command(unit,road===2?'up':'down');
+    await expect(escort).toHaveCount(0);
     const waiting=await distance(cart);
     expect(waiting).toBeGreaterThan(departure);
     await expect(objective).toContainText('糧車停下，派友軍回這一路護送');
@@ -137,6 +142,7 @@ for(const stage of stages)test(`stage ${stage.level} clears and replays from an 
     await expect(result).toBeHidden();
     await expect(objective).toContainText(`軍糧 ${sent-1}／3 批`);
     await command(unit,road===2?'down':'up');
+    await expect(unit).toHaveAttribute('data-lane',String(road));
     await expect(objective).toContainText('糧車前進中');
     expect(await distance(cart)).toBe(waiting);
     await expect(details).toHaveText(stoppedText.replace('糧車停下，派友軍回這一路護送','糧車前進中'));
@@ -147,7 +153,10 @@ for(const stage of stages)test(`stage ${stage.level} clears and replays from an 
    if(!cargo){
     const wave=text.match(/第 (\d)／3 波 · (.+?)路來敵/);
     if(wave&&!warnings.has(wave[1]+wave[2])){
-     if(withdrawal)await expect(buttons('retreat')).toBeDisabled();
+     if(withdrawal){
+      await expect(buttons('retreat')).toBeDisabled();
+      if(wave[1]==='3')await expect(waveText).toHaveText(/ 8 \/ 12$/);
+     }
      warnings.add(wave[1]+wave[2]);
     }
     if(defense&&wave&&!litRoutes.has(Number(wave[1]))){
@@ -156,6 +165,7 @@ for(const stage of stages)test(`stage ${stage.level} clears and replays from an 
       const expected=[0,2,1][Number(wave[1])-1];
       await expect(highlighted).toHaveAttribute('data-lane',String(expected));
       await expect(highlighted).toContainText('來敵');
+      await expect(highlighted).toBeVisible();
       litRoutes.add(Number(wave[1]));
      }
     }
@@ -192,6 +202,7 @@ for(const stage of stages)test(`stage ${stage.level} clears and replays from an 
     await expect(objective).toContainText(maicheng?'帶關羽與友軍撤回左側':'帶友軍撤回左側');
     expect(await page.locator('#units .enemy').count()).toBeGreaterThan(0);
     expect(await distance(lead)).toBeGreaterThan(18);
+    const beforeRetreat=await save();
     await quick.tap();
     await expect(result).toBeHidden();
     await expect(objective).toContainText(maicheng?'1 隊友軍尚未回到左側 · 等關羽回到左側':'隊友軍尚未回到左側');
@@ -206,6 +217,7 @@ for(const stage of stages)test(`stage ${stage.level} clears and replays from an 
      expect(await distance(straggler)).toBe(heldAhead);
      await expect(result).toBeHidden();
      await expect(objective).toContainText('1 隊友軍尚未回到左側');
+     expect(await save()).toEqual(beforeRetreat);
      await expect(quick).toHaveText('重新撤離');
      await quick.tap();
     }
@@ -277,7 +289,7 @@ for(const stage of stages)test(`stage ${stage.level} clears and replays from an 
   expect(await save()).toEqual(progress);
  }
 
- await tap(bonusButton?`#${bonusButton}`:'#startBtn');
+ await continueStory.tap();
  await play(stage);
  const first=await finish(stage,'+80',230);
  await checkReload(next,first);
