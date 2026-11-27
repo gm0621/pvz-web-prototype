@@ -32,9 +32,12 @@ const stages=[
  {level:94,kind:'supply',stops:['越巂營地','山路驛站','滇池營地'],chapter:16,title:'南中收兵',terrain:'',ending:'諸葛亮回到成都',next:'漢中出師',chapterEnd:'第十六章尾聲',nextChapter:'第十七章'},
  {level:96,kind:'defense',chapter:17,title:'隴右響應',terrain:'pass-defense',ending:'蜀軍在隴右獲得響應',next:'街亭撤離'},
  {level:103,kind:'withdrawal',chapter:18,title:'木門收兵',terrain:'pass-defense',ending:'張郃在木門中箭身亡',next:'斜谷再出',resultTitle:'全軍撤回'},
- {level:88,kind:'supply',stops:['秭歸營地','山路驛站','永安營地'],chapter:15,title:'白帝收兵',terrain:'',ending:'劉備留在永安安頓軍隊',next:'白帝託孤',chapterEnd:'第十五章尾聲',nextChapter:'第十六章',nextMission:'永安驛道接應',campGuest:'劉備'},
+ {level:88,kind:'supply',stops:['秭歸營地','山路驛站','永安營地'],chapter:15,title:'白帝收兵',terrain:'',ending:'劉備留在永安安頓軍隊',next:'白帝託孤',chapterEnd:'第十五章尾聲',nextChapter:'第十六章',nextMission:'永安驛道守備',campGuest:'劉備'},
  {level:101,kind:'defense',chapter:18,title:'雨阻漢中',terrain:'pass-defense',ending:'魏軍因大雨與道路中斷撤回',next:'祁山運糧',campGuest:'李嚴'},
- {level:134,kind:'withdrawal',chapter:23,title:'成都亂起',terrain:'pass-defense',ending:'鍾會和姜維在成都兵變中身亡',next:'安樂公入洛',resultTitle:'護送隊平安撤回',campGuest:'胡烈'}
+ {level:134,kind:'withdrawal',chapter:23,title:'成都亂起',terrain:'pass-defense',ending:'鍾會和姜維在成都兵變中身亡',next:'安樂公入洛',resultTitle:'護送隊平安撤回',campGuest:'胡烈'},
+ {level:18,kind:'supply',stops:['酸棗營外','糧道驛站','聯軍營地'],chapter:4,title:'酸棗會盟',terrain:'',ending:'三批糧食到營了',resultText:'接下來的汴水之戰',next:'汴水撤軍',selectArmy:true},
+ {level:89,kind:'defense',chapter:16,title:'白帝託孤',terrain:'pass-defense',ending:'劉備在永安去世',next:'劉禪即位',campGuest:'李嚴'},
+ {level:117,kind:'withdrawal',chapter:20,title:'南安糧盡',terrain:'pass-defense',ending:'南安仍在魏國手中',next:'洮西收兵',resultTitle:'全軍撤回',campGuest:'姜維'}
 ];
 
 test('stage 71 opens from home with an old save before and after reload',async({page})=>{
@@ -61,19 +64,20 @@ for(const stage of stages)test(`stage ${stage.level} clears and replays from an 
  test.setTimeout(420000);
  const {level,chapter,next,kind,bonusButton,bonusClears,stops,peaceful,sun,selectArmy,laneTotal=3}=stage;
  const waveLanes=[0,laneTotal-1,Math.floor(laneTotal/2)];
+ const savedRecordLevel=Math.min(20,level-1);
  const cargo=kind==='supply',defense=kind==='defense',withdrawal=kind==='withdrawal',maicheng=level===82;
  const errors=[];
  page.on('pageerror',error=>errors.push(error.message));
  page.on('requestfailed',request=>{
   if(request.resourceType()==='script')errors.push(`${request.url()}: ${request.failure()?.errorText}`);
  });
- await page.addInitScript(({level,saveKey,sun})=>{
+ await page.addInitScript(({level,saveKey,sun,savedRecordLevel})=>{
   if(!localStorage.getItem(saveKey))localStorage.setItem(saveKey,JSON.stringify({
-   completed:level-1,coins:150,weapons:{guanyu:2},armyWeapons:{cao:{liubei:1},...(sun?{sun:{zhangfei:2}}:{})},inventory:{grain:2},battleRecords:{20:80},
+   completed:level-1,coins:150,weapons:{guanyu:2},armyWeapons:{cao:{liubei:1},...(sun?{sun:{zhangfei:2}}:{})},inventory:{grain:2},battleRecords:{[savedRecordLevel]:80},
    skillSeen:['sunjian','chengpu','huanggai','liubei','guanyu','zhangfei','caocao','xiahoudun','caohong'].flatMap(id=>[1,3,5,7,10].map(level=>id+':'+level))
   }));
   Element.prototype.requestFullscreen=undefined;
- },{level,saveKey,sun});
+ },{level,saveKey,sun,savedRecordLevel});
  await page.clock.install({time:new Date('2026-11-27T00:00:00Z')});
  await page.goto('/hero/');
  const continueStory=page.locator(bonusButton?`#${bonusButton}`:'#startBtn');
@@ -298,7 +302,7 @@ for(const stage of stages)test(`stage ${stage.level} clears and replays from an 
   await expect(result).toBeVisible();
   await expect(result).toHaveAttribute('data-outcome','victory');
   if(resultTitle)await expect(page.locator('#resultTitle')).toHaveText(resultTitle);
-  await expect(page.locator('#resultText')).toContainText(ending);
+  await expect(page.locator('#resultText')).toContainText(stage.resultText||ending);
   expect(paused).toBe(true);
   if(cargo){
    expect(sent).toBe(3);
@@ -328,7 +332,7 @@ for(const stage of stages)test(`stage ${stage.level} clears and replays from an 
  async function finish({level,title,ending,next,chapterEnd,nextChapter,campGuest},reward,coins,wuRank){
   await expect(page.locator('#resultEarned')).toHaveText(reward);
   const progress=await save();
-  expect(progress).toMatchObject({completed:level,coins,weapons:{guanyu:2},armyWeapons:{cao:{liubei:1},...(sun?{sun:{zhangfei:wuRank}}:{})},inventory:{grain:2},battleRecords:{20:80,[level]:expect.any(Number)}});
+  expect(progress).toMatchObject({completed:level,coins,weapons:{guanyu:2},armyWeapons:{cao:{liubei:1},...(sun?{sun:{zhangfei:wuRank}}:{})},inventory:{grain:2},battleRecords:{[savedRecordLevel]:80,[level]:expect.any(Number)}});
   await advance(4200);
   while(await skillIntro.isVisible())await tap('#skillIntroContinue');
   await tap('#resultNext');
@@ -405,7 +409,7 @@ for(const stage of stages)test(`stage ${stage.level} clears and replays from an 
   await tap('#storySkip');
   await expect(page.locator('#battle')).toBeVisible({timeout:30000});
   await expect(page.locator('#battleTitle')).toContainText(next);
-  await expect(objective).toContainText(stage.nextMission);
+  await expect(page.locator('#missionQuick')).toContainText(stage.nextMission);
   expect(await save()).toEqual(first);
  }
  await checkReload(next,first);

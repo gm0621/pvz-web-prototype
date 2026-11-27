@@ -61,7 +61,7 @@ test('stage 112 continues through Jiang Wei’s northern campaigns and keeps cam
    await tap('#missionQuickAction');
   }
  }
- async function withdraw(){
+ async function withdraw({coverWaves=false}={}){
   await advance(2300);
   await tap('#cards [data-hero=archer]');
   await page.locator('.lane').first().tap({position:{x:40,y:25}});
@@ -74,11 +74,17 @@ test('stage 112 continues through Jiang Wei’s northern campaigns and keeps cam
    await advance(3300);
   }
   await tap('#commandDrawerClose');
-  await advance(6200);
+  if(coverWaves){
+   await page.evaluate(()=>window.chapterBattle.spawned=8);
+   await advance(100);
+   await expect(page.locator('#missionQuickAction')).toHaveText('查看任務');
+   await page.evaluate(()=>window.chapterBattle.spawned=9);
+   await advance(100);
+  }else await advance(6200);
   await expect(page.locator('#missionQuickAction')).toHaveText('全軍撤離');
   await tap('#missionQuickAction');
   await advance(200);
-  await expect(page.locator('#missionQuick')).toContainText('1 名友軍尚未回到左側');
+  await expect(page.locator('#missionQuick')).toContainText(`1 ${coverWaves?'隊':'名'}友軍尚未回到左側`);
   await expect(page.locator('#result')).toBeHidden();
   await tap('#pauseBtn');
   const frozen=await snapshot();
@@ -219,7 +225,7 @@ test('stage 112 continues through Jiang Wei’s northern campaigns and keeps cam
     await advance(6200);
    }
   }else if(stage.kind==='withdraw'){
-   await withdraw();
+   await withdraw({coverWaves:level===117});
   }else if(level===114){
    await tap('#missionDrawerButton');
    await tap('#missionChoices [data-action=route]:first-child');

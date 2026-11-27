@@ -8,9 +8,24 @@ test('legacy upgrades belong only to Liu army; all nine ranks persist independen
  p=normalizeProgress(JSON.parse(JSON.stringify(p)));assert.equal(p.coins,1640);assert.equal(weaponsForLevel(p,1).liubei,2);assert.equal(weaponsForLevel(p,64).liubei,1);assert.equal(weaponsForLevel(p,22).liubei,1);
  const b=createBattle(17,1,weaponsForLevel(p,17));purchase(p,'liubei',()=>true,17);assert.equal(b.weapons.liubei,1);assert.equal(weaponsForLevel(p,17).liubei,2);assert.equal(weaponsForLevel(p,20).liubei,1);
 });
-test('stage 18 explains missing lanes and finishes only after three shipments, respecting pause',async()=>{
- const {createBattle,deploy,stepBattle:step}=await import('../../hero/engine.mjs');const {historyMissionText,historyAction}=await import('../../hero/history-missions.mjs');
- const b=createBattle(18,1);b.bossSpawned=true;b.nextSpawn=Infinity;b.food=300;deploy(b,'liubei',0);deploy(b,'guanyu',1);
- assert.match(historyMissionText(b),/下路/);assert.match(historyMissionText(b),/敵軍已清退/);for(let i=0;i<100;i++)step(b,.1);assert.equal(b.over,false);assert.equal(b.mission.charge,0);deploy(b,'zhangfei',2);
- for(let batch=0;batch<3;batch++){for(let i=0;i<101;i++)step(b,.1);b.paused=true;assert.equal(historyAction(b,'supply'),false);b.paused=false;assert.equal(historyAction(b,'supply'),true);step(b,.1);assert.equal(b.won,batch===2)}
+test('stage 18 explains the active road and waits for three shipments, respecting pause',async()=>{
+ const {createBattle,deploy,stepBattle}=await import('../../hero/engine.mjs');
+ const {historyMissionText,historyAction}=await import('../../hero/history-missions.mjs');
+ const battle=createBattle(18,1);
+ battle.bossSpawned=true;
+ battle.nextSpawn=Infinity;
+ assert.match(historyMissionText(battle),/上路酸棗營外.*派友軍到這一路/);
+ assert.equal(historyAction(battle,'supply'),false);
+ battle.food=1000;
+ for(const [lane,key] of ['liubei','guanyu','zhangfei'].entries())assert.ok(deploy(battle,key,lane));
+ for(let batch=0;batch<3;batch++){
+  battle.paused=true;
+  assert.equal(historyAction(battle,'supply'),false);
+  battle.paused=false;
+  assert.ok(historyAction(battle,'supply'));
+  for(let step=0;step<79;step++)stepBattle(battle,.1);
+  assert.equal(battle.won,false);
+  stepBattle(battle,.1);
+  assert.equal(battle.won,batch===2);
+ }
 });

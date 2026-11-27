@@ -7,9 +7,9 @@ const adaptation='營地對話和過關任務為遊戲改編，行軍圖標示�
 const stages=[
  {
   name:'白帝託孤',historyCast:['劉備', '諸葛亮', '李嚴', '劉禪'],year:223,place:'yongan',origin:'chengdu',leader:'諸葛亮',guest:'李嚴',
-  mission:'holdout',missionTitle:'永安驛道接應',scene:'mountain-front',enemyArmy:'道上游兵',
+  mission:'pass-defense',missionTitle:'永安驛道守備',scene:'mountain-front',enemyArmy:'道上游兵',
   history:'223 年，劉備在永安病重，從成都召來諸葛亮，並託付諸葛亮與李嚴輔佐太子劉禪。諸葛亮負責主持大局，李嚴留下鎮守永安。',
-  briefing:'在改編的驛道任務裡，派友軍照應三路，累計守住 24 秒，再清退餘兵。',
+  briefing:'哪一路亮起，就派友軍去守。依序擋住上路、下路、中路三波，再清完剩下的敵兵。',
   ending:'驛道接應告一段落。四月，劉備在永安去世。成都的劉禪即將接下新的責任。',
   camp:'託孤，就是把照顧孩子和幫他站穩的責任交給信任的人。我先守住永安。',
   question:'劉備託付哪兩人輔佐劉禪？',choices:['諸葛亮與李嚴','只託付一名守將','只託付一名成都官員'],refs:[firstRuler,zhuge,liYan]

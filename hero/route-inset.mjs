@@ -1,4 +1,4 @@
-import {mapPersonSvg} from './characters.mjs?v=hanzhong-baidi-chengdu-1';
+import {mapPersonSvg} from './characters.mjs?v=baidi-suanzhao-nanan-1';
 
 const standardHeight=304,dualHeight=374;
 

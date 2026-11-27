@@ -1,7 +1,7 @@
-import {routeInset,routeInsetSvg} from './route-inset.mjs?v=hanzhong-baidi-chengdu-1';
-import {stagePeople,mapPersonSvg,renderMatchup} from './characters.mjs?v=hanzhong-baidi-chengdu-1';
-import {stageFactionTitle} from './factions.mjs?v=hanzhong-baidi-chengdu-1';
-import {HISTORICAL_STAGES} from './history-stages.mjs?v=hanzhong-baidi-chengdu-1';
+import {routeInset,routeInsetSvg} from './route-inset.mjs?v=baidi-suanzhao-nanan-1';
+import {stagePeople,mapPersonSvg,renderMatchup} from './characters.mjs?v=baidi-suanzhao-nanan-1';
+import {stageFactionTitle} from './factions.mjs?v=baidi-suanzhao-nanan-1';
+import {HISTORICAL_STAGES} from './history-stages.mjs?v=baidi-suanzhao-nanan-1';
 // Approximate regional placement, not historical borders or a surveyed route.
 export const MAP_PLACES={
  zhuo:{name:'涿郡',modern:'今河北涿州一帶',x:402,y:78},

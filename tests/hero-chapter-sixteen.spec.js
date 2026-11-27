@@ -1,7 +1,7 @@
 const {test,expect}=require('@playwright/test');
 const saveKey='heroLegendProgress_v1';
 const stages=[
- {name:'白帝託孤',route:'成都 → 永安（白帝一帶）',leader:'諸葛亮',guest:'李嚴',kind:'holdout',year:223},
+ {name:'白帝託孤',route:'成都 → 永安（白帝一帶）',leader:'諸葛亮',guest:'李嚴',kind:'pass-defense',year:223},
  {name:'劉禪即位',route:'成都',leader:'劉禪',guest:'劉禪',kind:'dispatch',year:223},
  {name:'使吳修好',route:'成都 → 武昌（吳都）',leader:'鄧芝',guest:'鄧芝',opponent:'孫權',onMap:true,host:true,kind:'dispatch',year:223},
  {name:'務農息民',route:'成都',leader:'諸葛亮',guest:'劉禪',kind:'restoration',year:224},
@@ -150,7 +150,7 @@ test('chapter sixteen continues a White Emperor save and completes the southern 
 
   // Keep this browser suite focused on the real task controls and mission timers.
   // A separate engine suite plays all six stages against their regular waves.
-  await arrangeWaves(!stage.host);
+  await arrangeWaves(!stage.host&&stage.kind!=='pass-defense');
   await deploy('liubei',0);
   await deploy('guanyu',1);
   if(stage.host){
@@ -208,6 +208,18 @@ test('chapter sixteen continues a White Emperor save and completes the southern 
    await expect(page.locator('#missionMessage')).toHaveText('水渠已整備完成。');
    await tap('#missionChoices [data-action=site]:nth-child(3)');
    await advance(6200);
+  }else if(stage.kind==='pass-defense'){
+   await expect(page.locator('#missionQuick')).toContainText('第 1／3 波 · 上路來敵');
+   await page.evaluate(()=>{
+    const battle=window.chapterBattle;
+    battle.spawned=11;
+    battle.nextSpawn=battle.time+2;
+   });
+   await advance(100);
+   await expect(page.locator('#missionQuick')).toContainText('第 3／3 波 · 中路來敵');
+   await expect(page.locator('.lane').nth(1)).toHaveAttribute('data-threat','true');
+   await advance(31000);
+   await expect(page.locator('#missionObjective')).toHaveText('三波已守住 · 敵軍已清退');
   }else if(stage.kind==='supply')await supply();
   else await advance(18500);
 

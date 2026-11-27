@@ -1,4 +1,4 @@
-import {CAMPAIGN_LENGTH} from './campaign-config.mjs?v=hanzhong-baidi-chengdu-1';
+import {CAMPAIGN_LENGTH} from './campaign-config.mjs?v=baidi-suanzhao-nanan-1';
 
 function recordRule(level){
  switch(level){

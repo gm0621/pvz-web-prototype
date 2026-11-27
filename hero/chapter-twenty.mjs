@@ -46,9 +46,9 @@ const stages=[
  {
   name:'南安糧盡',year:253,origin:'mianyang',place:'nanan',leader:'姜維',guest:'姜維',opponent:'陳泰',mapOpponent:false,shift:true,
   historyCast:['姜維','陳泰'],matchupLabel:'魏軍援將・由洛門方向接近',
-  mission:'withdraw',scene:'mountain-front',enemyArmy:'魏軍追兵',
+  mission:'withdraw',coverWaves:true,scene:'mountain-front',enemyArmy:'魏軍追兵',
   history:'費禕遇害後的夏天，姜維率軍包圍南安。魏將陳泰帶援軍到洛門，蜀軍糧食用盡，只得退兵。',
-  briefing:'等接應完成後按「全軍撤離」。至少要有一隊友軍存活，場上存活的武將和士兵都要回到左側。',
+  briefing:'哪一路亮起，就派友軍去擋。第三波追兵出現後按「全軍撤離」。至少保住一隊，讓所有還在場的武將和士兵回到左側。',
   ending:'姜維在糧盡後退兵，南安仍在魏國手中。各營收兵，轉而補足軍糧。',
   camp:'糧袋都見底了。先看看誰還在前面，把人平安帶回來，才有下一次出兵的機會。',
   question:'姜維為什麼撤出南安？',choices:['軍糧用完了','拿下南安後就地扎營','得到東吳的糧食'],refs:[jiangWei,chen,ruler]
@@ -70,6 +70,7 @@ export const TWENTIETH_CHAPTER=stages.map((stage,index)=>({
  mapPlace:stage.place,originPlace:stage.origin,viaPlaces:stage.via||[],viewpointShift:!!stage.shift,historyCast:stage.historyCast,
  leaderName:stage.leader,opponentName:stage.opponent,mapOpponent:stage.mapOpponent??!!stage.opponent,matchupLabel:stage.matchupLabel,
  scene:`./assets/scenes/${stage.scene}.jpg`,mission:stage.mission,missionTitle:stage.missionTitle,missionSites:stage.missionSites,
+ ...(stage.coverWaves?{coverWaves:true}:{}),
  ...(stage.mission==='withdraw'?{retreatKeys:[],successTitle:'全軍撤回'}:{}),
  noBoss:true,bossName:stage.enemyArmy,bossHp:0,enemyArmy:stage.enemyArmy,enemyCount:12,interval:3.8,
  lead:stage.history,history:stage.history,adaptation,note:adaptation,bossTip:stage.briefing,
