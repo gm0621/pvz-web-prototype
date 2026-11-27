@@ -26,8 +26,8 @@ const stages=[
  {level:71,kind:'withdrawal',chapter:13,title:'宕渠收兵',terrain:'pass-defense',ending:'張郃收攏隊伍，退回南鄭',next:'鄴城魏王',resultTitle:'保全撤離',selectArmy:true},
  {level:100,kind:'supply',stops:['武都營地','山路驛站','陰平營地'],chapter:17,title:'武都陰平',terrain:'',ending:'蜀軍取得武都、陰平兩郡',next:'雨阻漢中'},
  {level:123,kind:'defense',chapter:21,title:'漢壽會師',terrain:'pass-defense',ending:'退下來的蜀軍會合',next:'劍閣守關'},
- {level:74,kind:'defense',chapter:13,title:'馬鳴閣道',terrain:'pass-defense',ending:'徐晃保住了閣道',next:'定軍山爭高地',selectArmy:true},
- {level:76,kind:'supply',stops:['定軍山營地','山路驛站','沔陽營地'],chapter:13,title:'漢中歸劉',terrain:'',ending:'曹操撤回長安，漢中由劉備掌握',next:'沔陽傳令'},
+ {level:74,kind:'defense',chapter:13,title:'馬鳴閣道',terrain:'pass-defense',ending:'徐晃保住了閣道',next:'定軍山爭高地',selectArmy:true,laneTotal:5},
+ {level:76,kind:'supply',stops:['定軍山營地','山路驛站','沔陽營地'],chapter:13,title:'漢中歸劉',terrain:'',ending:'曹操撤回長安，漢中由劉備掌握',next:'沔陽傳令',chapterEnd:'第十三章尾聲',nextChapter:'第十四章'},
  {level:98,kind:'withdrawal',chapter:17,title:'箕谷收兵',terrain:'pass-defense',ending:'趙雲與鄧芝收兵回漢中',next:'陳倉糧盡',resultTitle:'全軍撤回'}
 ];
 
@@ -53,7 +53,8 @@ test('stage 71 opens from home with an old save before and after reload',async({
 
 for(const stage of stages)test(`stage ${stage.level} clears and replays from an old save on touch`,async({page})=>{
  test.setTimeout(420000);
- const {level,chapter,next,kind,bonusButton,bonusClears,stops,peaceful,sun,selectArmy}=stage;
+ const {level,chapter,next,kind,bonusButton,bonusClears,stops,peaceful,sun,selectArmy,laneTotal=3}=stage;
+ const waveLanes=[0,laneTotal-1,Math.floor(laneTotal/2)];
  const cargo=kind==='supply',defense=kind==='defense',withdrawal=kind==='withdrawal',maicheng=level===82;
  const errors=[];
  page.on('pageerror',error=>errors.push(error.message));
@@ -92,7 +93,7 @@ for(const stage of stages)test(`stage ${stage.level} clears and replays from an 
   await advance(100);
  }
  async function reinforce(escorted){
-  const formation=withdrawal?[0,1,2]:[1,0,2];
+  const formation=withdrawal?[0,1,2]:[waveLanes[2],waveLanes[0],waveLanes[1]];
   for(const [slot,key] of ['liubei','guanyu','zhangfei'].entries()){
    const card=page.locator(`#cards [data-hero=${key}]`),archer=page.locator('#cards [data-hero=archer]');
    const road=lanes.nth(formation[slot]),width=await road.evaluate(node=>node.clientWidth);
@@ -121,18 +122,24 @@ for(const stage of stages)test(`stage ${stage.level} clears and replays from an 
  async function play({level,title,terrain,ending,resultTitle}){
   await expect(page.locator('#storyTitle')).toHaveText(title);
   await tap('#storySkip');
+  if(selectArmy&&laneTotal>3){
+   const deployment=page.locator('#deployment');
+   await deployment.getByRole('combobox',{name:'戰線與出戰名額'}).selectOption(String(laneTotal));
+   const chosen=deployment.locator('[data-choose][aria-pressed=true]');
+   for(let count=await chosen.count();count<laneTotal;count++)await deployment.locator('[data-choose][aria-pressed=false]').first().tap();
+  }
   if(selectArmy||(bonusButton&&!sun))await tap('#deploymentStart');
   await expect(page.locator('#battle')).toBeVisible({timeout:30000});
   if(sun)await expect(page.locator('#cards [data-hero=zhangfei]')).toContainText('黃蓋');
   await expect(page.locator('#field')).toHaveAttribute('data-terrain',terrain);
-  await expect(lanes).toHaveCount(3);
+  await expect(lanes).toHaveCount(laneTotal);
   await page.locator('#battleSpeed').selectOption('2');
   let sent=0,escorted=0,retreated=false,forward=false,paused=false;
   const remainingCounts=new Set();
   let departure=0;
   const warnings=new Set(),litRoutes=new Set(),spawnedRoutes=new Set();
   const waveText=page.locator('#waveText');
-  const positions=['上','下','中'];
+  const positions=laneTotal===3?['上','下','中']:waveLanes.map(lane=>`第 ${lane+1}`);
   const cart=page.locator('#supplyCart');
   const lead=maicheng?page.locator('#units .ally').filter({has:page.getByText(/^關羽(?: · 駐守)?$/)}):page.locator('#units .ally[data-lane="1"]').first();
   const distance=unit=>unit.evaluate(node=>parseFloat(node.style.left));
@@ -211,7 +218,7 @@ for(const stage of stages)test(`stage ${stage.level} clears and replays from an 
     if(defense&&wave&&!litRoutes.has(Number(wave[1]))){
      const highlighted=page.locator('.lane[data-threat=true]');
      if(await highlighted.count()){
-      const expected=[0,2,1][Number(wave[1])-1];
+      const expected=waveLanes[Number(wave[1])-1];
       await expect(highlighted).toHaveAttribute('data-lane',String(expected));
       await expect(highlighted).toContainText('來敵');
       await expect(highlighted).toBeVisible();
@@ -222,7 +229,7 @@ for(const stage of stages)test(`stage ${stage.level} clears and replays from an 
      const count=Number((await waveText.textContent()).match(/ (\d+) \/ \d+$/)?.[1]);
      const firstInWave=[1,5,9].indexOf(count);
      if(firstInWave>=0&&!spawnedRoutes.has(firstInWave)){
-      await expect(page.locator('#units .enemy').last()).toHaveAttribute('data-lane',String([0,2,1][firstInWave]));
+      await expect(page.locator('#units .enemy').last()).toHaveAttribute('data-lane',String(waveLanes[firstInWave]));
       spawnedRoutes.add(firstInWave);
      }
     }
@@ -315,7 +322,7 @@ for(const stage of stages)test(`stage ${stage.level} clears and replays from an 
   }
  }
 
- async function finish({level,title,ending,next},reward,coins,wuRank){
+ async function finish({level,title,ending,next,chapterEnd,nextChapter},reward,coins,wuRank){
   await expect(page.locator('#resultEarned')).toHaveText(reward);
   const progress=await save();
   expect(progress).toMatchObject({completed:level,coins,weapons:{guanyu:2},armyWeapons:{cao:{liubei:1},...(sun?{sun:{zhangfei:wuRank}}:{})},inventory:{grain:2},battleRecords:{20:80,[level]:expect.any(Number)}});
@@ -335,6 +342,7 @@ for(const stage of stages)test(`stage ${stage.level} clears and replays from an 
    }else await expect(huanggai.getByRole('button',{name:'已滿'})).toBeDisabled();
    await tap('#campShopBack');
   }
+  if(chapterEnd)await expect(page.locator('#campContinue')).toContainText(chapterEnd);
   await tap('#campContinue');
   const storyLine=page.locator('#storyLine');
   const pages=Number((await page.locator('#storyCount').textContent()).split('/')[1]);
@@ -347,6 +355,7 @@ for(const stage of stages)test(`stage ${stage.level} clears and replays from an 
   if(next){
    await tap('#storySkip');
    await expect(page.locator('#storyTitle')).toHaveText(next);
+   if(nextChapter)await expect(page.locator('#storyChapter')).toContainText(nextChapter);
   }else{
    const final=page.locator('#storyNext');
    await expect(final).toHaveText('回主選單 →');
@@ -379,6 +388,12 @@ for(const stage of stages)test(`stage ${stage.level} clears and replays from an 
  await play(stage);
  const first=await finish(stage,'+80',230,2);
  await checkReload(next,first);
+ if(stage.nextChapter){
+  await continueStory.tap();
+  await expect(page.locator('#storyTitle')).toHaveText(next);
+  await expect(page.locator('#storyChapter')).toContainText(stage.nextChapter);
+  await tap('#story [data-home]');
+ }
  await tap('#chapterPicker > summary');
  await tap(`#chapterTabs [data-chapter="${chapter}"]`);
  await tap(`#chapterDots [data-level="${level}"]`);
