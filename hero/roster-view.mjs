@@ -1,5 +1,5 @@
-import {skillButtons} from './skill-preview.mjs?v=hero-audio-mix-1';
-import {campGrowthCard} from './camp-growth.mjs?v=hero-audio-mix-1';
+import {skillButtons} from './skill-preview.mjs?v=hero-audio-mix-2';
+import {campGrowthCard} from './camp-growth.mjs?v=hero-audio-mix-2';
 import {learnedPassives,passiveName} from './passive-feedback.mjs?v=passive-feedback-1';
 import {GENERALS,ALL_GENERALS,DEFAULT_TEAM,SLOTS,heroLevel,growthHint,growthBonuses,nextLesson,activeText,selectedTeam,maxLanes,buyHeroWeapon} from './roster.mjs?v=yuesui-wukou-taoxi-1';
 import {paintPortrait} from './factions.mjs?v=yuesui-wukou-taoxi-1';

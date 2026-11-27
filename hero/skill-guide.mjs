@@ -1,5 +1,5 @@
 import {GENERALS,PEACH_GENERALS,SUN_GENERALS,heroLevel} from './roster.mjs?v=yuesui-wukou-taoxi-1';
-import {skillButtons} from './skill-preview.mjs?v=hero-audio-mix-1';
+import {skillButtons} from './skill-preview.mjs?v=hero-audio-mix-2';
 import {factionFor,paintPortrait} from './factions.mjs?v=yuesui-wukou-taoxi-1';
 export function mountSkillGuide({getBattle,getProgress,setPaused}){
  const button=document.createElement('button');button.id='skillGuideButton';button.className='quiet-button';button.textContent='武將技能介紹';button.setAttribute('aria-haspopup','dialog');document.getElementById('cards').before(button);

@@ -386,6 +386,16 @@ test('enemy archer aims from distance then launches a leftward arrow before appl
  const {stepBattle}=await engine,{b,hero,archer}=await rangedFixture(),hp=hero.hp;stepBattle(b,.1);assert.equal(archer.action,'aiming');assert.equal(archer.x,.55);assert.equal(hero.hp,hp);
  for(let i=0;i<6;i++)stepBattle(b,.1);assert.equal(hero.hp,hp);assert.equal(b.projectiles.length,1);const arrow=b.effects.find(e=>e.type==='enemy-arrow');assert.ok(arrow.from>arrow.to);
  for(let i=0;i<4;i++)stepBattle(b,.1);assert.equal(hero.hp,hp-8);
+ assert.equal(b.effects.find(e=>e.type==='block')?.sound,'arrow-impact');
+});
+test('a shielded arrow impact plays a parry instead of the unblocked impact',async()=>{
+ const {stepBattle}=await engine,{b,hero}=await rangedFixture(),hp=hero.hp;
+ hero.shield=15;
+ hero.shieldUntil=3;
+ for(let i=0;i<11;i++)stepBattle(b,.1);
+ assert.equal(hero.hp,hp);
+ assert.equal(hero.shield,7);
+ assert.equal(b.effects.find(e=>e.type==='block')?.sound,'block');
 });
 test('enemy arrows freeze on pause and can be dodged by changing lanes',async()=>{
  const {stepBattle}=await engine,{b,hero}=await rangedFixture();for(let i=0;i<7;i++)stepBattle(b,.1);const hp=hero.hp;

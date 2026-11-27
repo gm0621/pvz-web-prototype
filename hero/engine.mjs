@@ -155,7 +155,11 @@ export function stepBattle(b,seconds){
  b.projectiles??=[];
  for(const shot of b.projectiles)if(b.time+1e-8>=shot.impactAt){
   const victim=b.allies.find(u=>u.id===shot.targetId&&u.hp>0&&u.lane===shot.lane&&Math.abs(u.x-shot.aimX)<.08);
-  if(victim){damageAlly(b,victim,shot.damage);victim.flash=.2;effect(b,'block',shot.lane,shot.aimX)}
+  if(victim){
+   const blocked=damageAlly(b,victim,shot.damage);
+   victim.flash=.2;
+   effect(b,'block',shot.lane,shot.aimX,shot.aimX,{sound:blocked?'block':'arrow-impact'});
+  }
  }
  b.projectiles=b.projectiles.filter(shot=>b.time+1e-8<shot.impactAt);
  for(const h of b.hazards||[]){if(b.time>=h.nextTick&&h.nextTick<=h.until){for(const u of b.allies)if(u.hp>0&&u.lane===h.lane){damageAlly(b,u,6);u.flash=.2}h.nextTick+=1}}
@@ -248,7 +252,7 @@ export function stepBattle(b,seconds){
  protectBarrier(b);
  for(const e of b.enemies){
   if(e.hp<=0)continue;e.action='guarding';e.flash=Math.max(0,e.flash-dt);if(b.time<(e.stunnedUntil||0)){e.action='stunned';e.pendingStrike=null;e.pendingShot=null;e.swingStartedAt=-100;continue}
-  if(!e.boss&&e.pendingStrike&&b.time+1e-8>=e.pendingStrike.impactAt){const strike=e.pendingStrike,victim=b.allies.find(u=>u.id===strike.targetId&&u.hp>0&&u.lane===e.lane);if(victim&&Math.abs(e.x-victim.x)<=.11){damageAlly(b,victim,strike.damage);victim.flash=.2;effect(b,'enemy-slash',e.lane,e.x,victim.x);e.impactUntil=b.time+.08}e.pendingStrike=null}
+  if(!e.boss&&e.pendingStrike&&b.time+1e-8>=e.pendingStrike.impactAt){const strike=e.pendingStrike,victim=b.allies.find(u=>u.id===strike.targetId&&u.hp>0&&u.lane===e.lane);if(victim&&Math.abs(e.x-victim.x)<=.11){const blocked=damageAlly(b,victim,strike.damage);victim.flash=.2;effect(b,'enemy-slash',e.lane,e.x,victim.x,{sound:blocked?'block':'enemy-slash'});e.impactUntil=b.time+.08}e.pendingStrike=null}
   if(e.ranged&&e.pendingShot&&b.time+1e-8>=e.pendingShot.releaseAt){
    const victim=b.allies.find(u=>u.id===e.pendingShot.targetId&&u.hp>0&&u.lane===e.lane&&u.x<=e.x+.015&&e.x-u.x<=.29);
    if(victim){const travel=.38;b.projectiles.push({targetId:victim.id,lane:e.lane,aimX:victim.x,impactAt:b.time+travel,damage:e.damage*(b.time<(e.rallyUntil||0)?1.3:1)});effect(b,'enemy-arrow',e.lane,e.x,victim.x,{duration:travel,remaining:travel});e.shotAt=b.time;}
@@ -296,7 +300,7 @@ export function stepBattle(b,seconds){
   }
   if(e.ranged&&e.pendingShot){e.action='aiming';continue;}
   if(!e.boss&&b.time-(e.swingStartedAt??-100)<ENEMY_SWING.duration){e.action='striking';continue}
-  if(target&&e.x-target.x<=.075){if(b.time-e.lastAttack>=e.rate){e.lastAttack=b.time;const damage=e.damage*(b.time<(e.tacticWeakenUntil||0)?.7:1)*(b.time<(e.rallyUntil||0)?1.3:1);if(e.boss){e.flash=.32;effect(b,'enemy-slash',e.lane,e.x,target.x);damageAlly(b,target,damage);target.flash=.2}else{e.swingStartedAt=b.time;e.pendingStrike={targetId:target.id,impactAt:b.time+ENEMY_SWING.impact,damage};e.action='striking'}}}
+  if(target&&e.x-target.x<=.075){if(b.time-e.lastAttack>=e.rate){e.lastAttack=b.time;const damage=e.damage*(b.time<(e.tacticWeakenUntil||0)?.7:1)*(b.time<(e.rallyUntil||0)?1.3:1);if(e.boss){e.flash=.32;const blocked=damageAlly(b,target,damage);effect(b,'enemy-slash',e.lane,e.x,target.x,{sound:blocked?'block':'enemy-slash'});target.flash=.2}else{e.swingStartedAt=b.time;e.pendingStrike={targetId:target.id,impactAt:b.time+ENEMY_SWING.impact,damage};e.action='striking'}}}
   else {e.action='marching';e.x-=e.speed*dt*(b.time<(e.rallyUntil||0)?1.35:1);}
   if(e.x<.025){e.hp=0;e.escaped=true;if(e.boss&&!e.support)b.lossReason='commander-breach';effect(b,'breach',e.lane,.025,-.12,{enemy:true,boss:e.boss,shielded:e.shielded,ranged:e.ranged});if(hasGate(b.mission)){hitGate(b,e);b.notice=b.mission.message}
    else{b.lives--;b.notice='敵軍突破！留意其他路線。'}b.noticeUntil=b.time+3}
@@ -315,7 +319,7 @@ export function stepBattle(b,seconds){
  else if(extracted(b)||cleared&&missionReady(b)){b.over=true;b.won=true}
 }
 
-export function damageAlly(b,u,amount){const incoming=amount;amount=amount>0?Math.max(1,amount-(u.damageReduction||0)):0;if(incoming>amount&&u.heroId){const d=battleHeroes(b)[u.key];passiveCue(b,u,`${passiveLabel(d,'damageReduction','護身')} · 減傷 ${Number((incoming-amount).toFixed(1))}`,'guard')}const blocked=Math.min(u.shield||0,amount);u.shield=Math.max(0,(u.shield||0)-blocked);u.hp-=amount-blocked}
+export function damageAlly(b,u,amount){const incoming=amount;amount=amount>0?Math.max(1,amount-(u.damageReduction||0)):0;if(incoming>amount&&u.heroId){const d=battleHeroes(b)[u.key];passiveCue(b,u,`${passiveLabel(d,'damageReduction','護身')} · 減傷 ${Number((incoming-amount).toFixed(1))}`,'guard')}const blocked=Math.min(u.shield||0,amount);u.shield=Math.max(0,(u.shield||0)-blocked);u.hp-=amount-blocked;return blocked}
 export function castActive(b,key,index){
  if(!b?.heroMode||b.paused||b.over||b.duel||b.introPending)return false;const u=b.allies.find(a=>a.key===key&&a.hp>0),d=battleHeroes(b)[key],s=d?.skills?.[index];if(!u||!s||d.heroLevel<s.level)return false;const r=b.heroResources[d.heroId];if(r.mp<s.mp||b.time<(r.ready[index]||0))return false;
  const near=b.enemies.filter(e=>e.hp>0&&e.lane===u.lane&&e.x>=u.x-.03&&e.x-u.x<=((b.peachMode||b.sunMode)?.17:d.ranged?.4:.28));const offensive=!!s.effects?.damage||['pierce','sweep','push','volley','rain','halt','lock'].includes(s.id);if(offensive&&!near.length){b.notice='這一路射程內還沒有敵人，MP 未扣除。';b.noticeUntil=b.time+2;return false}

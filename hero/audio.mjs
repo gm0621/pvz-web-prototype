@@ -128,6 +128,7 @@ const combatSounds={
  enemy:{clip:'impact',gain:.58,rate:.89},
  arrow:{clip:'bow',gain:.62,rate:1},
  'enemy-arrow':{clip:'bow',gain:.43,rate:.94},
+ 'arrow-impact':{clip:'impact',gain:.35,rate:1.04},
  block:{clip:'parry',gain:.69,rate:1},
  finish:{clip:'impact',gain:.85,rate:.74},
  cleave:{clip:'impact',gain:.81,rate:.83}
@@ -145,7 +146,7 @@ export function preloadCombatSounds(){
  }));
  return combatLoad;
 }
-const cooldowns={swing:.13,'enemy-swing':.17,slash:.115,'enemy-slash':.16,arrow:.12,'enemy-arrow':.16,block:.1,deploy:.1,fire:.25,rock:.18,hook:.18};
+const cooldowns={swing:.13,'enemy-swing':.17,slash:.115,'enemy-slash':.16,arrow:.12,'enemy-arrow':.16,'arrow-impact':.12,block:.1,deploy:.1,fire:.25,rock:.18,hook:.18};
 const lastSound=new Map();
 export async function hitSound(kind='slash'){
  if(!sfx||isBackground()||backgroundPaused)return false;

@@ -1,5 +1,5 @@
 import {archerArtwork} from './factions.mjs?v=yuesui-wukou-taoxi-1';
-import {createBattle,deploy,castActive,damageAlly} from './engine.mjs?v=yuesui-wukou-taoxi-1';
+import {createBattle,deploy,castActive,damageAlly} from './engine.mjs?v=hero-audio-mix-2';
 import {ALL_GENERALS,PEACH_GENERALS,SUN_GENERALS,rosterFor,growthState,LEVEL_XP} from './roster.mjs?v=yuesui-wukou-taoxi-1';
 import {PEACH_HEROES} from './hero-base.mjs?v=passive-feedback-1';
 // A disposable battle. No campaign, storage, rewards, timers or normal wave stepping.

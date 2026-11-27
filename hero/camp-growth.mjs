@@ -1,4 +1,4 @@
-import {previewButton,skillButtons} from './skill-preview.mjs?v=hero-audio-mix-1';
+import {previewButton,skillButtons} from './skill-preview.mjs?v=hero-audio-mix-2';
 import {LEVEL_XP,heroLevel,nextLesson,activeText} from './roster.mjs?v=yuesui-wukou-taoxi-1';
 import {paintPortrait} from './factions.mjs?v=yuesui-wukou-taoxi-1';
 const el=(tag,text)=>{const e=document.createElement(tag);if(text)e.textContent=text;return e};
