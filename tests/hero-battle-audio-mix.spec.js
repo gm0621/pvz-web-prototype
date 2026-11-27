@@ -2,7 +2,7 @@ const {test,expect}=require('@playwright/test');
 
 const team=['caocao','xiahoudun','caohong','caoren','xiahouyuan'];
 const entry=process.env.HERO_TEST_ENTRY||'/hero/';
-const audioModule='audio.mjs?v=hero-finale-audio-1';
+const audioModule='audio.mjs?v=hero-audio-settings-1';
 
 for(const [level,lanes] of [[40,4],[62,5]]){
  test(`${lanes} lanes keep warning, skill and arrows distinct through pause and foregrounding`,async({page,hasTouch})=>{

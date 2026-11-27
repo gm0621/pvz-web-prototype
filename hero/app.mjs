@@ -3,7 +3,7 @@ import {mountFinale} from './finale-view.mjs?v=yuesui-wukou-taoxi-1';
 import {supplyLeg} from './history-missions.mjs?v=yuesui-wukou-taoxi-1';
 import {recordBattleVictory} from './battle-records.mjs?v=yuesui-wukou-taoxi-1';
 import {GATE_MAX,hasGate,channelHazard,channelName,siegeLane,hasFireRoutes,fireLaneState,pointCompleted,OUTPOST_SECONDS,outpostLane,hasDirectedWaves,passLane,PASS_WAVE_SIZE} from './field-missions.mjs?v=yuesui-wukou-taoxi-1';
-import {mountExperienceView} from './experience-view.mjs?v=hero-finale-audio-1';
+import {mountExperienceView} from './experience-view.mjs?v=hero-audio-settings-1';
 import {preloadBattleAssets,battleAssetsReady,prepareBattleAssets} from './battle-assets.mjs?v=images-2';
 import {mountBattleFocus} from './battle-focus.mjs?v=yuesui-wukou-taoxi-1';
 import {advanceAutoSkills} from './auto-skills.mjs?v=battle-focus-1';
@@ -12,28 +12,28 @@ import {mountSkillIntro} from './skill-intro.mjs?v=yuesui-wukou-taoxi-1';
 import {beginReading,installStoryReader} from './story-reader.mjs?v=yuesui-wukou-taoxi-1';
 import {shortPages} from './story-pages.mjs?v=passive-feedback-1';
 import {configureRoster,configurePeachRoster,configureSunRoster,awardExperience,SLOTS,ALL_GENERALS as GENERALS} from './roster.mjs?v=yuesui-wukou-taoxi-1';
-import {openDeployment,mountActiveSkills} from './roster-view.mjs?v=hero-finale-audio-1';
+import {openDeployment,mountActiveSkills} from './roster-view.mjs?v=hero-audio-settings-1';
 import {castActive,lanesFor,laneLabel} from './engine.mjs?v=hero-audio-mix-2';
-import {mountSkillGuide} from './skill-guide.mjs?v=hero-finale-audio-1';
+import {mountSkillGuide} from './skill-guide.mjs?v=hero-audio-settings-1';
 import {battleBossPortrait,renderPeople,STORY_PEOPLE} from './characters.mjs?v=yuesui-wukou-taoxi-1';
 import {factionFor,stageFactionTitle,enemyPortrait,paintPortrait} from './factions.mjs?v=yuesui-wukou-taoxi-1';
 import {mountHistoryLesson} from './history-view.mjs?v=yuesui-wukou-taoxi-1';
-import {renderSkillCutin} from './skill-cutin.mjs?v=hero-finale-audio-1';
-import {renderMasterCutin} from './master-cutin.mjs?v=hero-finale-audio-1';
-import {renderBossCutin} from './boss-cutin.mjs?v=hero-finale-audio-1';
+import {renderSkillCutin} from './skill-cutin.mjs?v=hero-audio-settings-1';
+import {renderMasterCutin} from './master-cutin.mjs?v=hero-audio-settings-1';
+import {renderBossCutin} from './boss-cutin.mjs?v=hero-audio-settings-1';
 import {mountBattleKeys} from './battle-keys.mjs?v=battle-focus-1';
 import {mountJourney} from './journey-view.mjs?v=yuesui-wukou-taoxi-1';
-import {renderMission} from './chapter-mission-view.mjs?v=hero-finale-audio-1';
+import {renderMission} from './chapter-mission-view.mjs?v=hero-audio-settings-1';
 import {mountCampaignMap} from './campaign-map.mjs?v=yuesui-wukou-taoxi-1';
 import {advanceBattleFrame,normalizeBattleSpeed} from './battle-speed.mjs?v=hero-audio-mix-2';
 import {mountNovel} from './novel.mjs?v=yuesui-wukou-taoxi-1';
-import {mountCamp} from './camp-view.mjs?v=hero-finale-audio-1';
+import {mountCamp} from './camp-view.mjs?v=hero-audio-settings-1';
 import {rewardVictory,useSupply,weaponsForLevel} from './campaign.mjs?v=yuesui-wukou-taoxi-1';
 import {createFirstGuide} from './first-guide.mjs?v=passive-feedback-1';
 import {mountStoryTask} from './story-play.mjs?v=yuesui-wukou-taoxi-1';
 import {CHAPTER_BACKGROUNDS,STAGE_LEADS} from './prologue.mjs?v=yuesui-wukou-taoxi-1';
-import {setMusic,setMusicMode,setMusicHome,musicTheme,musicOn,setSfx,unlockAudio,hitSound,setBattleMusicPressure,preloadCombatSounds,setBattleAudioPaused} from './audio.mjs?v=hero-finale-audio-1';
-import {renderDuel} from './duel-view.mjs?v=hero-finale-audio-1';
+import {setMusicEnabled,setMusicMode,setMusicHome,musicTheme,musicOn,setSfx,sfxOn,unlockAudio,hitSound,setBattleMusicPressure,setBattleAudioPaused} from './audio.mjs?v=hero-audio-settings-1';
+import {renderDuel} from './duel-view.mjs?v=hero-audio-settings-1';
 import {chapterInfo,enemyArt,HEROES as BASE_HEROES,heroesForLevel,STAGES,ENEMY_ART,SHIELD_ART,FEATURES,heroDescription} from './story.mjs?v=yuesui-wukou-taoxi-1';
 import {bossProfile,LANE_CAPACITY,laneCount,ENEMY_SWING,enemyAttackFrame,skipDuelEntrance,positionHero,commandHero,moveHero,BOSS_SKILLS,SAVE_KEY,normalizeProgress,createBattle,deploy,canDeploy,attackFrame,SWING} from './engine.mjs?v=hero-audio-mix-2';
 
@@ -52,7 +52,7 @@ function saveProgress(next=progress){
  if(storageReadFailed)return false;
  try{localStorage.setItem(SAVE_KEY,JSON.stringify(next));$('storageNotice').hidden=true;$('storageRetry').hidden=true;$('resultRetrySave').hidden=true;return true}catch{$('storageNotice').textContent='目前無法保存；未保存的通關與軍資在重整後可能遺失。購買或使用道具失敗時不會扣除。';$('storageNotice').hidden=false;$('storageRetry').hidden=false;return false}
 }
-function syncMusicButton(on=musicOn()){$('musicBtn').textContent=on?`♫ ${musicTheme().name}`:'♫ 音樂：關';$('musicBtn').setAttribute('aria-pressed',String(on))}
+function syncMusicButton(){const on=musicOn();$('musicBtn').textContent=on?`♫ ${musicTheme().name}`:'♫ 音樂：關';$('musicBtn').setAttribute('aria-pressed',String(on))}
 let ownsFullscreen=false,focusRevision=0;
 function focusBattle(active){
  document.body.classList.toggle('battle-focus',active);const revision=++focusRevision;
@@ -406,10 +406,28 @@ document.addEventListener('visibilitychange',()=>{if(document.hidden&&battle&&!b
 const pauseHiddenBattle=()=>{if(battle&&!battle.over)setPause(true)};
 window.addEventListener('pagehide',pauseHiddenBattle);
 document.addEventListener('freeze',pauseHiddenBattle);
-$('musicBtn').onclick=async()=>{const on=!musicOn();syncMusicButton(await setMusic(on))};
-const sfxButton=document.createElement('button');sfxButton.className='quiet-button';sfxButton.textContent='音效：開';sfxButton.setAttribute('aria-pressed','true');let effectsEnabled=true;sfxButton.onclick=async()=>{effectsEnabled=!effectsEnabled;setSfx(effectsEnabled);sfxButton.textContent=effectsEnabled?'音效：開':'音效：關';sfxButton.setAttribute('aria-pressed',String(effectsEnabled));if(effectsEnabled){const ok=await hitSound('block');$('audioNotice').textContent=ok?'音效已開啟':'聲音尚未啟動，請點「試聽音效」重試';}};$('musicBtn').before(sfxButton);
-$('soundTest').onclick=async()=>{await preloadCombatSounds();const ok=await hitSound('swing');$('audioNotice').textContent=!effectsEnabled?'請先開啟音效':ok?'已播放揮擊音效；若無聲，請檢查裝置音量／靜音設定':'瀏覽器未啟動音訊，請再點一次試聽';};
-document.addEventListener('pointerdown',unlockAudio);document.addEventListener('keydown',unlockAudio);
+$('musicBtn').onclick=()=>{setMusicEnabled(!musicOn());syncMusicButton()};
+const sfxButton=document.createElement('button');
+sfxButton.className='quiet-button';
+function syncSfxButton(){
+ sfxButton.textContent=sfxOn()?'音效：開':'音效：關';
+ sfxButton.setAttribute('aria-pressed',String(sfxOn()));
+}
+sfxButton.onclick=async()=>{
+ setSfx(!sfxOn());
+ syncSfxButton();
+ $('audioNotice').textContent='';
+ if(!sfxOn())return;
+ const ok=await hitSound('block');
+ if(sfxOn())$('audioNotice').textContent=ok?'音效已開啟':'聲音尚未啟動，請點「試聽音效」重試';
+};
+$('musicBtn').before(sfxButton);
+syncMusicButton();
+syncSfxButton();
+$('soundTest').onclick=async()=>{const ok=await hitSound('swing',true);$('audioNotice').textContent=!sfxOn()?'請先開啟音效':ok?'已播放揮擊音效；若無聲，請檢查裝置音量／靜音設定':'瀏覽器未啟動音訊，請再點一次試聽';};
+document.addEventListener('pointerdown',event=>{if(event.pointerType!=='touch'&&event.pointerType!=='pen')void unlockAudio()});
+document.addEventListener('pointerup',event=>{if(event.pointerType==='touch'||event.pointerType==='pen')void unlockAudio()});
+document.addEventListener('keydown',unlockAudio);
 
 $('bossIntroContinue').onclick=()=>{battle.introPending=false;$('bossIntro').close();renderBattle()};
 $('bossIntro').addEventListener('cancel',e=>e.preventDefault());

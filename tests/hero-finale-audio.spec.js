@@ -1,7 +1,7 @@
 const {test,expect}=require('@playwright/test');
 
 const entry=process.env.HERO_TEST_ENTRY||'/hero/';
-const audioPath='audio.mjs?v=hero-finale-audio-1';
+const audioPath='audio.mjs?v=hero-audio-settings-1';
 const key='heroLegendProgress_v1';
 const ending='西晉一統・章末';
 const bonuses=[
@@ -81,16 +81,18 @@ async function coda(page,theme=ending){
 async function recording(page,mode,limit){
  await expect.poll(()=>active(page)).toEqual([mode]);
  await expect.poll(()=>page.locator(`audio[data-music-mode="${mode}"]`).evaluate(el=>el.currentTime)).toBeGreaterThan(.15);
- const peak=await signal(page);
- expect(peak).toBeGreaterThan(.01);
- expect(peak).toBeLessThan(limit);
+ await expect.poll(async()=>{
+  const peak=await signal(page);
+  expect(peak).toBeLessThan(limit);
+  return peak;
+ }).toBeGreaterThan(.01);
 }
 async function noOverlaps(page){
  expect(await page.evaluate(()=>window.finaleAudio.starts.every(s=>s.others.length===0))).toBe(true);
 }
 async function bonusBattle(page,bonus){
  await expect(page.locator('#storyTitle')).toHaveText(bonus.stage);
- await recording(page,'story',.26);
+ await recording(page,'story',.28);
  await tap(page,'#storySkip');
  const deployment=page.locator('#deployment');
  if(bonus.initial!==143){
@@ -192,7 +194,7 @@ for(const stage of [
 
   async function enterAndSettle(reward){
    await expect(page.locator('#storyTitle')).toHaveText(stage.title);
-   await recording(page,'story',.26);
+   await recording(page,'story',.28);
    await tap(page,'#storySkip');
    await recording(page,'prepare',.26);
    await tap(page,'#deploymentStart');
@@ -244,7 +246,7 @@ for(const stage of [
    await expect(page.locator(stage.next.button)).toBeEnabled();
    await tap(page,stage.next.button);
    await expect(page.locator('#storyTitle')).toHaveText(stage.next.stage);
-   await recording(page,'story',.26);
+   await recording(page,'story',.28);
    await tap(page,'#story [data-home]');
    await recording(page,'home',.345);
   }

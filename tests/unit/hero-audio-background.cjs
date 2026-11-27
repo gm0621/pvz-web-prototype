@@ -201,3 +201,32 @@ test('foreground audio unlock follows the bonus selected while the browser is re
  assert.equal(f.timers.size,1); // The test has no recorded story track, so it uses the score.
  assert.equal(f.tracks[0].plays,0);
 });
+
+test('a denied audio resume preserves the music choice until the next gesture',async t=>{
+ const f=await setup(t);
+ await f.audio.setMusic(true);
+ const resume=f.ctx.resume;
+ f.ctx.resume=async()=>{throw new Error('gesture required')};
+ await f.audio.setMusicMode('camp',2);
+ assert.equal(f.audio.musicOn(),true);
+ assert.ok(f.tracks.every(track=>track.paused));
+ f.ctx.resume=resume;
+ assert.equal(await f.audio.unlockAudio(),true);
+ assert.equal(f.tracks[4].paused,false);
+});
+
+test('muting effects discards a preview still waiting for audio to unlock',async t=>{
+ const f=await setup(t);
+ await f.audio.unlockAudio();
+ let ready;
+ f.ctx.pending=new Promise(resolve=>{ready=resolve});
+ const preview=f.audio.createSoundPreview();
+ const pending=preview.play('slash');
+ f.audio.setSfx(false);
+ f.audio.setSfx(true);
+ ready();
+ assert.equal(await pending,false);
+ assert.equal(f.ctx.effects.length,0);
+ assert.equal(await preview.play('slash'),true);
+ assert.equal(f.ctx.effects.length,1);
+});

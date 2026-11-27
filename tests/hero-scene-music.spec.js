@@ -1,6 +1,6 @@
 const {test,expect}=require('@playwright/test');
 const entry=process.env.HERO_TEST_ENTRY||'/hero/';
-const audioPath='audio.mjs?v=hero-finale-audio-1';
+const audioPath='audio.mjs?v=hero-audio-settings-1';
 
 async function open(page,level){
  await page.addInitScript(level=>{

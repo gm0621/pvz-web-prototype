@@ -1,5 +1,5 @@
 import {ALL_GENERALS as GENERALS} from './roster.mjs?v=yuesui-wukou-taoxi-1';
-import {skillSummary} from './roster-view.mjs?v=hero-finale-audio-1';
+import {skillSummary} from './roster-view.mjs?v=hero-audio-settings-1';
 import {PEOPLE,searchPeople} from './people-data.mjs?v=yuesui-wukou-taoxi-1';
 import {paintPortrait} from './factions.mjs?v=yuesui-wukou-taoxi-1';
 const $=id=>document.getElementById(id);let kind='all';

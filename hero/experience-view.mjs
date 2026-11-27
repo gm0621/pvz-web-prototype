@@ -1,6 +1,6 @@
 import {ALL_GENERALS,growthHint} from './roster.mjs?v=yuesui-wukou-taoxi-1';
 import {paintPortrait} from './factions.mjs?v=yuesui-wukou-taoxi-1';
-import {hitSound} from './audio.mjs?v=hero-finale-audio-1';
+import {hitSound} from './audio.mjs?v=hero-audio-settings-1';
 import {EXPERIENCE_DURATION,experienceFrame} from './experience-progress.mjs?v=yuesui-wukou-taoxi-1';
 export function mountExperienceView(){
  const root=document.createElement('section');root.id='resultExperience';root.setAttribute('aria-label','武將成長');document.getElementById('resultText').after(root);

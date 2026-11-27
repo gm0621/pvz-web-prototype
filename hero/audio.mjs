@@ -2,8 +2,15 @@ import {playScorePulse} from './battle-score.mjs?v=hero-score-1';
 import {skillPresentation} from './skill-presentation.mjs?v=passive-feedback-1';
 import {MASTER_STYLES} from './master-style.mjs?v=passive-feedback-1';
 import {STAGES,chapterInfo} from './story.mjs?v=yuesui-wukou-taoxi-1';
+const AUDIO_SETTINGS_KEY='heroLegendAudio_v1';
+let preferences;
+try{preferences=JSON.parse(localStorage.getItem(AUDIO_SETTINGS_KEY))}catch{/* Storage may be unavailable. */}
 // Recorded interludes, stage scores and chapter codas share one switchable music bus.
-let context,musicBus,sfxBus,scoreBus,timer=null,step=0,enabled=false,sfx=true,revision=0,scene=0,recordedMode='home',chapterEnding=false,pageInactive=false,backgroundPaused=false;
+let context,musicBus,sfxBus,scoreBus,timer=null,step=0,enabled=preferences?.music===true,sfx=preferences?.sfx!==false,revision=0,scene=0,recordedMode='home',chapterEnding=false,pageInactive=false,backgroundPaused=false;
+let waitingForGesture=enabled;
+function saveAudioSettings(){
+ try{localStorage.setItem(AUDIO_SETTINGS_KEY,JSON.stringify({music:enabled,sfx}))}catch{/* Keep the current choices for this page. */}
+}
 const recordedTracks=new Map(),recordedSources=[];
 const sceneLevels={home:.34,story:.25,prepare:.23,duel:.25,camp:.27,victory:.23};
 let cachedRecording,decodedPlayback,rewindTrack=false,musicPlaying=false,fading=false;
@@ -177,7 +184,7 @@ export async function setMusic(on,transition=false){
  silencePlayback();
  if(!enabled)return false;
  // Keep the preference, but never start media or fallback music in background.
- if(audioBlocked())return enabled;
+ if(audioBlocked()||waitingForGesture)return enabled;
  try{
   init();await context.resume();
   if(isBackground()||backgroundPaused){pauseBackgroundAudio();return enabled}
@@ -210,13 +217,20 @@ export async function setMusic(on,transition=false){
   }else{musicPlaying=true;updateMix(true);beginScore()}
   return enabled;
  }catch{
-  if(request===revision&&!audioBlocked()){enabled=false;silencePlayback()}
+  if(request===revision&&!audioBlocked()){waitingForGesture=true;silencePlayback()}
   return enabled;
  }
 }
 export function musicOn(){return enabled}
+export function setMusicEnabled(on){
+ waitingForGesture=false;
+ void setMusic(on);
+ saveAudioSettings();
+}
+export function sfxOn(){return sfx}
 export function setSfx(on){
  sfx=on;
+ saveAudioSettings();
  if(!sfx){
   stopEffects();
   previewOutput?.disconnect();
@@ -234,7 +248,8 @@ export async function unlockAudio(){
   // Scene selection can change while the browser resumes. Restore the latest
   // scene unless the page entered the background again during this request.
   if(epoch!==backgroundEpoch)return false;
-  const restore=backgroundPaused;backgroundPaused=false;sfxBus.gain.value=sfx?.7:0;
+  const restore=backgroundPaused||waitingForGesture;
+  backgroundPaused=false;waitingForGesture=false;sfxBus.gain.value=sfx?.7:0;
   if(sfx)void preloadCombatSounds();
   if(restore&&enabled&&!battlePaused)await setMusic(true);
   return !isBackground()&&!backgroundPaused&&context.state==='running';
@@ -271,11 +286,12 @@ const arrowKinds=new Set(['arrow','enemy-arrow']);
 const skillKinds=new Set(['cleave','roar','heal','oath']);
 const cooldowns={swing:.13,'enemy-swing':.17,slash:.115,'enemy-slash':.16,bow:.16,'arrow-impact':.12,block:.1,deploy:.1,fire:.25,rock:.18,hook:.18};
 const lastSound=new Map();
-export async function hitSound(kind='slash'){
+export async function hitSound(kind='slash',loadRecording=false){
  if(!sfx||audioBlocked())return false;
  const epoch=effectsEpoch;
  // Retry browser audio unlocking instead of silently discarding the first strike.
  if(init().state!=='running'&&!await unlockAudio())return false;
+ if(loadRecording)await preloadCombatSounds();
  if(!sfx||audioBlocked()||epoch!==effectsEpoch)return false;
  const key=arrowKinds.has(kind)?'bow':kind;
  const now=context.currentTime,cooldown=cooldowns[key];
@@ -381,5 +397,5 @@ document.addEventListener('freeze',pauseBackgroundAudio);
 export function createSoundPreview(){
  let bus,revision=0;
  function stop(){revision++;if(bus){bus.gain.value=0;bus.disconnect();bus=null}}
- return {stop,async play(kind){stop();const ticket=revision;if(!sfx||isBackground()||!await unlockAudio()||ticket!==revision||!sfx||isBackground())return false;if(!previewOutput){previewOutput=context.createGain();previewOutput.connect(sfxBus)}bus=context.createGain();bus.connect(previewOutput);return soundRecipe(kind,bus)}};
+ return {stop,async play(kind){stop();const ticket=revision,epoch=effectsEpoch;if(!sfx||isBackground()||!await unlockAudio()||ticket!==revision||epoch!==effectsEpoch||!sfx||isBackground())return false;if(!previewOutput){previewOutput=context.createGain();previewOutput.connect(sfxBus)}bus=context.createGain();bus.connect(previewOutput);return soundRecipe(kind,bus)}};
 }
