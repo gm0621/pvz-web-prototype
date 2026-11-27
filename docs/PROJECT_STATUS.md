@@ -20,6 +20,15 @@ npm run test:hero:engine
 npx playwright test --config=playwright.hero-input.config.js
 ```
 
+## 2026-11-27 宕渠、武都陰平、漢壽玩法複查
+
+- 回歸測試提交 `71a6d2e` 已完成 Pages 部署，正式遊戲沿用 `fc9fd7c`。正式站手機 Chromium（320px、390px）8 項、平板 WebKit（820×1180）4 項觸控流程通過，核對 52 份遊戲資源。宕渠另用 6 個全新手機瀏覽器工作階段測首次進關與重整進關，皆正常，未再出現上次的 HTTP 503。 [正式遊戲](https://gm0621.github.io/pvz-web-prototype/hero/?v=fc9fd7c) · [回歸測試部署](https://github.com/gm0621/pvz-web-prototype/actions/runs/45933436334)
+- 第 71 關第八隊追兵到場時仍鎖住撤離。第三波第一隊出場才開放。刻意讓一隊留在前方、其餘退回左側時，未結算也未寫存檔。最後一隊退回才完成。
+- 第 100 關三批糧車逐批驗證護衛離開時停在原處，回到同路後保留位置及進度百分比。前兩批交付未寫入過關存檔，引擎另驗證第三批抵達後仍需清完餘兵。
+- 第 123 關上、下、中路的三波預警與實際出兵一致，餘兵計數隨清場下降，清完才結算。
+- 三關均從舊格式存檔測暫停恢復、營地、下一關、重整和重玩。兵器、物資與個人最佳保留，首勝軍資只發一次。
+- 本機 434 項引擎測試及 12 項瀏覽器模擬觸控測試通過。快取版 `hanshou-wudu-dangqu-1`，觸控指令 `npx playwright test --config=playwright.hero-hanshou-wudu-dangqu.config.js`。
+
 ## 2026-11-27 漢壽分波守備、武都陰平分段護糧與宕渠撤離
 
 - 已發布 `fc9fd7c`。正式站手機 Chromium（320px、390px）6 項、平板 WebKit（820×1180）3 項觸控流程通過，核對 52 份發布資源。首輪宕渠手機首頁載入時，GitHub Pages 的一份模組短暫回傳 HTTP 503；同一網址恢復 HTTP 200 後，以全新瀏覽器重跑該關完整流程通過。 [正式遊戲](https://gm0621.github.io/pvz-web-prototype/hero/?v=fc9fd7c) · [人物圖鑑](https://gm0621.github.io/pvz-web-prototype/hero/people.html?v=fc9fd7c) · [發布紀錄](https://github.com/gm0621/pvz-web-prototype/actions/runs/45932314112)
