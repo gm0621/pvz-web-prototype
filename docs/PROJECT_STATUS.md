@@ -20,6 +20,13 @@ npm run test:hero:engine
 npx playwright test --config=playwright.hero-input.config.js
 ```
 
+## 2026-11-27 淮南、潁陰、河橋玩法複查
+
+- 回歸測試提交 `89d4181` 已合併並完成 Pages 部署。遊戲資源沿用 `e33ec1e`；潁陰 320px 額外以 5 個全新瀏覽器工作階段驗證首頁初次載入、重整和繼續番外。正式站手機 Chromium（320px、390px）6 項、平板 WebKit（820×1180）3 項觸控流程通過，核對 52 份遊戲資源。 [正式遊戲](https://gm0621.github.io/pvz-web-prototype/hero/?v=e33ec1e) · [人物圖鑑](https://gm0621.github.io/pvz-web-prototype/hero/people.html?v=e33ec1e) · [回歸測試部署](https://github.com/gm0621/pvz-web-prototype/actions/runs/45924995089)
+- 第 153 關淮南王起兵在第八隊敵兵時仍鎖住撤離，第九隊也就是第三波第一隊出現才開放。刻意留一隊在前方時，結算與存檔都未變；重新下令、全員退回左側才結算。第 156 關潁陰守營的上、下、中路預警與實際出兵相符，清完畫面所示餘兵後才過關。第 169 關河橋護駕逐批驗證護衛離開時車輛和百分比停止，護衛回同一路後從原地繼續，第三批送達才結算。
+- 三關均從舊格式存檔驗證首勝、暫停恢復、原劇情、營地、下一關、重整和重玩。舊兵器、物資和個人最佳保留，首勝軍資只發一次。
+- 本機 433 項引擎測試及 9 項觸控流程通過。裝置使用瀏覽器模擬觸控；快取版 `yingyin-heqiao-huainan-1`，觸控指令 `npx playwright test --config=playwright.hero-yingyin-heqiao-huainan.config.js`。
+
 ## 2026-11-27 潁陰分波守營、河橋分段護糧與淮南撤離
 
 - 已發布 `e33ec1e`。正式站手機 Chromium（320px、390px）6 項、平板 WebKit（820×1180）3 項完整觸控流程通過，核對 52 份發布資源。潁陰 320px 首輪首頁載入逾時，獨立重跑通過。 [正式遊戲](https://gm0621.github.io/pvz-web-prototype/hero/?v=e33ec1e) · [人物圖鑑](https://gm0621.github.io/pvz-web-prototype/hero/people.html?v=e33ec1e) · [發布紀錄](https://github.com/gm0621/pvz-web-prototype/actions/runs/45924011395)
