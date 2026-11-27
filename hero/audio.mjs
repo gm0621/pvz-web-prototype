@@ -5,6 +5,41 @@ import {STAGES,chapterInfo} from './story.mjs?v=yuesui-wukou-taoxi-1';
 // Recorded interludes, stage scores and chapter codas share one switchable music bus.
 let context,musicBus,sfxBus,scoreBus,timer=null,step=0,enabled=false,sfx=true,revision=0,scene=0,recordedMode='home',chapterEnding=false,pageInactive=false,backgroundPaused=false;
 const recordedTracks=new Map(),recordedSources=[];
+let battlePaused=false,effectsOutput,combatBus,skillBus,previewOutput,effectsEpoch=0;
+let warningUntil=0,skillUntil=0;
+const audioBlocked=()=>battlePaused||backgroundPaused||isBackground();
+const musicLevel=()=>recordedMode==='home'?.42:recordedMode?.36:.40;
+function mixLevel(param,base,warning,skill,now){
+ param.cancelScheduledValues(now);
+ if(warningUntil>now){param.setTargetAtTime(base*warning,now,.012);now=warningUntil}
+ if(skillUntil>now){param.setTargetAtTime(base*skill,now,.023);now=skillUntil}
+ param.setTargetAtTime(base,now,.13);
+}
+function updateMix(){
+ const now=context.currentTime;
+ if(enabled&&!audioBlocked())mixLevel(musicBus.gain,musicLevel(),.22,.50,now);
+ if(effectsOutput){
+  mixLevel(combatBus.gain,1,.20,.48,now);
+  mixLevel(skillBus.gain,1,.70,1,now);
+ }
+}
+function stopEffects(){
+ effectsEpoch++;
+ effectsOutput?.disconnect();
+ effectsOutput=null;
+ warningUntil=skillUntil=0;
+ lastSound.clear();
+}
+export function setBattleAudioPaused(paused){
+ if(battlePaused===paused)return;
+ battlePaused=paused;
+ if(paused){
+  ++revision;
+  stopEffects();
+  silencePlayback();
+ }else if(enabled&&!audioBlocked())void setMusic(true);
+}
+
 let battlePressure=0;
 export function setBattleMusicPressure(value){battlePressure=Math.max(0,Math.min(2,value))}
 export const RECORDED_THEMES={
@@ -67,7 +102,7 @@ function beginScore(){
  };
  const theme=synthTheme();
  function tick(){
-  if(!enabled||isBackground()||backgroundPaused||bus!==scoreBus)return;
+  if(!enabled||audioBlocked()||bus!==scoreBus)return;
   playScorePulse(theme,step++,battlePressure,voices);
  }
  tick();
@@ -81,32 +116,44 @@ function silencePlayback(){
  if(musicBus){musicBus.disconnect();musicBus.gain.cancelScheduledValues(context.currentTime);musicBus.gain.setValueAtTime(0,context.currentTime)}
 }
 function pauseBackgroundAudio(){
- backgroundPaused=true;++revision;silencePlayback();if(sfxBus)sfxBus.gain.value=0;
+ backgroundPaused=true;++revision;stopEffects();silencePlayback();
+ previewOutput?.disconnect();
+ previewOutput=null;
+ if(sfxBus)sfxBus.gain.value=0;
  if(context)void context.suspend().catch(()=>{});
 }
 export async function setMusic(on){
  enabled=!!on;const request=++revision;silencePlayback();
  if(!enabled)return false;
  // Keep the preference, but never start media or fallback music in background.
- if(isBackground()||backgroundPaused)return enabled;
+ if(audioBlocked())return enabled;
  try{
   init();await context.resume();
   if(isBackground()||backgroundPaused){pauseBackgroundAudio();return enabled}
-  if(!enabled||request!==revision)return enabled;
+  if(!enabled||request!==revision||battlePaused)return enabled;
   musicBus.connect(context.destination);sfxBus.gain.value=sfx?.7:0;
-  musicBus.gain.setValueAtTime(recordedMode==='home'?.42:recordedMode?.36:.40,context.currentTime);
+  updateMix();
   const track=recordedTracks.get(recordedMode);
   if(track){
    let recorded=true;try{await track.play()}catch{recorded=false}
    if(isBackground()||backgroundPaused){pauseBackgroundAudio();return enabled}
-   if(!enabled||request!==revision){if(!enabled||track!==recordedTracks.get(recordedMode))track.pause();return enabled}
+   if(!enabled||request!==revision||battlePaused){if(!enabled||battlePaused||track!==recordedTracks.get(recordedMode))track.pause();return enabled}
    if(!recorded)beginScore();
   }else beginScore();
   return enabled;
  }catch{if(request===revision&&!isBackground()&&!backgroundPaused)enabled=false;return enabled}
 }
 export function musicOn(){return enabled}
-export function setSfx(on){sfx=on;if(sfxBus)sfxBus.gain.value=on&&!isBackground()&&!backgroundPaused?.7:0}
+export function setSfx(on){
+ sfx=on;
+ if(!sfx){
+  stopEffects();
+  previewOutput?.disconnect();
+  previewOutput=null;
+  if(context)updateMix();
+ }
+ if(sfxBus)sfxBus.gain.value=on&&!isBackground()&&!backgroundPaused?.7:0;
+}
 export async function unlockAudio(){
  if(isBackground())return false;
  const request=revision;
@@ -115,7 +162,7 @@ export async function unlockAudio(){
   if(isBackground()||request!==revision){if(isBackground())pauseBackgroundAudio();return false}
   const restore=backgroundPaused;backgroundPaused=false;sfxBus.gain.value=sfx?.7:0;
   if(sfx)void preloadCombatSounds();
-  if(restore&&enabled)await setMusic(true);
+  if(restore&&enabled&&!battlePaused)await setMusic(true);
   return !isBackground()&&!backgroundPaused&&context.state==='running';
  }catch{return false}
 }
@@ -146,17 +193,39 @@ export function preloadCombatSounds(){
  }));
  return combatLoad;
 }
-const cooldowns={swing:.13,'enemy-swing':.17,slash:.115,'enemy-slash':.16,arrow:.12,'enemy-arrow':.16,'arrow-impact':.12,block:.1,deploy:.1,fire:.25,rock:.18,hook:.18};
+const arrowKinds=new Set(['arrow','enemy-arrow']);
+const skillKinds=new Set(['cleave','roar','heal','oath']);
+const cooldowns={swing:.13,'enemy-swing':.17,slash:.115,'enemy-slash':.16,bow:.16,'arrow-impact':.12,block:.1,deploy:.1,fire:.25,rock:.18,hook:.18};
 const lastSound=new Map();
 export async function hitSound(kind='slash'){
- if(!sfx||isBackground()||backgroundPaused)return false;
+ if(!sfx||audioBlocked())return false;
+ const epoch=effectsEpoch;
  // Retry browser audio unlocking instead of silently discarding the first strike.
  if(init().state!=='running'&&!await unlockAudio())return false;
- if(!sfx||isBackground()||backgroundPaused)return false;
- const cooldown=cooldowns[kind];
- if(cooldown&&context.currentTime-(lastSound.get(kind)??-Infinity)<cooldown)return true;
- if(cooldown)lastSound.set(kind,context.currentTime);
- return soundRecipe(kind,sfxBus);
+ if(!sfx||audioBlocked()||epoch!==effectsEpoch)return false;
+ const key=arrowKinds.has(kind)?'bow':kind;
+ const now=context.currentTime,cooldown=cooldowns[key];
+ if(cooldown&&now-(lastSound.get(key)??-Infinity)<cooldown)return true;
+ if(cooldown)lastSound.set(key,now);
+ if(!effectsOutput){
+  effectsOutput=context.createGain();
+  effectsOutput.connect(sfxBus);
+  combatBus=context.createGain();
+  combatBus.connect(effectsOutput);
+  skillBus=context.createGain();
+  skillBus.connect(effectsOutput);
+ }
+ if(kind.startsWith('warning-')){
+  warningUntil=Math.max(warningUntil,now+.53);
+  updateMix();
+  return soundRecipe(kind,effectsOutput);
+ }
+ if(kind.startsWith('skill-')||kind.startsWith('master-')||skillKinds.has(kind)){
+  skillUntil=Math.max(skillUntil,now+.42);
+  updateMix();
+  return soundRecipe(kind,skillBus);
+ }
+ return soundRecipe(kind,combatBus);
 }
 function soundRecipe(kind,bus){
  const combat=combatSounds[kind];
@@ -232,5 +301,5 @@ document.addEventListener('freeze',pauseBackgroundAudio);
 export function createSoundPreview(){
  let bus,revision=0;
  function stop(){revision++;if(bus){bus.gain.value=0;bus.disconnect();bus=null}}
- return {stop,async play(kind){stop();const ticket=revision;if(!sfx||isBackground()||!await unlockAudio()||ticket!==revision||!sfx||isBackground())return false;bus=context.createGain();bus.connect(sfxBus);return soundRecipe(kind,bus)}};
+ return {stop,async play(kind){stop();const ticket=revision;if(!sfx||isBackground()||!await unlockAudio()||ticket!==revision||!sfx||isBackground())return false;if(!previewOutput){previewOutput=context.createGain();previewOutput.connect(sfxBus)}bus=context.createGain();bus.connect(previewOutput);return soundRecipe(kind,bus)}};
 }
