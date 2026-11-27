@@ -140,7 +140,7 @@ for(const stage of stages)test(`stage ${stage.level} clears and replays from an 
   let sent=0,escorted=0,retreated=false,forward=false,paused=false;
   const remainingCounts=new Set();
   let departure=0;
-  const warnings=new Set(),litRoutes=new Set(),spawnedRoutes=new Set();
+  const warnings=new Set(),litRoutes=new Set(),enemyRoutes=new Map();
   const waveText=page.locator('#waveText');
   const positions=laneTotal===3?['上','下','中']:waveLanes.map(lane=>`第 ${lane+1}`);
   const cart=page.locator('#supplyCart');
@@ -228,13 +228,9 @@ for(const stage of stages)test(`stage ${stage.level} clears and replays from an 
       litRoutes.add(Number(wave[1]));
      }
     }
-    if(defense&&spawnedRoutes.size<3){
-     const count=Number((await waveText.textContent()).match(/ (\d+) \/ \d+$/)?.[1]);
-     const firstInWave=[1,5,9].indexOf(count);
-     if(firstInWave>=0&&!spawnedRoutes.has(firstInWave)){
-      await expect(page.locator('#units .enemy').last()).toHaveAttribute('data-lane',String(waveLanes[firstInWave]));
-      spawnedRoutes.add(firstInWave);
-     }
+    if(defense&&enemyRoutes.size<12){
+     const enemies=await page.locator('#units .enemy').evaluateAll(units=>units.map(unit=>[Number(unit.dataset.id),Number(unit.dataset.lane)]));
+     for(const [id,lane] of enemies)if(!enemyRoutes.has(id))enemyRoutes.set(id,lane);
     }
     if(!paused&&warnings.has('2'+positions[1])){
      await pause();
@@ -312,7 +308,8 @@ for(const stage of stages)test(`stage ${stage.level} clears and replays from an 
    expect(remainingCounts.size).toBeGreaterThan(1);
    expect([...remainingCounts]).toEqual([...remainingCounts].sort((a,b)=>b-a));
    expect([...litRoutes]).toEqual([1,2,3]);
-   expect([...spawnedRoutes]).toEqual([0,1,2]);
+   const routes=[...enemyRoutes].sort(([first],[second])=>first-second).map(([,lane])=>lane);
+   expect(routes).toEqual(waveLanes.flatMap(lane=>Array(4).fill(lane)));
    await expect(page.locator('#missionObjective')).toHaveText('三波已守住 · 敵軍已清退');
    await expect(page.locator('#units .enemy')).toHaveCount(0);
    await expect(page.locator('#waveText')).toContainText('已全數出現');
@@ -350,15 +347,18 @@ for(const stage of stages)test(`stage ${stage.level} clears and replays from an 
   const storyLine=page.locator('#storyLine');
   const pages=Number((await page.locator('#storyCount').textContent()).split('/')[1]);
   let story=await storyLine.textContent();
-  for(let i=1;i<pages&&(!next||!story.includes(ending));i++){
+  for(let i=1;i<pages&&(chapterEnd||!next||!story.includes(ending));i++){
    await tap('#storyNext');
    story+=await storyLine.textContent();
   }
   expect(story).toContain(ending);
   if(next){
-   await tap('#storySkip');
+   if(chapterEnd){
+    await expect(page.locator('#storyNext')).toHaveText('下一段故事 →');
+    await tap('#storyNext');
+   }else await tap('#storySkip');
    await expect(page.locator('#storyTitle')).toHaveText(next);
-   if(nextChapter)await expect(page.locator('#storyChapter')).toContainText(nextChapter);
+   if(nextChapter)await expect(page.locator('#storyChapter')).toContainText(`${nextChapter} · 第 1 / 6 關 · 戰前`);
   }else{
    const final=page.locator('#storyNext');
    await expect(final).toHaveText('回主選單 →');
@@ -394,7 +394,7 @@ for(const stage of stages)test(`stage ${stage.level} clears and replays from an 
  if(stage.nextChapter){
   await continueStory.tap();
   await expect(page.locator('#storyTitle')).toHaveText(next);
-  await expect(page.locator('#storyChapter')).toContainText(stage.nextChapter);
+  await expect(page.locator('#storyChapter')).toContainText(`${stage.nextChapter} · 第 1 / 6 關 · 戰前`);
   await tap('#story [data-home]');
  }
  await tap('#chapterPicker > summary');
