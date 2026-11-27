@@ -8,7 +8,7 @@
 
 ## Obsidian 尚未同步時，從這裡接手
 
-1. **確認版本。** 在剛拉下來的 `main` 執行 `git status --short --branch`、`git log -1 --oneline`。`git log` 顯示目前 checkout 的提交。正式遊戲版本另看下方最新一筆含「已發布」及 Pages 工作的功能紀錄。截至 2026-11-27，最新已驗證的正式遊戲版本為 `7563132`（主篇 142 關，《西晉後日談》18 關，《洛陽風雲》6 關，《長安西行》6 關）。 [正式遊戲](https://gm0621.github.io/pvz-web-prototype/hero/?v=7563132) · [人物圖鑑](https://gm0621.github.io/pvz-web-prototype/hero/people.html?v=7563132) · [發布紀錄](https://github.com/gm0621/pvz-web-prototype/actions/runs/45945063324)
+1. **確認版本。** 在剛拉下來的 `main` 執行 `git status --short --branch`、`git log -1 --oneline`。`git log` 顯示目前 checkout 的提交。正式遊戲版本另看下方最新一筆含「已發布」及 Pages 工作的功能紀錄。截至 2026-11-27，最新已驗證的正式遊戲版本為 `e207f06`（主篇 142 關，《西晉後日談》18 關，《洛陽風雲》6 關，《長安西行》6 關）。 [正式遊戲](https://gm0621.github.io/pvz-web-prototype/hero/?v=e207f06) · [人物圖鑑](https://gm0621.github.io/pvz-web-prototype/hero/people.html?v=e207f06) · [發布紀錄](https://github.com/gm0621/pvz-web-prototype/actions/runs/45949583574)
 2. **安裝並做基本驗證。** 在專案根目錄用 Node.js 20 以上與 npm。執行下列指令可驗證引擎、桌面滑鼠／鍵盤及手機平板觸控。更多測試和本機預覽見 [開發指南](DEVELOPMENT.md)。Playwright 會啟動 4174 埠的測試服務，先關閉佔用該埠的手動預覽。
 3. **開工前看目前進度。** 先讀 [AGENTS.md](../AGENTS.md) 的「重要約束」及下方與任務相關的紀錄。英雄演義是獨立的 `/hero/` 遊戲，關卡上限見 `hero/campaign-config.mjs`。正式存檔 `heroLegendProgress_v1` 與本機、線上跳關測試的存檔分開。跨電腦時瀏覽器存檔和未提交的檔案需另外移轉。保留滑鼠、鍵盤與觸控操作，也要保留首勝軍資、重玩及暫停的既有規則。 [跳關工具和存檔說明](hero-local-testing.md)
 4. **繼續當次工作。** 依使用者的新需求從最新 `main` 開分支，保留原工作區修改。完成後把變更、實際測試結果、版本與注意事項記在本檔。Obsidian 未同步時註明待補，能讀取後再更新。正式發布依當次授權。
@@ -19,6 +19,15 @@ npx playwright install chromium webkit
 npm run test:hero:engine
 npx playwright test --config=playwright.hero-input.config.js
 ```
+
+## 2026-11-27 雨阻漢中分波守備、白帝分段護糧與成都撤離
+
+- 已發布 `e207f06`。正式站手機 Chromium（320px、390px）6 項、平板 WebKit（820×1180）3 項完整觸控流程通過，核對 52 份發布資源。 [正式遊戲](https://gm0621.github.io/pvz-web-prototype/hero/?v=e207f06) · [人物圖鑑](https://gm0621.github.io/pvz-web-prototype/hero/people.html?v=e207f06) · [發布紀錄](https://github.com/gm0621/pvz-web-prototype/actions/runs/45949583574)
+- 第 101 關雨阻漢中改為漢中守備。上、下、中依序預警，三波共十二隊皆從對應路線出現，清完餘兵才結算，接祁山運糧。
+- 第 88 關白帝收兵分三批護送糧車經秭歸營地、山路驛站、永安營地。逐批測過護衛離開時停在原處，回到原路後從原進度繼續。三批送達並清完餘兵後，經第十五章尾聲接白帝託孤；重整也可從首頁續至同一關。
+- 第 134 關成都亂起在第三波第一隊追兵到場才開放撤離。至少保住一隊，最後一隊回到左側才結算。保留成都兵變的戰後劇情，再接安樂公入洛。
+- 三關從舊格式存檔驗證暫停恢復、營地、下一關、重整與重玩。兵器、物資及個人最佳保留，首勝軍資只發一次。
+- 本機 434 項引擎測試、9 項關卡觸控及第十五、十六、十八、二十三章的 4 項手機銜接測試通過。第十五章測試的麥城前置情境已依第三波開放撤離的規則更新。使用瀏覽器模擬觸控。快取版 `hanzhong-baidi-chengdu-1`，觸控指令 `npx playwright test --config=playwright.hero-hanzhong-baidi-chengdu.config.js`。
 
 ## 2026-11-27 南中、隴右、木門玩法複查
 
