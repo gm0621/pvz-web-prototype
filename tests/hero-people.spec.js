@@ -9,6 +9,19 @@ test('people book: portraits, aliases, filters, readable cards and unchanged sav
  const {PEOPLE}=await import('../hero/people-data.mjs');
  const expectedOrder=PEOPLE.slice().sort((a,b)=>a.levels[0]-b.levels[0]).map(person=>person.name);
  await expect(page.locator('.person-name')).toHaveText(expectedOrder);
+ const stories=await page.locator('.person-card').evaluateAll(cards=>cards.map(card=>({
+  name:card.dataset.person,
+  headings:[...card.querySelectorAll('.person-story-scene h3')].map(heading=>heading.textContent),
+  category:card.querySelector('.kind-tag').textContent,
+  storyType:card.querySelector('button[aria-controls$="-history"]').textContent
+ })));
+ expect(stories.every(person=>person.headings.length>=2)).toBe(true);
+ const storyTypes={
+  '史實人物':'詳細歷史',
+  '演義人物':'演義故事',
+  '遊戲原創（虛構人物）':'遊戲故事'
+ };
+ expect(stories.every(person=>storyTypes[person.category]===person.storyType)).toBe(true);
  await expect(page.locator('.era-heading').first()).toHaveText('184 年 · 桃園同心');
  await expect(page.locator('.era-heading').last()).toHaveText('304 年 · 長安西行');
  const portraits=await page.locator('.person-card img').evaluateAll(async images=>{
@@ -105,8 +118,15 @@ test('people book story and skill dialogs preserve the timeline and disclose the
  await tap(original.getByRole('button',{name:'遊戲故事'}));
  await expect(original.locator('.kind-tag')).toHaveText('遊戲原創（虛構人物）');
  const fictionalStory=page.getByRole('dialog',{name:'石魁'});
+ await expect(fictionalStory.getByRole('heading',{name:'路上像多了一扇大門'})).toBeVisible();
  await tap(fictionalStory.getByText('故事背景與登場關卡',{exact:true}));
  await expect(fictionalStory.locator('.note')).toBeVisible();
  await expect(fictionalStory.locator('.history-events')).toHaveCount(0);
+ await tap(fictionalStory.getByRole('button',{name:'關閉'}));
+ await page.locator('#peopleSearch').fill('鄧茂');
+ const novel=page.locator('[data-person="鄧茂"]');
+ await tap(novel.getByRole('button',{name:'演義故事'}));
+ await expect(novel.getByRole('heading',{name:'演義裡，黃巾前鋒來了'})).toBeVisible();
+ await expect(novel.locator('.history-events')).toHaveCount(0);
  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
 });

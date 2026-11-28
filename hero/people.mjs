@@ -4,7 +4,7 @@ import {PEOPLE,searchPeople} from './people-data.mjs?v=yuesui-wukou-taoxi-1';
 import {paintPortrait} from './factions.mjs?v=yuesui-wukou-taoxi-1';
 import {STAGES,chapterInfo} from './story.mjs?v=yuesui-wukou-taoxi-1';
 import {historyEntries} from './people-history.mjs?v=hero-people-sources-1';
-import {storyScenes} from './people-stories.mjs?v=hero-people-dialog-1';
+import {storyScenes} from './people-stories.mjs?v=hero-all-people-stories-1';
 
 const $=id=>document.getElementById(id);
 const node=(tag,text,className)=>{const e=document.createElement(tag);if(text)e.textContent=text;if(className)e.className=className;return e};

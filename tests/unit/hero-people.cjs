@@ -45,12 +45,13 @@ test('every historical figure has a sourced entry and fictional characters have 
  assert.ok(!find('曹真').some(entry=>entry.source.url.endsWith('/卷9')));
 });
 
-test('story dialogs have short scenes for the whole book and headed retellings for key figures',async()=>{
+test('each character has a distinct retelling with short titled scenes',async()=>{
  const {PEOPLE}=await import('../../hero/people-data.mjs');
  const {storyScenes}=await import('../../hero/people-stories.mjs');
  const scenes=PEOPLE.map(storyScenes);
- assert.ok(scenes.every(story=>story.length&&story.every(([,text])=>text.trim())));
- assert.equal(scenes.filter(story=>story[0][0]).length,24);
- const original=PEOPLE.find(person=>person.name==='石魁');
- assert.equal(storyScenes(original).map(([,text])=>text).join(''),original.intro);
+ for(const [i,story] of scenes.entries()){
+  assert.ok(story.length>=2&&story.every(([heading,text])=>heading.trim()&&text.trim()),PEOPLE[i].name);
+ }
+ const headings=scenes.flatMap(story=>story.map(([heading])=>heading));
+ assert.equal(new Set(headings).size,headings.length);
 });
