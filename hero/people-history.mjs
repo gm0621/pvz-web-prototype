@@ -1,5 +1,10 @@
 import {hasPersonMention} from './characters.mjs?v=yuesui-wukou-taoxi-1';
 
+const sourceLocations=new Map([
+ ['https://zh.wikisource.org/wiki/三國志/卷9','https://zh.wikisource.org/wiki/三國志/卷09'],
+ ['https://zh.wikisource.org/zh-hant/晉書/卷039#王浚','https://zh.wikisource.org/zh-hant/晉書/卷039#子浚']
+]);
+
 const records={
  '劉備': {
   source:{title:'《三國志・先主傳》',url:'https://zh.wikisource.org/zh-hant/三國志/卷32'},
@@ -56,7 +61,9 @@ export function historyEntries(person,stages){
   if(!stage.history||seen.has(stage.history)||!hasPersonMention(stage.history,person.portrait,[person.name]))continue;
   seen.add(stage.history);
   const sources=stage.references??[];
-  const source=sources.find(item=>item.title.includes(person.name))??sources[0];
+  const reference=sources.find(item=>item.title.includes(person.name))??sources[0];
+  const location=sourceLocations.get(reference?.url);
+  const source=location?{...reference,url:location}:reference;
   entries.push({label:`${stage.year} 年 · 第 ${level} 關 ${stage.name}`,text:stage.history,source});
  }
  return entries;

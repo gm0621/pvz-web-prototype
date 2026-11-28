@@ -3,7 +3,7 @@ import {skillSummary} from './roster-view.mjs?v=hero-audio-settings-1';
 import {PEOPLE,searchPeople} from './people-data.mjs?v=yuesui-wukou-taoxi-1';
 import {paintPortrait} from './factions.mjs?v=yuesui-wukou-taoxi-1';
 import {STAGES,chapterInfo} from './story.mjs?v=yuesui-wukou-taoxi-1';
-import {historyEntries} from './people-history.mjs?v=hero-people-details-1';
+import {historyEntries} from './people-history.mjs?v=hero-people-sources-1';
 import {storyScenes} from './people-stories.mjs?v=hero-people-dialog-1';
 
 const $=id=>document.getElementById(id);

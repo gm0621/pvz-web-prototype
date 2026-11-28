@@ -40,6 +40,9 @@ test('every historical figure has a sourced entry and fictional characters have 
  assert.ok(find('劉備').some(entry=>entry.text.includes('盧植')&&entry.source.title.includes('先主傳')));
  assert.ok(find('關平').some(entry=>entry.text.includes('臨沮')));
  assert.ok(!find('王浚').some(entry=>entry.label.includes('第 142 關')));
+ assert.ok(find('王浚').some(entry=>entry.source.url.endsWith('/卷039#子浚')));
+ assert.ok(find('曹真').some(entry=>entry.source.url.endsWith('/卷09')));
+ assert.ok(!find('曹真').some(entry=>entry.source.url.endsWith('/卷9')));
 });
 
 test('story dialogs have short scenes for the whole book and headed retellings for key figures',async()=>{

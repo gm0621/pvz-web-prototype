@@ -1,9 +1,11 @@
 const {expectExpressionPortrait}=require('./support/hero-portraits.cjs');
 const {test,expect}=require('@playwright/test');
+const gameEntry=process.env.HERO_PEOPLE_ENTRY||'/hero/';
+const peopleEntry=gameEntry+'people.html'+(process.env.HERO_PEOPLE_VERSION?'?v='+process.env.HERO_PEOPLE_VERSION:'');
 test('people book: portraits, aliases, filters, readable cards and unchanged save',async({page},info)=>{
  const errors=[];page.on('pageerror',e=>errors.push(e.message));const save={completed:28,coins:123,weapons:{liubei:2},inventory:{grain:3}};
  await page.addInitScript(s=>{if(!localStorage.getItem('heroLegendProgress_v1'))localStorage.setItem('heroLegendProgress_v1',JSON.stringify(s))},save);
- await page.goto('/hero/people.html');await expect(page.locator('.person-card')).toHaveCount(155);
+ await page.goto(peopleEntry);await expect(page.locator('.person-card')).toHaveCount(155);
  const {PEOPLE}=await import('../hero/people-data.mjs');
  const expectedOrder=PEOPLE.slice().sort((a,b)=>a.levels[0]-b.levels[0]).map(person=>person.name);
  await expect(page.locator('.person-name')).toHaveText(expectedOrder);
@@ -31,12 +33,12 @@ test('people book: portraits, aliases, filters, readable cards and unchanged sav
 });
 test('game opens book separately and retains chapter six story',async({page})=>{
  await page.addInitScript(()=>localStorage.setItem('heroLegendProgress_v1',JSON.stringify({completed:28,coins:321})));
- await page.goto('/hero/');const popupPromise=page.waitForEvent('popup');await page.locator('#home .people-link').click();const popup=await popupPromise;await expect(popup.locator('.person-card')).toHaveCount(155);await popup.close();await page.locator('#startBtn').click();await expect(page.locator('#storyTitle')).toHaveText('洛陽接駕');
+ await page.goto(gameEntry);const popupPromise=page.waitForEvent('popup');await page.locator('#home .people-link').click();const popup=await popupPromise;await expect(popup.locator('.person-card')).toHaveCount(155);await popup.close();await page.locator('#startBtn').click();await expect(page.locator('#storyTitle')).toHaveText('洛陽接駕');
  await page.locator('#storyMore').click();
  const link=page.locator('#storyDetails').getByRole('link',{name:/人物圖鑑/});await link.scrollIntoViewIfNeeded();expect(await link.evaluate(e=>{const r=e.getBoundingClientRect();return document.elementFromPoint(r.x+r.width/2,r.y+r.height/2)===e})).toBe(true);await expect(link).toHaveAttribute('target','_blank');expect(await page.evaluate(()=>JSON.parse(localStorage.getItem('heroLegendProgress_v1')).completed)).toBe(28);
 });
 test('book matches named portraits and narrative appearances, excluding source-only names',async({page})=>{
- await page.goto('/hero/people.html');
+ await page.goto(peopleEntry);
  for(const name of ['漢獻帝','袁術','典韋','曹昂','曹安民','賈詡','郭嘉','荀攸','棗祗']){
   await page.locator('#peopleSearch').fill(name);
   await expectExpressionPortrait(page.locator(`[data-person="${name}"] img`),name);
@@ -46,7 +48,7 @@ test('book matches named portraits and narrative appearances, excluding source-o
 });
 
 test('people book story and skill dialogs preserve the timeline and disclose the sources',async({page,hasTouch},info)=>{
- await page.goto('/hero/people.html');
+ await page.goto(peopleEntry);
  await expect(page.locator('.era-heading').first()).toHaveText('184 年 · 桃園同心');
  const marks=await page.evaluate(()=>{
   const root=document.getElementById('peopleGrid');
@@ -70,8 +72,20 @@ test('people book story and skill dialogs preserve the timeline and disclose the
  await page.screenshot({path:info.outputPath('book-story-dialog.png')});
  await tap(records);
  await expect(notes.locator('.history-events').first()).toContainText('盧植');
- await expect(dialog.getByRole('link',{name:'《三國志・先主傳》',exact:true}).first()).toHaveAttribute('href',/卷32/);
- expect(await dialog.locator('.person-dialog-content').evaluate(element=>element.scrollHeight>element.clientHeight)).toBe(true);
+ const source=dialog.getByRole('link',{name:'《三國志・先主傳》',exact:true}).first();
+ await expect(source).toHaveAttribute('href',/卷32/);
+ if(process.env.HERO_PEOPLE_ENTRY){
+  const sourcePopup=page.waitForEvent('popup');
+  await tap(source);
+  const sourceTab=await sourcePopup;
+  await sourceTab.waitForURL(/zh\.wikisource\.org/);
+  await sourceTab.close();
+  await expect(dialog).toBeVisible();
+ }
+ const content=dialog.locator('.person-dialog-content');
+ await content.evaluate(element=>element.scrollTop=element.scrollHeight);
+ expect(await content.evaluate(element=>element.scrollTop)).toBeGreaterThan(0);
+ expect(await page.evaluate(()=>scrollY)).toBe(scroll);
  await expect(dialog.getByRole('button',{name:'關閉'})).toBeInViewport();
  await tap(dialog.getByText(/^更多史料/));
  await expect(notes.locator('.history-events').nth(1)).toBeVisible();
