@@ -23,3 +23,21 @@ test('new narrative companions have distinct identities and retain distinct narr
  for(let n=1;n<=172;n++)assert.ok(Object.values(heroesForLevel(n)).every(p=>!['曹仁','夏侯淵'].includes(p.name)));
  for(const n of [25,28,29,30])assert.match(STAGES[n-1].adaptation,/對話為人物介紹改編/);
 });
+
+test('every historical figure has a sourced entry and fictional characters have no historical entries',async()=>{
+ const {PEOPLE}=await import('../../hero/people-data.mjs');
+ const {historyEntries}=await import('../../hero/people-history.mjs');
+ const {STAGES}=await import('../../hero/story.mjs');
+ for(const person of PEOPLE){
+  const entries=historyEntries(person,STAGES);
+  if(person.kind==='史實人物'){
+   assert.ok(entries.length,person.name);
+   assert.ok(entries.every(({label,text,source})=>label&&text&&source?.url.startsWith('https://')),person.name);
+   assert.equal(new Set(entries.map(entry=>entry.text)).size,entries.length,person.name);
+  }else assert.deepEqual(entries,[],person.name);
+ }
+ const find=name=>historyEntries(PEOPLE.find(person=>person.name===name),STAGES);
+ assert.ok(find('劉備').some(entry=>entry.text.includes('盧植')&&entry.source.title.includes('先主傳')));
+ assert.ok(find('關平').some(entry=>entry.text.includes('臨沮')));
+ assert.ok(!find('王浚').some(entry=>entry.label.includes('第 142 關')));
+});

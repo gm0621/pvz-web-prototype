@@ -2,9 +2,26 @@
 
 .skill-copy{white-space:pre-line;background:#f6ecd4;padding:14px;border-radius:12px;line-height:1.8}
 
-.people-era{margin-block:28px 36px}
-.era-heading{margin:0 0 14px;padding:4px 0 4px 12px;border-inline-start:4px solid var(--accent);font-size:clamp(18px,3vw,23px);line-height:1.4;color:var(--ink)}
+#peopleGrid{--timeline-offset:32px;--timeline-line:8px;display:grid;gap:32px;position:relative;padding-inline-start:var(--timeline-offset);margin-block:24px 36px}
+#peopleGrid:not(:empty)::before{content:'';position:absolute;inset-block:14px 0;inset-inline-start:var(--timeline-line);width:2px;background:#ba8265}
+.era-heading{position:relative;margin:0 0 14px;padding-block:3px;font-size:clamp(18px,3vw,23px);line-height:1.4;color:var(--ink)}
+.era-heading::before{content:'';position:absolute;inset-block-start:9px;inset-inline-start:calc(var(--timeline-line) - var(--timeline-offset) - 5px);width:12px;height:12px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 3px var(--paper)}
 .first-appearance{margin:6px 0 0;color:#52634e;font-size:13px;line-height:1.5;font-weight:650}
 .appearance-timeline{list-style:none;margin:0;padding:0 4px 4px 12px;border-inline-start:2px solid var(--line)}
 .appearance-timeline li+li{margin-block-start:10px}
 .appearance-period{margin-block-end:4px;font-size:13px;font-weight:700}
+
+.person-body details+details{margin-block-start:6px}
+.person-body details[open]{padding-block-end:8px}
+.history-notes h5{font-size:15px;margin:14px 0 8px;color:var(--ink)}
+.history-events{margin:0 0 14px;padding:0 0 0 14px;list-style:none;border-inline-start:2px solid var(--line)}
+.history-events li+li{margin-block-start:17px}
+.history-events strong{display:block;font-size:14px;color:var(--ink)}
+.history-events p{margin:4px 0;line-height:1.65}
+.history-events a{display:inline-flex;align-items:center;min-height:44px;color:#6b4428;font-size:13px}
+@media(max-width:560px){
+ #peopleGrid{--timeline-offset:21px;--timeline-line:6px;gap:24px}
+ .era-heading::before{width:10px;height:10px;inset-inline-start:calc(var(--timeline-line) - var(--timeline-offset) - 4px)}
+ .person-top{gap:12px}
+ .portrait-disc{flex-basis:88px;width:88px;height:96px}
+}

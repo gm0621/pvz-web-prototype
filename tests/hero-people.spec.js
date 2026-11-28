@@ -22,11 +22,11 @@ test('people book: portraits, aliases, filters, readable cards and unchanged sav
   expect(portrait.url).toBe(expressionPortrait(portrait.name));
   expect([portrait.width,portrait.height]).toEqual([320,320]);
  }
- await page.locator('#peopleSearch').fill('盧公');await expect(page.locator('.person-card .person-name')).toHaveText('盧植');await page.locator('summary').click();await expect(page.locator('.memory')).toContainText('老師');await expect(page.locator('.stage-pills')).toContainText('第 7 關');
- await page.locator('#peopleSearch').fill('劉協');await expect(page.locator('.person-card .person-name')).toHaveText('漢獻帝');await page.locator('summary').click();await expect(page.locator('.appearance-timeline li').filter({hasText:'迎駕與下邳'})).toContainText('第 29 關');await page.screenshot({path:info.outputPath('people-search.png'),fullPage:true});
+ await page.locator('#peopleSearch').fill('盧公');await expect(page.locator('.person-card .person-name')).toHaveText('盧植');await page.locator('.history-panel > summary').click();await expect(page.locator('.memory')).toContainText('老師');await expect(page.locator('.stage-pills')).toContainText('第 7 關');
+ await page.locator('#peopleSearch').fill('劉協');await expect(page.locator('.person-card .person-name')).toHaveText('漢獻帝');await page.locator('.history-panel > summary').click();await expect(page.locator('.appearance-timeline li').filter({hasText:'迎駕與下邳'})).toContainText('第 29 關');await page.screenshot({path:info.outputPath('people-search.png'),fullPage:true});
  await page.locator('#clearSearch').click();await page.locator('[data-kind="遊戲原創"]').click();await expect(page.locator('.person-card')).toHaveCount(5);await expect(page.locator('.kind-tag')).toHaveText(Array(5).fill('遊戲原創（虛構人物）'));
  await page.locator('[data-kind="演義人物"]').click();await expect(page.locator('.person-card')).toHaveCount(2);await page.locator('#peopleSearch').fill('沒有這個名字');await expect(page.locator('#peopleEmpty')).toBeVisible();await page.locator('#clearSearch').click();await expect(page.locator('.person-card')).toHaveCount(155);
- expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);for(const l of [page.locator('#clearSearch'),page.locator('summary').first(),page.locator('[data-kind=all]')]){const b=await l.boundingBox();expect(b.height).toBeGreaterThanOrEqual(44);expect(b.width).toBeGreaterThanOrEqual(44)}
+ expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);for(const l of [page.locator('#clearSearch'),page.locator('.history-panel > summary').first(),page.locator('[data-kind=all]')]){const b=await l.boundingBox();expect(b.height).toBeGreaterThanOrEqual(44);expect(b.width).toBeGreaterThanOrEqual(44)}
  await page.screenshot({path:info.outputPath('people-home.png')});await page.reload();expect(await page.evaluate(()=>JSON.parse(localStorage.getItem('heroLegendProgress_v1')))).toEqual(save);expect(errors).toEqual([]);
 });
 test('game opens book separately and retains chapter six story',async({page})=>{
@@ -41,6 +41,47 @@ test('book matches named portraits and narrative appearances, excluding source-o
   await page.locator('#peopleSearch').fill(name);
   await expectExpressionPortrait(page.locator(`[data-person="${name}"] img`),name);
  }
- for(const [name,yes,no] of [['張角',1,34],['盧植',8,34],['典韋',31,34],['呂布',34,30]]){await page.locator('#peopleSearch').fill(name);const card=page.locator(`[data-person="${name}"]`);await card.locator('summary').click();await expect(card.locator('.stage-pills span').filter({hasText:new RegExp(`^第 ${yes} 關$`)})).toHaveCount(1);await expect(card.locator('.stage-pills span').filter({hasText:new RegExp(`^第 ${no} 關$`)})).toHaveCount(0)}
- await page.locator('#peopleSearch').fill('賈詡');await page.locator('[data-person="賈詡"] summary').click();await expect(page.locator('[data-person="賈詡"] .stage-pills span')).toHaveText(['第 35 關','第 64 關']);
+ for(const [name,yes,no] of [['張角',1,34],['盧植',8,34],['典韋',31,34],['呂布',34,30]]){await page.locator('#peopleSearch').fill(name);const card=page.locator(`[data-person="${name}"]`);await card.locator('.history-panel > summary').click();await expect(card.locator('.stage-pills span').filter({hasText:new RegExp(`^第 ${yes} 關$`)})).toHaveCount(1);await expect(card.locator('.stage-pills span').filter({hasText:new RegExp(`^第 ${no} 關$`)})).toHaveCount(0)}
+ await page.locator('#peopleSearch').fill('賈詡');await page.locator('[data-person="賈詡"] .history-panel > summary').click();await expect(page.locator('[data-person="賈詡"] .stage-pills span')).toHaveText(['第 35 關','第 64 關']);
+});
+
+test('people book timeline markers and independently collapsed history and skills',async({page,hasTouch},info)=>{
+ await page.goto('/hero/people.html');
+ await expect(page.locator('.era-heading').first()).toHaveText('184 年 · 桃園同心');
+ const marks=await page.evaluate(()=>{
+  const root=document.getElementById('peopleGrid');
+  return [root,root.querySelector('.era-heading')].map(element=>getComputedStyle(element,'::before').content);
+ });
+ expect(marks).toEqual(['""','""']);
+ await expect(page.locator('.person-card details[open]')).toHaveCount(0);
+ await page.screenshot({path:info.outputPath('timeline.png')});
+ await page.locator('#peopleSearch').fill('劉備');
+ const card=page.locator('[data-person="劉備"]');
+ const history=card.getByText('詳細歷史',{exact:true}),skills=card.getByText('遊戲技能',{exact:true});
+ const tap=locator=>hasTouch?locator.tap():locator.click();
+ await expect(card.locator('.skill-copy')).toBeHidden();
+ await expect(card.locator('.memory')).toBeHidden();
+ await tap(history);
+ await expect(card.getByText('年少時 · 涿郡',{exact:true})).toBeVisible();
+ const historyNotes=card.locator('.history-notes');
+ const more=historyNotes.getByText(/^更多史料/);
+ await expect(historyNotes.locator('.history-events').first()).toContainText('盧植');
+ await expect(card.getByRole('link',{name:'《三國志・先主傳》',exact:true}).first()).toHaveAttribute('href',/卷32/);
+ await expect(card.locator('.skill-copy')).toBeHidden();
+ await expect(historyNotes.locator('.history-events').nth(1)).toBeHidden();
+ await tap(more);
+ await expect(historyNotes.locator('.history-events').nth(1)).toBeVisible();
+ await tap(history);
+ await tap(skills);
+ await expect(card.locator('.skill-copy')).toContainText('被動');
+ await expect(historyNotes).toBeHidden();
+ await tap(skills);
+ await expect(card.locator('.skill-copy')).toBeHidden();
+ await page.locator('#peopleSearch').fill('石魁');
+ const original=page.locator('[data-person="石魁"]');
+ await tap(original.getByText('遊戲故事',{exact:true}));
+ await expect(original.locator('.kind-tag')).toHaveText('遊戲原創（虛構人物）');
+ await expect(original.locator('.note')).toBeVisible();
+ await expect(original.locator('.history-events')).toHaveCount(0);
+ expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
 });

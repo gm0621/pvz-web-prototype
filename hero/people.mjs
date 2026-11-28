@@ -3,6 +3,7 @@ import {skillSummary} from './roster-view.mjs?v=hero-audio-settings-1';
 import {PEOPLE,searchPeople} from './people-data.mjs?v=yuesui-wukou-taoxi-1';
 import {paintPortrait} from './factions.mjs?v=yuesui-wukou-taoxi-1';
 import {STAGES,chapterInfo} from './story.mjs?v=yuesui-wukou-taoxi-1';
+import {historyEntries} from './people-history.mjs?v=hero-people-details-1';
 
 const $=id=>document.getElementById(id);
 const node=(tag,text,className)=>{const e=document.createElement(tag);if(text)e.textContent=text;if(className)e.className=className;return e};
@@ -46,6 +47,49 @@ function renderAppearanceList(levels){
  return timeline;
 }
 
+function renderHistoryEvents(entries){
+ const timeline=node('ol',null,'history-events');
+ for(const {label,text,source} of entries){
+  const item=node('li');
+  item.append(node('strong',label),node('p',text));
+  if(source){
+   const link=node('a',source.title);
+   link.href=source.url;
+   link.target='_blank';
+   link.rel='noopener';
+   item.append(link);
+  }
+  timeline.append(item);
+ }
+ return timeline;
+}
+
+function renderHistory(person){
+ const details=node('details',null,'history-panel');
+ const historical=person.kind==='史實人物';
+ const label=historical?'詳細歷史':person.kind==='演義人物'?'演義故事':'遊戲故事';
+ details.append(node('summary',label),node('p',person.intro));
+ const notes=node('div',null,'history-notes');
+ details.append(notes,node('p',person.remember,'memory'),node('p',person.note,'note'));
+ if(person.levels.length){
+  details.append(node('div','登場或被提到的關卡','stage-label'),renderAppearanceList(person.levels));
+ }else details.append(node('p','延伸認識的人物'));
+ if(historical)details.addEventListener('toggle',function populate(){
+  if(!details.open)return;
+  details.removeEventListener('toggle',populate);
+  const entries=historyEntries(person,STAGES);
+  if(!entries.length)return;
+  const previewSize=6;
+  notes.append(node('h5','史書中的事蹟'),renderHistoryEvents(entries.slice(0,previewSize)));
+  if(entries.length>previewSize){
+   const more=node('details');
+   more.append(node('summary',`更多史料（${entries.length-previewSize} 則）`),renderHistoryEvents(entries.slice(previewSize)));
+   notes.append(more);
+  }
+ });
+ return details;
+}
+
 function renderCard(person){
  const card=node('article',null,'person-card');
  card.dataset.person=person.name;
@@ -64,24 +108,24 @@ function renderCard(person){
  top.append(disc,heading);
 
  const body=node('div',null,'person-body');
- body.append(node('h4',person.title),node('p',person.intro));
- const details=node('details');
- details.append(node('summary','記憶小提示 · 在哪裡遇見他'),node('p',person.remember,'memory'),node('p',person.note,'note'));
- if(first){
-  details.append(node('div','登場或被提到的關卡','stage-label'),renderAppearanceList(person.levels));
- }else details.append(node('p','延伸認識的人物'));
- body.append(details);
+ body.append(node('h4',person.title),renderHistory(person));
  const general=generalsByName.get(person.name);
  if(general){
   const army=general.faction==='cao'?'曹操軍':general.faction==='sun'?'孫堅軍':'劉備軍';
-  body.append(node('p',`${army}可出戰 · ${general.role}\n${skillSummary(general,1)}`,'skill-copy'));
+  const skills=node('details',null,'skill-panel');
+  skills.append(node('summary','遊戲技能'),node('p',`${army}可出戰 · ${general.role}\n${skillSummary(general,1)}`,'skill-copy'));
+  body.append(skills);
  }
  card.append(top,body);
  return card;
 }
 
 function render(){
- const people=searchPeople($('peopleSearch').value,kind).sort((a,b)=>(a.levels[0]??Infinity)-(b.levels[0]??Infinity));
+ const query=$('peopleSearch').value.trim().normalize('NFKC').toLocaleLowerCase();
+ const matches=searchPeople(query,kind);
+ // A full name or alias should find its owner before incidental mentions in other bios.
+ const named=matches.filter(person=>[person.name,...person.aliases].some(name=>name.normalize('NFKC').toLocaleLowerCase()===query));
+ const people=(named.length?named:matches).sort((a,b)=>(a.levels[0]??Infinity)-(b.levels[0]??Infinity));
  $('peopleCount').textContent=`找到 ${people.length} 位人物 · 共 ${PEOPLE.length} 位`;
  $('peopleEmpty').hidden=people.length>0;
  const groups=new Map();
