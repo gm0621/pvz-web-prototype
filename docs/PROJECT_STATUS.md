@@ -20,6 +20,11 @@ npm run test:hero:engine
 npx playwright test --config=playwright.hero-input.config.js
 ```
 
+## 2026-11-28 人物圖鑑時間軸
+
+- 本機提交 `2a0304f`，分支 `codex/hero-people-timeline`，待正式發布。圖鑑依 155 位人物首次在遊戲中出現的關卡排序，按章分組。卡片顯示首次出現的年份（有標示時）、關數與關名，展開後按時間查看其他登場或提及。早期未標年份的章回沿用劇情時期標示，第三章明列原創支線。
+- 3 項圖鑑單元測試與 12 項 Playwright 流程通過，涵蓋桌面 Chromium、320px Chromium 手機、390px WebKit 手機和 820px WebKit 平板。確認排序、頭像、別名與類別搜尋、跨章出現、圖鑑另開及存檔唯讀。圖鑑快取 `hero-people-timeline-1`。
+
 ## 2026-11-27 音樂與音效開關保存
 
 - 已發布 `99ddf95`，快取 `hero-audio-settings-1`。 [正式遊戲](https://gm0621.github.io/pvz-web-prototype/hero/?v=99ddf95) · [發布紀錄](https://github.com/gm0621/pvz-web-prototype/actions/runs/45974346232)
