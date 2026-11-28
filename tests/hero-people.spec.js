@@ -4,6 +4,11 @@ test('people book: portraits, aliases, filters, readable cards and unchanged sav
  const errors=[];page.on('pageerror',e=>errors.push(e.message));const save={completed:28,coins:123,weapons:{liubei:2},inventory:{grain:3}};
  await page.addInitScript(s=>{if(!localStorage.getItem('heroLegendProgress_v1'))localStorage.setItem('heroLegendProgress_v1',JSON.stringify(s))},save);
  await page.goto('/hero/people.html');await expect(page.locator('.person-card')).toHaveCount(155);
+ const {PEOPLE}=await import('../hero/people-data.mjs');
+ const expectedOrder=PEOPLE.slice().sort((a,b)=>a.levels[0]-b.levels[0]).map(person=>person.name);
+ await expect(page.locator('.person-name')).toHaveText(expectedOrder);
+ await expect(page.locator('.era-heading').first()).toHaveText('184 年 · 桃園同心');
+ await expect(page.locator('.era-heading').last()).toHaveText('304 年 · 長安西行');
  const portraits=await page.locator('.person-card img').evaluateAll(async images=>{
   return Promise.all(images.map(async img=>{
    img.loading='eager';
@@ -17,8 +22,8 @@ test('people book: portraits, aliases, filters, readable cards and unchanged sav
   expect(portrait.url).toBe(expressionPortrait(portrait.name));
   expect([portrait.width,portrait.height]).toEqual([320,320]);
  }
- await page.locator('#peopleSearch').fill('盧公');await expect(page.locator('.person-card h2')).toHaveText('盧植');await page.locator('summary').click();await expect(page.locator('.memory')).toContainText('老師');await expect(page.locator('.stage-pills')).toContainText('第 7 關');
- await page.locator('#peopleSearch').fill('劉協');await expect(page.locator('.person-card h2')).toHaveText('漢獻帝');await page.locator('summary').click();await expect(page.locator('.stage-pills')).toContainText('第 29 關');await page.screenshot({path:info.outputPath('people-search.png'),fullPage:true});
+ await page.locator('#peopleSearch').fill('盧公');await expect(page.locator('.person-card .person-name')).toHaveText('盧植');await page.locator('summary').click();await expect(page.locator('.memory')).toContainText('老師');await expect(page.locator('.stage-pills')).toContainText('第 7 關');
+ await page.locator('#peopleSearch').fill('劉協');await expect(page.locator('.person-card .person-name')).toHaveText('漢獻帝');await page.locator('summary').click();await expect(page.locator('.appearance-timeline li').filter({hasText:'迎駕與下邳'})).toContainText('第 29 關');await page.screenshot({path:info.outputPath('people-search.png'),fullPage:true});
  await page.locator('#clearSearch').click();await page.locator('[data-kind="遊戲原創"]').click();await expect(page.locator('.person-card')).toHaveCount(5);await expect(page.locator('.kind-tag')).toHaveText(Array(5).fill('遊戲原創（虛構人物）'));
  await page.locator('[data-kind="演義人物"]').click();await expect(page.locator('.person-card')).toHaveCount(2);await page.locator('#peopleSearch').fill('沒有這個名字');await expect(page.locator('#peopleEmpty')).toBeVisible();await page.locator('#clearSearch').click();await expect(page.locator('.person-card')).toHaveCount(155);
  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);for(const l of [page.locator('#clearSearch'),page.locator('summary').first(),page.locator('[data-kind=all]')]){const b=await l.boundingBox();expect(b.height).toBeGreaterThanOrEqual(44);expect(b.width).toBeGreaterThanOrEqual(44)}
