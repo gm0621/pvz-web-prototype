@@ -4,6 +4,7 @@ import {PEOPLE,searchPeople} from './people-data.mjs?v=yuesui-wukou-taoxi-1';
 import {paintPortrait} from './factions.mjs?v=yuesui-wukou-taoxi-1';
 import {STAGES,chapterInfo} from './story.mjs?v=yuesui-wukou-taoxi-1';
 import {historyEntries} from './people-history.mjs?v=hero-people-details-1';
+import {storyScenes} from './people-stories.mjs?v=hero-people-dialog-1';
 
 const $=id=>document.getElementById(id);
 const node=(tag,text,className)=>{const e=document.createElement(tag);if(text)e.textContent=text;if(className)e.className=className;return e};
@@ -64,30 +65,73 @@ function renderHistoryEvents(entries){
  return timeline;
 }
 
-function renderHistory(person){
- const details=node('details',null,'history-panel');
+function personDialog(person,portrait,label,type,content){
+ const id=`person-${PEOPLE.indexOf(person)}-${type}`;
+ const button=node('button',label,'person-detail-button');
+ button.type='button';
+ button.setAttribute('aria-haspopup','dialog');
+ button.setAttribute('aria-controls',id);
+ const dialog=node('dialog',null,'person-dialog');
+ dialog.id=id;
+ dialog.setAttribute('aria-labelledby',`${id}-title`);
+ const header=node('header',null,'person-dialog-header');
+ const picture=node('span',null,'person-dialog-portrait');
+ picture.setAttribute('aria-hidden','true');
+ const titles=node('div');
+ const title=node('h2',person.name);
+ title.id=`${id}-title`;
+ titles.append(node('p',label),title);
+ const close=node('button','關閉','person-dialog-close');
+ close.type='button';
+ close.autofocus=true;
+ header.append(picture,titles,close);
+ dialog.append(header,content);
+ dialog.addEventListener('click',event=>{if(event.target===dialog)dialog.close()});
+ dialog.addEventListener('close',()=>button.focus({preventScroll:true}));
+ close.onclick=()=>dialog.close();
+ button.onclick=()=>{
+  picture.style.backgroundImage=`url("${portrait.src}")`;
+  dialog.showModal();
+  content.scrollTop=0;
+ };
+ return [button,dialog];
+}
+
+function renderHistory(person,portrait){
  const historical=person.kind==='史實人物';
  const label=historical?'詳細歷史':person.kind==='演義人物'?'演義故事':'遊戲故事';
- details.append(node('summary',label),node('p',person.intro));
+ const content=node('div',null,'person-dialog-content history-panel');
+ const story=node('div',null,'person-story');
+ const scenes=storyScenes(person);
+ for(const [heading,text] of scenes){
+  const scene=node('section',null,'person-story-scene');
+  if(heading)scene.append(node('h3',heading));
+  scene.append(node('p',text));
+  story.append(scene);
+ }
+ content.append(story,node('p',person.remember,'memory'));
+ const records=node('details',null,'person-records');
+ records.append(node('summary',historical?'史料與登場關卡':'故事背景與登場關卡'));
+ if(scenes[0]?.[0])records.append(node('p',person.intro));
  const notes=node('div',null,'history-notes');
- details.append(notes,node('p',person.remember,'memory'),node('p',person.note,'note'));
+ records.append(node('p',person.note,'note'),notes);
  if(person.levels.length){
-  details.append(node('div','登場或被提到的關卡','stage-label'),renderAppearanceList(person.levels));
- }else details.append(node('p','延伸認識的人物'));
- if(historical)details.addEventListener('toggle',function populate(){
-  if(!details.open)return;
-  details.removeEventListener('toggle',populate);
+  records.append(node('p','登場或被提到的關卡','stage-label'),renderAppearanceList(person.levels));
+ }else records.append(node('p','延伸認識的人物'));
+ content.append(records);
+ if(historical)records.addEventListener('toggle',function populate(){
+  if(!records.open)return;
+  records.removeEventListener('toggle',populate);
   const entries=historyEntries(person,STAGES);
-  if(!entries.length)return;
   const previewSize=6;
-  notes.append(node('h5','史書中的事蹟'),renderHistoryEvents(entries.slice(0,previewSize)));
+  notes.append(node('h3','史書中的事蹟'),renderHistoryEvents(entries.slice(0,previewSize)));
   if(entries.length>previewSize){
    const more=node('details');
    more.append(node('summary',`更多史料（${entries.length-previewSize} 則）`),renderHistoryEvents(entries.slice(previewSize)));
    notes.append(more);
   }
  });
- return details;
+ return personDialog(person,portrait,label,'history',content);
 }
 
 function renderCard(person){
@@ -108,14 +152,20 @@ function renderCard(person){
  top.append(disc,heading);
 
  const body=node('div',null,'person-body');
- body.append(node('h4',person.title),renderHistory(person));
+ body.append(node('h4',person.title));
+ const actions=node('div',null,'person-actions');
+ actions.append(...renderHistory(person,img));
  const general=generalsByName.get(person.name);
  if(general){
   const army=general.faction==='cao'?'曹操軍':general.faction==='sun'?'孫堅軍':'劉備軍';
-  const skills=node('details',null,'skill-panel');
-  skills.append(node('summary','遊戲技能'),node('p',`${army}可出戰 · ${general.role}\n${skillSummary(general,1)}`,'skill-copy'));
-  body.append(skills);
+  const skills=node('div',null,'person-dialog-content skill-panel');
+  skills.append(node('p',`${army}可出戰 · ${general.role}`,'skill-intro'));
+  const list=node('ul',null,'skill-list');
+  for(const line of skillSummary(general,1).split('\n'))list.append(node('li',line));
+  skills.append(list);
+  actions.append(...personDialog(person,img,'遊戲技能','skills',skills));
  }
+ body.append(actions);
  card.append(top,body);
  return card;
 }

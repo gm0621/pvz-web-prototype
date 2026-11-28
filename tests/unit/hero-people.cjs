@@ -41,3 +41,13 @@ test('every historical figure has a sourced entry and fictional characters have 
  assert.ok(find('關平').some(entry=>entry.text.includes('臨沮')));
  assert.ok(!find('王浚').some(entry=>entry.label.includes('第 142 關')));
 });
+
+test('story dialogs have short scenes for the whole book and headed retellings for key figures',async()=>{
+ const {PEOPLE}=await import('../../hero/people-data.mjs');
+ const {storyScenes}=await import('../../hero/people-stories.mjs');
+ const scenes=PEOPLE.map(storyScenes);
+ assert.ok(scenes.every(story=>story.length&&story.every(([,text])=>text.trim())));
+ assert.equal(scenes.filter(story=>story[0][0]).length,24);
+ const original=PEOPLE.find(person=>person.name==='石魁');
+ assert.equal(storyScenes(original).map(([,text])=>text).join(''),original.intro);
+});
